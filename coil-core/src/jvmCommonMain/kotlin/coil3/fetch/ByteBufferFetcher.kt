@@ -1,6 +1,7 @@
 package coil3.fetch
 
 import coil3.ImageLoader
+import coil3.decode.ByteBufferMetadata
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
@@ -37,8 +38,6 @@ internal class ByteBufferFetcher(
             return ByteBufferFetcher(data, options)
         }
     }
-
-    class ByteBufferMetadata(val byteBuffer: ByteBuffer) : ImageSource.Metadata()
 }
 
 internal fun ByteBuffer.asSource() = object : Source {

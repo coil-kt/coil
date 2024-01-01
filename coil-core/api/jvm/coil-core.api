@@ -212,6 +212,11 @@ public abstract interface annotation class coil3/annotation/ExperimentalCoilApi 
 public abstract interface annotation class coil3/annotation/InternalCoilApi : java/lang/annotation/Annotation {
 }
 
+public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Metadata {
+	public fun <init> (Ljava/nio/ByteBuffer;)V
+	public final fun getByteBuffer ()Ljava/nio/ByteBuffer;
+}
+
 public final class coil3/decode/DataSource : java/lang/Enum {
 	public static final field DISK Lcoil3/decode/DataSource;
 	public static final field MEMORY Lcoil3/decode/DataSource;
