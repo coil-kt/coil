@@ -123,6 +123,7 @@ private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder
         return ImageDecoder.createSource(options.context.assets, metadata.filePath)
     }
     if (metadata is ContentMetadata) {
+        // ImageDecoder will seek inner fd to startOffset
         return ImageDecoder.createSource { metadata.afd }
     }
     if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
