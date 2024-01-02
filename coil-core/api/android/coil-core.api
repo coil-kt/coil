@@ -261,7 +261,8 @@ public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Me
 }
 
 public final class coil3/decode/ContentMetadata : coil3/decode/ImageSource$Metadata {
-	public fun <init> (Lcoil3/Uri;)V
+	public fun <init> (Lcoil3/Uri;Landroid/content/res/AssetFileDescriptor;)V
+	public final fun getAfd ()Landroid/content/res/AssetFileDescriptor;
 	public final fun getUri ()Lcoil3/Uri;
 }
 
