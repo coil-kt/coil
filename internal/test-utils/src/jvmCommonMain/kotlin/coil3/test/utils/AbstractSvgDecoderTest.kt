@@ -10,7 +10,13 @@ import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.FileSystem
