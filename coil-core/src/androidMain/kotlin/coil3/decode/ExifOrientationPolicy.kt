@@ -1,6 +1,7 @@
 package coil3.decode
 
 import coil3.ImageLoader
+import coil3.bitmapFactoryExifOrientationPolicy
 
 /**
  * Specifies the policy for handling the EXIF orientation flag.

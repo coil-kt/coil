@@ -2,6 +2,7 @@ package coil3
 
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
+import coil3.decode.ExifOrientationPolicy.IGNORE
 import coil3.decode.StaticImageDecoderDecoder
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
@@ -85,7 +86,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .apply {
             // Require API 29 for ImageDecoder support as API 28 has framework bugs:
             // https://github.com/element-hq/element-android/pull/7184
-            if (SDK_INT >= 29) {
+            if (SDK_INT >= 29 && options.bitmapFactoryExifOrientationPolicy != IGNORE) {
                 add(
                     StaticImageDecoderDecoder.Factory(
                         maxParallelism = options.bitmapFactoryMaxParallelism,
