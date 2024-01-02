@@ -111,7 +111,11 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
             return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
         if (metadata is ContentMetadata) {
-            return ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
+            return if (SDK_INT >= 29) {
+                ImageDecoder.createSource { metadata.afd }
+            } else {
+                ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
+            }
         }
         if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)

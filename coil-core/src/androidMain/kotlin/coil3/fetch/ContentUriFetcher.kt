@@ -30,30 +30,28 @@ internal class ContentUriFetcher(
     override suspend fun fetch(): FetchResult {
         val androidUri = data.toAndroidUri()
         val contentResolver = options.context.contentResolver
-        val inputStream = if (isContactPhotoUri(data)) {
+        val afd = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
-            val stream = contentResolver
+            val afd = contentResolver
                 //noinspection Recycle: Automatically recycled after being decoded.
                 .openAssetFileDescriptor(androidUri, "r")
-                ?.createInputStream()
-            checkNotNull(stream) { "Unable to find a contact photo associated with '$androidUri'." }
+            checkNotNull(afd) { "Unable to find a contact photo associated with '$androidUri'." }
         } else if (SDK_INT >= 29 && isMusicThumbnailUri(data)) {
             val bundle = newMusicThumbnailSizeOptions()
-            val stream = contentResolver
+            val afd = contentResolver
                 //noinspection Recycle: Automatically recycled after being decoded.
                 .openTypedAssetFile(androidUri, "image/*", bundle, null)
-                ?.createInputStream()
-            checkNotNull(stream) { "Unable to find a music thumbnail associated with '$androidUri'." }
+            checkNotNull(afd) { "Unable to find a music thumbnail associated with '$androidUri'." }
         } else {
-            val stream = contentResolver.openInputStream(androidUri)
+            val stream = contentResolver.openAssetFileDescriptor(androidUri, "r")
             checkNotNull(stream) { "Unable to open '$androidUri'." }
         }
 
         return SourceFetchResult(
             source = ImageSource(
-                source = inputStream.source().buffer(),
+                source = afd.createInputStream().source().buffer(),
                 fileSystem = options.fileSystem,
-                metadata = ContentMetadata(data),
+                metadata = ContentMetadata(data, afd),
             ),
             mimeType = contentResolver.getType(androidUri),
             dataSource = DataSource.DISK,
