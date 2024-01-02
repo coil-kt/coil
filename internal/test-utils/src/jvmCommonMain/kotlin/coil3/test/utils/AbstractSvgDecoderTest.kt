@@ -10,12 +10,7 @@ import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.FileSystem
@@ -26,19 +21,22 @@ abstract class AbstractSvgDecoderTest(
     private val decoderFactory: Decoder.Factory
 ) {
 
-    open fun handlesSvgMimeType() {
+    @Test
+    fun handlesSvgMimeType() {
         val result = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
             .asSourceResult(mimeType = "image/svg+xml")
         assertNotNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
     }
 
-    open fun doesNotHandlePngMimeType() {
+    @Test
+    fun doesNotHandlePngMimeType() {
         val result = FileSystem.RESOURCES.source("coil_logo.png".toPath()).buffer()
             .asSourceResult(mimeType = "image/png")
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
     }
 
-    open fun doesNotHandleGeneralXmlFile() {
+    @Test
+    fun doesNotHandleGeneralXmlFile() {
         val source = FileSystem.RESOURCES.source("document.xml".toPath()).buffer()
         val result = source.asSourceResult()
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
@@ -46,7 +44,8 @@ abstract class AbstractSvgDecoderTest(
         assertEquals(8192, source.buffer.size) // should buffer exactly 1 segment
     }
 
-    open fun handlesSvgSource() {
+    @Test
+    fun handlesSvgSource() {
         val options = Options(context)
         val imageLoader = ImageLoader(context)
         var source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
@@ -62,7 +61,8 @@ abstract class AbstractSvgDecoderTest(
         assertNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
     }
 
-    open fun basic() = runTest {
+    @Test
+    fun basic() = runTest {
         val source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
@@ -84,7 +84,8 @@ abstract class AbstractSvgDecoderTest(
         image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
-    open fun noViewBox() = runTest {
+    @Test
+    fun noViewBox() = runTest {
         val source = FileSystem.RESOURCES.source("instacart_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
@@ -107,7 +108,8 @@ abstract class AbstractSvgDecoderTest(
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
-    open fun oneDimensionIsUndefined() = runTest {
+    @Test
+    fun oneDimensionIsUndefined() = runTest {
         val source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
