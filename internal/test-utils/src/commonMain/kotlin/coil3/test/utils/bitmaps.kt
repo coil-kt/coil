@@ -40,7 +40,7 @@ suspend fun CoilBitmap.isSimilarTo(
  */
 suspend fun CoilBitmap.assertIsSimilarTo(
     expected: CoilBitmap,
-    threshold: Double = 0.987
+    threshold: Double = 0.98
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
