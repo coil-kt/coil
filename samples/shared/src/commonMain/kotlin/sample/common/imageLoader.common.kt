@@ -3,6 +3,7 @@ package sample.common
 import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.decode.SvgDecoder
 import coil3.disk.DiskCache
 import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
@@ -16,6 +17,8 @@ fun newImageLoader(
     return ImageLoader.Builder(context)
         .components {
             add(NetworkFetcher.Factory())
+            // SVGs
+            add(SvgDecoder.Factory())
             addPlatformComponents()
         }
         .memoryCache {

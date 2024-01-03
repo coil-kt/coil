@@ -26,10 +26,10 @@ import kotlinx.coroutines.runInterruptible
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  */
-class SvgDecoder @JvmOverloads constructor(
+actual class SvgDecoder @JvmOverloads actual constructor(
     private val source: ImageSource,
     private val options: Options,
-    val useViewBoundsAsIntrinsicSize: Boolean = true,
+    val useViewBoundsAsIntrinsicSize: Boolean,
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
@@ -93,8 +93,8 @@ class SvgDecoder @JvmOverloads constructor(
         }
     }
 
-    class Factory @JvmOverloads constructor(
-        val useViewBoundsAsIntrinsicSize: Boolean = true,
+    actual class Factory @JvmOverloads actual constructor(
+        val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
 
         override fun create(
@@ -109,10 +109,5 @@ class SvgDecoder @JvmOverloads constructor(
         private fun isApplicable(result: SourceFetchResult): Boolean {
             return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
-    }
-
-    companion object {
-        private const val MIME_TYPE_SVG = "image/svg+xml"
-        private const val DEFAULT_SIZE = 512f
     }
 }

@@ -1,9 +1,9 @@
 package coil3.util
 
-import android.graphics.Bitmap
-import android.os.Build.VERSION.SDK_INT
 import coil3.size.Dimension
 import coil3.size.Scale
+import coil3.size.Size
+import coil3.size.isOriginal
 import okio.BufferedSource
 import okio.ByteString
 
@@ -23,14 +23,6 @@ internal fun BufferedSource.indexOf(bytes: ByteString, fromIndex: Long, toIndex:
     return -1
 }
 
-internal val Bitmap.Config.isHardware: Boolean
-    get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
-
-/** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
-internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {
-    return if (this == null || isHardware) Bitmap.Config.ARGB_8888 else this
-}
-
 internal fun Dimension.toPx(scale: Scale): Float {
     if (this is Dimension.Pixels) {
         return px.toFloat()
@@ -40,4 +32,12 @@ internal fun Dimension.toPx(scale: Scale): Float {
             Scale.FIT -> Float.MAX_VALUE
         }
     }
+}
+
+internal inline fun Size.widthPx(scale: Scale, original: () -> Float): Float {
+    return if (isOriginal) original() else width.toPx(scale)
+}
+
+internal inline fun Size.heightPx(scale: Scale, original: () -> Float): Float {
+    return if (isOriginal) original() else height.toPx(scale)
 }
