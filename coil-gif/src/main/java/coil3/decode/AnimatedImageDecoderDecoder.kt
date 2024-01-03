@@ -19,7 +19,6 @@ import coil3.request.animationEndCallback
 import coil3.request.animationStartCallback
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
-import coil3.request.premultipliedAlpha
 import coil3.request.repeatCount
 import coil3.toAndroidUri
 import coil3.util.animatable2CallbackOf
@@ -148,7 +147,6 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
         if (options.colorSpace != null) {
             setTargetColorSpace(options.colorSpace)
         }
-        isUnpremultipliedRequired = !options.premultipliedAlpha
         postProcessor = options.animatedTransformation?.asPostProcessor()
     }
 
