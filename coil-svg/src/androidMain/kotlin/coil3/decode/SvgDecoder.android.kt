@@ -12,7 +12,7 @@ import coil3.request.bitmapConfig
 import coil3.request.css
 import coil3.size.Scale
 import coil3.size.isOriginal
-import coil3.util.toPx
+import coil3.util.svg.toPx
 import coil3.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG

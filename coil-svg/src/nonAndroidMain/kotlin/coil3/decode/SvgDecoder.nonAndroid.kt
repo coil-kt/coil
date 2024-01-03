@@ -6,7 +6,7 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.isOriginal
-import coil3.util.toPx
+import coil3.util.svg.toPx
 import kotlin.math.roundToInt
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
