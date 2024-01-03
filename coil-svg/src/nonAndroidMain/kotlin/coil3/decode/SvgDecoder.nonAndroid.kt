@@ -48,7 +48,7 @@ actual class SvgDecoder actual constructor(
         val bitmapWidth: Int
         val bitmapHeight: Int
         val (dstWidth, dstHeight) = getDstSize(svgWidth, svgHeight, options.scale)
-        if (svgWidth > 0 && svgHeight > 0) {
+        if (svgWidth > 0f && svgHeight > 0f) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
                 srcHeight = svgHeight,
@@ -64,7 +64,7 @@ actual class SvgDecoder actual constructor(
         }
 
         // Set the SVG's view box to enable scaling if it is not set.
-        if (viewBox == null && svgWidth > 0 && svgHeight > 0) {
+        if (viewBox == null && svgWidth > 0f && svgHeight > 0f) {
             svg.root?.viewBox = Rect.makeWH(svgWidth, svgHeight)
         }
 
@@ -94,14 +94,15 @@ actual class SvgDecoder actual constructor(
 
     private fun getDstSize(srcWidth: Float, srcHeight: Float, scale: Scale): Pair<Float, Float> {
         if (options.size.isOriginal) {
-            val dstWidth = if (srcWidth > 0) srcWidth else DEFAULT_SIZE
-            val dstHeight = if (srcHeight > 0) srcHeight else DEFAULT_SIZE
+            val dstWidth = if (srcWidth > 0f) srcWidth else DEFAULT_SIZE
+            val dstHeight = if (srcHeight > 0f) srcHeight else DEFAULT_SIZE
             return dstWidth to dstHeight
         } else {
             val (dstWidth, dstHeight) = options.size
             return dstWidth.toPx(scale) to dstHeight.toPx(scale)
         }
     }
+
     actual class Factory actual constructor(
         val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
