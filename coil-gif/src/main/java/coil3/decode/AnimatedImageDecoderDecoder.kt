@@ -195,7 +195,7 @@ internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
     request(Long.MAX_VALUE)
     return ByteBuffer.allocateDirect(buffer.size.toInt()).apply {
         // Squash to DirectByteBuffer
-        buffer.read(this)
+        while (!buffer.exhausted()) buffer.read(this)
         flip()
     }
 }
