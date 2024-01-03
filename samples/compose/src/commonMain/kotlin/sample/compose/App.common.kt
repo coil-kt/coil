@@ -212,7 +212,7 @@ private fun ListScreen(
     ) {
         items(
             items = images,
-            key = { it.uri },
+            key = { it.toString() },
         ) { image ->
             // Scale the image to fit the width of a column.
             val size = remember(density, screenWidth) {
