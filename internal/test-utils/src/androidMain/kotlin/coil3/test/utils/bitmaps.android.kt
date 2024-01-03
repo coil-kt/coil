@@ -9,10 +9,39 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.test.platform.app.InstrumentationRegistry
+import coil3.Image
 import coil3.size.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+
+actual interface CoilBitmap {
+    actual val width: Int
+    actual val height: Int
+
+    val bitmap: Bitmap
+
+    actual suspend fun CoilBitmap.computeSimilarity(
+        other: CoilBitmap,
+    ): Double
+}
+
+actual fun Image.asCoilBitmap(): CoilBitmap = this.bitmap.toCoilBitmap()
+
+class CoilBitmapImpl(
+    override val bitmap: Bitmap
+) : CoilBitmap {
+    override val width: Int = bitmap.width
+
+    override val height: Int = bitmap.height
+
+    override suspend fun CoilBitmap.computeSimilarity(
+        other: CoilBitmap
+    ): Double =
+        bitmap.computeSimilarity(other.bitmap)
+}
+
+fun Bitmap.toCoilBitmap(): CoilBitmap = CoilBitmapImpl(this)
 
 val Bitmap.size: Size
     get() = Size(width, height)

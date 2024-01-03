@@ -4,7 +4,6 @@ import android.os.Build.VERSION.SDK_INT
 import coil3.ComponentRegistry
 import coil3.decode.AnimatedImageDecoderDecoder
 import coil3.decode.GifDecoder
-import coil3.decode.SvgDecoder
 import coil3.decode.VideoFrameDecoder
 
 internal actual fun newComponentRegistry(): ComponentRegistry {
@@ -14,7 +13,6 @@ internal actual fun newComponentRegistry(): ComponentRegistry {
     } else {
         components.add(GifDecoder.Factory())
     }
-    components.add(SvgDecoder.Factory())
     components.add(VideoFrameDecoder.Factory())
     return components.build()
 }

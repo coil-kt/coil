@@ -16,6 +16,8 @@ import coil3.PlatformContext
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.sink
 import okio.source
@@ -28,6 +30,25 @@ actual abstract class RobolectricTest
 
 actual val context: PlatformContext
     get() = ApplicationProvider.getApplicationContext()
+
+actual fun decodeBitmapResource(
+    path: String,
+): CoilBitmap {
+    val options: BitmapFactory.Options = BitmapFactory.Options().apply {
+        inPreferredConfig = Bitmap.Config.ARGB_8888
+    }
+
+    // Retry multiple times as the emulator can be flaky.
+    var failures = 0
+    while (true) {
+        try {
+            val stream = FileSystem.RESOURCES.source(path.toPath()).buffer().inputStream()
+            return BitmapFactory.decodeStream(stream, null, options)!!.toCoilBitmap()
+        } catch (e: Exception) {
+            if (failures++ > 5) throw e
+        }
+    }
+}
 
 /** Alias for [Assume.assumeTrue]. */
 fun assumeTrue(actual: Boolean, message: String = "") {
