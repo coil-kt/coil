@@ -1,15 +1,16 @@
-package coil3.decode
+package coil3.test.utils
 
-import coil3.BitmapImage
+import coil3.Image
 import coil3.ImageLoader
+import coil3.decode.DataSource
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.test.utils.assertIsSimilarTo
-import coil3.test.utils.context
-import coil3.test.utils.decodeBitmapAsset
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -17,75 +18,58 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import okio.Buffer
 import okio.BufferedSource
 import okio.FileSystem
+import okio.Path.Companion.toPath
 import okio.buffer
-import okio.source
-import org.junit.Test
 
-class SvgDecoderTest {
-
-    private val decoderFactory = SvgDecoder.Factory()
+abstract class AbstractSvgDecoderTest(
+    private val decoderFactory: Decoder.Factory
+) {
 
     @Test
     fun handlesSvgMimeType() {
-        val result = context.assets.open("coil_logo.svg").source().buffer()
+        val result = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
             .asSourceResult(mimeType = "image/svg+xml")
         assertNotNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
     }
 
     @Test
     fun doesNotHandlePngMimeType() {
-        val result = context.assets.open("coil_logo.png").source().buffer()
+        val result = FileSystem.RESOURCES.source("coil_logo.png".toPath()).buffer()
             .asSourceResult(mimeType = "image/png")
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
     }
 
     @Test
     fun doesNotHandleGeneralXmlFile() {
-        val source = context.assets.open("document.xml").source().buffer()
+        val source = FileSystem.RESOURCES.source("document.xml".toPath()).buffer()
         val result = source.asSourceResult()
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
         assertFalse(source.exhausted())
         assertEquals(8192, source.buffer.size) // should buffer exactly 1 segment
     }
 
-    /** Regression test: https://github.com/coil-kt/coil/issues/1154 */
-    @Test
-    fun isSvg_newLine() {
-        val text = "<svg\n" +
-            "   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
-            "   xmlns:cc=\"http://creativecommons.org/ns#\"\n" +
-            "   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
-            "   xmlns:svg=\"http://www.w3.org/2000/svg\"\n" +
-            "   xmlns=\"http://www.w3.org/2000/svg\"\n" +
-            "   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"/>"
-        val buffer = Buffer().apply { writeUtf8(text) }
-
-        assertTrue(DecodeUtils.isSvg(buffer))
-    }
-
     @Test
     fun handlesSvgSource() {
         val options = Options(context)
         val imageLoader = ImageLoader(context)
-        var source = context.assets.open("coil_logo.svg").source().buffer()
+        var source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
         assertNotNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
-        source = context.assets.open("coil_logo.png").source().buffer()
+        source = FileSystem.RESOURCES.source("coil_logo.png".toPath()).buffer()
         assertNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
-        source = context.assets.open("instacart_logo.svg").source().buffer()
+        source = FileSystem.RESOURCES.source("instacart_logo.svg".toPath()).buffer()
         assertNotNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
-        source = context.assets.open("instacart_logo.png").source().buffer()
+        source = FileSystem.RESOURCES.source("instacart_logo.png".toPath()).buffer()
         assertNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
     }
 
     @Test
     fun basic() = runTest {
-        val source = context.assets.open("coil_logo.svg").source().buffer()
+        val source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
             size = Size(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
@@ -100,15 +84,15 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val image = assertIs<BitmapImage>(result.image)
+        val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("coil_logo.png")
-        image.bitmap.assertIsSimilarTo(expected)
+        val expected = decodeBitmapResource("coil_logo.png")
+        image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
     @Test
     fun noViewBox() = runTest {
-        val source = context.assets.open("instacart_logo.svg").source().buffer()
+        val source = FileSystem.RESOURCES.source("instacart_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
             size = Size(600, 96),
@@ -123,16 +107,16 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val image = assertIs<BitmapImage>(result.image)
+        val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("instacart_logo.png")
-        image.bitmap.assertIsSimilarTo(expected)
+        val expected = decodeBitmapResource("instacart_logo.png")
+        image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
     @Test
     fun oneDimensionIsUndefined() = runTest {
-        val source = context.assets.open("coil_logo.svg").source().buffer()
+        val source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
         val options = Options(
             context = context,
             // coil_logo.svg's intrinsic dimensions are 200x200.
@@ -148,10 +132,10 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val image = assertIs<BitmapImage>(result.image)
+        val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("coil_logo.png")
-        image.bitmap.assertIsSimilarTo(expected)
+        val expected = decodeBitmapResource("coil_logo.png")
+        image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
     private fun BufferedSource.asSourceResult(

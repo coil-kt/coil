@@ -12,6 +12,7 @@ ktor-wasm = "3.0.0-wasm2"
 okio = "3.7.0"
 paparazzi = "1.3.1"
 roborazzi = "1.7.0"
+skiko = "0.7.90"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
@@ -85,7 +86,7 @@ roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.r
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-skiko = "org.jetbrains.skiko:skiko:0.7.90"
+skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
 
 svg = "com.caverock:androidsvg-aar:1.4"
 

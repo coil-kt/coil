@@ -1,0 +1,26 @@
+public final class coil3/decode/SvgDecodeUtilsKt {
+	public static final fun isSvg (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+}
+
+public final class coil3/decode/SvgDecoder : coil3/decode/Decoder {
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+}
+
+public final class coil3/decode/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+}
+
+public final class coil3/request/SvgsKt {
+	public static final fun css (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getCss (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getCss (Lcoil3/request/ImageRequest;)Ljava/lang/String;
+	public static final fun getCss (Lcoil3/request/Options;)Ljava/lang/String;
+}
+
