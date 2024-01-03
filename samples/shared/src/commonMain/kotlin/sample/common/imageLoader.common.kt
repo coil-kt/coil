@@ -1,6 +1,5 @@
 package sample.common
 
-import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
@@ -13,7 +12,6 @@ fun newImageLoader(
     debug: Boolean = false,
 ): ImageLoader {
     return ImageLoader.Builder(context)
-        .components(newComponentRegistry())
         .memoryCache {
             MemoryCache.Builder()
                 // Set the max size to 25% of the app's available memory.
@@ -35,5 +33,3 @@ fun newImageLoader(
 }
 
 internal expect fun newDiskCache(): DiskCache?
-
-internal expect fun newComponentRegistry(): ComponentRegistry
