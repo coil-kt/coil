@@ -52,7 +52,15 @@ private val networkObserverEnabledKey = Extras.Key(default = true)
 // region serviceLoaderComponentsEnabled
 
 /**
- * TODO
+ * Enables adding all components (fetchers and decoders) that are supported by the service locator
+ * to this [ImageLoader]'s [ComponentRegistry]. All of Coil's first party decoders and fetchers are
+ * supported.
+ *
+ * If true, all components that are supported by the service locator will be added to this
+ * [ImageLoader]'s [ComponentRegistry].
+ *
+ * If false, no components from the service locator will be added to the [ImageLoader]'s
+ * [ComponentRegistry].
  */
 fun ImageLoader.Builder.serviceLoaderEnabled(enable: Boolean) = apply {
     extras[serviceLoaderEnabledKey] = enable
