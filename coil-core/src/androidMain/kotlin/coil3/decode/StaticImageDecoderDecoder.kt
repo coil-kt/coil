@@ -14,7 +14,6 @@ import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
 import coil3.request.premultipliedAlpha
-import coil3.toAndroidUri
 import coil3.util.heightPx
 import coil3.util.isHardware
 import coil3.util.widthPx
@@ -24,7 +23,7 @@ import kotlinx.coroutines.sync.withPermit
 import okio.Closeable
 import okio.FileSystem
 
-@RequiresApi(28)
+@RequiresApi(29)
 internal class StaticImageDecoderDecoder(
     private val source: ImageDecoder.Source,
     private val closeable: Closeable,
@@ -110,7 +109,7 @@ internal class StaticImageDecoderDecoder(
     }
 }
 
-@RequiresApi(28)
+@RequiresApi(29)
 private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
     if (fileSystem == FileSystem.SYSTEM) {
         val file = fileOrNull()
@@ -124,7 +123,8 @@ private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder
         return ImageDecoder.createSource(options.context.assets, metadata.filePath)
     }
     if (metadata is ContentMetadata) {
-        return ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
+        // ImageDecoder will seek inner fd to startOffset
+        return ImageDecoder.createSource { metadata.assetFileDescriptor }
     }
     if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
         return ImageDecoder.createSource(options.context.resources, metadata.resId)

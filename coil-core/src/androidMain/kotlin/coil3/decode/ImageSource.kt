@@ -1,5 +1,6 @@
 package coil3.decode
 
+import android.content.res.AssetFileDescriptor
 import androidx.annotation.DrawableRes
 import coil3.Uri
 
@@ -15,6 +16,7 @@ class AssetMetadata(
  */
 class ContentMetadata(
     val uri: Uri,
+    val assetFileDescriptor: AssetFileDescriptor
 ) : ImageSource.Metadata()
 
 /**
