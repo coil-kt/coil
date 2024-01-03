@@ -138,6 +138,19 @@ abstract class AbstractSvgDecoderTest(
         image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
+    @Test
+    fun resultImageIsShareable() = runTest {
+        val source = FileSystem.RESOURCES.source("coil_logo.svg".toPath()).buffer()
+            .asSourceResult(mimeType = "image/svg+xml")
+        val result = decoderFactory.create(
+            result = source,
+            options = Options(context),
+            imageLoader = ImageLoader(context),
+        )?.decode()
+        assertNotNull(result)
+        assertTrue(result.image.shareable)
+    }
+
     private fun BufferedSource.asSourceResult(
         mimeType: String? = null,
         dataSource: DataSource = DataSource.DISK,

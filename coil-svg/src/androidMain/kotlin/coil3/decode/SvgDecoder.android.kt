@@ -3,7 +3,6 @@ package coil3.decode
 import android.graphics.Canvas
 import android.graphics.RectF
 import androidx.core.graphics.createBitmap
-import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.fetch.SourceFetchResult
@@ -77,7 +76,7 @@ actual class SvgDecoder @JvmOverloads actual constructor(
         svg.renderToCanvas(Canvas(bitmap), renderOptions)
 
         DecodeResult(
-            image = bitmap.toDrawable(options.context.resources).asCoilImage(),
+            image = bitmap.asCoilImage(shareable = true),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }

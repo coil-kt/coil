@@ -85,9 +85,10 @@ actual class SvgDecoder actual constructor(
         }
 
         svg.render(Canvas(bitmap))
+        bitmap.setImmutable()
 
         return DecodeResult(
-            image = bitmap.asCoilImage(),
+            image = bitmap.asCoilImage(shareable = true),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }
