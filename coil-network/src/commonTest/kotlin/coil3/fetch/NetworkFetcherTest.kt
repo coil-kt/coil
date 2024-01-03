@@ -8,6 +8,7 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.test.utils.runTestAsync
 import coil3.toUri
+import coil3.util.ServiceLoaderComponentRegistry
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -20,6 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
@@ -389,6 +391,12 @@ class NetworkFetcherTest : RobolectricTest() {
 //        assertEquals(DataSource.NETWORK, result.dataSource)
 //        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 //    }
+
+    @Test
+    fun serviceLoaderFindsNetworkFetcher() {
+        val fetchers = ServiceLoaderComponentRegistry.fetchers
+        assertTrue(fetchers.any { it.factory() is NetworkFetcher.Factory })
+    }
 
     private fun newFetcher(
         url: String = "https://example.com/image.jpg",

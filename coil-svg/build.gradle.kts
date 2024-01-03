@@ -18,7 +18,17 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
-                implementation(libs.coroutines.core)
+            }
+        }
+        androidMain {
+            dependencies {
+                implementation(libs.androidx.core)
+                implementation(libs.svg)
+            }
+        }
+        named("nonAndroidMain") {
+            dependencies {
+                implementation(libs.skiko)
             }
         }
         commonTest {
@@ -27,15 +37,10 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        named("nonAndroidMain") {
+        jvmTest {
             dependencies {
-                api(libs.skiko)
-            }
-        }
-        androidMain {
-            dependencies {
-                implementation(libs.androidx.core)
-                implementation(libs.svg)
+                implementation(projects.internal.testUtils)
+                implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }
         androidUnitTest {
@@ -48,12 +53,6 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
-            }
-        }
-        jvmTest {
-            dependencies {
-                implementation(projects.internal.testUtils)
-                implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }
     }

@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.util.svg
 
 import coil3.size.Dimension
 import coil3.size.Scale

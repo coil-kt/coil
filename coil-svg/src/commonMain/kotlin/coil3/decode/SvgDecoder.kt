@@ -17,7 +17,7 @@ expect class SvgDecoder(
 ) : Decoder {
 
     class Factory(
-        useViewBoundsAsIntrinsicSize: Boolean = true
+        useViewBoundsAsIntrinsicSize: Boolean = true,
     ) : Decoder.Factory
 }
 

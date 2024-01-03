@@ -197,6 +197,7 @@ public final class coil3/ImageLoaders_commonKt {
 	public static final fun ImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun networkObserverEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun serviceLoaderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 }
 
 public final class coil3/ImageLoaders_nonJsKt {
@@ -1018,6 +1019,15 @@ public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun setMinLevel (Lcoil3/util/Logger$Level;)V
 }
 
+public abstract interface class coil3/util/DecoderServiceLoaderTarget {
+	public abstract fun factory ()Lcoil3/decode/Decoder$Factory;
+}
+
+public abstract interface class coil3/util/FetcherServiceLoaderTarget {
+	public abstract fun factory ()Lcoil3/fetch/Fetcher$Factory;
+	public abstract fun type ()Lkotlin/reflect/KClass;
+}
+
 public abstract interface class coil3/util/Logger {
 	public abstract fun getMinLevel ()Lcoil3/util/Logger$Level;
 	public abstract fun log (Ljava/lang/String;Lcoil3/util/Logger$Level;Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -1039,5 +1049,11 @@ public final class coil3/util/MimeTypeMap {
 	public static final field INSTANCE Lcoil3/util/MimeTypeMap;
 	public final fun getMimeTypeFromExtension (Ljava/lang/String;)Ljava/lang/String;
 	public final fun getMimeTypeFromUrl (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class coil3/util/ServiceLoaderComponentRegistry {
+	public static final field INSTANCE Lcoil3/util/ServiceLoaderComponentRegistry;
+	public final fun getDecoders ()Ljava/util/List;
+	public final fun getFetchers ()Ljava/util/List;
 }
 

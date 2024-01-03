@@ -20,7 +20,9 @@ import coil3.request.NullRequestDataException
 import coil3.request.RequestService
 import coil3.request.SuccessResult
 import coil3.target.Target
+import coil3.util.FetcherServiceLoaderTarget
 import coil3.util.Logger
+import coil3.util.ServiceLoaderComponentRegistry
 import coil3.util.SystemCallbacks
 import coil3.util.emoji
 import coil3.util.get
@@ -50,6 +52,7 @@ internal class RealImageLoader(
     override val memoryCache by options.memoryCacheLazy
     override val diskCache by options.diskCacheLazy
     override val components = options.componentRegistry.newBuilder()
+        .addServiceLoaderComponents(options)
         .addAndroidComponents(options)
         .addJvmComponents(options)
         .addCommonComponents(options)
@@ -243,6 +246,22 @@ internal expect inline fun transition(
     eventListener: EventListener,
     setDrawable: () -> Unit,
 )
+
+@Suppress("UNCHECKED_CAST")
+internal fun ComponentRegistry.Builder.addServiceLoaderComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder {
+    if (options.serviceLoaderEnabled) {
+        for (factory in ServiceLoaderComponentRegistry.fetchers) {
+            factory as FetcherServiceLoaderTarget<Any>
+            add(factory.factory(), factory.type())
+        }
+        for (factory in ServiceLoaderComponentRegistry.decoders) {
+            add(factory.factory())
+        }
+    }
+    return this
+}
 
 internal expect fun ComponentRegistry.Builder.addAndroidComponents(
     options: RealImageLoader.Options,
