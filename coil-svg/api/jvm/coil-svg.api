@@ -17,10 +17,3 @@ public final class coil3/decode/SvgDecoder$Factory : coil3/decode/Decoder$Factor
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
-public final class coil3/request/SvgsKt {
-	public static final fun css (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun getCss (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getCss (Lcoil3/request/ImageRequest;)Ljava/lang/String;
-	public static final fun getCss (Lcoil3/request/Options;)Ljava/lang/String;
-}
-
