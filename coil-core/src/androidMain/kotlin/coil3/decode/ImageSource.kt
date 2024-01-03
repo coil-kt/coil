@@ -16,7 +16,7 @@ class AssetMetadata(
  */
 class ContentMetadata(
     val uri: Uri,
-    val afd: AssetFileDescriptor
+    val assetFileDescriptor: AssetFileDescriptor
 ) : ImageSource.Metadata()
 
 /**
