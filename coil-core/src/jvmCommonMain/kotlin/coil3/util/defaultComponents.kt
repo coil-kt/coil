@@ -5,10 +5,14 @@ import java.util.ServiceLoader
 
 @InternalCoilApi
 actual object ServiceLoaderComponentRegistry {
-    actual val fetchers = FetcherServiceLoaderTarget::class.java.let {
-        ServiceLoader.load(it, it.classLoader).toList().toImmutableList()
-    }
-    actual val decoders = DecoderServiceLoaderTarget::class.java.let {
-        ServiceLoader.load(it, it.classLoader).toList().toImmutableList()
-    }
+    // This code is written intentionally so R8 can optimize it:
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/1231
+    actual val fetchers = ServiceLoader.load(
+        FetcherServiceLoaderTarget::class.java,
+        FetcherServiceLoaderTarget::class.java.classLoader,
+    ).iterator().asSequence().toList().toImmutableList()
+    actual val decoders = ServiceLoader.load(
+        DecoderServiceLoaderTarget::class.java,
+        DecoderServiceLoaderTarget::class.java.classLoader,
+    ).iterator().asSequence().toList().toImmutableList()
 }
