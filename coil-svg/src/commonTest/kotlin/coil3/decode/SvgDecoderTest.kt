@@ -1,5 +1,6 @@
 package coil3.decode
 
+import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import okio.Buffer
@@ -19,5 +20,11 @@ class SvgDecoderTest {
         val buffer = Buffer().apply { writeUtf8(text) }
 
         assertTrue(DecodeUtils.isSvg(buffer))
+    }
+
+    @Test
+    fun serviceLoaderFindsSvgDecoder() {
+        val decoders = ServiceLoaderComponentRegistry.decoders
+        assertTrue(decoders.any { it.factory() is SvgDecoder.Factory })
     }
 }
