@@ -6,7 +6,6 @@ package coil3.test
 import coil3.Image
 import coil3.ImageLoader
 import coil3.annotation.Data
-import coil3.annotation.ExperimentalCoilApi
 import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -41,7 +40,6 @@ fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {
  *     .build()
  * ```
  */
-@ExperimentalCoilApi
 class FakeImageLoaderEngine private constructor(
     val interceptors: List<OptionalInterceptor>,
     val defaultInterceptor: Interceptor,
