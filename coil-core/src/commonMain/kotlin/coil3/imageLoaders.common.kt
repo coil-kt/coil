@@ -49,3 +49,18 @@ internal val RealImageLoader.Options.networkObserverEnabled: Boolean
 private val networkObserverEnabledKey = Extras.Key(default = true)
 
 // endregion
+// region serviceLoaderComponentsEnabled
+
+/**
+ * TODO
+ */
+fun ImageLoader.Builder.serviceLoaderEnabled(enable: Boolean) = apply {
+    extras[serviceLoaderEnabledKey] = enable
+}
+
+internal val RealImageLoader.Options.serviceLoaderEnabled: Boolean
+    get() = defaults.extras.getOrDefault(serviceLoaderEnabledKey)
+
+private val serviceLoaderEnabledKey = Extras.Key(default = true)
+
+// endregion

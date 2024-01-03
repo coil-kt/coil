@@ -2,4 +2,4 @@ package sample.common
 
 import coil3.ComponentRegistry
 
-internal actual fun ComponentRegistry.Builder.addPlatformComponents() {}
+internal actual fun newComponentRegistry() = ComponentRegistry()

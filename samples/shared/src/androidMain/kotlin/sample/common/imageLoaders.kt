@@ -7,15 +7,14 @@ import coil3.decode.GifDecoder
 import coil3.decode.SvgDecoder
 import coil3.decode.VideoFrameDecoder
 
-internal actual fun ComponentRegistry.Builder.addPlatformComponents() {
-    // GIFs
+internal actual fun newComponentRegistry(): ComponentRegistry {
+    val components = ComponentRegistry.Builder()
     if (SDK_INT >= 28) {
-        add(AnimatedImageDecoderDecoder.Factory())
+        components.add(AnimatedImageDecoderDecoder.Factory())
     } else {
-        add(GifDecoder.Factory())
+        components.add(GifDecoder.Factory())
     }
-    // SVGs
-    add(SvgDecoder.Factory())
-    // Video frames
-    add(VideoFrameDecoder.Factory())
+    components.add(SvgDecoder.Factory())
+    components.add(VideoFrameDecoder.Factory())
+    return components.build()
 }

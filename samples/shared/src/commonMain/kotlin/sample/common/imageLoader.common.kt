@@ -4,7 +4,6 @@ import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
-import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
 import coil3.request.crossfade
 import coil3.util.DebugLogger
@@ -14,10 +13,7 @@ fun newImageLoader(
     debug: Boolean = false,
 ): ImageLoader {
     return ImageLoader.Builder(context)
-        .components {
-            add(NetworkFetcher.Factory())
-            addPlatformComponents()
-        }
+        .components(newComponentRegistry())
         .memoryCache {
             MemoryCache.Builder()
                 // Set the max size to 25% of the app's available memory.
@@ -40,4 +36,4 @@ fun newImageLoader(
 
 internal expect fun newDiskCache(): DiskCache?
 
-internal expect fun ComponentRegistry.Builder.addPlatformComponents()
+internal expect fun newComponentRegistry(): ComponentRegistry
