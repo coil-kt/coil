@@ -191,10 +191,11 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
 }
 
 internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
-    // TODO: How can we know BufferedSource's length, avoid allocating that bytearray?
-    val bytes = readByteArray()
-    return ByteBuffer.allocateDirect(bytes.size).apply {
-        put(bytes)
+    // Squash bytes to BufferedSource inner buffer then we know total byteCount
+    request(Long.MAX_VALUE)
+    return ByteBuffer.allocateDirect(buffer.size.toInt()).apply {
+        // Squash to DirectByteBuffer
+        buffer.read(this)
         flip()
     }
 }
