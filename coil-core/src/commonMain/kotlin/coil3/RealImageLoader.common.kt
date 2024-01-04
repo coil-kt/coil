@@ -252,12 +252,17 @@ internal fun ComponentRegistry.Builder.addServiceLoaderComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder {
     if (options.serviceLoaderEnabled) {
-        for (factory in ServiceLoaderComponentRegistry.fetchers) {
-            factory as FetcherServiceLoaderTarget<Any>
-            add(factory.factory(), factory.type())
+        // Delay reading the fetchers and decoders until the fetching/decoding stage.
+        addFetcherFactories {
+            ServiceLoaderComponentRegistry.fetchers.map { factory ->
+                factory as FetcherServiceLoaderTarget<Any>
+                factory.factory() to factory.type()
+            }
         }
-        for (factory in ServiceLoaderComponentRegistry.decoders) {
-            add(factory.factory())
+        addDecoderFactories {
+            ServiceLoaderComponentRegistry.decoders.map { factory ->
+                factory.factory()
+            }
         }
     }
     return this

@@ -37,6 +37,8 @@ public final class coil3/ComponentRegistry$Builder {
 	public final fun add (Lcoil3/intercept/Interceptor;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/key/Keyer;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/map/Mapper;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
+	public final fun addDecoderFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
+	public final fun addFetcherFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun build ()Lcoil3/ComponentRegistry;
 }
 
