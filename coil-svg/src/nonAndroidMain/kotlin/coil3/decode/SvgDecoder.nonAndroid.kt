@@ -80,15 +80,8 @@ actual class SvgDecoder actual constructor(
 
         svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
 
-        val bitmap = Bitmap().apply {
-            allocN32Pixels(bitmapWidth, bitmapHeight)
-        }
-
-        svg.render(Canvas(bitmap))
-        bitmap.setImmutable()
-
         return DecodeResult(
-            image = bitmap.asCoilImage(shareable = true),
+            image = svg.asCoilImage(bitmapWidth, bitmapHeight),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }

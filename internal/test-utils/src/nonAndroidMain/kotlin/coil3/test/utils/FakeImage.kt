@@ -1,5 +1,6 @@
 package coil3.test.utils
 
+import coil3.CoilPainter
 import coil3.Image
 import org.jetbrains.skia.Bitmap
 
@@ -9,7 +10,7 @@ actual class FakeImage actual constructor(
     override val size: Long,
     override val shareable: Boolean,
 ) : Image {
-    override fun asBitmap(): Bitmap {
+    override fun asPainter(): CoilPainter {
         throw UnsupportedOperationException()
     }
 }
