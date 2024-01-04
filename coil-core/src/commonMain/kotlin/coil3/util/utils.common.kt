@@ -61,11 +61,11 @@ internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
 internal fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?
-) = apply { if (pair != null) fetcherFactories.add(0) { listOf(pair) } }
+) = apply { if (pair != null) lazyFetcherFactories.add(0) { listOf(pair) } }
 
 internal fun ComponentRegistry.Builder.addFirst(
     factory: Decoder.Factory?
-) = apply { if (factory != null) decoderFactories.add(0) { listOf(factory) } }
+) = apply { if (factory != null) lazyDecoderFactories.add(0) { listOf(factory) } }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"
 internal const val MIME_TYPE_WEBP = "image/webp"

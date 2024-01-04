@@ -122,23 +122,23 @@ class ComponentRegistry private constructor(
         internal val interceptors: MutableList<Interceptor>
         internal val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
         internal val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
-        internal val fetcherFactories: MutableList<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>
-        internal val decoderFactories: MutableList<() -> List<Decoder.Factory>>
+        internal val lazyFetcherFactories: MutableList<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>
+        internal val lazyDecoderFactories: MutableList<() -> List<Decoder.Factory>>
 
         constructor() {
             interceptors = mutableListOf()
             mappers = mutableListOf()
             keyers = mutableListOf()
-            fetcherFactories = mutableListOf()
-            decoderFactories = mutableListOf()
+            lazyFetcherFactories = mutableListOf()
+            lazyDecoderFactories = mutableListOf()
         }
 
         constructor(registry: ComponentRegistry) {
             interceptors = registry.interceptors.toMutableList()
             mappers = registry.mappers.toMutableList()
             keyers = registry.keyers.toMutableList()
-            fetcherFactories = registry.fetcherFactories.mapTo(mutableListOf()) { { listOf(it) } }
-            decoderFactories = registry.decoderFactories.mapTo(mutableListOf()) { { listOf(it) } }
+            lazyFetcherFactories = registry.fetcherFactories.mapTo(mutableListOf()) { { listOf(it) } }
+            lazyDecoderFactories = registry.decoderFactories.mapTo(mutableListOf()) { { listOf(it) } }
         }
 
         /** Append an [Interceptor] to the end of the list. */
@@ -167,24 +167,24 @@ class ComponentRegistry private constructor(
 
         /** Register a [Fetcher.Factory]. */
         fun <T : Any> add(factory: Fetcher.Factory<T>, type: KClass<T>) = apply {
-            fetcherFactories += { listOf(factory to type) }
+            lazyFetcherFactories += { listOf(factory to type) }
         }
 
         /** Register a factory of [Fetcher.Factory]s. */
         @ExperimentalCoilApi
         fun addFetcherFactories(factory: () -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>) = apply {
-            fetcherFactories += factory
+            lazyFetcherFactories += factory
         }
 
         /** Register a [Decoder.Factory]. */
         fun add(factory: Decoder.Factory) = apply {
-            decoderFactories += { listOf(factory) }
+            lazyDecoderFactories += { listOf(factory) }
         }
 
         /** Register a factory of [Decoder.Factory]s. */
         @ExperimentalCoilApi
         fun addDecoderFactories(factory: () -> List<Decoder.Factory>) = apply {
-            decoderFactories += factory
+            lazyDecoderFactories += factory
         }
 
         fun build(): ComponentRegistry {
@@ -192,8 +192,8 @@ class ComponentRegistry private constructor(
                 interceptors = interceptors.toImmutableList(),
                 mappers = mappers.toImmutableList(),
                 keyers = keyers.toImmutableList(),
-                lazyFetcherFactories = fetcherFactories.toImmutableList(),
-                lazyDecoderFactories = decoderFactories.toImmutableList(),
+                lazyFetcherFactories = lazyFetcherFactories.toImmutableList(),
+                lazyDecoderFactories = lazyDecoderFactories.toImmutableList(),
             )
         }
     }
