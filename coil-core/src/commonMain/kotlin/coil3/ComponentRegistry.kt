@@ -1,5 +1,6 @@
 package coil3
 
+import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
@@ -22,11 +23,19 @@ class ComponentRegistry private constructor(
     val interceptors: List<Interceptor>,
     val mappers: List<Pair<Mapper<out Any, out Any>, KClass<out Any>>>,
     val keyers: List<Pair<Keyer<out Any>, KClass<out Any>>>,
-    val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>,
-    val decoderFactories: List<Decoder.Factory>,
+    private var lazyFetcherFactories: List<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>,
+    private var lazyDecoderFactories: List<() -> List<Decoder.Factory>>,
 ) {
 
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+
+    val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>> by lazy {
+        lazyFetcherFactories.flatMap { it() }.also { lazyFetcherFactories = emptyList() }
+    }
+
+    val decoderFactories: List<Decoder.Factory> by lazy {
+        lazyDecoderFactories.flatMap { it() }.also { lazyDecoderFactories = emptyList() }
+    }
 
     /**
      * Convert [data] using the registered [mappers].
@@ -113,23 +122,23 @@ class ComponentRegistry private constructor(
         internal val interceptors: MutableList<Interceptor>
         internal val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
         internal val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
-        internal val fetcherFactories: MutableList<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>
-        internal val decoderFactories: MutableList<Decoder.Factory>
+        internal val lazyFetcherFactories: MutableList<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>
+        internal val lazyDecoderFactories: MutableList<() -> List<Decoder.Factory>>
 
         constructor() {
             interceptors = mutableListOf()
             mappers = mutableListOf()
             keyers = mutableListOf()
-            fetcherFactories = mutableListOf()
-            decoderFactories = mutableListOf()
+            lazyFetcherFactories = mutableListOf()
+            lazyDecoderFactories = mutableListOf()
         }
 
         constructor(registry: ComponentRegistry) {
             interceptors = registry.interceptors.toMutableList()
             mappers = registry.mappers.toMutableList()
             keyers = registry.keyers.toMutableList()
-            fetcherFactories = registry.fetcherFactories.toMutableList()
-            decoderFactories = registry.decoderFactories.toMutableList()
+            lazyFetcherFactories = registry.fetcherFactories.mapTo(mutableListOf()) { { listOf(it) } }
+            lazyDecoderFactories = registry.decoderFactories.mapTo(mutableListOf()) { { listOf(it) } }
         }
 
         /** Append an [Interceptor] to the end of the list. */
@@ -158,12 +167,24 @@ class ComponentRegistry private constructor(
 
         /** Register a [Fetcher.Factory]. */
         fun <T : Any> add(factory: Fetcher.Factory<T>, type: KClass<T>) = apply {
-            fetcherFactories += factory to type
+            lazyFetcherFactories += { listOf(factory to type) }
+        }
+
+        /** Register a factory of [Fetcher.Factory]s. */
+        @ExperimentalCoilApi
+        fun addFetcherFactories(factory: () -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>) = apply {
+            lazyFetcherFactories += factory
         }
 
         /** Register a [Decoder.Factory]. */
         fun add(factory: Decoder.Factory) = apply {
-            decoderFactories += factory
+            lazyDecoderFactories += { listOf(factory) }
+        }
+
+        /** Register a factory of [Decoder.Factory]s. */
+        @ExperimentalCoilApi
+        fun addDecoderFactories(factory: () -> List<Decoder.Factory>) = apply {
+            lazyDecoderFactories += factory
         }
 
         fun build(): ComponentRegistry {
@@ -171,8 +192,8 @@ class ComponentRegistry private constructor(
                 interceptors = interceptors.toImmutableList(),
                 mappers = mappers.toImmutableList(),
                 keyers = keyers.toImmutableList(),
-                fetcherFactories = fetcherFactories.toImmutableList(),
-                decoderFactories = decoderFactories.toImmutableList(),
+                lazyFetcherFactories = lazyFetcherFactories.toImmutableList(),
+                lazyDecoderFactories = lazyDecoderFactories.toImmutableList(),
             )
         }
     }
