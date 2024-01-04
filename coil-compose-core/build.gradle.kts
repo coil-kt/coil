@@ -14,11 +14,6 @@ plugins {
 addAllMultiplatformTargets()
 androidLibrary(name = "coil3.compose.core")
 
-compose {
-    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
-    experimental.web.application {}
-}
-
 kotlin {
     sourceSets {
         commonMain {

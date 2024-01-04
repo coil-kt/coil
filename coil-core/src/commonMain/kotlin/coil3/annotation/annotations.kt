@@ -24,6 +24,17 @@ annotation class ExperimentalCoilApi
 annotation class InternalCoilApi
 
 /**
+ * Marks declarations that should be used carefully.
+ *
+ * Targets marked by this annotation are often provided for usage in tests and should be avoided in
+ * production code.
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.BINARY)
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+annotation class DelicateCoilApi
+
+/**
  * Marks declarations that have their visibility relaxed to make code easier to test.
  */
 @MustBeDocumented

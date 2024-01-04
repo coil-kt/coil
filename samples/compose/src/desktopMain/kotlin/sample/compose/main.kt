@@ -6,8 +6,6 @@ import androidx.compose.ui.window.application
 import sample.common.JvmResources
 
 fun main() {
-    initializeSingletonImageLoader()
-
     application {
         Window(
             title = Title,

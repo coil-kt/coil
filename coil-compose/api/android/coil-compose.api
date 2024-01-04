@@ -8,6 +8,10 @@ public final class coil3/compose/SingletonAsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-HtA5bXE (Ljava/lang/Object;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;II)Lcoil3/compose/AsyncImagePainter;
 }
 
+public final class coil3/compose/SingletonImageLoaderKt {
+	public static final fun setSingletonImageLoaderFactory (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)V
+}
+
 public final class coil3/compose/SingletonSubcomposeAsyncImageKt {
 	public static final fun SubcomposeAsyncImage-gl8XCv8 (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILcoil3/compose/EqualityDelegate;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
 	public static final fun SubcomposeAsyncImage-nc27qi8 (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;III)V

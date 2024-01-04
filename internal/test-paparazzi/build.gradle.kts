@@ -9,11 +9,6 @@ plugins {
 
 androidLibrary(name = "coil3.test.paparazzi")
 
-compose {
-    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
-    experimental.web.application {}
-}
-
 dependencies {
     api(projects.coilCore)
 

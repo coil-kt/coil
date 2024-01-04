@@ -8,8 +8,6 @@ import sample.common.JsResources
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() = onWasmReady {
-    initializeSingletonImageLoader()
-
     CanvasBasedWindow(Title) {
         App(remember { JsResources() })
     }

@@ -41,7 +41,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
         assertFalse(factory.isInitialized)
         assertFalse((context.applicationContext as TestApplication).isInitialized)
 
-        SingletonImageLoader.set(factory)
+        SingletonImageLoader.setSafe(factory)
 
         SingletonImageLoader.get(context)
 
@@ -53,7 +53,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
         private val _isInitialized = atomic(false)
         val isInitialized: Boolean by _isInitialized
 
-        override fun newImageLoader(): ImageLoader {
+        override fun newImageLoader(context: PlatformContext): ImageLoader {
             check(!_isInitialized.getAndSet(true)) {
                 "newImageLoader was invoked more than once."
             }
