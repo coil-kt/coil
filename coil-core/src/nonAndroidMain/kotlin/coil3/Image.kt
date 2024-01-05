@@ -32,7 +32,7 @@ actual interface Image {
 
     fun asPainter(): CoilPainter
 
-    fun asBitmap(): Bitmap = when(val painter = asPainter()) {
+    fun asBitmap(): Bitmap = when (val painter = asPainter()) {
         is CoilPainter.BitmapPainter -> painter.asBitmap()
         is CoilPainter.VectorPainter -> {
             val bitmap = Bitmap()
@@ -79,7 +79,7 @@ class SvgImage internal constructor(
     val svg: SVGDOM,
     override val width: Int,
     override val height: Int,
-): Image {
+) : Image {
     override val size: Long
         get() = 4L * width * height
 

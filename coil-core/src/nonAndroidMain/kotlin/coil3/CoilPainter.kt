@@ -7,12 +7,12 @@ import org.jetbrains.skia.Canvas
 @ExperimentalCoilApi
 sealed interface CoilPainter {
     @ExperimentalCoilApi
-    fun interface BitmapPainter: CoilPainter {
+    fun interface BitmapPainter : CoilPainter {
         fun asBitmap(): Bitmap
     }
 
     @ExperimentalCoilApi
-    fun interface VectorPainter: CoilPainter {
+    fun interface VectorPainter : CoilPainter {
         fun Canvas.onDraw()
     }
 }

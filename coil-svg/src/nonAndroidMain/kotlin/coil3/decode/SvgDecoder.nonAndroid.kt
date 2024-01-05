@@ -8,8 +8,6 @@ import coil3.size.Scale
 import coil3.size.isOriginal
 import coil3.util.svg.toPx
 import kotlin.math.roundToInt
-import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
