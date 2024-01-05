@@ -1,5 +1,5 @@
 public final class coil3/BitmapImage : coil3/Image {
-	public fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
+	public fun asPainter ()Lcoil3/CoilPainter;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun getHeight ()I
@@ -8,6 +8,17 @@ public final class coil3/BitmapImage : coil3/Image {
 	public fun getWidth ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class coil3/CoilPainter {
+}
+
+public abstract interface class coil3/CoilPainter$BitmapPainter : coil3/CoilPainter {
+	public abstract fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
+}
+
+public abstract interface class coil3/CoilPainter$VectorPainter : coil3/CoilPainter {
+	public abstract fun onDraw (Lorg/jetbrains/skia/Canvas;)V
 }
 
 public final class coil3/ComponentRegistry {
@@ -114,7 +125,8 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
-	public abstract fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
+	public fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
+	public abstract fun asPainter ()Lcoil3/CoilPainter;
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J
@@ -124,6 +136,7 @@ public abstract interface class coil3/Image {
 public final class coil3/ImageKt {
 	public static final fun asCoilImage (Lorg/jetbrains/skia/Bitmap;)Lcoil3/Image;
 	public static final fun asCoilImage (Lorg/jetbrains/skia/Bitmap;Z)Lcoil3/Image;
+	public static final fun asCoilImage (Lorg/jetbrains/skia/svg/SVGDOM;II)Lcoil3/Image;
 	public static synthetic fun asCoilImage$default (Lorg/jetbrains/skia/Bitmap;ZILjava/lang/Object;)Lcoil3/Image;
 }
 
@@ -185,6 +198,18 @@ public abstract class coil3/PlatformContext {
 }
 
 public final class coil3/PlatformContext$Companion {
+}
+
+public final class coil3/SvgImage : coil3/Image {
+	public fun asPainter ()Lcoil3/CoilPainter;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public final fun getSvg ()Lorg/jetbrains/skia/svg/SVGDOM;
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/Uri {

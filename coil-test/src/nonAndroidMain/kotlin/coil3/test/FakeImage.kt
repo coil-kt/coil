@@ -1,5 +1,6 @@
 package coil3.test
 
+import coil3.CoilPainter
 import coil3.Image
 import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
@@ -21,7 +22,7 @@ actual class FakeImage actual constructor(
     override val shareable: Boolean,
     actual val color: Int,
 ) : Image {
-    override fun asBitmap(): Bitmap {
+    override fun asPainter(): CoilPainter = CoilPainter.BitmapPainter {
         val bitmap = Bitmap()
         bitmap.setImageInfo(ImageInfo(colorInfo, width, height))
         Canvas(bitmap).use { canvas ->
@@ -29,7 +30,7 @@ actual class FakeImage actual constructor(
             paint.color = color
             canvas.drawPaint(paint)
         }
-        return bitmap
+        bitmap
     }
 }
 
