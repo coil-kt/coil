@@ -15,24 +15,27 @@ ij_kotlin_imports_layout=*
 
 ktlint_standard_annotation=disabled
 ktlint_standard_blank-line-before-declaration=disabled
-ktlint_standard_discouraged-comment-location=disabled
 ktlint_standard_filename=disabled
-ktlint_standard_function-naming=disabled
 ktlint_standard_function-signature=disabled
 ktlint_standard_indent=disabled
 ktlint_standard_max-line-length=disabled
 ktlint_standard_no-blank-line-in-list=disabled
 ktlint_standard_no-empty-first-line-in-class-body=disabled
-ktlint_standard_property-naming=disabled
 ktlint_standard_spacing-between-declarations-with-annotations=disabled
 ktlint_standard_string-template-indent=disabled
 ktlint_standard_try-catch-finally-spacing=disabled
+
+ktlint_standard_function-naming=disabled
+ktlint_standard_property-naming=disabled
+
 ktlint_standard_type-argument-comment=disabled
 ktlint_standard_type-parameter-comment=disabled
 ktlint_standard_value-argument-comment=disabled
 ktlint_standard_value-parameter-comment=disabled
 
-# Wrapping
+ktlint_standard_trailing-comma-on-call-site=disabled
+ktlint_standard_trailing-comma-on-declaration-site=disabled
+
 ktlint_standard_argument-list-wrapping=disabled
 ktlint_standard_context-receiver-wrapping=disabled
 ktlint_standard_enum-wrapping=disabled
@@ -42,6 +45,4 @@ ktlint_standard_parameter-wrapping=disabled
 ktlint_standard_parameter-list-wrapping=disabled
 ktlint_standard_property-wrapping=disabled
 ktlint_standard_statement-wrapping=disabled
-ktlint_standard_trailing-comma-on-call-site=disabled
-ktlint_standard_trailing-comma-on-declaration-site=disabled
 ktlint_standard_wrapping=disabled
