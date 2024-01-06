@@ -18,7 +18,7 @@ fun Project.skikoAwtRuntimeDependency(version: String): String {
         else -> error("Unsupported arch: $osArch")
     }
 
-    val target = "${targetOs}-${targetArch}"
+    val target = "$targetOs-$targetArch"
 
     return "org.jetbrains.skiko:skiko-awt-runtime-$target:$version"
 }

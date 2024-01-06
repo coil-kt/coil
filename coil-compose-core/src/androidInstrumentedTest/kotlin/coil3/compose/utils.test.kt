@@ -41,7 +41,7 @@ fun resourceUri(@IdRes resId: Int): Uri {
 fun ImageBitmap.assertIsSimilarTo(
     @IdRes resId: Int,
     scale: Scale = Scale.FIT,
-    threshold: Double = 0.9 // Use a lower threshold by default.
+    threshold: Double = 0.9,
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val expected = context.getDrawable(resId)!!.toBitmap().scale(width, height, scale)
@@ -50,7 +50,7 @@ fun ImageBitmap.assertIsSimilarTo(
 
 fun ImageBitmap.assertIsSimilarTo(
     bitmap: ImageBitmap,
-    threshold: Double = 0.9 // Use a lower threshold by default.
+    threshold: Double = 0.9,
 ) {
     asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
 }
@@ -67,7 +67,7 @@ private fun Bitmap.scale(width: Int, height: Int, scale: Scale = Scale.FIT): Bit
             srcHeight = input.height,
             dstWidth = width,
             dstHeight = height,
-            scale = scale
+            scale = scale,
         ).toFloat()
         val dx = (width - multiplier * input.width) / 2
         val dy = (height - multiplier * input.height) / 2
@@ -93,7 +93,7 @@ fun SemanticsNodeInteraction.assertHeightIsEqualTo(
 }
 
 private fun SemanticsNodeInteraction.withUnclippedBoundsInRoot(
-    assertion: (DpRect) -> Unit
+    assertion: (DpRect) -> Unit,
 ) = apply {
     val node = fetchSemanticsNode("Failed to retrieve bounds of the node.")
     val bounds = with(node.root!!.density) {
@@ -114,7 +114,7 @@ private val SemanticsNode.unclippedBoundsInRoot: Rect
 private fun Dp.assertIsEqualTo(expected: Dp, subject: String, tolerance: Dp) {
     if (!isWithinTolerance(expected, tolerance)) {
         throw AssertionError(
-            "Actual $subject is $this, expected $expected (tolerance: $tolerance)"
+            "Actual $subject is $this, expected $expected (tolerance: $tolerance)",
         )
     }
 }

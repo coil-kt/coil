@@ -27,6 +27,10 @@ ktlint_standard_property-naming=disabled
 ktlint_standard_spacing-between-declarations-with-annotations=disabled
 ktlint_standard_string-template-indent=disabled
 ktlint_standard_try-catch-finally-spacing=disabled
+ktlint_standard_type-argument-comment=disabled
+ktlint_standard_type-parameter-comment=disabled
+ktlint_standard_value-argument-comment=disabled
+ktlint_standard_value-parameter-comment=disabled
 
 # Wrapping
 ktlint_standard_argument-list-wrapping=disabled
