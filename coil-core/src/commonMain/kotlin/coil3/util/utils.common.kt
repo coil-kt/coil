@@ -41,6 +41,7 @@ internal val DataSource.emoji: String
         DataSource.NETWORK -> "☁️"
     }
 
+@PublishedApi // Used by extension modules.
 internal fun Closeable.closeQuietly() {
     try {
         close()
@@ -81,14 +82,17 @@ internal val Interceptor.Chain.eventListener: EventListener
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
+@PublishedApi // Used by extension modules.
 internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
     return if (isOriginal) original() else width.toPx(scale)
 }
 
+@PublishedApi // Used by extension modules.
 internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
     return if (isOriginal) original() else height.toPx(scale)
 }
 
+@PublishedApi // Used by extension modules.
 internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
     when (scale) {
         Scale.FILL -> Int.MIN_VALUE

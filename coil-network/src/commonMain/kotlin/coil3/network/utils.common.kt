@@ -5,7 +5,6 @@ import io.ktor.http.HeadersBuilder
 import io.ktor.util.StringValues
 import io.ktor.utils.io.ByteReadChannel
 import okio.BufferedSink
-import okio.Closeable
 import okio.FileSystem
 import okio.Path
 
@@ -21,14 +20,6 @@ internal fun HeadersBuilder.appendAllIfNameAbsent(stringValues: StringValues) = 
             appendAll(name, values)
         }
     }
-}
-
-internal fun Closeable.closeQuietly() {
-    try {
-        close()
-    } catch (e: RuntimeException) {
-        throw e
-    } catch (_: Exception) {}
 }
 
 internal fun DiskCache.Editor.abortQuietly() {

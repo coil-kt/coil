@@ -1,3 +1,5 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+
 package coil3.decode
 
 import android.graphics.ImageDecoder
