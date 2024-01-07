@@ -8,8 +8,8 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.isOriginal
-import coil3.util.SVG_DEFAULT_SIZE
 import coil3.util.MIME_TYPE_SVG
+import coil3.util.SVG_DEFAULT_SIZE
 import coil3.util.toPx
 import kotlin.math.roundToInt
 import org.jetbrains.skia.Bitmap
