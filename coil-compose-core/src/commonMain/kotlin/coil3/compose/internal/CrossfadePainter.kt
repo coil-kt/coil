@@ -1,4 +1,4 @@
-package coil3.compose
+package coil3.compose.internal
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue

@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.compose
+package coil3.compose.internal
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.DrawModifier
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import coil3.annotation.Data
+import coil3.compose.Content
 import kotlin.math.roundToInt
 
 /**

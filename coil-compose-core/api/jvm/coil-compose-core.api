@@ -72,7 +72,7 @@ public final class coil3/compose/AsyncImagePainter$State$Success : coil3/compose
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil3/compose/AsyncImagePainter_commonKt {
+public final class coil3/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-0YpotYA (Ljava/lang/Object;Lcoil3/ImageLoader;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;II)Lcoil3/compose/AsyncImagePainter;
 	public static final fun rememberAsyncImagePainter-10Xjiaw (Ljava/lang/Object;Lcoil3/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;III)Lcoil3/compose/AsyncImagePainter;
 }
@@ -93,7 +93,7 @@ public final class coil3/compose/EqualityDelegateKt {
 	public static final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
 }
 
-public final class coil3/compose/LocalPlatformContextKt {
+public final class coil3/compose/LocalPlatformContext_nonAndroidKt {
 	public static final fun getLocalPlatformContext ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

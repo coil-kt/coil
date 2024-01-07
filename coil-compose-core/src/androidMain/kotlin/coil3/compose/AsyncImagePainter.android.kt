@@ -9,6 +9,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.BitmapImage
 import coil3.Image
 import coil3.PlatformContext
+import coil3.compose.internal.CrossfadePainter
 import coil3.request.SuccessResult
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition

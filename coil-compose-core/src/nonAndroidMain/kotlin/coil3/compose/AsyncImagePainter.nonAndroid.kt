@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil3.Image
 import coil3.PlatformContext
+import coil3.compose.internal.CrossfadePainter
 import coil3.decode.DataSource
 import coil3.request.SuccessResult
 import coil3.request.crossfadeMillis

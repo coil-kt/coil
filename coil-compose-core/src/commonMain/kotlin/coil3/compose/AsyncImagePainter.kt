@@ -31,6 +31,13 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.internal.AsyncImageState
+import coil3.compose.internal.CrossfadePainter
+import coil3.compose.internal.isPositive
+import coil3.compose.internal.onStateOf
+import coil3.compose.internal.requestOf
+import coil3.compose.internal.toScale
+import coil3.compose.internal.transformOf
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
