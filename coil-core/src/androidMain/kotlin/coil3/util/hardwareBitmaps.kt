@@ -30,13 +30,17 @@ internal sealed interface HardwareBitmapService {
 }
 
 /** Returns a fixed value for [allowHardwareMainThread] and [allowHardwareWorkerThread]. */
-private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService {
+private class ImmutableHardwareBitmapService(
+    private val allowHardware: Boolean,
+) : HardwareBitmapService {
     override fun allowHardwareMainThread(size: Size) = allowHardware
     override fun allowHardwareWorkerThread() = allowHardware
 }
 
 /** Guards against running out of file descriptors. */
-private class LimitedFileDescriptorHardwareBitmapService(private val logger: Logger?) : HardwareBitmapService {
+private class LimitedFileDescriptorHardwareBitmapService(
+    private val logger: Logger?,
+) : HardwareBitmapService {
 
     override fun allowHardwareMainThread(size: Size): Boolean {
         return size.width.pxOrElse { Int.MAX_VALUE } > MIN_SIZE_DIMENSION &&
@@ -133,9 +137,10 @@ private val IS_DEVICE_BLOCKED = when (SDK_INT) {
             "CatS41", // Cat S41
             "Hi9Pro", // CHUWI Hi9 Pro
             "manning", // Lenovo K8 Note
-            "N5702L" // NUU Mobile G3
+            "N5702L", // NUU Mobile G3
         )
     }
+
     27 -> run {
         val device = Build.DEVICE ?: return@run false
 
@@ -204,8 +209,9 @@ private val IS_DEVICE_BLOCKED = when (SDK_INT) {
             "SGINO6", // SGiNO 6
             "st18c10bnn", // Barnes and Noble BNTV650
             "TECNO-CA8", // Tecno CAMON X Pro,
-            "SHIFT6m" // SHIFT 6m
+            "SHIFT6m", // SHIFT 6m
         )
     }
+
     else -> false
 }

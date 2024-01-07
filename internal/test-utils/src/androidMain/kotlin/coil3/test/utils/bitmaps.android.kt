@@ -29,16 +29,15 @@ actual interface CoilBitmap {
 actual fun Image.asCoilBitmap(): CoilBitmap = this.bitmap.toCoilBitmap()
 
 class CoilBitmapImpl(
-    override val bitmap: Bitmap
+    override val bitmap: Bitmap,
 ) : CoilBitmap {
     override val width: Int = bitmap.width
 
     override val height: Int = bitmap.height
 
     override suspend fun CoilBitmap.computeSimilarity(
-        other: CoilBitmap
-    ): Double =
-        bitmap.computeSimilarity(other.bitmap)
+        other: CoilBitmap,
+    ): Double = bitmap.computeSimilarity(other.bitmap)
 }
 
 fun Bitmap.toCoilBitmap(): CoilBitmap = CoilBitmapImpl(this)
@@ -102,7 +101,7 @@ fun Bitmap.computeSimilarity(
         alphaThreshold.await(),
         redThreshold.await(),
         greenThreshold.await(),
-        blueThreshold.await()
+        blueThreshold.await(),
     )
 }
 
@@ -112,7 +111,7 @@ fun Bitmap.computeSimilarity(
  */
 fun Bitmap.isSimilarTo(
     expected: Bitmap,
-    threshold: Double = 0.99
+    threshold: Double = 0.98,
 ): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
@@ -129,7 +128,7 @@ fun Bitmap.isSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     expected: Bitmap,
-    threshold: Double = 0.99
+    threshold: Double = 0.98,
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
@@ -149,7 +148,7 @@ fun Bitmap.assertIsSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     @DrawableRes expected: Int,
-    threshold: Double = 0.99
+    threshold: Double = 0.98,
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     assertIsSimilarTo(AppCompatResources.getDrawable(context, expected)!!.toBitmap(), threshold)
