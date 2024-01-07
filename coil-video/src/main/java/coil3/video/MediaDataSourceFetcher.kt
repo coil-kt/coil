@@ -46,7 +46,7 @@ class MediaDataSourceFetcher(
     }
 
     internal class MediaDataSourceOkioSource(
-        private val mediaDataSource: MediaDataSource
+        private val mediaDataSource: MediaDataSource,
     ) : Source {
 
         private var size = mediaDataSource.size
