@@ -18,13 +18,3 @@ dependencies {
     testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
 }
-
-// https://github.com/diffplug/spotless/issues/1572
-afterEvaluate {
-    tasks {
-        named("spotlessKotlin").configure {
-            dependsOn(named("testDebugUnitTest"))
-            dependsOn(named("testReleaseUnitTest"))
-        }
-    }
-}
