@@ -5,11 +5,6 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.BitmapParams
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
-import coil3.size.Dimension
-import coil3.size.Scale
-import coil3.size.Size
-import coil3.size.isOriginal
-import coil3.size.pxOrElse
 
 /** [MediaMetadataRetriever] doesn't implement [AutoCloseable] until API 29. */
 internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetriever) -> T): T {
@@ -48,19 +43,4 @@ internal fun MediaMetadataRetriever.getScaledFrameAtTime(
     getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight, params)
 } else {
     getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight)
-}
-
-internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else width.toPx(scale)
-}
-
-internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else height.toPx(scale)
-}
-
-internal fun Dimension.toPx(scale: Scale) = pxOrElse {
-    when (scale) {
-        Scale.FILL -> Int.MIN_VALUE
-        Scale.FIT -> Int.MAX_VALUE
-    }
 }

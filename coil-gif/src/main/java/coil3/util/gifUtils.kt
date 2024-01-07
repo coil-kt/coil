@@ -1,18 +1,11 @@
 package coil3.util
 
-import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.graphics.PostProcessor
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil3.size.Dimension
-import coil3.size.Scale
-import coil3.size.Size
-import coil3.size.isOriginal
-import coil3.size.pxOrElse
 import coil3.transform.AnimatedTransformation
 import coil3.transform.PixelOpacity
 
@@ -42,28 +35,4 @@ internal fun animatable2CompatCallbackOf(
 ) = object : Animatable2Compat.AnimationCallback() {
     override fun onAnimationStart(drawable: Drawable?) { onStart?.invoke() }
     override fun onAnimationEnd(drawable: Drawable?) { onEnd?.invoke() }
-}
-
-internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
-    for (i in indices) {
-        action(get(i))
-    }
-}
-
-internal val Bitmap.Config.isHardware: Boolean
-    get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
-
-internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else width.toPx(scale)
-}
-
-internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else height.toPx(scale)
-}
-
-internal fun Dimension.toPx(scale: Scale) = pxOrElse {
-    when (scale) {
-        Scale.FILL -> Int.MIN_VALUE
-        Scale.FIT -> Int.MAX_VALUE
-    }
 }

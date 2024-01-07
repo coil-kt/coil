@@ -23,14 +23,6 @@ internal fun HeadersBuilder.appendAllIfNameAbsent(stringValues: StringValues) = 
     }
 }
 
-internal fun Closeable.closeQuietly() {
-    try {
-        close()
-    } catch (e: RuntimeException) {
-        throw e
-    } catch (_: Exception) {}
-}
-
 internal fun DiskCache.Editor.abortQuietly() {
     try {
         abort()

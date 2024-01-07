@@ -1,3 +1,5 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+
 package coil3.fetch
 
 import coil3.ImageLoader
@@ -14,12 +16,12 @@ import coil3.network.MIME_TYPE_TEXT_PLAIN
 import coil3.network.abortQuietly
 import coil3.network.appendAllIfNameAbsent
 import coil3.network.assertNotOnMainThread
-import coil3.network.closeQuietly
 import coil3.network.writeTo
 import coil3.request.Options
 import coil3.request.httpHeaders
 import coil3.request.httpMethod
 import coil3.util.MimeTypeMap
+import coil3.util.closeQuietly
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
