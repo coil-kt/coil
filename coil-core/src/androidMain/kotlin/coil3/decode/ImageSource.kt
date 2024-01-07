@@ -12,11 +12,11 @@ class AssetMetadata(
 ) : ImageSource.Metadata()
 
 /**
- * Metadata containing the [uri] of a `content` URI.
+ * Metadata containing the [uri] and associated [assetFileDescriptor] of a `content` URI.
  */
 class ContentMetadata(
     val uri: Uri,
-    val assetFileDescriptor: AssetFileDescriptor
+    val assetFileDescriptor: AssetFileDescriptor,
 ) : ImageSource.Metadata()
 
 /**
