@@ -28,7 +28,7 @@ internal class StaticImageDecoderDecoder(
     private val source: ImageDecoder.Source,
     private val closeable: Closeable,
     private val options: Options,
-    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
+    private val parallelismLock: Semaphore,
 ) : Decoder {
 
     override suspend fun decode() = parallelismLock.withPermit {
@@ -94,9 +94,8 @@ internal class StaticImageDecoderDecoder(
     }
 
     class Factory @JvmOverloads constructor(
-        maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
+        private val parallelismLock: Semaphore = Semaphore(DEFAULT_MAX_PARALLELISM),
     ) : Decoder.Factory {
-        private val parallelismLock = Semaphore(maxParallelism)
 
         override fun create(
             result: SourceFetchResult,
@@ -123,7 +122,6 @@ private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder
         return ImageDecoder.createSource(options.context.assets, metadata.filePath)
     }
     if (metadata is ContentMetadata) {
-        // ImageDecoder will seek inner fd to startOffset
         return ImageDecoder.createSource { metadata.assetFileDescriptor }
     }
     if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {

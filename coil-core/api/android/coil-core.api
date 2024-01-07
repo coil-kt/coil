@@ -249,9 +249,9 @@ public final class coil3/decode/BitmapFactoryDecoder : coil3/decode/Decoder {
 
 public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (I)V
-	public fun <init> (ILcoil3/decode/ExifOrientationPolicy;)V
-	public synthetic fun <init> (ILcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;)V
+	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;)V
+	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
