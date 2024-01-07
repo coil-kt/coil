@@ -1,8 +1,6 @@
-package coil.util
+package coil3.util
 
 import coil3.annotation.InternalCoilApi
-import coil3.util.ServiceLoaderComponentRegistry
-import coil3.util.SvgDecoderServiceLoaderTarget
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalStdlibApi::class)
