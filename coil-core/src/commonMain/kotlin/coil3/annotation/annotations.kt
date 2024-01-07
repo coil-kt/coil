@@ -63,5 +63,4 @@ internal annotation class WorkerThread
  */
 @MustBeDocumented
 @Retention(value = AnnotationRetention.SOURCE)
-@InternalCoilApi
-annotation class Data
+internal annotation class Data
