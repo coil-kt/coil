@@ -1,5 +1,7 @@
-package coil3.decode
+package coil3.svg
 
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
 import coil3.request.Options
 
 /**

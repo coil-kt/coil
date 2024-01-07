@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.svg.internal
 
 import okio.BufferedSource
 import okio.ByteString

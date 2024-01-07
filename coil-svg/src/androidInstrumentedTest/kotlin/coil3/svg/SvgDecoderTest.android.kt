@@ -1,4 +1,4 @@
-package coil3.decode
+package coil3.svg
 
 import coil3.test.utils.AbstractSvgDecoderTest
 

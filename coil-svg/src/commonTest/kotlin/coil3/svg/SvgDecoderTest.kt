@@ -1,5 +1,6 @@
-package coil3.decode
+package coil3.svg
 
+import coil3.decode.DecodeUtils
 import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.Test
 import kotlin.test.assertTrue

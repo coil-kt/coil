@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.svg.internal
 
 import coil3.annotation.InternalCoilApi
 
