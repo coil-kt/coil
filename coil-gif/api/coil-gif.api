@@ -48,7 +48,7 @@ public final class coil3/gif/GifDecoder$Factory : coil3/decode/Decoder$Factory {
 	public final fun getEnforceMinimumFrameDelay ()Z
 }
 
-public final class coil3/gif/GifsKt {
+public final class coil3/gif/ImageRequestsKt {
 	public static final fun animatedTransformation (Lcoil3/request/ImageRequest$Builder;Lcoil3/gif/AnimatedTransformation;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getAnimatedTransformation (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAnimatedTransformation (Lcoil3/request/ImageRequest;)Lcoil3/gif/AnimatedTransformation;

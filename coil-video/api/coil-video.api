@@ -1,3 +1,19 @@
+public final class coil3/video/ImageRequestsKt {
+	public static final fun getVideoFrameMicros (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFrameMicros (Lcoil3/request/ImageRequest;)J
+	public static final fun getVideoFrameMicros (Lcoil3/request/Options;)J
+	public static final fun getVideoFrameOption (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFrameOption (Lcoil3/request/ImageRequest;)I
+	public static final fun getVideoFrameOption (Lcoil3/request/Options;)I
+	public static final fun getVideoFramePercent (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFramePercent (Lcoil3/request/ImageRequest;)D
+	public static final fun getVideoFramePercent (Lcoil3/request/Options;)D
+	public static final fun videoFrameMicros (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameMillis (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameOption (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFramePercent (Lcoil3/request/ImageRequest$Builder;D)Lcoil3/request/ImageRequest$Builder;
+}
+
 public final class coil3/video/MediaDataSourceFetcher : coil3/fetch/Fetcher {
 	public fun <init> (Landroid/media/MediaDataSource;Lcoil3/request/Options;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -22,21 +38,5 @@ public final class coil3/video/VideoFrameDecoder : coil3/decode/Decoder {
 public final class coil3/video/VideoFrameDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-}
-
-public final class coil3/video/VideosKt {
-	public static final fun getVideoFrameMicros (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getVideoFrameMicros (Lcoil3/request/ImageRequest;)J
-	public static final fun getVideoFrameMicros (Lcoil3/request/Options;)J
-	public static final fun getVideoFrameOption (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getVideoFrameOption (Lcoil3/request/ImageRequest;)I
-	public static final fun getVideoFrameOption (Lcoil3/request/Options;)I
-	public static final fun getVideoFramePercent (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getVideoFramePercent (Lcoil3/request/ImageRequest;)D
-	public static final fun getVideoFramePercent (Lcoil3/request/Options;)D
-	public static final fun videoFrameMicros (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
-	public static final fun videoFrameMillis (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
-	public static final fun videoFrameOption (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
-	public static final fun videoFramePercent (Lcoil3/request/ImageRequest$Builder;D)Lcoil3/request/ImageRequest$Builder;
 }
 
