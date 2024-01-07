@@ -1,7 +1,9 @@
-package coil3.request
+package coil3.network
 
 import coil3.Extras
 import coil3.getExtra
+import coil3.request.ImageRequest
+import coil3.request.Options
 import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 

@@ -1,4 +1,4 @@
-package coil3.network
+package coil3.network.internal
 
 import android.os.Looper
 import android.os.NetworkOnMainThreadException

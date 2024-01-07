@@ -1,25 +1,23 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.fetch
+package coil3.network
 
 import coil3.ImageLoader
 import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.disk.DiskCache
-import coil3.network.CACHE_CONTROL
-import coil3.network.CONTENT_TYPE
-import coil3.network.CacheResponse
-import coil3.network.CacheStrategy
-import coil3.network.HttpException
-import coil3.network.MIME_TYPE_TEXT_PLAIN
-import coil3.network.abortQuietly
-import coil3.network.appendAllIfNameAbsent
-import coil3.network.assertNotOnMainThread
-import coil3.network.writeTo
+import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
+import coil3.fetch.SourceFetchResult
+import coil3.network.internal.CACHE_CONTROL
+import coil3.network.internal.CONTENT_TYPE
+import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
+import coil3.network.internal.abortQuietly
+import coil3.network.internal.appendAllIfNameAbsent
+import coil3.network.internal.assertNotOnMainThread
+import coil3.network.internal.writeTo
 import coil3.request.Options
-import coil3.request.httpHeaders
-import coil3.request.httpMethod
 import coil3.util.MimeTypeMap
 import coil3.util.closeQuietly
 import io.ktor.client.HttpClient

@@ -1,8 +1,8 @@
-package coil3.fetch
+package coil3.network
 
 import coil3.ImageLoader
 import coil3.disk.DiskCache
-import coil3.network.CacheStrategy
+import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context

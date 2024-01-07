@@ -1,4 +1,4 @@
-package coil3.network
+package coil3.network.internal
 
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.isEmpty

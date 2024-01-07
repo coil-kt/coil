@@ -1,4 +1,4 @@
-package coil3.network
+package coil3.network.internal
 
 import coil3.disk.DiskCache
 import io.ktor.http.HeadersBuilder
