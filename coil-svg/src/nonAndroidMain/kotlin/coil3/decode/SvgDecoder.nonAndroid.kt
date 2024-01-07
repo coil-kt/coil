@@ -8,7 +8,7 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.isOriginal
-import coil3.util.DEFAULT_SIZE
+import coil3.util.SVG_DEFAULT_SIZE
 import coil3.util.MIME_TYPE_SVG
 import coil3.util.toPx
 import kotlin.math.roundToInt
@@ -99,8 +99,8 @@ actual class SvgDecoder actual constructor(
 
     private fun getDstSize(srcWidth: Float, srcHeight: Float, scale: Scale): Pair<Int, Int> {
         if (options.size.isOriginal) {
-            val dstWidth = if (srcWidth > 0) srcWidth.roundToInt() else DEFAULT_SIZE
-            val dstHeight = if (srcHeight > 0) srcHeight.roundToInt() else DEFAULT_SIZE
+            val dstWidth = if (srcWidth > 0) srcWidth.roundToInt() else SVG_DEFAULT_SIZE
+            val dstHeight = if (srcHeight > 0) srcHeight.roundToInt() else SVG_DEFAULT_SIZE
             return dstWidth to dstHeight
         } else {
             val (dstWidth, dstHeight) = options.size
