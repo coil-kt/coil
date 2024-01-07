@@ -20,5 +20,4 @@ internal fun BufferedSource.indexOf(bytes: ByteString, fromIndex: Long, toIndex:
 }
 
 internal const val MIME_TYPE_SVG = "image/svg+xml"
-
 internal const val DEFAULT_SIZE = 512
