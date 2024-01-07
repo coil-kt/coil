@@ -1,6 +1,6 @@
-package coil3.util
+package coil3.video
 
-import coil3.decode.VideoFrameDecoder
+import coil3.util.DecoderServiceLoaderTarget
 
 internal class VideoFrameDecoderServiceLoaderTarget : DecoderServiceLoaderTarget {
     override fun factory() = VideoFrameDecoder.Factory()

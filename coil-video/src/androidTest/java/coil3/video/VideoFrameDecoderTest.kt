@@ -1,12 +1,10 @@
-package coil3.decode
+package coil3.video
 
 import android.os.Build.VERSION.SDK_INT
 import coil3.Extras
-import coil3.FileMediaDataSource
-import coil3.fetch.MediaDataSourceFetcher
+import coil3.decode.AssetMetadata
+import coil3.decode.ImageSource
 import coil3.request.Options
-import coil3.request.videoFrameMicros
-import coil3.request.videoFramePercent
 import coil3.size.Size
 import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.assumeTrue

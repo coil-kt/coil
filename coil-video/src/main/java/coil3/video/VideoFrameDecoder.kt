@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.decode
+package coil3.video
 
 import android.graphics.Bitmap
 import android.graphics.Paint
@@ -15,22 +15,23 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
 import coil3.asCoilImage
-import coil3.fetch.MediaDataSourceFetcher.MediaSourceMetadata
+import coil3.decode.AssetMetadata
+import coil3.decode.ContentMetadata
+import coil3.decode.DecodeResult
+import coil3.decode.DecodeUtils
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
+import coil3.decode.ResourceMetadata
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
-import coil3.request.videoFrameMicros
-import coil3.request.videoFrameOption
-import coil3.request.videoFramePercent
 import coil3.size.Dimension.Pixels
 import coil3.size.Size
 import coil3.size.pxOrElse
 import coil3.toAndroidUri
-import coil3.util.getFrameAtTime
-import coil3.util.getScaledFrameAtTime
 import coil3.util.heightPx
-import coil3.util.use
 import coil3.util.widthPx
+import coil3.video.MediaDataSourceFetcher.MediaSourceMetadata
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 

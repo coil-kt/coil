@@ -1,8 +1,6 @@
-package coil3.decode
+package coil3.video
 
 import android.os.Build.VERSION.SDK_INT
-import coil3.FileMediaDataSource
-import coil3.fetch.MediaDataSourceFetcher
 import coil3.test.utils.assumeTrue
 import coil3.test.utils.context
 import coil3.test.utils.copyAssetToFile

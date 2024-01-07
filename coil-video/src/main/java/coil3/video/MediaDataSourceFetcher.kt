@@ -1,10 +1,13 @@
-package coil3.fetch
+package coil3.video
 
 import android.media.MediaDataSource
 import androidx.annotation.RequiresApi
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
+import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
+import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import okio.Buffer
 import okio.Source

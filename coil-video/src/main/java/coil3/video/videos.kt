@@ -1,4 +1,4 @@
-package coil3.request
+package coil3.video
 
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST
@@ -7,6 +7,8 @@ import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
 import coil3.Extras
 import coil3.getExtra
+import coil3.request.ImageRequest
+import coil3.request.Options
 
 // region videoFrameMicros
 

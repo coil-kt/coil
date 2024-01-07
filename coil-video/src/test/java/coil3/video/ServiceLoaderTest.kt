@@ -1,6 +1,6 @@
-package coil3.util
+package coil3.video
 
-import coil3.decode.VideoFrameDecoder
+import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.assertTrue
 import org.junit.Test
 

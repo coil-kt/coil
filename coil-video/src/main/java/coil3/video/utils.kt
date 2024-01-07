@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.video
 
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever

@@ -1,8 +1,8 @@
-package coil3.fetch
+package coil3.video
 
 import android.os.Build.VERSION.SDK_INT
-import coil3.FileMediaDataSource
 import coil3.ImageLoader
+import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.test.utils.assumeTrue
 import coil3.test.utils.context

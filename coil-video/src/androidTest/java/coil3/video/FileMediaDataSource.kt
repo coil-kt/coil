@@ -1,4 +1,4 @@
-package coil3
+package coil3.video
 
 import android.media.MediaDataSource
 import androidx.annotation.RequiresApi
