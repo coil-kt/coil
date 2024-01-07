@@ -1,6 +1,7 @@
 package coil3.svg
 
 import coil3.decode.DecodeUtils
+import coil3.svg.internal.indexOf
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
 
