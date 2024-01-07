@@ -1,19 +1,14 @@
-package coil3.transform
+package coil3.gif
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
-import coil3.decode.AnimatedImageDecoderDecoder
-import coil3.decode.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import coil3.request.onAnimationEnd
-import coil3.request.onAnimationStart
-import coil3.request.repeatCount
 import coil3.request.target
 import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.activity

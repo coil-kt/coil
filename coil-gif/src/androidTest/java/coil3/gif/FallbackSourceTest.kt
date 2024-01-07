@@ -1,4 +1,4 @@
-package coil3.decode
+package coil3.gif
 
 import java.io.ByteArrayInputStream
 import kotlin.random.Random

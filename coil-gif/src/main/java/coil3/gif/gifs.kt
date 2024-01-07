@@ -1,14 +1,14 @@
-package coil3.request
+package coil3.gif
 
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import coil3.Extras
 import coil3.annotation.ExperimentalCoilApi
-import coil3.drawable.MovieDrawable
-import coil3.drawable.MovieDrawable.Companion.REPEAT_INFINITE
 import coil3.getExtra
-import coil3.transform.AnimatedTransformation
+import coil3.gif.MovieDrawable.Companion.REPEAT_INFINITE
+import coil3.request.ImageRequest
+import coil3.request.Options
 
 /**
  * Set the number of times to repeat the animation if the result is an animated [Drawable].

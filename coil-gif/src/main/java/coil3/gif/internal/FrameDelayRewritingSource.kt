@@ -1,8 +1,11 @@
 @file:Suppress("SameParameterValue")
 
-package coil3.decode
+package coil3.gif.internal
 
 import android.os.Build.VERSION.SDK_INT
+import coil3.decode.DecodeUtils
+import coil3.decode.ImageSource
+import coil3.gif.isGif
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex

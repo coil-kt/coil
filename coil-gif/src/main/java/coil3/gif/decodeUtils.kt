@@ -1,5 +1,6 @@
-package coil3.decode
+package coil3.gif
 
+import coil3.decode.DecodeUtils
 import kotlin.experimental.and
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8

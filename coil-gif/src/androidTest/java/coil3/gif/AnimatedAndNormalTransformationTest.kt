@@ -1,4 +1,4 @@
-package coil3.transform
+package coil3.gif
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.Bitmap
@@ -14,19 +14,17 @@ import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.decode.AnimatedImageDecoderDecoder
-import coil3.decode.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowConversionToBitmap
-import coil3.request.animatedTransformation
 import coil3.request.bitmapConfig
 import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.context
 import coil3.test.utils.decodeBitmapAsset
+import coil3.transform.CircleCropTransformation
 import kotlin.test.assertIs
 import kotlin.test.assertIsNot
 import kotlinx.coroutines.test.runTest

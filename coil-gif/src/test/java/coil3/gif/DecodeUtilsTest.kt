@@ -1,5 +1,6 @@
-package coil3.decode
+package coil3.gif
 
+import coil3.decode.DecodeUtils
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.test.assertFalse

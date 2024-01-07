@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.drawable
+package coil3.gif
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -18,12 +18,10 @@ import android.os.SystemClock
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil3.decode.AnimatedImageDecoderDecoder
 import coil3.decode.DecodeUtils
+import coil3.gif.PixelOpacity.OPAQUE
+import coil3.gif.PixelOpacity.UNCHANGED
 import coil3.size.Scale
-import coil3.transform.AnimatedTransformation
-import coil3.transform.PixelOpacity.OPAQUE
-import coil3.transform.PixelOpacity.UNCHANGED
 import coil3.util.forEachIndices
 import coil3.util.isHardware
 

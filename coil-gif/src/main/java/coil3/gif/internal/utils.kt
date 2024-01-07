@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.gif.internal
 
 import android.graphics.PixelFormat
 import android.graphics.PostProcessor
@@ -6,8 +6,8 @@ import android.graphics.drawable.Animatable2
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil3.transform.AnimatedTransformation
-import coil3.transform.PixelOpacity
+import coil3.gif.AnimatedTransformation
+import coil3.gif.PixelOpacity
 
 @RequiresApi(28)
 internal fun AnimatedTransformation.asPostProcessor() =

@@ -1,5 +1,6 @@
-package coil3.decode
+package coil3.gif
 
+import coil3.gif.internal.FrameDelayRewritingSource
 import coil3.test.utils.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

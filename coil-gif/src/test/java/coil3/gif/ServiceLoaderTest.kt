@@ -1,6 +1,6 @@
-package coil3.util
+package coil3.gif
 
-import coil3.decode.GifDecoder
+import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.assertTrue
 import org.junit.Test
 

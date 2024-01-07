@@ -1,4 +1,4 @@
-package coil3.drawable
+package coil3.gif
 
 import android.content.res.ColorStateList
 import android.graphics.BlendMode

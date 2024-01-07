@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.decode
+package coil3.gif
 
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
@@ -12,19 +12,23 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
 import coil3.asCoilImage
-import coil3.drawable.ScaleDrawable
+import coil3.decode.AssetMetadata
+import coil3.decode.ByteBufferMetadata
+import coil3.decode.ContentMetadata
+import coil3.decode.DecodeResult
+import coil3.decode.DecodeUtils
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
+import coil3.decode.ResourceMetadata
 import coil3.fetch.SourceFetchResult
+import coil3.gif.internal.animatable2CallbackOf
+import coil3.gif.internal.asPostProcessor
+import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.request.Options
 import coil3.request.allowRgb565
-import coil3.request.animatedTransformation
-import coil3.request.animationEndCallback
-import coil3.request.animationStartCallback
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
-import coil3.request.repeatCount
 import coil3.toAndroidUri
-import coil3.util.animatable2CallbackOf
-import coil3.util.asPostProcessor
 import coil3.util.heightPx
 import coil3.util.isHardware
 import coil3.util.widthPx

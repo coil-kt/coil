@@ -1,21 +1,21 @@
 @file:Suppress("DEPRECATION", "INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package coil3.decode
+package coil3.gif
 
 import android.graphics.Bitmap
 import android.graphics.Movie
 import coil3.ImageLoader
 import coil3.asCoilImage
-import coil3.drawable.MovieDrawable
+import coil3.decode.DecodeResult
+import coil3.decode.DecodeUtils
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.internal.animatable2CompatCallbackOf
+import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.request.Options
 import coil3.request.allowRgb565
-import coil3.request.animatedTransformation
-import coil3.request.animationEndCallback
-import coil3.request.animationStartCallback
 import coil3.request.bitmapConfig
-import coil3.request.repeatCount
-import coil3.util.animatable2CompatCallbackOf
 import coil3.util.isHardware
 import kotlinx.coroutines.runInterruptible
 

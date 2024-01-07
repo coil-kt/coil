@@ -1,15 +1,12 @@
-package coil3.transform
+package coil3.gif
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import coil3.ImageLoader
-import coil3.decode.AnimatedImageDecoderDecoder
-import coil3.decode.GifDecoder
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
-import coil3.request.animatedTransformation
 import coil3.request.bitmapConfig
 import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.assumeTrue

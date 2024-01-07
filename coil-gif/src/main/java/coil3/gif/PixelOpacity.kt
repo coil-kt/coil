@@ -1,4 +1,4 @@
-package coil3.transform
+package coil3.gif
 
 import coil3.annotation.ExperimentalCoilApi
 
