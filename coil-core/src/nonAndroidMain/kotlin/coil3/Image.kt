@@ -5,7 +5,6 @@ import coil3.annotation.ExperimentalCoilApi
 import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
-import org.jetbrains.skia.svg.SVGDOM
 
 @ExperimentalCoilApi
 @JvmOverloads
@@ -66,4 +65,3 @@ class BitmapImage internal constructor(
         )
     }
 }
-

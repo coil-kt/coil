@@ -18,7 +18,7 @@ import coil3.request.crossfadeMillis
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
-): Painter =  object : Painter() {
+): Painter = object : Painter() {
     override val intrinsicSize: Size =
         Size(width.toFloat(), height.toFloat())
 
