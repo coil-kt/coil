@@ -3,14 +3,11 @@ package coil3.compose
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import coil3.CoilPainter
 import coil3.Image
 import coil3.PlatformContext
 import coil3.decode.DataSource
@@ -20,28 +17,20 @@ import coil3.request.crossfadeMillis
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
-): Painter = when (val painter = asPainter()) {
-    is CoilPainter.BitmapPainter -> BitmapPainter(
-        image = asBitmap().asComposeImageBitmap(),
-        filterQuality = filterQuality,
-    )
-    is CoilPainter.VectorPainter -> object : Painter() {
-        override val intrinsicSize: Size =
-            Size(width.toFloat(), height.toFloat())
+): Painter =  object : Painter() {
+    override val intrinsicSize: Size =
+        Size(width.toFloat(), height.toFloat())
 
-        override fun DrawScope.onDraw() {
-            val scaleX = size.width / intrinsicSize.width
-            val scaleY = size.height / intrinsicSize.height
+    override fun DrawScope.onDraw() {
+        val scaleX = size.width / intrinsicSize.width
+        val scaleY = size.height / intrinsicSize.height
 
-            scale(
-                scaleX = scaleX,
-                scaleY = scaleY,
-                pivot = Offset.Zero,
-            ) {
-                with(painter) {
-                    drawContext.canvas.nativeCanvas.onDraw()
-                }
-            }
+        scale(
+            scaleX = scaleX,
+            scaleY = scaleY,
+            pivot = Offset.Zero,
+        ) {
+            drawContext.canvas.nativeCanvas.onDraw()
         }
     }
 }

@@ -14,78 +14,54 @@ fun Bitmap.asCoilImage(
 ): Image = BitmapImage(this, shareable)
 
 @ExperimentalCoilApi
-fun SVGDOM.asCoilImage(
-    width: Int,
-    height: Int,
-): Image = SvgImage(
-    svg = this,
-    width = width,
-    height = height,
-)
-
-@ExperimentalCoilApi
 actual interface Image {
     actual val size: Long
     actual val width: Int
     actual val height: Int
     actual val shareable: Boolean
 
-    fun asPainter(): CoilPainter
+    fun Canvas.onDraw()
 
-    fun asBitmap(): Bitmap = when (val painter = asPainter()) {
-        is CoilPainter.BitmapPainter -> painter.asBitmap()
-        is CoilPainter.VectorPainter -> {
-            val bitmap = Bitmap()
-            bitmap.allocN32Pixels(width, height)
-            with(painter) {
-                Canvas(bitmap).onDraw()
-            }
-            bitmap
-        }
+    fun asBitmap(): Bitmap {
+        val bitmap = Bitmap()
+        bitmap.allocN32Pixels(width, height)
+        Canvas(bitmap).onDraw()
+        return bitmap
     }
 }
 
 @ExperimentalCoilApi
 @Data
 class BitmapImage internal constructor(
-    val bitmap: Bitmap,
+    bitmap: Bitmap,
     override val shareable: Boolean,
 ) : Image {
+    private val image =
+        org.jetbrains.skia.Image
+            .makeFromBitmap(bitmap)
+            .also { bitmap.close() }
 
     override val size: Long
         get() {
-            var size = bitmap.imageInfo.computeMinByteSize().toLong()
+            var size = image.imageInfo.computeMinByteSize().toLong()
             if (size <= 0L) {
                 // Estimate 4 bytes per pixel.
-                size = 4L * bitmap.width * bitmap.height
+                size = 4L * image.width * image.height
             }
             return size
         }
 
     override val width: Int
-        get() = bitmap.width
+        get() = image.width
 
     override val height: Int
-        get() = bitmap.height
+        get() = image.height
 
-    override fun asPainter(): CoilPainter = CoilPainter.BitmapPainter {
-        bitmap
-    }
-}
-
-@ExperimentalCoilApi
-@Data
-class SvgImage internal constructor(
-    val svg: SVGDOM,
-    override val width: Int,
-    override val height: Int,
-) : Image {
-    override val size: Long
-        get() = 4L * width * height
-
-    override val shareable: Boolean = true
-
-    override fun asPainter(): CoilPainter = CoilPainter.VectorPainter {
-        svg.render(this)
+    override fun Canvas.onDraw() {
+        drawImage(
+            image = image,
+            top = 0f,
+            left = 0f,
+        )
     }
 }
