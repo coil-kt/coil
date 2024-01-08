@@ -29,7 +29,6 @@ actual interface Image {
         return bitmap
     }
 }
-
 @ExperimentalCoilApi
 @Data
 class BitmapImage internal constructor(
@@ -37,9 +36,11 @@ class BitmapImage internal constructor(
     override val shareable: Boolean,
 ) : Image {
     private val image =
-        org.jetbrains.skia.Image
-            .makeFromBitmap(bitmap)
-            .also { bitmap.close() }
+        try {
+            org.jetbrains.skia.Image.makeFromBitmap(bitmap)
+        } finally {
+            bitmap.close()
+        }
 
     override val size: Long
         get() {
@@ -65,3 +66,4 @@ class BitmapImage internal constructor(
         )
     }
 }
+
