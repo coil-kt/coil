@@ -15,6 +15,13 @@ import androidx.compose.ui.layout.Layout
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.internal.AsyncImageState
+import coil3.compose.internal.ConstraintsSizeResolver
+import coil3.compose.internal.ContentPainterModifier
+import coil3.compose.internal.contentDescription
+import coil3.compose.internal.onStateOf
+import coil3.compose.internal.requestOfWithSizeResolver
+import coil3.compose.internal.transformOf
 import coil3.request.ImageRequest
 
 /**

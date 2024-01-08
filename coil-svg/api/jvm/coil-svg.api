@@ -1,15 +1,15 @@
-public final class coil3/decode/SvgDecodeUtilsKt {
+public final class coil3/svg/DecodeUtilsKt {
 	public static final fun isSvg (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 }
 
-public final class coil3/decode/SvgDecoder : coil3/decode/Decoder {
+public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
-public final class coil3/decode/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
+public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V

@@ -1,11 +1,11 @@
-public final class coil3/decode/AnimatedImageDecoderDecoder : coil3/decode/Decoder {
+public final class coil3/gif/AnimatedImageDecoderDecoder : coil3/decode/Decoder {
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil3/decode/AnimatedImageDecoderDecoder$Factory : coil3/decode/Decoder$Factory {
+public final class coil3/gif/AnimatedImageDecoderDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -13,7 +13,11 @@ public final class coil3/decode/AnimatedImageDecoderDecoder$Factory : coil3/deco
 	public final fun getEnforceMinimumFrameDelay ()Z
 }
 
-public final class coil3/decode/GifDecodeUtilsKt {
+public abstract interface class coil3/gif/AnimatedTransformation {
+	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil3/gif/PixelOpacity;
+}
+
+public final class coil3/gif/DecodeUtilsKt {
 	public static final fun isAnimatedHeif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isAnimatedWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isGif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
@@ -21,11 +25,11 @@ public final class coil3/decode/GifDecodeUtilsKt {
 	public static final fun isWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 }
 
-public final class coil3/decode/GifDecoder : coil3/decode/Decoder {
+public final class coil3/gif/GifDecoder : coil3/decode/Decoder {
 	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
 	public static final field ANIMATION_END_CALLBACK_KEY Ljava/lang/String;
 	public static final field ANIMATION_START_CALLBACK_KEY Ljava/lang/String;
-	public static final field Companion Lcoil3/decode/GifDecoder$Companion;
+	public static final field Companion Lcoil3/gif/GifDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
@@ -33,10 +37,10 @@ public final class coil3/decode/GifDecoder : coil3/decode/Decoder {
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil3/decode/GifDecoder$Companion {
+public final class coil3/gif/GifDecoder$Companion {
 }
 
-public final class coil3/decode/GifDecoder$Factory : coil3/decode/Decoder$Factory {
+public final class coil3/gif/GifDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -44,8 +48,27 @@ public final class coil3/decode/GifDecoder$Factory : coil3/decode/Decoder$Factor
 	public final fun getEnforceMinimumFrameDelay ()Z
 }
 
-public final class coil3/drawable/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
-	public static final field Companion Lcoil3/drawable/MovieDrawable$Companion;
+public final class coil3/gif/ImageRequestsKt {
+	public static final fun animatedTransformation (Lcoil3/request/ImageRequest$Builder;Lcoil3/gif/AnimatedTransformation;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getAnimatedTransformation (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimatedTransformation (Lcoil3/request/ImageRequest;)Lcoil3/gif/AnimatedTransformation;
+	public static final fun getAnimatedTransformation (Lcoil3/request/Options;)Lcoil3/gif/AnimatedTransformation;
+	public static final fun getAnimationEndCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimationEndCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationEndCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getRepeatCount (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getRepeatCount (Lcoil3/request/ImageRequest;)I
+	public static final fun getRepeatCount (Lcoil3/request/Options;)I
+	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/gif/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
+	public static final field Companion Lcoil3/gif/MovieDrawable$Companion;
 	public static final field REPEAT_INFINITE I
 	public fun <init> (Landroid/graphics/Movie;)V
 	public fun <init> (Landroid/graphics/Movie;Landroid/graphics/Bitmap$Config;)V
@@ -53,7 +76,7 @@ public final class coil3/drawable/MovieDrawable : android/graphics/drawable/Draw
 	public synthetic fun <init> (Landroid/graphics/Movie;Landroid/graphics/Bitmap$Config;Lcoil3/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clearAnimationCallbacks ()V
 	public fun draw (Landroid/graphics/Canvas;)V
-	public final fun getAnimatedTransformation ()Lcoil3/transform/AnimatedTransformation;
+	public final fun getAnimatedTransformation ()Lcoil3/gif/AnimatedTransformation;
 	public final fun getConfig ()Landroid/graphics/Bitmap$Config;
 	public fun getIntrinsicHeight ()I
 	public fun getIntrinsicWidth ()I
@@ -63,7 +86,7 @@ public final class coil3/drawable/MovieDrawable : android/graphics/drawable/Draw
 	public fun isRunning ()Z
 	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
 	public fun setAlpha (I)V
-	public final fun setAnimatedTransformation (Lcoil3/transform/AnimatedTransformation;)V
+	public final fun setAnimatedTransformation (Lcoil3/gif/AnimatedTransformation;)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
 	public final fun setRepeatCount (I)V
 	public fun start ()V
@@ -71,10 +94,19 @@ public final class coil3/drawable/MovieDrawable : android/graphics/drawable/Draw
 	public fun unregisterAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)Z
 }
 
-public final class coil3/drawable/MovieDrawable$Companion {
+public final class coil3/gif/MovieDrawable$Companion {
 }
 
-public final class coil3/drawable/ScaleDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Animatable, android/graphics/drawable/Drawable$Callback {
+public final class coil3/gif/PixelOpacity : java/lang/Enum {
+	public static final field OPAQUE Lcoil3/gif/PixelOpacity;
+	public static final field TRANSLUCENT Lcoil3/gif/PixelOpacity;
+	public static final field UNCHANGED Lcoil3/gif/PixelOpacity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcoil3/gif/PixelOpacity;
+	public static fun values ()[Lcoil3/gif/PixelOpacity;
+}
+
+public final class coil3/gif/ScaleDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Animatable, android/graphics/drawable/Drawable$Callback {
 	public fun <init> (Landroid/graphics/drawable/Drawable;)V
 	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil3/size/Scale;)V
 	public synthetic fun <init> (Landroid/graphics/drawable/Drawable;Lcoil3/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -98,37 +130,5 @@ public final class coil3/drawable/ScaleDrawable : android/graphics/drawable/Draw
 	public fun start ()V
 	public fun stop ()V
 	public fun unscheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;)V
-}
-
-public final class coil3/request/GifsKt {
-	public static final fun animatedTransformation (Lcoil3/request/ImageRequest$Builder;Lcoil3/transform/AnimatedTransformation;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun getAnimatedTransformation (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getAnimatedTransformation (Lcoil3/request/ImageRequest;)Lcoil3/transform/AnimatedTransformation;
-	public static final fun getAnimatedTransformation (Lcoil3/request/Options;)Lcoil3/transform/AnimatedTransformation;
-	public static final fun getAnimationEndCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getAnimationEndCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
-	public static final fun getAnimationEndCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
-	public static final fun getAnimationStartCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
-	public static final fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
-	public static final fun getRepeatCount (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getRepeatCount (Lcoil3/request/ImageRequest;)I
-	public static final fun getRepeatCount (Lcoil3/request/Options;)I
-	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
-}
-
-public abstract interface class coil3/transform/AnimatedTransformation {
-	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil3/transform/PixelOpacity;
-}
-
-public final class coil3/transform/PixelOpacity : java/lang/Enum {
-	public static final field OPAQUE Lcoil3/transform/PixelOpacity;
-	public static final field TRANSLUCENT Lcoil3/transform/PixelOpacity;
-	public static final field UNCHANGED Lcoil3/transform/PixelOpacity;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcoil3/transform/PixelOpacity;
-	public static fun values ()[Lcoil3/transform/PixelOpacity;
 }
 

@@ -1,16 +1,3 @@
-public final class coil3/fetch/NetworkFetcher : coil3/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
-	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/fetch/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
-	public fun <init> ()V
-	public fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;)V
-	public synthetic fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
-	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
-}
-
 public final class coil3/network/CacheResponse {
 	public fun <init> (Lio/ktor/client/statement/HttpResponse;Lio/ktor/http/Headers;)V
 	public synthetic fun <init> (Lio/ktor/client/statement/HttpResponse;Lio/ktor/http/Headers;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -51,7 +38,7 @@ public final class coil3/network/HttpException : java/lang/RuntimeException {
 	public final fun getResponse ()Lio/ktor/client/statement/HttpResponse;
 }
 
-public final class coil3/request/NetworkRequestsKt {
+public final class coil3/network/ImageRequestsKt {
 	public static final fun getHttpHeaders (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getHttpHeaders (Lcoil3/request/ImageRequest;)Lio/ktor/http/Headers;
 	public static final fun getHttpHeaders (Lcoil3/request/Options;)Lio/ktor/http/Headers;
@@ -60,5 +47,18 @@ public final class coil3/request/NetworkRequestsKt {
 	public static final fun getHttpMethod (Lcoil3/request/Options;)Lio/ktor/http/HttpMethod;
 	public static final fun httpHeaders (Lcoil3/request/ImageRequest$Builder;Lio/ktor/http/Headers;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Lio/ktor/http/HttpMethod;)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
+	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
+	public fun <init> ()V
+	public fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;)V
+	public synthetic fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
+	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 }
 

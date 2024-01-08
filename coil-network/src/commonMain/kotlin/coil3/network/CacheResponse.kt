@@ -1,5 +1,8 @@
 package coil3.network
 
+import coil3.network.internal.CACHE_CONTROL
+import coil3.network.internal.CONTENT_TYPE
+import coil3.network.internal.append
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
 import io.ktor.http.headers
