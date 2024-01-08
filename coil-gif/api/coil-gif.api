@@ -1,11 +1,11 @@
-public final class coil3/gif/AnimatedImageDecoderDecoder : coil3/decode/Decoder {
+public final class coil3/gif/AnimatedImageDecoder : coil3/decode/Decoder {
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil3/gif/AnimatedImageDecoderDecoder$Factory : coil3/decode/Decoder$Factory {
+public final class coil3/gif/AnimatedImageDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
