@@ -42,7 +42,7 @@ class AnimatedAndNormalTransformationTest {
             .crossfade(false)
             .components {
                 if (SDK_INT >= 28) {
-                    add(AnimatedImageDecoderDecoder.Factory())
+                    add(AnimatedImageDecoder.Factory())
                 } else {
                     add(GifDecoder.Factory())
                 }

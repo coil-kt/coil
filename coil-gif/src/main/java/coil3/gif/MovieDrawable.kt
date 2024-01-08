@@ -28,7 +28,7 @@ import coil3.util.isHardware
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
  *
- * NOTE: Prefer using [AnimatedImageDecoderDecoder] and [AnimatedImageDrawable] on API 28 and above.
+ * NOTE: Prefer using [AnimatedImageDecoder] and [AnimatedImageDrawable] on API 28 and above.
  */
 class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
