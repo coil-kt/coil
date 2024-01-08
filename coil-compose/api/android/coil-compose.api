@@ -8,7 +8,7 @@ public final class coil3/compose/SingletonAsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-HtA5bXE (Ljava/lang/Object;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;II)Lcoil3/compose/AsyncImagePainter;
 }
 
-public final class coil3/compose/SingletonImageLoaderKt {
+public final class coil3/compose/SingletonImageLoadersKt {
 	public static final fun setSingletonImageLoaderFactory (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)V
 }
 
