@@ -1,6 +1,5 @@
 package coil3
 
-import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.svg.SVGDOM
@@ -16,7 +15,6 @@ internal fun SVGDOM.asCoilImage(
 )
 
 @ExperimentalCoilApi
-@Data
 private class SvgImage(
     val svg: SVGDOM,
     override val width: Int,
