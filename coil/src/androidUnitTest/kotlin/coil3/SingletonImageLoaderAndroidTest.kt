@@ -1,7 +1,6 @@
 package coil3
 
 import android.app.Application
-import coil3.SingletonImageLoaderTestCommon.TestSingletonImageLoaderFactory
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.test.assertFalse
@@ -48,16 +47,16 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
         assertTrue(factory.isInitialized)
         assertFalse((context.applicationContext as TestApplication).isInitialized)
     }
+}
 
-    class TestApplication : Application(), SingletonImageLoader.Factory {
-        private val _isInitialized = atomic(false)
-        val isInitialized: Boolean by _isInitialized
+class TestApplication : Application(), SingletonImageLoader.Factory {
+    private val _isInitialized = atomic(false)
+    val isInitialized: Boolean by _isInitialized
 
-        override fun newImageLoader(context: PlatformContext): ImageLoader {
-            check(!_isInitialized.getAndSet(true)) {
-                "newImageLoader was invoked more than once."
-            }
-            return ImageLoader(this)
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        check(!_isInitialized.getAndSet(true)) {
+            "newImageLoader was invoked more than once."
         }
+        return ImageLoader(this)
     }
 }

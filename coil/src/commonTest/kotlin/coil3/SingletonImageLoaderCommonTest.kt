@@ -10,7 +10,7 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.atomicfu.atomic
 
-class SingletonImageLoaderTestCommon : RobolectricTest() {
+class SingletonImageLoaderCommonTest : RobolectricTest() {
 
     @AfterTest
     fun after() {
@@ -45,21 +45,21 @@ class SingletonImageLoaderTestCommon : RobolectricTest() {
             SingletonImageLoader.setSafe(::ImageLoader)
         }
     }
+}
 
-    class TestSingletonImageLoaderFactory(
-        private val imageLoaderLazy: Lazy<ImageLoader>,
-    ) : SingletonImageLoader.Factory {
+class TestSingletonImageLoaderFactory(
+    private val imageLoaderLazy: Lazy<ImageLoader>,
+) : SingletonImageLoader.Factory {
 
-        constructor(context: PlatformContext) : this(lazy { ImageLoader(context) })
+    constructor(context: PlatformContext) : this(lazy { ImageLoader(context) })
 
-        private val _isInitialized = atomic(false)
-        val isInitialized: Boolean by _isInitialized
+    private val _isInitialized = atomic(false)
+    val isInitialized: Boolean by _isInitialized
 
-        override fun newImageLoader(context: PlatformContext): ImageLoader {
-            check(!_isInitialized.getAndSet(true)) {
-                "newImageLoader was invoked more than once."
-            }
-            return imageLoaderLazy.value
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        check(!_isInitialized.getAndSet(true)) {
+            "newImageLoader was invoked more than once."
         }
+        return imageLoaderLazy.value
     }
 }
