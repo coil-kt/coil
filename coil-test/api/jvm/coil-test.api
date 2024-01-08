@@ -65,7 +65,7 @@ public final class coil3/test/FakeImageLoaderEngine$ResultValue {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil3/test/FakeImageLoaderEngine_commonKt {
+public final class coil3/test/FakeImageLoaderEngineKt {
 	public static final fun FakeImageLoaderEngine (Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine;
 }
 
