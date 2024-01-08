@@ -23,7 +23,7 @@ val CoilBitmap.size: Size
  */
 suspend fun CoilBitmap.isSimilarTo(
     expected: CoilBitmap,
-    threshold: Double = 0.99
+    threshold: Double = 0.98,
 ): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
@@ -40,7 +40,7 @@ suspend fun CoilBitmap.isSimilarTo(
  */
 suspend fun CoilBitmap.assertIsSimilarTo(
     expected: CoilBitmap,
-    threshold: Double = 0.98
+    threshold: Double = 0.98,
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {

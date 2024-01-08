@@ -26,6 +26,7 @@ import coil3.transition.NoneTransition
 import coil3.transition.TransitionTarget
 import coil3.util.awaitStarted
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.sync.Semaphore
 
 internal actual fun getDisposable(
     request: ImageRequest,
@@ -68,36 +69,43 @@ internal actual inline fun transition(
 
 internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     options: RealImageLoader.Options,
-): ComponentRegistry.Builder {
-    return this
-        // Mappers
-        .add(AndroidUriMapper())
-        .add(ResourceUriMapper())
-        .add(ResourceIntMapper())
-        // Keyers
-        .add(AndroidResourceUriKeyer())
-        // Fetchers
-        .add(AssetUriFetcher.Factory())
-        .add(ContentUriFetcher.Factory())
-        .add(ResourceUriFetcher.Factory())
-        .add(DrawableFetcher.Factory())
-        .add(BitmapFetcher.Factory())
-        // Decoders
-        .apply {
-            // Require API 29 for ImageDecoder support as API 28 has framework bugs:
-            // https://github.com/element-hq/element-android/pull/7184
-            if (SDK_INT >= 29 && options.bitmapFactoryExifOrientationPolicy != IGNORE) {
-                add(
-                    StaticImageDecoderDecoder.Factory(
-                        maxParallelism = options.bitmapFactoryMaxParallelism,
-                    )
-                )
-            }
-        }
-        .add(
-            BitmapFactoryDecoder.Factory(
-                maxParallelism = options.bitmapFactoryMaxParallelism,
-                exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
+): ComponentRegistry.Builder = apply {
+    // Mappers
+    add(AndroidUriMapper())
+    add(ResourceUriMapper())
+    add(ResourceIntMapper())
+
+    // Keyers
+    add(AndroidResourceUriKeyer())
+
+    // Fetchers
+    add(AssetUriFetcher.Factory())
+    add(ContentUriFetcher.Factory())
+    add(ResourceUriFetcher.Factory())
+    add(DrawableFetcher.Factory())
+    add(BitmapFetcher.Factory())
+
+    // Decoders
+    val parallelismLock = Semaphore(options.bitmapFactoryMaxParallelism)
+    if (enableStaticImageDecoder(options)) {
+        add(
+            StaticImageDecoderDecoder.Factory(
+                parallelismLock = parallelismLock,
             )
         )
+    }
+    add(
+        BitmapFactoryDecoder.Factory(
+            parallelismLock = parallelismLock,
+            exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
+        )
+    )
+}
+
+private fun enableStaticImageDecoder(options: RealImageLoader.Options): Boolean {
+    // Require API 29 for ImageDecoder support as API 28 has framework bugs:
+    // https://github.com/element-hq/element-android/pull/7184
+    return SDK_INT >= 29 &&
+        // ImageDecoder always rotates the image according to its EXIF data.
+        options.bitmapFactoryExifOrientationPolicy != IGNORE
 }

@@ -148,21 +148,25 @@ private fun <T : BaseExtension> Project.androidBase(
         compilerOptions {
             allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
-            val arguments = mutableListOf(
-                // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                "-progressive",
-                // Enable Java default method generation.
-                "-Xjvm-default=all",
-                // Generate smaller bytecode by not generating runtime not-null assertions.
-                "-Xno-call-assertions",
-                "-Xno-param-assertions",
-                "-Xno-receiver-assertions",
-            )
+            val arguments = mutableListOf<String>()
+
+            // https://kotlinlang.org/docs/compiler-reference.html#progressive
+            arguments += "-progressive"
+
+            // Enable Java default method generation.
+            arguments += "-Xjvm-default=all"
+
+            // Generate smaller bytecode by not generating runtime not-null assertions.
+            arguments += "-Xno-call-assertions"
+            arguments += "-Xno-param-assertions"
+            arguments += "-Xno-receiver-assertions"
+
             if (project.name != "benchmark") {
                 arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
                 arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
                 arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }
+
             freeCompilerArgs.addAll(arguments)
         }
     }

@@ -13,11 +13,11 @@ expect object ServiceLoaderComponentRegistry {
 
 @InternalCoilApi
 interface FetcherServiceLoaderTarget<T : Any> {
-    fun factory(): Fetcher.Factory<T>
-    fun type(): KClass<T>
+    fun factory(): Fetcher.Factory<T>?
+    fun type(): KClass<T>?
 }
 
 @InternalCoilApi
 interface DecoderServiceLoaderTarget {
-    fun factory(): Decoder.Factory
+    fun factory(): Decoder.Factory?
 }

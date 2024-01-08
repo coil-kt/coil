@@ -598,8 +598,10 @@ class AsyncImageTest {
     @Test
     fun painterState_memoryCached() {
         val url = "https://example.com/image"
-        val bitmap = BitmapFactory.decodeResource(composeTestRule.activity.resources, R.drawable.sample)
-            .toDrawable(composeTestRule.activity.resources).asCoilImage()
+        val bitmap = BitmapFactory
+            .decodeResource(composeTestRule.activity.resources, R.drawable.sample)
+            .toDrawable(composeTestRule.activity.resources)
+            .asCoilImage()
         imageLoader.memoryCache!![MemoryCache.Key(url)] = MemoryCache.Value(bitmap)
 
         val outerCompositionCount = AtomicInteger()
@@ -847,7 +849,11 @@ class AsyncImageTest {
         }
 
         class Factory : Fetcher.Factory<Any> {
-            override fun create(data: Any, options: Options, imageLoader: ImageLoader) = LoadingFetcher()
+            override fun create(
+                data: Any,
+                options: Options,
+                imageLoader: ImageLoader,
+            ) = LoadingFetcher()
         }
     }
 
@@ -858,7 +864,11 @@ class AsyncImageTest {
         }
 
         class Factory : Fetcher.Factory<Any> {
-            override fun create(data: Any, options: Options, imageLoader: ImageLoader) = ErrorFetcher()
+            override fun create(
+                data: Any,
+                options: Options,
+                imageLoader: ImageLoader,
+            ) = ErrorFetcher()
         }
     }
 

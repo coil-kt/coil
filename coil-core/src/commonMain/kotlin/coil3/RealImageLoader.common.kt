@@ -254,14 +254,16 @@ internal fun ComponentRegistry.Builder.addServiceLoaderComponents(
     if (options.serviceLoaderEnabled) {
         // Delay reading the fetchers and decoders until the fetching/decoding stage.
         addFetcherFactories {
-            ServiceLoaderComponentRegistry.fetchers.map { factory ->
-                factory as FetcherServiceLoaderTarget<Any>
-                factory.factory() to factory.type()
+            ServiceLoaderComponentRegistry.fetchers.mapNotNull { target ->
+                target as FetcherServiceLoaderTarget<Any>
+                val factory = target.factory() ?: return@mapNotNull null
+                val type = target.type() ?: return@mapNotNull null
+                factory to type
             }
         }
         addDecoderFactories {
-            ServiceLoaderComponentRegistry.decoders.map { factory ->
-                factory.factory()
+            ServiceLoaderComponentRegistry.decoders.mapNotNull { target ->
+                target.factory()
             }
         }
     }

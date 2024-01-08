@@ -227,9 +227,6 @@ public final class coil3/Uri_commonKt {
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;
 }
 
-public abstract interface annotation class coil3/annotation/Data : java/lang/annotation/Annotation {
-}
-
 public abstract interface annotation class coil3/annotation/DelicateCoilApi : java/lang/annotation/Annotation {
 }
 
@@ -252,9 +249,9 @@ public final class coil3/decode/BitmapFactoryDecoder : coil3/decode/Decoder {
 
 public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (I)V
-	public fun <init> (ILcoil3/decode/ExifOrientationPolicy;)V
-	public synthetic fun <init> (ILcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;)V
+	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;)V
+	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
@@ -1007,10 +1004,19 @@ public abstract interface class coil3/transition/TransitionTarget : coil3/target
 	public abstract fun getView ()Landroid/view/View;
 }
 
+public final class coil3/util/BitmapsKt {
+	public static final fun isHardware (Landroid/graphics/Bitmap$Config;)Z
+	public static final fun toSoftware (Landroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap$Config;
+}
+
 public final class coil3/util/CoilUtils {
 	public static final field INSTANCE Lcoil3/util/CoilUtils;
 	public static final fun dispose (Landroid/view/View;)V
 	public static final fun result (Landroid/view/View;)Lcoil3/request/ImageResult;
+}
+
+public final class coil3/util/Collections_commonKt {
+	public static final fun forEachIndices (Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
 }
 
 public final class coil3/util/DebugLogger : coil3/util/Logger {
@@ -1058,5 +1064,12 @@ public final class coil3/util/ServiceLoaderComponentRegistry {
 	public static final field INSTANCE Lcoil3/util/ServiceLoaderComponentRegistry;
 	public final fun getDecoders ()Ljava/util/List;
 	public final fun getFetchers ()Ljava/util/List;
+}
+
+public final class coil3/util/Utils_commonKt {
+	public static final fun closeQuietly (Ljava/io/Closeable;)V
+	public static final fun heightPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
+	public static final fun toPx (Lcoil3/size/Dimension;Lcoil3/size/Scale;)I
+	public static final fun widthPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
 }
 

@@ -3,7 +3,6 @@ package coil3.network
 import android.os.NetworkOnMainThreadException
 import coil3.ImageLoader
 import coil3.disk.DiskCache
-import coil3.fetch.NetworkFetcher
 import coil3.fetch.SourceFetchResult
 import coil3.request.CachePolicy
 import coil3.request.Options

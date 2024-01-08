@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Build the Dokka docs.
 ./assemble_docs.sh
