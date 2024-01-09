@@ -121,7 +121,7 @@ private fun String.percentDecode(): String {
     var index = 0
 
     while (index < length) {
-        if (get(index) == '%') {
+        if (get(index) == '%' && index + 2 < length) {
             val hex = substring(index + 1, index + 3)
             bytes[size] = hex.toInt(16).toByte()
             index += 3
@@ -132,5 +132,11 @@ private fun String.percentDecode(): String {
         size++
     }
 
-    return bytes.decodeToString(endIndex = size)
+    if (size == length) {
+        // Fast path: the string doesn't have any encoded characters.
+        return this
+    } else {
+        // Slow path: decode the byte array.
+        return bytes.decodeToString(endIndex = size)
+    }
 }
