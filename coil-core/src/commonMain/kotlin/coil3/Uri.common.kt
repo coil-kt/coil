@@ -34,7 +34,8 @@ val Uri.pathSegments: List<String>
 
 fun String.toUri(): Uri = parseUri(this)
 
-private fun parseUri(data: String): Uri {
+private fun parseUri(rawData: String): Uri {
+    val data = rawData.percentDecode()
     var authorityStartIndex = -1
     var pathStartIndex = -1
     var queryStartIndex = -1
@@ -111,5 +112,31 @@ private fun parseUri(data: String): Uri {
         fragment = data.substring(fragmentStartIndex, data.length)
     }
 
-    return Uri(data, scheme, authority, path, query, fragment)
+    return Uri(rawData, scheme, authority, path, query, fragment)
+}
+
+private fun String.percentDecode(): String {
+    val bytes = ByteArray(length)
+    var size = 0
+    var index = 0
+
+    while (index < length) {
+        if (get(index) == '%' && index + 2 < length) {
+            val hex = substring(index + 1, index + 3)
+            bytes[size] = hex.toInt(16).toByte()
+            index += 3
+        } else {
+            bytes[size] = get(index).code.toByte()
+            index++
+        }
+        size++
+    }
+
+    if (size == length) {
+        // Fast path: the string doesn't have any encoded characters.
+        return this
+    } else {
+        // Slow path: decode the byte array.
+        return bytes.decodeToString(endIndex = size)
+    }
 }
