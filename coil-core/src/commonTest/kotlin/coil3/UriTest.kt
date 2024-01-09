@@ -12,6 +12,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("www.example.com", uri.authority)
         assertEquals("/image.jpg", uri.path)
+        assertEquals(listOf("image.jpg"), uri.pathSegments)
         assertEquals("q=jpg", uri.query)
         assertEquals("fragment", uri.fragment)
     }
@@ -22,6 +23,7 @@ class UriTest {
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("/test/relative/image.jpg", uri.path)
+        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
     }
@@ -32,6 +34,7 @@ class UriTest {
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("/test/relative/image.jpg", uri.path)
+        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
@@ -43,6 +46,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("images.unsplash.com", uri.authority)
         assertEquals("/photo-1550939810-cb345b2f4ad7", uri.path)
+        assertEquals(listOf("photo-1550939810-cb345b2f4ad7"), uri.pathSegments)
         assertEquals("ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ", uri.query)
         assertNull(uri.fragment)
     }
@@ -54,6 +58,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國", uri.path)
+        assertEquals(listOf("上海+中國"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
         assertEquals(string, uri.toString())
@@ -66,6 +71,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國%6", uri.path)
+        assertEquals(listOf("上海+中國%6"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
         assertEquals(string, uri.toString())
@@ -77,8 +83,8 @@ class UriTest {
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test///image.jpg", uri.path)
+        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
-        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
     }
 }
