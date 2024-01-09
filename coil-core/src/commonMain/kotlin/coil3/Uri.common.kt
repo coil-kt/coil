@@ -29,7 +29,22 @@ class Uri internal constructor(
 val Uri.pathSegments: List<String>
     get() {
         val path = path ?: return emptyList()
-        return path.substring(1).split('/')
+
+        val segments = mutableListOf<String>()
+        var index = 0
+        while (index < path.length) {
+            val startIndex = index + 1
+            index = path.indexOf('/', startIndex = startIndex)
+            if (index == -1) {
+                index = path.length
+            }
+
+            val segment = path.substring(startIndex, index)
+            if (segment.isNotEmpty()) {
+                segments += segment
+            }
+        }
+        return segments
     }
 
 fun String.toUri(): Uri = parseUri(this)
