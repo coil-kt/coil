@@ -50,4 +50,39 @@ class UriTest {
         assertEquals("ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ", uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun encoded() {
+        val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B"
+        val uri = string.toUri()
+        assertEquals("https", uri.scheme)
+        assertEquals("example.com", uri.authority)
+        assertEquals("/上海+中國", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+        assertEquals(string, uri.toString())
+    }
+
+    @Test
+    fun encodedMalformed() {
+        val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B%6"
+        val uri = string.toUri()
+        assertEquals("https", uri.scheme)
+        assertEquals("example.com", uri.authority)
+        assertEquals("/上海+中國%6", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+        assertEquals(string, uri.toString())
+    }
+
+    @Test
+    fun skipsEmptyPathSegments() {
+        val uri = "file:///test///image.jpg".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/test///image.jpg", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
+    }
 }

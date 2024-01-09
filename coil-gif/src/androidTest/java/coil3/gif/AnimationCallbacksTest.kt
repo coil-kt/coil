@@ -50,7 +50,7 @@ class AnimationCallbacksTest {
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
         val decoderFactory = if (SDK_INT >= 28) {
-            AnimatedImageDecoderDecoder.Factory()
+            AnimatedImageDecoder.Factory()
         } else {
             GifDecoder.Factory()
         }

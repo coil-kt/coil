@@ -24,7 +24,7 @@ import okio.Closeable
 import okio.FileSystem
 
 @RequiresApi(29)
-internal class StaticImageDecoderDecoder(
+internal class StaticImageDecoder(
     private val source: ImageDecoder.Source,
     private val closeable: Closeable,
     private val options: Options,
@@ -103,7 +103,7 @@ internal class StaticImageDecoderDecoder(
             imageLoader: ImageLoader,
         ): Decoder? {
             val source = result.source.imageDecoderSourceOrNull(options) ?: return null
-            return StaticImageDecoderDecoder(source, result.source, options, parallelismLock)
+            return StaticImageDecoder(source, result.source, options, parallelismLock)
         }
     }
 }
