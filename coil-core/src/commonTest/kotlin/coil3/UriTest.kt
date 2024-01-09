@@ -24,6 +24,7 @@ class UriTest {
         assertEquals("/test/relative/image.jpg", uri.path)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
+        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
     }
 
     @Test
