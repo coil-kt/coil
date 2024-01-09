@@ -35,7 +35,7 @@ class AnimatedTransformationTest {
     @Test
     fun gifTransformationTest() = runTest {
         val decoderFactory = if (SDK_INT >= 28) {
-            AnimatedImageDecoderDecoder.Factory()
+            AnimatedImageDecoder.Factory()
         } else {
             GifDecoder.Factory()
         }
@@ -64,7 +64,7 @@ class AnimatedTransformationTest {
             .data("$SCHEME_FILE:///android_asset/animated.heif")
             .animatedTransformation(RoundedCornersAnimatedTransformation())
             .bitmapConfig(Bitmap.Config.ARGB_8888)
-            .decoderFactory(AnimatedImageDecoderDecoder.Factory())
+            .decoderFactory(AnimatedImageDecoder.Factory())
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
@@ -82,7 +82,7 @@ class AnimatedTransformationTest {
             .data("$SCHEME_FILE:///android_asset/animated.webp")
             .animatedTransformation(RoundedCornersAnimatedTransformation())
             .bitmapConfig(Bitmap.Config.ARGB_8888)
-            .decoderFactory(AnimatedImageDecoderDecoder.Factory())
+            .decoderFactory(AnimatedImageDecoder.Factory())
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")

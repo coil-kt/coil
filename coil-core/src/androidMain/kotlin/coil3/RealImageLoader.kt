@@ -3,7 +3,7 @@ package coil3
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.ExifOrientationPolicy.IGNORE
-import coil3.decode.StaticImageDecoderDecoder
+import coil3.decode.StaticImageDecoder
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
 import coil3.fetch.ContentUriFetcher
@@ -89,7 +89,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     val parallelismLock = Semaphore(options.bitmapFactoryMaxParallelism)
     if (enableStaticImageDecoder(options)) {
         add(
-            StaticImageDecoderDecoder.Factory(
+            StaticImageDecoder.Factory(
                 parallelismLock = parallelismLock,
             )
         )

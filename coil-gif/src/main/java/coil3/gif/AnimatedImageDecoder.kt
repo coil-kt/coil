@@ -49,7 +49,7 @@ import okio.FileSystem
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 @RequiresApi(28)
-class AnimatedImageDecoderDecoder @JvmOverloads constructor(
+class AnimatedImageDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
     private val enforceMinimumFrameDelay: Boolean = true,
@@ -183,7 +183,7 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isApplicable(result.source.source())) return null
-            return AnimatedImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
+            return AnimatedImageDecoder(result.source, options, enforceMinimumFrameDelay)
         }
 
         private fun isApplicable(source: BufferedSource): Boolean {
