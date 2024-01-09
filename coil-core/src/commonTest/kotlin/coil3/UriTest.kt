@@ -83,7 +83,7 @@ class UriTest {
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test///image.jpg", uri.path)
-        assertEquals(listOf("test", "", "", "image.jpg"), uri.pathSegments)
+        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
