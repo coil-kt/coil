@@ -1,11 +1,10 @@
 package coil3.gif
 
-import coil3.test.utils.RobolectricTest
 import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.assertTrue
 import org.junit.Test
 
-class ServiceLoaderTest : RobolectricTest() {
+class ServiceLoaderTest {
 
     @Test
     fun serviceLoaderFindsGifDecoder() {
