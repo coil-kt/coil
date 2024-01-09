@@ -5,7 +5,11 @@ package coil3.test
 import coil3.Image
 import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
-import org.jetbrains.skia.*
+import org.jetbrains.skia.Canvas
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorInfo
+import org.jetbrains.skia.ColorType
+import org.jetbrains.skia.Paint
 
 @ExperimentalCoilApi
 @Data
