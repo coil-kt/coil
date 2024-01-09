@@ -44,7 +44,6 @@ val Uri.pathSegments: List<String>
                 segments += segment
             }
         }
-
         return segments
     }
 
