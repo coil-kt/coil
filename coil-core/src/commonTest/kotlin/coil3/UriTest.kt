@@ -24,7 +24,6 @@ class UriTest {
         assertEquals("/test/relative/image.jpg", uri.path)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
-        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
     }
 
     @Test
@@ -70,5 +69,16 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
         assertEquals(string, uri.toString())
+    }
+
+    @Test
+    fun skipsEmptyPathSegments() {
+        val uri = "file:///test///image.jpg".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/test///image.jpg", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
     }
 }
