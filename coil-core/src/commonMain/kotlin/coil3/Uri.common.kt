@@ -164,13 +164,17 @@ private fun String.percentDecode(bytes: ByteArray): String {
 
     while (index < length) {
         if (get(index) == '%' && index + 2 < length) {
-            val hex = substring(index + 1, index + 3)
-            bytes[size] = hex.toInt(16).toByte()
-            index += 3
-        } else {
-            bytes[size] = get(index).code.toByte()
-            index++
+            try {
+                val hex = substring(index + 1, index + 3)
+                bytes[size] = hex.toInt(16).toByte()
+                index += 3
+                size++
+                continue
+            } catch (_: NumberFormatException) {}
         }
+
+        bytes[size] = get(index).code.toByte()
+        index++
         size++
     }
 

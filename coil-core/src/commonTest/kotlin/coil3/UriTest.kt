@@ -29,7 +29,7 @@ class UriTest {
     }
 
     @Test
-    fun malformatted() {
+    fun malformed() {
         val uri = "#something:/test/relative/image.jpg".toUri()
         assertNull(uri.scheme)
         assertNull(uri.authority)
@@ -37,6 +37,17 @@ class UriTest {
         assertEquals(listOf(), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something:/test/relative/image.jpg", uri.fragment)
+    }
+
+    @Test
+    fun veryMalformed() {
+        val uri = "/#02dkfj;anc%%2".toUri()
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals("/", uri.path)
+        assertEquals(listOf(), uri.pathSegments)
+        assertNull(uri.query)
+        assertEquals("02dkfj;anc%%2", uri.fragment)
     }
 
     @Test
