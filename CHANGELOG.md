@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0-alpha02] - January 10, 2023
+## [3.0.0-alpha02] - January 10, 2024
 
 - **Breaking**: `coil-gif`, `coil-svg`, and `coil-video`'s packages have been updated so all their classes are part of `coil.gif`, `coil.svg`, and `coil.video` respectively. This helps avoid class name conflicts with other artifacts.
 - **Breaking**: `ImageDecoderDecoder` has been renamed to `AnimatedImageDecoder`.
