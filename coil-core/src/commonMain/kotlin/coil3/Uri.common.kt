@@ -26,6 +26,9 @@ class Uri internal constructor(
     }
 }
 
+/**
+ * Return the separate segments of the [Uri.path].
+ */
 val Uri.pathSegments: List<String>
     get() {
         val path = path ?: return emptyList()
@@ -34,7 +37,7 @@ val Uri.pathSegments: List<String>
         var index = 0
         while (index < path.length) {
             val startIndex = index + 1
-            index = path.indexOf('/', startIndex = startIndex)
+            index = path.indexOf('/', startIndex)
             if (index == -1) {
                 index = path.length
             }
@@ -47,10 +50,14 @@ val Uri.pathSegments: List<String>
         return segments
     }
 
+/**
+ * Parse this string into a [Uri].
+ *
+ * This method is permissive and will not throw if the URI is malformed.
+ */
 fun String.toUri(): Uri = parseUri(this)
 
-private fun parseUri(rawData: String): Uri {
-    val data = rawData.percentDecode()
+private fun parseUri(data: String): Uri {
     var authorityStartIndex = -1
     var pathStartIndex = -1
     var queryStartIndex = -1
@@ -60,27 +67,35 @@ private fun parseUri(rawData: String): Uri {
     while (index < data.length) {
         when (data[index]) {
             ':' -> {
-                if (pathStartIndex == -1 &&
+                if (queryStartIndex == -1 &&
+                    fragmentStartIndex == -1 &&
+                    pathStartIndex == -1 &&
                     authorityStartIndex == -1 &&
                     index + 2 < data.length &&
                     data[index + 1] == '/' &&
-                    data[index + 2] == '/') {
+                    data[index + 2] == '/'
+                ) {
                     authorityStartIndex = index + 3
                     index += 2
                 }
             }
             '/' -> {
-                if (pathStartIndex == -1) {
+                if (queryStartIndex == -1 &&
+                    fragmentStartIndex == -1 &&
+                    pathStartIndex == -1
+                ) {
                     pathStartIndex = index
                 }
             }
             '?' -> {
-                if (pathStartIndex != -1 && queryStartIndex == -1) {
+                if (fragmentStartIndex == -1 &&
+                    queryStartIndex == -1
+                ) {
                     queryStartIndex = index + 1
                 }
             }
             '#' -> {
-                if (pathStartIndex != -1 && fragmentStartIndex == -1) {
+                if (fragmentStartIndex == -1) {
                     fragmentStartIndex = index + 1
                 }
             }
@@ -88,25 +103,11 @@ private fun parseUri(rawData: String): Uri {
         index++
     }
 
-    // The query must come before the fragment.
-    if (fragmentStartIndex != -1 && fragmentStartIndex < queryStartIndex) {
-        queryStartIndex = -1
-        fragmentStartIndex = -1
-    }
-
     var scheme: String? = null
     var authority: String? = null
     var path: String? = null
     var query: String? = null
     var fragment: String? = null
-
-    if (authorityStartIndex != -1) {
-        scheme = data.substring(0, authorityStartIndex - 3)
-
-        if (pathStartIndex != -1) {
-            authority = data.substring(authorityStartIndex, pathStartIndex)
-        }
-    }
 
     val queryEndIndex = minOf(
         if (fragmentStartIndex == -1) Int.MAX_VALUE else fragmentStartIndex - 1,
@@ -116,6 +117,16 @@ private fun parseUri(rawData: String): Uri {
         if (queryStartIndex == -1) Int.MAX_VALUE else queryStartIndex - 1,
         queryEndIndex,
     )
+
+    if (authorityStartIndex != -1) {
+        scheme = data.substring(0, authorityStartIndex - 3)
+
+        val authorityEndIndex = minOf(
+            if (pathStartIndex == -1) Int.MAX_VALUE else pathStartIndex,
+            pathEndIndex,
+        )
+        authority = data.substring(authorityStartIndex, authorityEndIndex)
+    }
 
     if (pathStartIndex != -1) {
         path = data.substring(pathStartIndex, pathEndIndex)
@@ -127,11 +138,27 @@ private fun parseUri(rawData: String): Uri {
         fragment = data.substring(fragmentStartIndex, data.length)
     }
 
-    return Uri(rawData, scheme, authority, path, query, fragment)
+    val size = maxOf(
+        scheme.length,
+        authority.length,
+        maxOf(
+            path.length,
+            query.length,
+            fragment.length,
+        ),
+    )
+    val bytes = ByteArray(size)
+    return Uri(
+        data = data,
+        scheme = scheme?.percentDecode(bytes),
+        authority = authority?.percentDecode(bytes),
+        path = path?.percentDecode(bytes),
+        query = query?.percentDecode(bytes),
+        fragment = fragment?.percentDecode(bytes),
+    )
 }
 
-private fun String.percentDecode(): String {
-    val bytes = ByteArray(length)
+private fun String.percentDecode(bytes: ByteArray): String {
     var size = 0
     var index = 0
 
@@ -155,3 +182,6 @@ private fun String.percentDecode(): String {
         return bytes.decodeToString(endIndex = size)
     }
 }
+
+private val String?.length: Int
+    get() = this?.length ?: 0

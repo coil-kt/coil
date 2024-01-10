@@ -33,10 +33,10 @@ class UriTest {
         val uri = "#something:/test/relative/image.jpg".toUri()
         assertNull(uri.scheme)
         assertNull(uri.authority)
-        assertEquals("/test/relative/image.jpg", uri.path)
-        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
+        assertNull(uri.path)
+        assertEquals(listOf(), uri.pathSegments)
         assertNull(uri.query)
-        assertNull(uri.fragment)
+        assertEquals("something:/test/relative/image.jpg", uri.fragment)
     }
 
     @Test
@@ -66,12 +66,12 @@ class UriTest {
 
     @Test
     fun encodedMalformed() {
-        val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B%6"
+        val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B%"
         val uri = string.toUri()
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
-        assertEquals("/上海+中國%6", uri.path)
-        assertEquals(listOf("上海+中國%6"), uri.pathSegments)
+        assertEquals("/上海+中國%", uri.path)
+        assertEquals(listOf("上海+中國%"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
         assertEquals(string, uri.toString())
@@ -86,5 +86,16 @@ class UriTest {
         assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
+    }
+
+    @Test
+    fun noPath() {
+        val uri = "https://example.com?a=b#c".toUri()
+        assertEquals("https", uri.scheme)
+        assertEquals("example.com", uri.authority)
+        assertEquals(null, uri.path)
+        assertEquals(listOf(), uri.pathSegments)
+        assertEquals("a=b", uri.query)
+        assertEquals("c", uri.fragment)
     }
 }
