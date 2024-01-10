@@ -14,10 +14,7 @@ internal expect fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V>
 
 internal expect fun <T> List<T>.toImmutableList(): List<T>
 
-/**
- * Functionally the same as [Iterable.forEach] except it generates
- * an index-based loop that doesn't use an [Iterator].
- */
+/** @see forEach */
 @PublishedApi // Used by extension modules.
 internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     for (i in indices) {
@@ -25,20 +22,35 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     }
 }
 
-/**
- * Functionally the same as [Iterable.forEachIndexed] except it generates
- * an index-based loop that doesn't use an [Iterator].
- */
+/** @see forEachIndices */
 internal inline fun <T> List<T>.forEachIndexedIndices(action: (Int, T) -> Unit) {
     for (i in indices) {
         action(i, get(i))
     }
 }
 
-/**
- * Functionally the same as [Iterable.fold] except it generates
- * an index-based loop that doesn't use an [Iterator].
- */
+/** @see mapNotNull */
+internal inline fun <T, R : Any> List<T>.mapNotNullIndices(transform: (T) -> R?): List<R> {
+    val destination = mutableListOf<R>()
+    for (i in indices) {
+        val value = transform(get(i))
+        if (value != null) {
+            destination += value
+        }
+    }
+    return destination
+}
+
+/** @see flatMap */
+internal inline fun <T, R> List<T>.flatMapIndices(transform: (T) -> List<R>): List<R> {
+    val destination = mutableListOf<R>()
+    for (i in indices) {
+        destination += transform(get(i))
+    }
+    return destination
+}
+
+/** @see fold */
 internal inline fun <T, R> List<T>.foldIndices(initial: R, operation: (R, T) -> R): R {
     var accumulator = initial
     for (i in indices) {
