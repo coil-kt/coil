@@ -8,6 +8,7 @@ import coil3.intercept.Interceptor
 import coil3.key.Keyer
 import coil3.map.Mapper
 import coil3.request.Options
+import coil3.util.flatMapIndices
 import coil3.util.forEachIndices
 import coil3.util.toImmutableList
 import kotlin.jvm.JvmOverloads
@@ -30,11 +31,11 @@ class ComponentRegistry private constructor(
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
     val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>> by lazy {
-        lazyFetcherFactories.flatMap { it() }.also { lazyFetcherFactories = emptyList() }
+        lazyFetcherFactories.flatMapIndices { it() }.also { lazyFetcherFactories = emptyList() }
     }
 
     val decoderFactories: List<Decoder.Factory> by lazy {
-        lazyDecoderFactories.flatMap { it() }.also { lazyDecoderFactories = emptyList() }
+        lazyDecoderFactories.flatMapIndices { it() }.also { lazyDecoderFactories = emptyList() }
     }
 
     /**

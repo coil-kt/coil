@@ -27,6 +27,7 @@ import coil3.util.SystemCallbacks
 import coil3.util.emoji
 import coil3.util.get
 import coil3.util.log
+import coil3.util.mapNotNullIndices
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
@@ -254,15 +255,15 @@ internal fun ComponentRegistry.Builder.addServiceLoaderComponents(
     if (options.serviceLoaderEnabled) {
         // Delay reading the fetchers and decoders until the fetching/decoding stage.
         addFetcherFactories {
-            ServiceLoaderComponentRegistry.fetchers.mapNotNull { target ->
+            ServiceLoaderComponentRegistry.fetchers.mapNotNullIndices { target ->
                 target as FetcherServiceLoaderTarget<Any>
-                val factory = target.factory() ?: return@mapNotNull null
-                val type = target.type() ?: return@mapNotNull null
+                val factory = target.factory() ?: return@mapNotNullIndices null
+                val type = target.type() ?: return@mapNotNullIndices null
                 factory to type
             }
         }
         addDecoderFactories {
-            ServiceLoaderComponentRegistry.decoders.mapNotNull { target ->
+            ServiceLoaderComponentRegistry.decoders.mapNotNullIndices { target ->
                 target.factory()
             }
         }
