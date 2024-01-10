@@ -22,13 +22,11 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     }
 }
 
-/** @see map */
-internal inline fun <T, R> List<T>.mapIndices(transform: (T) -> R): List<R> {
-    val destination = mutableListOf<R>()
+/** @see forEachIndices */
+internal inline fun <T> List<T>.forEachIndexedIndices(action: (Int, T) -> Unit) {
     for (i in indices) {
-        destination += transform(get(i))
+        action(i, get(i))
     }
-    return destination
 }
 
 /** @see mapNotNull */
@@ -50,13 +48,6 @@ internal inline fun <T, R> List<T>.flatMapIndices(transform: (T) -> List<R>): Li
         destination += transform(get(i))
     }
     return destination
-}
-
-/** @see forEachIndices */
-internal inline fun <T> List<T>.forEachIndexedIndices(action: (Int, T) -> Unit) {
-    for (i in indices) {
-        action(i, get(i))
-    }
 }
 
 /** @see fold */
