@@ -5,7 +5,7 @@
 - **Breaking**: `coil-gif`, `coil-svg`, and `coil-video`'s packages have been updated so all their classes are part of `coil.gif`, `coil.svg`, and `coil.video` respectively. This helps avoid class name conflicts with other artifacts.
 - **Breaking**: `ImageDecoderDecoder` has been renamed to `AnimatedImageDecoder`.
 - **New**: `coil-gif`, `coil-network`, `coil-svg`, and `coil-video`'s components are now automatically added to each `ImageLoader`'s `ComponentRegistry`.
-    - To be clear, unlike `3.0.0-alpha01` **you do not need to import `NetworkFetcher.Factory()` manually**. Simply importing `io.coil-kt.coil3:coil-network:[version]` and Ktor is enough to load network images.
+    - To be clear, unlike `3.0.0-alpha01` **you do not need to manually add `NetworkFetcher.Factory()` to your `ComponentRegistry`**. Simply importing `io.coil-kt.coil3:coil-network:[version]` and [a Ktor engine](https://ktor.io/docs/http-client-engines.html#dependencies) is enough to load network images.
     - It's safe to also add these components to `ComponentRegistry` manually. Any manually added components take precedence over components that are added automatically.
     - If preferred, this behaviour can be disabled using `ImageLoader.Builder.serviceLoaderEnabled(false)`.
 - **New**: Support `coil-svg` on all platforms. It's backed by [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) on Android and [SVGDOM](https://api.skia.org/classSkSVGDOM.html) on non-Android platforms.
