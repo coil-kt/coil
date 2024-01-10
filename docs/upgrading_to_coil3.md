@@ -27,59 +27,27 @@ As part of decoupling from the Android SDK, a number of API changes were made. N
 - Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms.
 - The `Coil` class was renamed to `SingletonImageLoader`.
 
-The `coil-gif`, `coil-svg`, and `coil-video` artifacts continue to be Android-only as they rely on specific Android decoders and libraries.
+The `coil-gif` and `coil-video` artifacts continue to be Android-only as they rely on specific Android decoders and libraries.
+
+## Compose
+
+The `coil-compose` artifact's APIs are mostly unchanged. You can continue using `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter` the same way as with Coil 2.x. Additionally, this methods have been updated to be [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability) which should improve their performance.
+
+!!! Note
+    If you use Coil on a JVM (non-Android) platform, you'll need to add a dependency on a [coroutines main dispatcher](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html. On desktop you likely want to import `org.jetbrains.kotlinx:kotlinx-coroutines-swing`.
 
 ## Network Images
 
-Coil's network image fetcher was extracted into a separate artifact, `coil-network`, and now depends on [Ktor](https://ktor.io/) instead of [OkHttp](https://square.github.io/okhttp/).
-
-**IMPORTANT**: `ImageLoader` no longer supports network URLs by default. You'll need to import `coil-network`, add the `NetworkFetcher.Factory()` to your `ImageLoader` manually and [import a Ktor engine](https://ktor.io/docs/http-client-engines.html). Here's how:
+**IMPORTANT** Coil's network image support was extracted into a separate artifact, `coil-network`, and now depends on [Ktor](https://ktor.io/) instead of [OkHttp](https://square.github.io/okhttp/). This means `coil` and `coil-core` no longer support network URLs by default and you'll need to import `coil-network` and [import a Ktor engine](https://ktor.io/docs/http-client-engines.html). Import these artifacts to continue loading images from network URLs:
 
 ```kotlin
-// Import coil-network and an HTTP client engine.
-implementation("io.coil-kt.coil3:coil-network:3.0.0-alpha01")
-implementation("io.ktor:ktor-client-okhttp:[ktor-version]")
+implementation("io.coil-kt.coil3:coil-network:3.0.0-alpha02")
+implementation("io.ktor:ktor-client-okhttp:2.3.7")
 ```
-
-If you use the singleton `ImageLoader` on Android, create a custom `ImageLoader` in your Application's `SingletonImageLoader.Factory`:
-
-```kotlin
-class Application : Application(), SingletonImageLoader.Factory {
-    override fun newImageLoader(context: Context): ImageLoader {
-        return ImageLoader.Builder(context)
-            .components {
-                add(NetworkFetcher.Factory())
-            }
-            .build()
-    }
-}
-```
-
-With Compose, you can call `setSingletonImageLoaderFactory` at the entrypoint to your app:
-
-```kotlin
-@Composable
-fun App() {
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .components {
-                add(NetworkFetcher.Factory())
-            }
-            .build()
-    }
-}
-```
-
-!!! Note
-    This approach should be avoided on Android if your app uses multiple activities. Instead, prefer implementing `SingletonImageLoader.Factory` on your `Application` like above.
 
 Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
 
 **IMPORTANT**: `Cache-Control` header support is no longer enabled by default. In subsequent alphas, it will be possible to re-enable it, but it will be opt-in. `NetworkFetcher.Factory` now also supports custom `CacheStrategy` implementations to allow custom cache resolution behaviour.
-
-## Compose Multiplatform
-
-Coil's Compose API is largely unchanged, however it includes changes to ensure `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter` are [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability). This should provide a performance benefit as those composable functions will often be entirely skipped when their parent composable recomposes.
 
 ## Extras
 

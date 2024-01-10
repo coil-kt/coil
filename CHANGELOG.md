@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.0-alpha02] - January 10, 2023
+
+- **Breaking**: `coil-gif`, `coil-svg`, and `coil-video`'s packages have been updated so all their classes are part of `coil.gif`, `coil.svg`, and `coil.video` respectively. This helps avoid class name conflicts with other artifacts.
+- **Breaking**: `ImageDecoderDecoder` has been renamed to `AnimatedImageDecoder`.
+- **New**: `coil-gif`, `coil-network`, `coil-svg`, and `coil-video`'s components are now automatically added to each `ImageLoader`'s `ComponentRegistry`.
+    - To be clear, unlike `3.0.0-alpha01` **you do not need to import `NetworkFetcher.Factory()` manually**. Simply importing `io.coil-kt.coil3:coil-network:[version]` and Ktor is enough to load network images.
+    - It's safe to also add these components to `ComponentRegistry` manually. Any manually added components take precedence over components that are added automatically.
+    - If preferred, this behaviour can be disabled using `ImageLoader.Builder.serviceLoaderEnabled(false)`.
+- **New**: Support `coil-svg` on all platforms. It's backed by [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) on Android and [SVGDOM](https://api.skia.org/classSkSVGDOM.html) on non-Android platforms.
+- Coil now uses Android's [`ImageDecoder`](https://developer.android.com/reference/android/graphics/ImageDecoder) API internally, which has performance benefits when decoding directly from a file, resource, or content URI.
+- Fix: Multiple `coil3.Uri` parsing fixes.
+- [For the full list of important changes, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
+
 ## [3.0.0-alpha01] - December 30, 2023
 
 - **New**: [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) support. Coil is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, and Javascript.
