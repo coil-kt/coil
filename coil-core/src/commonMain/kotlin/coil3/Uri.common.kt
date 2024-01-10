@@ -53,7 +53,7 @@ val Uri.pathSegments: List<String>
 /**
  * Parse this [String] into a [Uri].
  *
- * This method is permissive and will not throw if the URI is malformed.
+ * This method will not throw if the URI is malformed.
  */
 fun String.toUri(): Uri = parseUri(this)
 
