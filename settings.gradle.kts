@@ -9,7 +9,7 @@ include(
     "coil-core",
     "coil-compose",
     "coil-compose-core",
-    "coil-network",
+    "coil-network-core",
     "coil-gif",
     "coil-svg",
     "coil-video",
