@@ -4,7 +4,6 @@ import coil3.Extras
 import coil3.getExtra
 import coil3.request.ImageRequest
 import coil3.request.Options
-import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 
 // region httpMethod
@@ -12,40 +11,40 @@ import io.ktor.http.HttpMethod
 /**
  * Set the [HttpMethod] for any network operations performed by this image request.
  */
-fun ImageRequest.Builder.httpMethod(method: HttpMethod) = apply {
+fun ImageRequest.Builder.httpMethod(method: String) = apply {
     extras[httpMethodKey] = method
 }
 
-val ImageRequest.httpMethod: HttpMethod
+val ImageRequest.httpMethod: String
     get() = getExtra(httpMethodKey)
 
-val Options.httpMethod: HttpMethod
+val Options.httpMethod: String
     get() = getExtra(httpMethodKey)
 
-val Extras.Key.Companion.httpMethod: Extras.Key<HttpMethod>
+val Extras.Key.Companion.httpMethod: Extras.Key<String>
     get() = httpMethodKey
 
-private val httpMethodKey = Extras.Key(default = HttpMethod.Get)
+private val httpMethodKey = Extras.Key(default = "GET")
 
 // endregion
 // region httpHeaders
 
 /**
- * Set the [Headers] for any network operations performed by this image request.
+ * Set the [NetworkHeaders] for any network operations performed by this image request.
  */
-fun ImageRequest.Builder.httpHeaders(headers: Headers) = apply {
+fun ImageRequest.Builder.httpHeaders(headers: NetworkHeaders) = apply {
     extras[httpHeadersKey] = headers
 }
 
-val ImageRequest.httpHeaders: Headers
+val ImageRequest.httpHeaders: NetworkHeaders
     get() = getExtra(httpHeadersKey)
 
-val Options.httpHeaders: Headers
+val Options.httpHeaders: NetworkHeaders
     get() = getExtra(httpHeadersKey)
 
-val Extras.Key.Companion.httpHeaders: Extras.Key<Headers>
+val Extras.Key.Companion.httpHeaders: Extras.Key<NetworkHeaders>
     get() = httpHeadersKey
 
-private val httpHeadersKey = Extras.Key(default = Headers.Empty)
+private val httpHeadersKey = Extras.Key(default = NetworkHeaders.EMPTY)
 
 // endregion

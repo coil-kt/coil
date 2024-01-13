@@ -14,24 +14,10 @@ import coil3.network.internal.CACHE_CONTROL
 import coil3.network.internal.CONTENT_TYPE
 import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
-import coil3.network.internal.appendAllIfNameAbsent
 import coil3.network.internal.assertNotOnMainThread
-import coil3.network.internal.writeTo
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import coil3.util.closeQuietly
-import io.ktor.client.HttpClient
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.header
-import io.ktor.client.request.prepareRequest
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.discardRemaining
-import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.isSuccess
-import io.ktor.http.takeFrom
-import io.ktor.utils.io.ByteReadChannel
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException
@@ -39,7 +25,7 @@ import okio.IOException
 class NetworkFetcher(
     private val url: String,
     private val options: Options,
-    private val httpClient: Lazy<HttpClient>,
+    private val httpClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
 ) : Fetcher {
@@ -59,7 +45,7 @@ class NetworkFetcher(
                 if (cacheResponse != null) {
                     return SourceFetchResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, cacheResponse.contentType),
+                        mimeType = getMimeType(url, cacheResponse.responseHeaders[CONTENT_TYPE]),
                         dataSource = DataSource.DISK,
                     )
                 }
@@ -69,18 +55,19 @@ class NetworkFetcher(
             val networkRequest = output?.networkRequest ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
-                val responseBody = response.bodyAsChannel()
+                val responseBody = checkNotNull(response.body) { "body == null" }
                 snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, responseBody)
                 if (snapshot != null) {
+                    val cacheResponse = snapshot!!.toCacheResponse()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
-                        mimeType = getMimeType(url, snapshot!!.toCacheResponse()?.contentType),
+                        mimeType = getMimeType(url, cacheResponse?.responseHeaders?.get(CONTENT_TYPE)),
                         dataSource = DataSource.NETWORK,
                     )
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                if (responseBody.availableForRead > 0) {
+                if (responseBody.availableBytes > 0) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
@@ -96,7 +83,7 @@ class NetworkFetcher(
             if (result == null) {
                 result = executeNetworkRequest(newRequest()) { response ->
                     SourceFetchResult(
-                        source = response.bodyAsChannel().toImageSource(),
+                        source = checkNotNull(response.body) { "body == null" }.toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
                         dataSource = DataSource.NETWORK,
                     )
@@ -121,8 +108,8 @@ class NetworkFetcher(
     private suspend fun writeToDiskCache(
         snapshot: DiskCache.Snapshot?,
         cacheResponse: CacheResponse?,
-        networkResponse: HttpResponse,
-        networkResponseBody: ByteReadChannel,
+        networkResponse: NetworkResponse,
+        networkResponseBody: NetworkResponse.Body,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
         if (!options.diskCachePolicy.writeEnabled) {
@@ -142,18 +129,18 @@ class NetworkFetcher(
 
         try {
             // Write the response to the disk cache.
-            if (networkResponse.status == HttpStatusCode.NotModified && cacheResponse != null) {
+            if (networkResponse.code == 304 && cacheResponse != null) {
                 // Combine and write the updated cache headers and discard the body.
                 fileSystem.write(editor.metadata) {
-                    CacheResponse(
-                        response = networkResponse,
-                        headers = Headers.build {
-                            appendAll(networkResponse.headers)
-                            appendAllIfNameAbsent(cacheResponse.responseHeaders)
-                        },
-                    ).writeTo(this)
+                    val headers = networkResponse.headers.newBuilder()
+                    for ((key, values) in cacheResponse.responseHeaders.asMap()) {
+                        if (networkResponse.headers[key] == null) {
+                            headers[key] = values
+                        }
+                    }
+                    CacheResponse(networkResponse, headers.build()).writeTo(this)
                 }
-                networkResponse.discardRemaining()
+                networkResponseBody.close()
             } else {
                 // Write the response's cache headers and body.
                 fileSystem.write(editor.metadata) {
@@ -168,37 +155,37 @@ class NetworkFetcher(
         }
     }
 
-    private fun newRequest(): HttpRequestBuilder {
-        val request = HttpRequestBuilder()
-        request.method = options.httpMethod
-        request.url.takeFrom(url)
-        request.headers.appendAll(options.httpHeaders)
-
+    private fun newRequest(): NetworkRequest {
+        val headers = options.httpHeaders.newBuilder()
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled
         when {
             !networkRead && diskRead -> {
-                request.header(CACHE_CONTROL, "only-if-cached, max-stale=2147483647")
+                headers[CACHE_CONTROL] = "only-if-cached, max-stale=2147483647"
             }
 
             networkRead && !diskRead -> if (options.diskCachePolicy.writeEnabled) {
-                request.header(CACHE_CONTROL, "no-cache")
+                headers[CACHE_CONTROL] = "no-cache"
             } else {
-                request.header(CACHE_CONTROL, "no-cache, no-store")
+                headers[CACHE_CONTROL] = "no-cache, no-store"
             }
 
             !networkRead && !diskRead -> {
                 // This causes the request to fail with a 504 Unsatisfiable Request.
-                request.header(CACHE_CONTROL, "no-cache, only-if-cached")
+                headers[CACHE_CONTROL] = "no-cache, only-if-cached"
             }
         }
 
-        return request
+        return NetworkRequest(
+            url = url,
+            method = options.httpMethod,
+            headers = headers.build(),
+        )
     }
 
     private suspend fun <T> executeNetworkRequest(
-        request: HttpRequestBuilder,
-        block: suspend (HttpResponse) -> T,
+        request: NetworkRequest,
+        block: suspend (NetworkResponse) -> T,
     ): T {
         // Prevent executing requests on the main thread that could block due to a
         // networking operation.
@@ -206,8 +193,8 @@ class NetworkFetcher(
             assertNotOnMainThread()
         }
 
-        return httpClient.value.prepareRequest(request).execute { response ->
-            if (!response.status.isSuccess() && response.status != HttpStatusCode.NotModified) {
+        return httpClient.value.executeRequest(request) { response ->
+            if (response.code !in 200 until 300 && response.code != 304) {
                 throw HttpException(response)
             }
             block(response)
@@ -247,7 +234,7 @@ class NetworkFetcher(
         )
     }
 
-    private suspend fun ByteReadChannel.toImageSource(): ImageSource {
+    private suspend fun NetworkResponse.Body.toImageSource(): ImageSource {
         return ImageSource(
             source = Buffer().apply { writeTo(this) },
             fileSystem = fileSystem,
@@ -261,8 +248,8 @@ class NetworkFetcher(
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
     class Factory(
-        private val httpClient: Lazy<HttpClient> = lazy { HttpClient() },
-        private val cacheStrategy: Lazy<CacheStrategy> = lazy { CacheStrategy() },
+        private val httpClient: Lazy<NetworkClient>,
+        private val cacheStrategy: Lazy<CacheStrategy>,
     ) : Fetcher.Factory<Uri> {
 
         override fun create(
