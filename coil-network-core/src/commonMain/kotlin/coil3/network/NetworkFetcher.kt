@@ -25,7 +25,7 @@ import okio.IOException
 class NetworkFetcher(
     private val url: String,
     private val options: Options,
-    private val httpClient: Lazy<NetworkClient>,
+    private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
 ) : Fetcher {
@@ -193,7 +193,7 @@ class NetworkFetcher(
             assertNotOnMainThread()
         }
 
-        return httpClient.value.executeRequest(request) { response ->
+        return networkClient.value.executeRequest(request) { response ->
             if (response.code !in 200 until 300 && response.code != 304) {
                 throw HttpException(response)
             }
@@ -248,7 +248,7 @@ class NetworkFetcher(
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
     class Factory(
-        private val httpClient: Lazy<NetworkClient>,
+        private val networkClient: Lazy<NetworkClient>,
         private val cacheStrategy: Lazy<CacheStrategy>,
     ) : Fetcher.Factory<Uri> {
 
@@ -261,7 +261,7 @@ class NetworkFetcher(
             return NetworkFetcher(
                 url = data.toString(),
                 options = options,
-                httpClient = httpClient,
+                networkClient = networkClient,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategy,
             )
