@@ -4,12 +4,11 @@ import coil3.Extras
 import coil3.getExtra
 import coil3.request.ImageRequest
 import coil3.request.Options
-import io.ktor.http.HttpMethod
 
 // region httpMethod
 
 /**
- * Set the [HttpMethod] for any network operations performed by this image request.
+ * Set the HTTP method for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpMethod(method: String) = apply {
     extras[httpMethodKey] = method
@@ -30,7 +29,7 @@ private val httpMethodKey = Extras.Key(default = "GET")
 // region httpHeaders
 
 /**
- * Set the [NetworkHeaders] for any network operations performed by this image request.
+ * Set the HTTP headers for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpHeaders(headers: NetworkHeaders) = apply {
     extras[httpHeadersKey] = headers

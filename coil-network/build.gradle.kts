@@ -17,14 +17,12 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
-                api(libs.ktor.core)
             }
         }
         commonTest {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
-                implementation(libs.ktor.mock)
             }
         }
         androidUnitTest {
