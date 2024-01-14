@@ -14,34 +14,35 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coil)
-                api(projects.coilNetworkKtor)
                 api(projects.coilSvg)
                 api(libs.kotlinx.serialization.json)
             }
         }
         androidMain {
             dependencies {
+                api(projects.coilNetworkOkhttp)
                 api(projects.coilGif)
                 api(projects.coilVideo)
                 api(libs.androidx.core)
                 api(libs.androidx.lifecycle.viewmodel)
-                api(libs.ktor.engine.android)
             }
         }
         appleMain {
             dependencies {
+                api(projects.coilNetworkKtor)
                 api(libs.ktor.engine.darwin)
             }
         }
         jsMain {
             dependencies {
+                api(projects.coilNetworkKtor)
                 api(libs.ktor.engine.js)
             }
         }
         jvmMain {
             dependencies {
+                api(projects.coilNetworkOkhttp)
                 api(libs.coroutines.swing)
-                api(libs.ktor.engine.java)
             }
         }
     }
