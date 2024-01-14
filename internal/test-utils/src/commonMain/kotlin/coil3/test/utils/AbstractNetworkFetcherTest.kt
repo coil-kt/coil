@@ -1,0 +1,149 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+
+package coil3.test.utils
+
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.fetch.SourceFetchResult
+import coil3.network.NetworkFetcher
+import coil3.request.Options
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import okio.blackholeSink
+import okio.fakefilesystem.FakeFileSystem
+import okio.use
+
+abstract class AbstractNetworkFetcherTest {
+
+    lateinit var fileSystem: FakeFileSystem
+    lateinit var diskCache: DiskCache
+    lateinit var imageLoader: ImageLoader
+
+    @BeforeTest
+    fun before() {
+        fileSystem = FakeFileSystem()
+        diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
+            .build()
+        imageLoader = ImageLoader.Builder(context)
+            .diskCache(diskCache)
+            .fileSystem(diskCache.fileSystem)
+            .build()
+    }
+
+    @AfterTest
+    fun after() {
+        imageLoader.shutdown()
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
+    }
+
+    @Test
+    fun basicNetworkFetch() = runTestAsync {
+        val expectedSize = 1_000
+        val result = newFetcher(responseBody = ByteArray(expectedSize)).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+    }
+
+    @Test
+    fun mimeTypeIsParsedCorrectlyFromContentType() = runTestAsync {
+        val expectedSize = 1_000
+        val fetcher = newFetcher(responseBody = ByteArray(expectedSize))
+
+        val url1 = "https://example.com/image.jpg"
+        val type1 = "image/svg+xml"
+        assertEquals(type1, fetcher.getMimeType(url1, type1))
+
+        val url2 = "https://www.example.com/image.svg"
+        val type2: String? = null
+        assertEquals("image/svg+xml", fetcher.getMimeType(url2, type2))
+
+        val url3 = "https://www.example.com/image"
+        val type3 = "image/svg+xml;charset=utf-8"
+        assertEquals("image/svg+xml", fetcher.getMimeType(url3, type3))
+
+        val url4 = "https://www.example.com/image.svg"
+        val type4 = "text/plain"
+        assertEquals("image/svg+xml", fetcher.getMimeType(url4, type4))
+
+        val url5 = "https://www.example.com/image"
+        val type5: String? = null
+        assertNull(fetcher.getMimeType(url5, type5))
+    }
+
+    @Test
+    fun noDiskCache_fetcherReturnsASourceResult() = runTestAsync {
+        val expectedSize = 1_000
+        val path = "image.jpg"
+        val result = newFetcher(path, ByteArray(expectedSize)).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+    }
+
+    @Test
+    fun noCachedFile_fetcherReturnsTheFile() = runTestAsync {
+        val expectedSize = 1_000
+        val path = "image.jpg"
+        val result = newFetcher(path, ByteArray(expectedSize)).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val file = assertNotNull(result.source.fileOrNull())
+
+        // Ensure we can read the source.
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Ensure the result file is present.
+        diskCache.openSnapshot(url("image.jpg"))!!.use { snapshot ->
+            assertContains(fileSystem.list(diskCache.directory), snapshot.data)
+            assertEquals(snapshot.data, file)
+        }
+    }
+
+    @Test
+    fun existingCachedFile_fetcherReturnsTheFile() = runTestAsync {
+        val expectedSize = 1_000
+        val path = "image.jpg"
+
+        // Run the fetcher once to create the disk cache file.
+        var result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        assertIs<SourceFetchResult>(result)
+        assertNotNull(result.source.fileOrNull())
+        var actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Run the fetcher a second time.
+        result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        assertIs<SourceFetchResult>(result)
+        val file = assertNotNull(result.source.fileOrNull())
+        actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Ensure the result file is present.
+        diskCache.openSnapshot(url("image.jpg"))!!.use { snapshot ->
+            assertContains(fileSystem.list(diskCache.directory), snapshot.data)
+            assertEquals(snapshot.data, file)
+        }
+    }
+
+    abstract fun url(path: String): String
+
+    abstract fun newFetcher(
+        path: String = "image.jpg",
+        responseBody: ByteArray = byteArrayOf(),
+        options: Options = Options(context),
+    ): NetworkFetcher
+}
