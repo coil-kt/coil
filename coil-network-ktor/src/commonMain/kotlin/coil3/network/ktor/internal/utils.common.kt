@@ -4,6 +4,7 @@ import coil3.network.NetworkClient
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
+import coil3.network.NetworkResponseBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.prepareRequest
@@ -45,12 +46,12 @@ private fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder {
 private suspend fun HttpResponse.toNetworkResponse(request: NetworkRequest): NetworkResponse {
     return NetworkResponse(
         request = request,
-        response = this,
+        code = status.value,
         requestMillis = requestTime.timestamp,
         responseMillis = responseTime.timestamp,
-        code = status.value,
         headers = headers.toNetworkHeaders(),
         body = KtorNetworkResponseBody(bodyAsChannel()),
+        delegate = this,
     )
 }
 
@@ -71,7 +72,7 @@ private fun Headers.toNetworkHeaders(): NetworkHeaders {
 @JvmInline
 private value class KtorNetworkResponseBody(
     private val channel: ByteReadChannel,
-) : NetworkResponse.Body {
+) : NetworkResponseBody {
 
     override fun exhausted(): Boolean {
         return channel.availableForRead == 0

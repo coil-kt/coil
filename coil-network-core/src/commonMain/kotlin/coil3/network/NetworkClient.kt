@@ -4,6 +4,7 @@ package coil3.network
 
 import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.Closeable
@@ -43,34 +44,65 @@ class NetworkRequest(
 @Data
 class NetworkResponse(
     val request: NetworkRequest,
-    val response: Any,
-    val requestMillis: Long,
-    val responseMillis: Long,
     val code: Int = 200,
+    val requestMillis: Long = 0L,
+    val responseMillis: Long = 0L,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
-    val body: Body? = null,
+    val body: NetworkResponseBody? = null,
+    val delegate: Any? = null,
 ) {
     fun copy(
         request: NetworkRequest = this.request,
-        response: Any = this.response,
+        code: Int = this.code,
         requestMillis: Long = this.requestMillis,
         responseMillis: Long = this.responseMillis,
-        code: Int = this.code,
         headers: NetworkHeaders = this.headers,
-        body: Body? = this.body,
+        body: NetworkResponseBody? = this.body,
+        delegate: Any? = this.delegate,
     ) = NetworkResponse(
         request = request,
-        response = response,
+        code = code,
         requestMillis = requestMillis,
         responseMillis = responseMillis,
-        code = code,
         headers = headers,
         body = body,
+        delegate = delegate,
     )
+}
 
-    interface Body : Closeable {
-        fun exhausted(): Boolean
-        suspend fun writeTo(sink: BufferedSink)
-        suspend fun writeTo(fileSystem: FileSystem, path: Path)
+@ExperimentalCoilApi
+interface NetworkResponseBody : Closeable {
+    fun exhausted(): Boolean
+    suspend fun writeTo(sink: BufferedSink)
+    suspend fun writeTo(fileSystem: FileSystem, path: Path)
+}
+
+@ExperimentalCoilApi
+fun NetworkResponseBody(
+    source: BufferedSource,
+): NetworkResponseBody = SourceResponseBody(source)
+
+@ExperimentalCoilApi
+@JvmInline
+private value class SourceResponseBody(
+    private val source: BufferedSource,
+) : NetworkResponseBody {
+
+    override fun exhausted(): Boolean {
+        return source.exhausted()
+    }
+
+    override suspend fun writeTo(sink: BufferedSink) {
+        source.readAll(sink)
+    }
+
+    override suspend fun writeTo(fileSystem: FileSystem, path: Path) {
+        fileSystem.write(path) {
+            source.readAll(this)
+        }
+    }
+
+    override fun close() {
+        source.close()
     }
 }

@@ -109,7 +109,7 @@ class NetworkFetcher(
         snapshot: DiskCache.Snapshot?,
         cacheResponse: CacheResponse?,
         networkResponse: NetworkResponse,
-        networkResponseBody: NetworkResponse.Body,
+        networkResponseBody: NetworkResponseBody,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
         if (!options.diskCachePolicy.writeEnabled) {
@@ -234,7 +234,7 @@ class NetworkFetcher(
         )
     }
 
-    private suspend fun NetworkResponse.Body.toImageSource(): ImageSource {
+    private suspend fun NetworkResponseBody.toImageSource(): ImageSource {
         return ImageSource(
             source = Buffer().apply { writeTo(this) },
             fileSystem = fileSystem,

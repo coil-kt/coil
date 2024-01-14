@@ -39,11 +39,11 @@ class NetworkHeaders private constructor(
 
         operator fun set(key: String, value: String) = set(key, listOf(value))
 
-        operator fun set(key: String, values: List<String>) {
+        operator fun set(key: String, values: List<String>) = apply {
             data[key.lowercase()] = values.toMutableList()
         }
 
-        fun add(key: String, value: String) {
+        fun add(key: String, value: String) = apply {
             val values = data.getOrPut(key.lowercase()) { mutableListOf() }
             values += value
         }

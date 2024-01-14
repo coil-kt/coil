@@ -8,11 +8,6 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.test.utils.runTestAsync
 import coil3.toUri
-import coil3.util.ServiceLoaderComponentRegistry
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondOk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -21,7 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import okio.Buffer
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
@@ -50,10 +45,10 @@ class NetworkFetcherTest : RobolectricTest() {
     @Test
     fun basicNetworkFetch() = runTestAsync {
         val expectedSize = 1_000
-        val engine = MockEngine {
-            respond(ByteArray(expectedSize))
+        val client = FakeNetworkClient { request ->
+            NetworkResponse(request, body = NetworkResponseBody(expectedSize))
         }
-        val result = newFetcher(engine = engine).fetch()
+        val result = newFetcher(networkClient = client).fetch()
 
         assertIs<SourceFetchResult>(result)
         val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -88,10 +83,10 @@ class NetworkFetcherTest : RobolectricTest() {
     @Test
     fun noDiskCache_fetcherReturnsASourceResult() = runTestAsync {
         val expectedSize = 1_000
-        val engine = MockEngine {
-            respond(ByteArray(expectedSize))
+        val client = FakeNetworkClient { request ->
+            NetworkResponse(request, body = NetworkResponseBody(expectedSize))
         }
-        val result = newFetcher(engine = engine, diskCache = null).fetch()
+        val result = newFetcher(networkClient = client, diskCache = null).fetch()
 
         assertIs<SourceFetchResult>(result)
         val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -102,10 +97,10 @@ class NetworkFetcherTest : RobolectricTest() {
     fun noCachedFile_fetcherReturnsTheFile() = runTestAsync {
         val expectedSize = 1_000
         val url = "https://example.com/image.jpg"
-        val engine = MockEngine {
-            respond(ByteArray(expectedSize))
+        val client = FakeNetworkClient { request ->
+            NetworkResponse(request, body = NetworkResponseBody(expectedSize))
         }
-        val result = newFetcher(url, engine = engine).fetch()
+        val result = newFetcher(url, networkClient = client).fetch()
 
         assertIs<SourceFetchResult>(result)
         val file = assertNotNull(result.source.fileOrNull())
@@ -125,19 +120,19 @@ class NetworkFetcherTest : RobolectricTest() {
     fun existingCachedFile_fetcherReturnsTheFile() = runTestAsync {
         val expectedSize = 1_000
         val url = "https://example.com/image.jpg"
-        val engine = MockEngine {
-            respond(ByteArray(expectedSize))
+        val client = FakeNetworkClient { request ->
+            NetworkResponse(request, body = NetworkResponseBody(expectedSize))
         }
 
         // Run the fetcher once to create the disk cache file.
-        var result = newFetcher(url, engine = engine).fetch()
+        var result = newFetcher(url, networkClient = client).fetch()
         assertIs<SourceFetchResult>(result)
         assertNotNull(result.source.fileOrNull())
         var actualSize = result.source.use { it.source().readAll(blackholeSink()) }
         assertEquals(expectedSize.toLong(), actualSize)
 
         // Run the fetcher a second time.
-        result = newFetcher(url, engine = engine).fetch()
+        result = newFetcher(url, networkClient = client).fetch()
         assertIs<SourceFetchResult>(result)
         val file = assertNotNull(result.source.fileOrNull())
         actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -152,13 +147,13 @@ class NetworkFetcherTest : RobolectricTest() {
 
     private fun newFetcher(
         url: String = "https://example.com/image.jpg",
-        engine: MockEngine = MockEngine { respondOk() },
+        networkClient: NetworkClient = FakeNetworkClient(::NetworkResponse),
         cacheStrategy: CacheStrategy = CacheStrategy(),
         options: Options = Options(context),
         diskCache: DiskCache? = this.diskCache,
     ): NetworkFetcher {
         val factory = NetworkFetcher.Factory(
-            networkClient = lazyOf(HttpClient(engine)),
+            networkClient = lazyOf(networkClient),
             cacheStrategy = lazyOf(cacheStrategy),
         )
         val imageLoader = ImageLoader.Builder(context)
@@ -166,5 +161,18 @@ class NetworkFetcherTest : RobolectricTest() {
             .apply { diskCache?.fileSystem?.let(::fileSystem) }
             .build()
         return assertIs(factory.create(url.toUri(), options, imageLoader))
+    }
+
+    private fun FakeNetworkClient(
+        execute: suspend (NetworkRequest) -> NetworkResponse,
+    ) = object : NetworkClient {
+        override suspend fun <T> executeRequest(
+            request: NetworkRequest,
+            block: suspend (response: NetworkResponse) -> T,
+        ): T = block(execute(request))
+    }
+
+    private fun NetworkResponseBody(expectedSize: Int): NetworkResponseBody {
+        return NetworkResponseBody(Buffer().apply { write(ByteArray(expectedSize)) })
     }
 }
