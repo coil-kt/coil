@@ -67,7 +67,7 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                if (responseBody.availableBytes > 0) {
+                if (!responseBody.exhausted()) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),

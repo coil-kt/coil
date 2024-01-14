@@ -1,9 +1,13 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+
 package coil3.network
 
+import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
 import kotlin.jvm.JvmField
 
 @ExperimentalCoilApi
+@Data
 class NetworkHeaders private constructor(
     private val data: Map<String, List<String>>,
 ) {
