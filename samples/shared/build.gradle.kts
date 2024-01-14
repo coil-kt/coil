@@ -20,8 +20,8 @@ kotlin {
         }
         androidMain {
             dependencies {
-                api(projects.coilGif)
                 api(projects.coilNetworkOkhttp)
+                api(projects.coilGif)
                 api(projects.coilVideo)
                 api(libs.androidx.core)
                 api(libs.androidx.lifecycle.viewmodel)
