@@ -1,0 +1,8 @@
+public final class coil3/network/okhttp/OkHttpNetworkFetcher {
+	public static final fun asNetworkClient (Lokhttp3/OkHttpClient;)Lcoil3/network/NetworkClient;
+	public static final fun factory ()Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/Lazy;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/Lazy;Lkotlin/Lazy;)Lcoil3/network/NetworkFetcher$Factory;
+	public static synthetic fun factory$default (Lkotlin/Lazy;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
+}
+

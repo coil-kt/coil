@@ -1,3 +1,5 @@
+@file:JvmName("OkHttpNetworkFetcher")
+
 package coil3.network.okhttp
 
 import coil3.network.CacheStrategy
@@ -7,6 +9,7 @@ import coil3.network.okhttp.internal.OkHttpNetworkClient
 import okhttp3.OkHttpClient
 
 @JvmOverloads
+@JvmName("factory")
 fun OkHttpNetworkFetcherFactory(
     httpClient: Lazy<OkHttpClient> = lazy { OkHttpClient() },
 ) = OkHttpNetworkFetcherFactory(
@@ -14,6 +17,7 @@ fun OkHttpNetworkFetcherFactory(
     cacheStrategy = lazy { CacheStrategy() },
 )
 
+@JvmName("factory")
 fun OkHttpNetworkFetcherFactory(
     httpClient: Lazy<OkHttpClient>,
     cacheStrategy: Lazy<CacheStrategy>,
