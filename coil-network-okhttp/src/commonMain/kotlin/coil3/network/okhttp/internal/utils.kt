@@ -36,8 +36,8 @@ private fun NetworkRequest.toRequest(): Request {
 
 private fun Response.toNetworkResponse(request: NetworkRequest): NetworkResponse {
     return NetworkResponse(
-        delegate = this,
         request = request,
+        response = this,
         requestMillis = sentRequestAtMillis,
         responseMillis = receivedResponseAtMillis,
         code = code,

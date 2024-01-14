@@ -31,14 +31,19 @@ class NetworkRequest(
         method: String = this.method,
         headers: NetworkHeaders = this.headers,
         body: BufferedSource? = this.body,
-    ) = NetworkRequest(url, method, headers, body)
+    ) = NetworkRequest(
+        url = url,
+        method = method,
+        headers = headers,
+        body = body,
+    )
 }
 
 @ExperimentalCoilApi
 @Data
 class NetworkResponse(
-    val delegate: Any,
     val request: NetworkRequest,
+    val response: Any,
     val requestMillis: Long,
     val responseMillis: Long,
     val code: Int = 200,
@@ -46,14 +51,22 @@ class NetworkResponse(
     val body: Body? = null,
 ) {
     fun copy(
-        delegate: Any = this.delegate,
         request: NetworkRequest = this.request,
+        response: Any = this.response,
         requestMillis: Long = this.requestMillis,
         responseMillis: Long = this.responseMillis,
         code: Int = this.code,
         headers: NetworkHeaders = this.headers,
         body: Body? = this.body,
-    ) = NetworkResponse(delegate, request, requestMillis, responseMillis, code, headers, body)
+    ) = NetworkResponse(
+        request = request,
+        response = response,
+        requestMillis = requestMillis,
+        responseMillis = responseMillis,
+        code = code,
+        headers = headers,
+        body = body,
+    )
 
     interface Body : Closeable {
         fun exhausted(): Boolean

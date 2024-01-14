@@ -44,8 +44,8 @@ private fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder {
 
 private suspend fun HttpResponse.toNetworkResponse(request: NetworkRequest): NetworkResponse {
     return NetworkResponse(
-        delegate = this,
         request = request,
+        response = this,
         requestMillis = requestTime.timestamp,
         responseMillis = responseTime.timestamp,
         code = status.value,
