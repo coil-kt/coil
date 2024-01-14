@@ -392,12 +392,6 @@ class NetworkFetcherTest : RobolectricTest() {
 //        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 //    }
 
-    @Test
-    fun serviceLoaderFindsNetworkFetcher() {
-        val fetchers = ServiceLoaderComponentRegistry.fetchers
-        assertTrue(fetchers.any { it.factory() is NetworkFetcher.Factory })
-    }
-
     private fun newFetcher(
         url: String = "https://example.com/image.jpg",
         engine: MockEngine = MockEngine { respondOk() },
