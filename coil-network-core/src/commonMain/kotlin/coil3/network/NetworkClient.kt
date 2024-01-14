@@ -4,6 +4,7 @@ package coil3.network
 
 import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
@@ -23,7 +24,7 @@ interface NetworkClient {
 @Data
 class NetworkRequest(
     val url: String,
-    val method: String = "GET",
+    val method: String = HTTP_METHOD_GET,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
     val body: BufferedSource? = null,
 ) {

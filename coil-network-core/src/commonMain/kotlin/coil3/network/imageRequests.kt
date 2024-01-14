@@ -2,6 +2,7 @@ package coil3.network
 
 import coil3.Extras
 import coil3.getExtra
+import coil3.network.internal.HTTP_METHOD_GET
 import coil3.request.ImageRequest
 import coil3.request.Options
 
@@ -23,7 +24,7 @@ val Options.httpMethod: String
 val Extras.Key.Companion.httpMethod: Extras.Key<String>
     get() = httpMethodKey
 
-private val httpMethodKey = Extras.Key(default = "GET")
+private val httpMethodKey = Extras.Key(default = HTTP_METHOD_GET)
 
 // endregion
 // region httpHeaders

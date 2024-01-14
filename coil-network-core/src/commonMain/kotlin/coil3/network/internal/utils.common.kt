@@ -17,6 +17,7 @@ internal fun DiskCache.Editor.abortQuietly() {
 
 internal expect fun assertNotOnMainThread()
 
-internal const val MIME_TYPE_TEXT_PLAIN = "text/plain"
 internal const val CACHE_CONTROL = "Cache-Control"
 internal const val CONTENT_TYPE = "Content-Type"
+internal const val HTTP_METHOD_GET = "GET"
+internal const val MIME_TYPE_TEXT_PLAIN = "text/plain"
