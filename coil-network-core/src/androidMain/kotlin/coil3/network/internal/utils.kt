@@ -4,9 +4,7 @@ import android.os.Looper
 import android.os.NetworkOnMainThreadException
 
 internal actual fun assertNotOnMainThread() {
-    if (isMainThread()) {
+    if (Looper.myLooper() == Looper.getMainLooper()) {
         throw NetworkOnMainThreadException()
     }
 }
-
-internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
