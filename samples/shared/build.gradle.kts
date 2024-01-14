@@ -14,7 +14,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coil)
-                api(projects.coilNetwork)
+                api(projects.coilNetworkKtor)
                 api(projects.coilSvg)
                 api(libs.kotlinx.serialization.json)
             }

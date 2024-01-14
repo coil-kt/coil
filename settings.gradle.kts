@@ -10,6 +10,7 @@ include(
     "coil-compose",
     "coil-compose-core",
     "coil-network-core",
+    "coil-network-ktor",
     "coil-gif",
     "coil-svg",
     "coil-video",

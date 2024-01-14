@@ -2,10 +2,6 @@ package coil3.network.internal
 
 import coil3.disk.DiskCache
 import coil3.network.NetworkHeaders
-import io.ktor.utils.io.ByteReadChannel
-import okio.BufferedSink
-import okio.FileSystem
-import okio.Path
 
 internal fun NetworkHeaders.Builder.append(line: String) = apply {
     val index = line.indexOf(':')
@@ -17,21 +13,6 @@ internal fun DiskCache.Editor.abortQuietly() {
     try {
         abort()
     } catch (_: Exception) {}
-}
-
-/** Write a [ByteReadChannel] to [sink] using streaming. */
-internal expect suspend fun ByteReadChannel.writeTo(sink: BufferedSink)
-
-/** Write a [ByteReadChannel] to [path] natively. */
-internal expect suspend fun ByteReadChannel.writeTo(fileSystem: FileSystem, path: Path)
-
-internal fun String.toNonNegativeInt(defaultValue: Int): Int {
-    val value = toLongOrNull() ?: return defaultValue
-    return when {
-        value > Int.MAX_VALUE -> Int.MAX_VALUE
-        value < 0 -> 0
-        else -> value.toInt()
-    }
 }
 
 internal expect fun assertNotOnMainThread()

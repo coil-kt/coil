@@ -95,7 +95,7 @@ class NetworkFetcherAndroidTest : RobolectricTest() {
         diskCache: DiskCache? = this.diskCache,
     ): NetworkFetcher {
         val factory = NetworkFetcher.Factory(
-            httpClient = lazyOf(HttpClient(engine)),
+            networkClient = lazyOf(HttpClient(engine)),
             cacheStrategy = lazyOf(cacheStrategy),
         )
         val imageLoader = ImageLoader.Builder(context)

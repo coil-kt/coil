@@ -1,4 +1,4 @@
-package coil3.network.internal
+package coil3.network.ktor.internal
 
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.nio.copyTo
