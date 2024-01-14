@@ -5,7 +5,7 @@ import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.assertTrue
 import org.junit.Test
 
-class ServiceLoaderTest : RobolectricTest() {
+class VideoFrameServiceLoaderTest : RobolectricTest() {
 
     @Test
     fun serviceLoaderFindsVideoFrameDecoder() {
