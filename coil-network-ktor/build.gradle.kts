@@ -1,6 +1,6 @@
-
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
+import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
@@ -25,6 +25,11 @@ kotlin {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
                 implementation(libs.ktor.mock)
+            }
+        }
+        androidUnitTest {
+            dependencies {
+                implementation(libs.bundles.test.jvm)
             }
         }
     }

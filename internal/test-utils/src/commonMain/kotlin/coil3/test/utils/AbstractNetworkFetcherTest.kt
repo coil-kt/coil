@@ -19,14 +19,14 @@ import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
-abstract class AbstractNetworkFetcherTest {
+abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
 
     lateinit var fileSystem: FakeFileSystem
     lateinit var diskCache: DiskCache
     lateinit var imageLoader: ImageLoader
 
     @BeforeTest
-    fun before() {
+    open fun before() {
         fileSystem = FakeFileSystem()
         diskCache = DiskCache.Builder()
             .directory(fileSystem.workingDirectory)
@@ -40,7 +40,7 @@ abstract class AbstractNetworkFetcherTest {
     }
 
     @AfterTest
-    fun after() {
+    open fun after() {
         imageLoader.shutdown()
         diskCache.shutdown()
         fileSystem.checkNoOpenFiles()

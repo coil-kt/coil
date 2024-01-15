@@ -10,6 +10,7 @@ import androidx.test.core.app.ActivityScenario.ActivityAction
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil3.BitmapImage
 import coil3.Image
 import coil3.PlatformContext
@@ -24,6 +25,9 @@ import okio.source
 import org.junit.Assume
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+
+@RunWith(AndroidJUnit4::class)
+actual abstract class AndroidJUnit4Test
 
 @RunWith(RobolectricTestRunner::class)
 actual abstract class RobolectricTest

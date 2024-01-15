@@ -1,5 +1,5 @@
-
 import coil3.androidLibrary
+import coil3.androidUnitTest
 import coil3.applyCoilHierarchyTemplate
 
 plugins {
@@ -29,6 +29,11 @@ kotlin {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
                 implementation(libs.okhttp.mockwebserver)
+            }
+        }
+        androidUnitTest {
+            dependencies {
+                implementation(libs.bundles.test.jvm)
             }
         }
     }
