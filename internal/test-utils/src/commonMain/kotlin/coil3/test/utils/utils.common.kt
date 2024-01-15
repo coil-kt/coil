@@ -8,6 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
+expect abstract class AndroidJUnit4Test()
+
 expect abstract class RobolectricTest()
 
 expect val context: PlatformContext

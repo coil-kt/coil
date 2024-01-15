@@ -19,7 +19,7 @@ kotlin {
             dependencies {
                 api(libs.coroutines.core)
                 api(libs.kotlin.stdlib)
-                api(libs.okio)
+                api(libs.okio.core)
             }
         }
         commonTest {

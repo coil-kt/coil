@@ -763,10 +763,12 @@ public final class coil3/util/DebugLogger : coil3/util/Logger {
 
 public abstract interface class coil3/util/DecoderServiceLoaderTarget {
 	public abstract fun factory ()Lcoil3/decode/Decoder$Factory;
+	public fun priority ()I
 }
 
 public abstract interface class coil3/util/FetcherServiceLoaderTarget {
 	public abstract fun factory ()Lcoil3/fetch/Fetcher$Factory;
+	public fun priority ()I
 	public abstract fun type ()Lkotlin/reflect/KClass;
 }
 

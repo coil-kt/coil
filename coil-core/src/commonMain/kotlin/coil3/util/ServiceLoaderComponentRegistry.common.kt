@@ -15,9 +15,11 @@ expect object ServiceLoaderComponentRegistry {
 interface FetcherServiceLoaderTarget<T : Any> {
     fun factory(): Fetcher.Factory<T>?
     fun type(): KClass<T>?
+    fun priority(): Int = 0
 }
 
 @InternalCoilApi
 interface DecoderServiceLoaderTarget {
     fun factory(): Decoder.Factory?
+    fun priority(): Int = 0
 }

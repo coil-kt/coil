@@ -15,13 +15,10 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
+                api(projects.coilNetworkCore)
+                api(libs.bundles.test.common)
                 api(libs.coroutines.test)
                 api(libs.kotlinx.datetime)
-            }
-        }
-        commonTest {
-            dependencies {
-                implementation(libs.bundles.test.common)
             }
         }
         androidMain {
@@ -33,11 +30,6 @@ kotlin {
                 api(libs.androidx.test.junit)
                 api(libs.junit)
                 compileOnly(libs.robolectric)
-            }
-        }
-        named("jvmCommonMain") {
-            dependencies {
-                implementation(libs.bundles.test.common)
             }
         }
     }

@@ -13,6 +13,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -24,6 +25,9 @@ fun Project.androidLibrary(
 ) = androidBase<LibraryExtension>(name) {
     buildFeatures {
         buildConfig = config
+    }
+    sourceSets["main"].resources {
+        srcDirs("src/commonMain/resources", "src/jvmCommonMain/resources")
     }
     if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
