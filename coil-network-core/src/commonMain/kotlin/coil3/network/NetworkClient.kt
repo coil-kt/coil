@@ -26,19 +26,44 @@ class NetworkRequest(
     val url: String,
     val method: String = HTTP_METHOD_GET,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
-    val body: BufferedSource? = null,
+    val body: NetworkRequestBody? = null,
 ) {
     fun copy(
         url: String = this.url,
         method: String = this.method,
         headers: NetworkHeaders = this.headers,
-        body: BufferedSource? = this.body,
+        body: NetworkRequestBody? = this.body,
     ) = NetworkRequest(
         url = url,
         method = method,
         headers = headers,
         body = body,
     )
+}
+
+@ExperimentalCoilApi
+interface NetworkRequestBody : Closeable {
+    suspend fun writeTo(sink: BufferedSink)
+}
+
+@ExperimentalCoilApi
+fun NetworkRequestBody(
+    source: BufferedSource,
+): NetworkRequestBody = SourceRequestBody(source)
+
+@ExperimentalCoilApi
+@JvmInline
+private value class SourceRequestBody(
+    private val source: BufferedSource,
+) : NetworkRequestBody {
+
+    override suspend fun writeTo(sink: BufferedSink) {
+        source.readAll(sink)
+    }
+
+    override fun close() {
+        source.close()
+    }
 }
 
 @ExperimentalCoilApi
@@ -73,7 +98,6 @@ class NetworkResponse(
 
 @ExperimentalCoilApi
 interface NetworkResponseBody : Closeable {
-    fun exhausted(): Boolean
     suspend fun writeTo(sink: BufferedSink)
     suspend fun writeTo(fileSystem: FileSystem, path: Path)
 }
@@ -88,10 +112,6 @@ fun NetworkResponseBody(
 private value class SourceResponseBody(
     private val source: BufferedSource,
 ) : NetworkResponseBody {
-
-    override fun exhausted(): Boolean {
-        return source.exhausted()
-    }
 
     override suspend fun writeTo(sink: BufferedSink) {
         source.readAll(sink)

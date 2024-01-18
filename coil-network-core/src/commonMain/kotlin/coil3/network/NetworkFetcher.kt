@@ -21,6 +21,7 @@ import coil3.util.closeQuietly
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException
+import okio.use
 
 class NetworkFetcher(
     private val url: String,
@@ -67,9 +68,11 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                if (!responseBody.exhausted()) {
+                val responseBodyBuffer = Buffer()
+                responseBody.use { it.writeTo(responseBodyBuffer) }
+                if (responseBodyBuffer.size > 0) {
                     return@executeNetworkRequest SourceFetchResult(
-                        source = responseBody.toImageSource(),
+                        source = responseBodyBuffer.toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
                         dataSource = DataSource.NETWORK,
                     )
@@ -140,7 +143,6 @@ class NetworkFetcher(
                     }
                     CacheResponse(networkResponse, headers.build()).writeTo(this)
                 }
-                networkResponseBody.close()
             } else {
                 // Write the response's cache headers and body.
                 fileSystem.write(editor.metadata) {
@@ -151,6 +153,7 @@ class NetworkFetcher(
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
+            networkResponseBody.close()
             throw e
         }
     }
@@ -237,6 +240,13 @@ class NetworkFetcher(
     private suspend fun NetworkResponseBody.toImageSource(): ImageSource {
         return ImageSource(
             source = Buffer().apply { writeTo(this) },
+            fileSystem = fileSystem,
+        )
+    }
+
+    private fun Buffer.toImageSource(): ImageSource {
+        return ImageSource(
+            source = this,
             fileSystem = fileSystem,
         )
     }
