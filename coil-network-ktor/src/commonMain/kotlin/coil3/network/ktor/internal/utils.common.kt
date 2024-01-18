@@ -42,7 +42,7 @@ private suspend fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder = 
     request.url.takeFrom(url)
     request.method = HttpMethod.parse(method)
     request.headers.takeFrom(headers)
-    request.setBody(body?.readByteArray())
+    body?.readByteArray()?.let(request::setBody)
     return request
 }
 
