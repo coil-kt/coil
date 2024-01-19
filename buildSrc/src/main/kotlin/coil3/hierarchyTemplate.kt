@@ -23,6 +23,7 @@ private val hierarchyTemplate = KotlinHierarchyTemplate {
         groupJvmCommon()
         groupNonJvmCommon()
         groupNative()
+        groupNonNative()
     }
 }
 
@@ -77,6 +78,13 @@ private fun KotlinHierarchyBuilder.groupNative() {
                 withMacos()
             }
         }
+    }
+}
+
+private fun KotlinHierarchyBuilder.groupNonNative() {
+    group("nonNative") {
+        groupJsCommon()
+        groupJvmCommon()
     }
 }
 
