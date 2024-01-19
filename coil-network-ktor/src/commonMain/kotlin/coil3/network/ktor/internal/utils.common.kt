@@ -3,6 +3,7 @@ package coil3.network.ktor.internal
 import coil3.network.NetworkClient
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
+import coil3.network.NetworkRequestBody
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
 import io.ktor.client.HttpClient
@@ -18,9 +19,11 @@ import io.ktor.http.takeFrom
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.cancel
 import kotlin.jvm.JvmInline
+import okio.Buffer
 import okio.BufferedSink
 import okio.FileSystem
 import okio.Path
+import okio.use
 
 @JvmInline
 internal value class KtorNetworkClient(
@@ -34,13 +37,19 @@ internal value class KtorNetworkClient(
     }
 }
 
-private fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder {
+private suspend fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder = body.use { body ->
     val request = HttpRequestBuilder()
     request.url.takeFrom(url)
     request.method = HttpMethod.parse(method)
     request.headers.takeFrom(headers)
-    body?.let { request.setBody(it.readByteArray()) }
+    body?.readByteArray()?.let(request::setBody)
     return request
+}
+
+private suspend fun NetworkRequestBody.readByteArray(): ByteArray {
+    val buffer = Buffer()
+    writeTo(buffer)
+    return buffer.readByteArray()
 }
 
 private suspend fun HttpResponse.toNetworkResponse(request: NetworkRequest): NetworkResponse {
@@ -73,10 +82,6 @@ private fun Headers.toNetworkHeaders(): NetworkHeaders {
 private value class KtorNetworkResponseBody(
     private val channel: ByteReadChannel,
 ) : NetworkResponseBody {
-
-    override fun exhausted(): Boolean {
-        return channel.availableForRead == 0
-    }
 
     override suspend fun writeTo(sink: BufferedSink) {
         channel.writeTo(sink)

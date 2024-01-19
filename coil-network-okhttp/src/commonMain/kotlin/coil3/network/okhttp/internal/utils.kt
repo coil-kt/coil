@@ -3,6 +3,7 @@ package coil3.network.okhttp.internal
 import coil3.network.NetworkClient
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
+import coil3.network.NetworkRequestBody
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
 import okhttp3.Headers
@@ -10,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okio.Buffer
 
 @JvmInline
 internal value class OkHttpNetworkClient(
@@ -23,12 +25,18 @@ internal value class OkHttpNetworkClient(
     }
 }
 
-private fun NetworkRequest.toRequest(): Request {
+private suspend fun NetworkRequest.toRequest(): Request = body.use { body ->
     val request = Request.Builder()
     request.url(url)
     request.method(method, body?.readByteArray()?.toRequestBody())
     request.headers(headers.toHeaders())
     return request.build()
+}
+
+private suspend fun NetworkRequestBody.readByteArray(): ByteArray {
+    val buffer = Buffer()
+    writeTo(buffer)
+    return buffer.readByteArray()
 }
 
 private fun Response.toNetworkResponse(request: NetworkRequest): NetworkResponse {
