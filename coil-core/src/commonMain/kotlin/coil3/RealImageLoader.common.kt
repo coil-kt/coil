@@ -56,6 +56,7 @@ internal class RealImageLoader(
         .addServiceLoaderComponents(options)
         .addAndroidComponents(options)
         .addJvmComponents(options)
+        .addAppleComponents(options)
         .addCommonComponents(options)
         .add(EngineInterceptor(this, requestService, options.logger))
         .build()
@@ -280,6 +281,10 @@ internal expect fun ComponentRegistry.Builder.addAndroidComponents(
 ): ComponentRegistry.Builder
 
 internal expect fun ComponentRegistry.Builder.addJvmComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder
+
+internal expect fun ComponentRegistry.Builder.addAppleComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
