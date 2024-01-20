@@ -39,6 +39,7 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -59,6 +60,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     model = model,
@@ -76,6 +78,7 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
     modelEqualityDelegate = modelEqualityDelegate,
 )
 
@@ -100,6 +103,7 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -116,6 +120,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     model = model,
@@ -129,5 +134,6 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
     modelEqualityDelegate = modelEqualityDelegate,
 )

@@ -39,6 +39,7 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -60,6 +61,7 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
     model = model,
@@ -77,6 +79,7 @@ fun SubcomposeAsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
+    clipToBounds = clipToBounds,
     modelEqualityDelegate = modelEqualityDelegate,
     filterQuality = filterQuality,
 )
@@ -102,6 +105,7 @@ fun SubcomposeAsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
@@ -119,6 +123,7 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
@@ -133,6 +138,7 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
     modelEqualityDelegate = modelEqualityDelegate,
     content = content,
 )

@@ -57,6 +57,7 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -79,6 +80,7 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
@@ -91,6 +93,7 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
     content = contentOf(loading, success, error),
 )
 
@@ -116,6 +119,7 @@ fun SubcomposeAsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
@@ -134,6 +138,7 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
@@ -147,6 +152,7 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
     content = content,
 )
 
@@ -162,6 +168,7 @@ private fun SubcomposeAsyncImage(
     alpha: Float,
     colorFilter: ColorFilter?,
     filterQuality: FilterQuality,
+    clipToBounds: Boolean,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
     // Create and execute the image request.
@@ -195,6 +202,7 @@ private fun SubcomposeAsyncImage(
                 contentScale = contentScale,
                 alpha = alpha,
                 colorFilter = colorFilter,
+                clipToBounds = clipToBounds,
             ).content()
         }
     } else {
@@ -218,6 +226,7 @@ private fun SubcomposeAsyncImage(
                 contentScale = contentScale,
                 alpha = alpha,
                 colorFilter = colorFilter,
+                clipToBounds = clipToBounds,
             ).content()
         }
     }
@@ -247,6 +256,9 @@ interface SubcomposeAsyncImageScope : BoxScope {
 
     /** The color filter for [SubcomposeAsyncImageContent]. */
     val colorFilter: ColorFilter?
+
+    /** If true, applies [clipToBounds] to [SubcomposeAsyncImageContent]. */
+    val clipToBounds: Boolean
 }
 
 /**
@@ -267,7 +279,7 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
 ) = Layout(
     modifier = modifier
         .contentDescription(contentDescription)
-        .clipToBounds()
+        .run { if (clipToBounds) clipToBounds() else this }
         .then(
             ContentPainterModifier(
                 painter = painter,
@@ -313,4 +325,5 @@ private class RealSubcomposeAsyncImageScope(
     override val contentScale: ContentScale,
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
+    override val clipToBounds: Boolean,
 ) : SubcomposeAsyncImageScope, BoxScope by parentScope
