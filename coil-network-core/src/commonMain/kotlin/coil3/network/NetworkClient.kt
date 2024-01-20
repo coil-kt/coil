@@ -86,8 +86,8 @@ private value class SourceRequestBody(
  * @param responseMillis Timestamp of when the response was received.
  * @param headers The HTTP headers.
  * @param body The HTTP response body.
- * @param delegate The underlying response instance. If executed by Ktor, this is
- *  `io.ktor.client.statement.HttpResponse`. If executed by OkHttp, this is `okhttp3.Response`.
+ * @param delegate The underlying response instance. If executed by OkHttp, this is
+ *  `okhttp3.Response`. If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
  */
 @ExperimentalCoilApi
 @Data
