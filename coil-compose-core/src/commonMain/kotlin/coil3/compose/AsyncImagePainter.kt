@@ -266,7 +266,7 @@ class AsyncImagePainter internal constructor(
         // Observe the current request and execute any emissions.
         scope.launch {
             snapshotFlow { request }
-                .mapLatest { imageLoader.execute(updateRequest(request)).toState() }
+                .mapLatest { imageLoader.execute(updateRequest(it)).toState() }
                 .collect(::updateState)
         }
     }
@@ -297,11 +297,11 @@ class AsyncImagePainter internal constructor(
             )
             .apply {
                 if (request.defined.sizeResolver == null) {
-                    // If no other size resolver is set, suspend until the canvas size is positive.
+                    // If the size resolver isn't set, suspend until the canvas size is positive.
                     size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
                 if (request.defined.scale == null) {
-                    // If no other scale resolver is set, use the content scale.
+                    // If the scale isn't set, use the content scale.
                     scale(contentScale.toScale())
                 }
                 if (request.defined.precision != Precision.EXACT) {
