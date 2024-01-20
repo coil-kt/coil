@@ -6,6 +6,9 @@ import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
 import kotlin.jvm.JvmField
 
+/**
+ * Represents a list of HTTP headers.
+ */
 @ExperimentalCoilApi
 @Data
 class NetworkHeaders private constructor(

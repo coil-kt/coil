@@ -12,6 +12,9 @@ import okio.Closeable
 import okio.FileSystem
 import okio.Path
 
+/**
+ * An asynchronous HTTP client that executes [NetworkRequest]s and returns [NetworkResponse]s.
+ */
 @ExperimentalCoilApi
 interface NetworkClient {
     suspend fun <T> executeRequest(
@@ -20,6 +23,14 @@ interface NetworkClient {
     ): T
 }
 
+/**
+ * Represents an HTTP request.
+ *
+ * @param url The URL to fetch.
+ * @param method The HTTP method.
+ * @param headers The HTTP headers.
+ * @param body The HTTP request body.
+ */
 @ExperimentalCoilApi
 @Data
 class NetworkRequest(
@@ -66,6 +77,18 @@ private value class SourceRequestBody(
     }
 }
 
+/**
+ * Represents an HTTP response.
+ *
+ * @param request The [NetworkRequest] that was executed to create this response.
+ * @param code The HTTP response code.
+ * @param requestMillis Timestamp of when the request was launched.
+ * @param responseMillis Timestamp of when the response was received.
+ * @param headers The HTTP headers.
+ * @param body The HTTP response body.
+ * @param delegate The underlying response instance. If executed by Ktor, this is
+ *  `io.ktor.client.statement.HttpResponse`. If executed by OkHttp, this is `okhttp3.Response`.
+ */
 @ExperimentalCoilApi
 @Data
 class NetworkResponse(
