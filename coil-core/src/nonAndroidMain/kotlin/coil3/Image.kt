@@ -21,7 +21,7 @@ actual interface Image {
 
     fun Canvas.onDraw()
 
-    fun asBitmap(): Bitmap {
+    fun toBitmap(): Bitmap {
         val bitmap = Bitmap()
         bitmap.allocN32Pixels(width, height)
         Canvas(bitmap).onDraw()
