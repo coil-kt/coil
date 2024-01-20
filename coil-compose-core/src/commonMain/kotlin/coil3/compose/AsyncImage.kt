@@ -49,6 +49,7 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -70,6 +71,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
@@ -82,6 +84,7 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
 )
 
 /**
@@ -106,6 +109,7 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
@@ -123,6 +127,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
@@ -135,6 +140,7 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
 )
 
 @Composable
@@ -149,6 +155,7 @@ private fun AsyncImage(
     alpha: Float,
     colorFilter: ColorFilter?,
     filterQuality: FilterQuality,
+    clipToBounds: Boolean,
 ) {
     // Create and execute the image request.
     val request = requestOfWithSizeResolver(
@@ -179,6 +186,7 @@ private fun AsyncImage(
         contentScale = contentScale,
         alpha = alpha,
         colorFilter = colorFilter,
+        clipToBounds = clipToBounds,
     )
 }
 
@@ -193,10 +201,11 @@ private fun Content(
     contentScale: ContentScale,
     alpha: Float,
     colorFilter: ColorFilter?,
+    clipToBounds: Boolean,
 ) = Layout(
     modifier = modifier
         .contentDescription(contentDescription)
-        .clipToBounds()
+        .run { if (clipToBounds) clipToBounds() else this }
         .then(
             ContentPainterModifier(
                 painter = painter,
