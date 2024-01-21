@@ -61,9 +61,9 @@ kotlin {
 }
 
 baselineProfile {
-    automaticGenerationDuringBuild = true
     mergeIntoMain = true
     saveInSrc = true
+    baselineProfileOutputDir = ""
     filter {
         include("coil3.**")
         exclude("coil3.network.**")
