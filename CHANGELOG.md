@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0-alpha03] - January 20, 2024
+
+- **Breaking**: `coil-network` has been renamed to `coil-network-ktor`. Additionally, there is a new `coil-network-okhttp` artifact that depends on OkHttp and doesn't require specifying a Ktor engine.
+    - Depending on which artifact you import you can reference the `Fetcher.Factory` manually using `KtorNetworkFetcherFactory` or `OkHttpNetworkFetcherFactory`.
+- Support loading `NSUrl` on Apple platforms.
+- Add `clipToBounds` parameter to `AsyncImage`.
+- [For the full list of important changes, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
+
 ## [3.0.0-alpha02] - January 10, 2024
 
 - **Breaking**: `coil-gif`, `coil-network`, `coil-svg`, and `coil-video`'s packages have been updated so all their classes are part of `coil.gif`, `coil.network`, `coil.svg`, and `coil.video` respectively. This helps avoid class name conflicts with other artifacts.

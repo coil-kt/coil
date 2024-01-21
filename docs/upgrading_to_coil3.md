@@ -38,11 +38,21 @@ The `coil-compose` artifact's APIs are mostly unchanged. You can continue using 
 
 ## Network Images
 
-**IMPORTANT** Coil's network image support was extracted into a separate artifact, `coil-network`, and now depends on [Ktor](https://ktor.io/) instead of [OkHttp](https://square.github.io/okhttp/). This means `coil` and `coil-core` no longer support network URLs by default and you'll need to import `coil-network` and [import a Ktor engine](https://ktor.io/docs/http-client-engines.html). Import these artifacts to continue loading images from network URLs:
+**IMPORTANT** Coil's network image support was extracted out of `coil-core`. To load images from a network URL in Coil 3.0 you'll need to import a separate artifact, either:
+
+- Import `coil-network-okhttp` if you prefer using [OkHttp](https://square.github.io/okhttp/). OkHttp is Android/JVM-only.
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-network:3.0.0-alpha02")
-implementation("io.ktor:ktor-client-okhttp:2.3.7")
+implementation("io.coil-kt.coil3:coil:[coil-version]")
+implementation("io.coil-kt.coil3:coil-network-okhttp:[coil-version]")
+```
+
+- Import `coil-network-ktor` and a [Ktor engine](https://ktor.io/docs/http-client-engines.html) if you prefer using [Ktor](https://ktor.io/).
+
+```kotlin
+implementation("io.coil-kt.coil3:coil:[coil-version]")
+implementation("io.coil-kt.coil3:coil-network-ktor:[coil-version]")
+implementation("io.ktor:ktor-client-android:[ktor-version]")
 ```
 
 Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.

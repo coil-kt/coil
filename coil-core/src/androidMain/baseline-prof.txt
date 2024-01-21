@@ -1017,6 +1017,7 @@ HSPLcoil3/util/RealNetworkObserver;->onConnectivityChange(Landroid/net/Network;Z
 Lcoil3/util/RealNetworkObserver$networkCallback$1;
 HSPLcoil3/util/RealNetworkObserver$networkCallback$1;-><init>(Lcoil3/util/RealNetworkObserver;)V
 HSPLcoil3/util/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
+PLcoil3/util/RealNetworkObserver$networkCallback$1;->onLost(Landroid/net/Network;)V
 Lcoil3/util/ServiceLoaderComponentRegistry;
 HSPLcoil3/util/ServiceLoaderComponentRegistry;-><clinit>()V
 HSPLcoil3/util/ServiceLoaderComponentRegistry;-><init>()V
