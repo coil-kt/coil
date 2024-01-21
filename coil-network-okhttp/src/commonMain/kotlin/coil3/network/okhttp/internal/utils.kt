@@ -6,16 +6,16 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkRequestBody
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
+import okhttp3.Call
 import okhttp3.Headers
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.Buffer
 
 @JvmInline
-internal value class OkHttpNetworkClient(
-    private val httpClient: OkHttpClient,
+internal value class CallFactoryNetworkClient(
+    private val httpClient: Call.Factory,
 ) : NetworkClient {
     override suspend fun <T> executeRequest(
         request: NetworkRequest,
