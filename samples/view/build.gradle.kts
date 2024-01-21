@@ -8,20 +8,21 @@ plugins {
 androidApplication(name = "sample.view") {
     buildTypes {
         release {
+            isDebuggable = false
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs["debug"]
+        }
+        create("minifiedRelease") {
+            isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
+            matchingFallbacks += "release"
             proguardFiles(
                 "../shared/shrinker-rules.pro",
                 "../shared/shrinker-rules-android.pro",
             )
             signingConfig = signingConfigs["debug"]
-        }
-        create("benchmark") {
-            isDebuggable = false
-            isMinifyEnabled = false
-            isShrinkResources = false
-            matchingFallbacks += listOf("release")
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {

@@ -4,20 +4,20 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 plugins {
     id("com.android.test")
     id("kotlin-android")
+    id("androidx.baselineprofile")
 }
 
 androidTest(name = "coil3.benchmark", config = true) {
-    val targetProject = System.getProperty("project", "view")
+    val targetProject = System.getProperty("project", "compose")
     defaultConfig {
         minSdk = 28
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
-        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
     }
     buildTypes {
         create("benchmark") {
             isDebuggable = true
-            signingConfig = getByName("debug").signingConfig
-            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs["debug"]
+            matchingFallbacks += "release"
         }
     }
     testOptions {
@@ -35,15 +35,15 @@ androidTest(name = "coil3.benchmark", config = true) {
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
+baselineProfile {
+    managedDevices += "pixel7Api34"
+    useConnectedDevices = false
+    enableEmulatorDisplay = false
+}
+
 dependencies {
     implementation(libs.androidx.benchmark.macro)
     implementation(libs.androidx.test.espresso)
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.uiautomator)
-}
-
-androidComponents {
-    beforeVariants(selector().all()) {
-        it.enable = it.buildType == "benchmark"
-    }
 }

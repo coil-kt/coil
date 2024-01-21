@@ -1,7 +1,8 @@
 [versions]
 androidx-activity = "1.8.2"
-androidx-lifecycle = "2.7.0"
+androidx-benchmark = "1.2.2"
 androidx-compose = "1.5.4"
+androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0-RC2"
 jetbrains-compose = "1.6.0-alpha01"
 jetbrains-compose-compiler = "1.5.7"
@@ -16,6 +17,7 @@ roborazzi = "1.7.0"
 skiko = "0.7.90"
 
 [plugins]
+baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark"}
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
 dokka = "org.jetbrains.dokka:1.9.10"
 poko = "dev.drewhamilton.poko:0.15.2"
@@ -34,7 +36,7 @@ androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.1"
-androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.2.2"
+androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.7"

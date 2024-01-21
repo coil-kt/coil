@@ -1,3 +1,11 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = "coil-root"
 
 // https://docs.gradle.org/7.4/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
