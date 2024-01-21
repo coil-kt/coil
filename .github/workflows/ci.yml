@@ -117,7 +117,7 @@ jobs:
     deploy-snapshot:
         name: Deploy snapshot
         runs-on: macos-13
-        timeout-minutes: 30
+        timeout-minutes: 60
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
