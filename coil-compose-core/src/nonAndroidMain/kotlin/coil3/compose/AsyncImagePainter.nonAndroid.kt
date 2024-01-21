@@ -1,13 +1,11 @@
 package coil3.compose
 
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.asComposeImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import coil3.DrawableImage
 import coil3.Image
 import coil3.PlatformContext
 import coil3.compose.internal.CrossfadePainter
@@ -18,21 +16,16 @@ import coil3.request.crossfadeMillis
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
-): Painter = object : Painter() {
-    override val intrinsicSize: Size =
-        Size(width.toFloat(), height.toFloat())
+): Painter {
+    return when (this) {
+        is DrawableImage ->
+            DrawablePainter(this)
 
-    override fun DrawScope.onDraw() {
-        val scaleX = size.width / intrinsicSize.width
-        val scaleY = size.height / intrinsicSize.height
-
-        scale(
-            scaleX = scaleX,
-            scaleY = scaleY,
-            pivot = Offset.Zero,
-        ) {
-            drawContext.canvas.nativeCanvas.onDraw()
-        }
+        else ->
+            BitmapPainter(
+                image = toBitmap().asComposeImageBitmap(),
+                filterQuality = filterQuality,
+            )
     }
 }
 

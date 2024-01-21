@@ -4,7 +4,6 @@ import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
 import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.Canvas
 
 @ExperimentalCoilApi
 @JvmOverloads
@@ -19,49 +18,29 @@ actual interface Image {
     actual val height: Int
     actual val shareable: Boolean
 
-    fun Canvas.onDraw()
-
-    fun toBitmap(): Bitmap {
-        val bitmap = Bitmap()
-        bitmap.allocN32Pixels(width, height)
-        Canvas(bitmap).onDraw()
-        return bitmap
-    }
+    fun toBitmap(): Bitmap
 }
 @ExperimentalCoilApi
 @Data
 class BitmapImage internal constructor(
-    bitmap: Bitmap,
+    val bitmap: Bitmap,
     override val shareable: Boolean,
 ) : Image {
-    private val image =
-        try {
-            org.jetbrains.skia.Image.makeFromBitmap(bitmap)
-        } finally {
-            bitmap.close()
-        }
-
     override val size: Long
         get() {
-            var size = image.imageInfo.computeMinByteSize().toLong()
+            var size = bitmap.imageInfo.computeMinByteSize().toLong()
             if (size <= 0L) {
                 // Estimate 4 bytes per pixel.
-                size = 4L * image.width * image.height
+                size = 4L * bitmap.width * bitmap.height
             }
             return size
         }
 
     override val width: Int
-        get() = image.width
+        get() = bitmap.width
 
     override val height: Int
-        get() = image.height
+        get() = bitmap.height
 
-    override fun Canvas.onDraw() {
-        drawImage(
-            image = image,
-            top = 0f,
-            left = 0f,
-        )
-    }
+    override fun toBitmap(): Bitmap = bitmap
 }

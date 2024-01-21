@@ -19,7 +19,7 @@ private class SvgImage(
     val svg: SVGDOM,
     override val width: Int,
     override val height: Int,
-) : Image {
+) : DrawableImage() {
     override val size: Long
         get() = 4L * width * height
 
