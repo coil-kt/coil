@@ -8,6 +8,7 @@ plugins {
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
     id("dev.drewhamilton.poko")
+    id("androidx.baselineprofile")
 }
 
 addAllMultiplatformTargets()
@@ -57,4 +58,21 @@ kotlin {
             }
         }
     }
+}
+
+baselineProfile {
+    mergeIntoMain = true
+    saveInSrc = true
+    baselineProfileOutputDir = ""
+    filter {
+        include("coil3.**")
+        exclude("coil3.network.**")
+        exclude("coil3.gif.**")
+        exclude("coil3.svg.**")
+        exclude("coil3.video.**")
+    }
+}
+
+dependencies {
+    baselineProfile(projects.internal.benchmark)
 }

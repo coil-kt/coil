@@ -21,7 +21,6 @@ class BaselineProfileGenerator {
     @Test
     fun generate() = baselineProfileRule.collect(
         packageName = "sample.$PROJECT",
-        filterPredicate = newFilterPredicate(),
     ) {
         pressHome()
         startActivityAndWait()
@@ -36,38 +35,4 @@ class BaselineProfileGenerator {
             .fling(Direction.DOWN, 3000)
         device.waitForIdle()
     }
-
-    private fun newFilterPredicate(): (String) -> Boolean {
-        val packageNames = if (PROJECT == "compose") {
-            composePackageNames
-        } else {
-            basePackageNames
-        }
-        return filter@{ line ->
-            val endIndex = line.indexOf(';')
-            if (endIndex == -1) {
-                return@filter false
-            }
-
-            if (line.indexOf("sample/") != -1) {
-                return@filter false
-            }
-
-            packageNames.any { packageName ->
-                val index = line.indexOf(packageName)
-                index != -1 && index < endIndex
-            }
-        }
-    }
 }
-
-// Only include Compose-specific rules in the coil-compose module.
-private val composePackageNames = listOf(
-    "coil3/compose/",
-)
-
-private val basePackageNames = listOf(
-    "coil3/",
-    "kotlinx/coroutines/",
-    "okio/",
-)

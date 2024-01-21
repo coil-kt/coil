@@ -35,6 +35,7 @@ buildscript {
 }
 
 plugins {
+    alias(libs.plugins.baselineProfile) apply false
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
     alias(libs.plugins.poko) apply false

@@ -9,6 +9,7 @@ plugins {
     id("kotlinx-atomicfu")
     id("dev.drewhamilton.poko")
     id("org.jetbrains.compose")
+    id("androidx.baselineprofile")
 }
 
 addAllMultiplatformTargets()
@@ -41,4 +42,17 @@ kotlin {
             }
         }
     }
+}
+
+baselineProfile {
+    mergeIntoMain = true
+    saveInSrc = true
+    baselineProfileOutputDir = ""
+    filter {
+        include("coil3.compose.**")
+    }
+}
+
+dependencies {
+    baselineProfile(projects.internal.benchmark)
 }
