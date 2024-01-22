@@ -3,6 +3,7 @@ package coil3.network
 import coil3.Extras
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.test.utils.runTestAsync
 import kotlin.test.Test
@@ -11,7 +12,7 @@ import kotlin.test.assertIs
 import okio.Buffer
 import okio.ByteString.Companion.toByteString
 
-class NetworkFetcherTest {
+class NetworkFetcherTest : RobolectricTest() {
 
     @Test
     fun networkRequestParamsArePassedThrough() = runTestAsync {

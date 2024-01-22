@@ -13,7 +13,7 @@ import okio.ByteString
  * Set the HTTP request method for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpMethod(method: String) = apply {
-    extras[httpMethodKey] = method
+    extras[httpMethodKey] = method.uppercase()
 }
 
 val ImageRequest.httpMethod: String
