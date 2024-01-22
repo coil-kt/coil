@@ -15,6 +15,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import okio.ByteString
+import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
@@ -49,7 +51,7 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
     @Test
     fun basicNetworkFetch() = runTestAsync {
         val expectedSize = 1_000
-        val result = newFetcher(responseBody = ByteArray(expectedSize)).fetch()
+        val result = newFetcher(responseBody = ByteArray(expectedSize).toByteString()).fetch()
 
         assertIs<SourceFetchResult>(result)
         val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -59,7 +61,7 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
     @Test
     fun mimeTypeIsParsedCorrectlyFromContentType() = runTestAsync {
         val expectedSize = 1_000
-        val fetcher = newFetcher(responseBody = ByteArray(expectedSize))
+        val fetcher = newFetcher(responseBody = ByteArray(expectedSize).toByteString())
 
         val url1 = "https://example.com/image.jpg"
         val type1 = "image/svg+xml"
@@ -86,7 +88,7 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
     fun noDiskCache_fetcherReturnsASourceResult() = runTestAsync {
         val expectedSize = 1_000
         val path = "image.jpg"
-        val result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        val result = newFetcher(path, ByteArray(expectedSize).toByteString()).fetch()
 
         assertIs<SourceFetchResult>(result)
         val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -97,7 +99,7 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
     fun noCachedFile_fetcherReturnsTheFile() = runTestAsync {
         val expectedSize = 1_000
         val path = "image.jpg"
-        val result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        val result = newFetcher(path, ByteArray(expectedSize).toByteString()).fetch()
 
         assertIs<SourceFetchResult>(result)
         val file = assertNotNull(result.source.fileOrNull())
@@ -119,14 +121,14 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
         val path = "image.jpg"
 
         // Run the fetcher once to create the disk cache file.
-        var result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        var result = newFetcher(path, ByteArray(expectedSize).toByteString()).fetch()
         assertIs<SourceFetchResult>(result)
         assertNotNull(result.source.fileOrNull())
         var actualSize = result.source.use { it.source().readAll(blackholeSink()) }
         assertEquals(expectedSize.toLong(), actualSize)
 
         // Run the fetcher a second time.
-        result = newFetcher(path, ByteArray(expectedSize)).fetch()
+        result = newFetcher(path, ByteArray(expectedSize).toByteString()).fetch()
         assertIs<SourceFetchResult>(result)
         val file = assertNotNull(result.source.fileOrNull())
         actualSize = result.source.use { it.source().readAll(blackholeSink()) }
@@ -143,7 +145,7 @@ abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
 
     abstract fun newFetcher(
         path: String = "image.jpg",
-        responseBody: ByteArray = byteArrayOf(),
+        responseBody: ByteString = ByteString.EMPTY,
         options: Options = Options(context),
     ): NetworkFetcher
 }

@@ -2,6 +2,9 @@ package coil3.network.internal
 
 import coil3.disk.DiskCache
 import coil3.network.NetworkHeaders
+import coil3.network.NetworkResponseBody
+import okio.Buffer
+import okio.use
 
 internal fun NetworkHeaders.Builder.append(line: String) = apply {
     val index = line.indexOf(':')
@@ -13,6 +16,12 @@ internal fun DiskCache.Editor.abortQuietly() {
     try {
         abort()
     } catch (_: Exception) {}
+}
+
+internal suspend fun NetworkResponseBody.readBuffer(): Buffer = use { body ->
+    val buffer = Buffer()
+    body.writeTo(buffer)
+    return buffer
 }
 
 internal expect fun assertNotOnMainThread()

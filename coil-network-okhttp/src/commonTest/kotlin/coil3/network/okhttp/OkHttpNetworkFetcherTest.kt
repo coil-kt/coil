@@ -10,6 +10,7 @@ import kotlin.test.assertIs
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
+import okio.ByteString
 
 class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
@@ -33,7 +34,7 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
     override fun newFetcher(
         path: String,
-        responseBody: ByteArray,
+        responseBody: ByteString,
         options: Options,
     ): NetworkFetcher {
         server.enqueue(MockResponse().setBody(Buffer().apply { write(responseBody) }))

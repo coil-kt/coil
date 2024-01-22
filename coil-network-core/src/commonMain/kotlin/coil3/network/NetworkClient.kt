@@ -8,6 +8,7 @@ import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
+import okio.ByteString
 import okio.Closeable
 import okio.FileSystem
 import okio.Path
@@ -37,44 +38,19 @@ class NetworkRequest(
     val url: String,
     val method: String = HTTP_METHOD_GET,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
-    val body: NetworkRequestBody? = null,
+    val body: ByteString? = null,
 ) {
     fun copy(
         url: String = this.url,
         method: String = this.method,
         headers: NetworkHeaders = this.headers,
-        body: NetworkRequestBody? = this.body,
+        body: ByteString? = this.body,
     ) = NetworkRequest(
         url = url,
         method = method,
         headers = headers,
         body = body,
     )
-}
-
-@ExperimentalCoilApi
-interface NetworkRequestBody : Closeable {
-    suspend fun writeTo(sink: BufferedSink)
-}
-
-@ExperimentalCoilApi
-fun NetworkRequestBody(
-    source: BufferedSource,
-): NetworkRequestBody = SourceRequestBody(source)
-
-@ExperimentalCoilApi
-@JvmInline
-private value class SourceRequestBody(
-    private val source: BufferedSource,
-) : NetworkRequestBody {
-
-    override suspend fun writeTo(sink: BufferedSink) {
-        source.readAll(sink)
-    }
-
-    override fun close() {
-        source.close()
-    }
 }
 
 /**
