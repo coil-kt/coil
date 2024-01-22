@@ -7,6 +7,7 @@ import coil3.toUri
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertIs
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -37,7 +38,8 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
         options: Options,
     ): NetworkFetcher {
         server.enqueue(MockResponse().setBody(Buffer().apply { write(responseBody) }))
-        val factory = OkHttpNetworkFetcherFactory()
+        val client = OkHttpClient()
+        val factory = OkHttpNetworkFetcherFactory(client)
         return assertIs(factory.create(url(path).toUri(), options, imageLoader))
     }
 }
