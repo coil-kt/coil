@@ -27,7 +27,7 @@ class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
                 }
             }
         }
-        val factory = KtorNetworkFetcherFactory(lazyOf(client))
+        val factory = KtorNetworkFetcherFactory(client)
         return assertIs(factory.create(url(path).toUri(), options, imageLoader))
     }
 }

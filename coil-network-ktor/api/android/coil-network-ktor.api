@@ -1,8 +1,9 @@
 public final class coil3/network/ktor/KtorNetworkFetcher {
 	public static final fun asNetworkClient (Lio/ktor/client/HttpClient;)Lcoil3/network/NetworkClient;
 	public static final fun factory ()Lcoil3/network/NetworkFetcher$Factory;
-	public static final fun factory (Lkotlin/Lazy;)Lcoil3/network/NetworkFetcher$Factory;
-	public static final fun factory (Lkotlin/Lazy;Lkotlin/Lazy;)Lcoil3/network/NetworkFetcher$Factory;
-	public static synthetic fun factory$default (Lkotlin/Lazy;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lio/ktor/client/HttpClient;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lio/ktor/client/HttpClient;Lcoil3/network/CacheStrategy;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
 }
 

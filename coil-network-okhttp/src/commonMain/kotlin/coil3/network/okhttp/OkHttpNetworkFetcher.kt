@@ -9,22 +9,44 @@ import coil3.network.okhttp.internal.CallFactoryNetworkClient
 import okhttp3.Call
 import okhttp3.OkHttpClient
 
-@JvmOverloads
 @JvmName("factory")
-fun OkHttpNetworkFetcherFactory(
-    callFactory: Lazy<Call.Factory> = lazy { OkHttpClient() },
-) = OkHttpNetworkFetcherFactory(
-    callFactory = callFactory,
+fun OkHttpNetworkFetcherFactory() = NetworkFetcher.Factory(
+    networkClient = lazy { OkHttpClient().asNetworkClient() },
     cacheStrategy = lazy { CacheStrategy() },
 )
 
 @JvmName("factory")
 fun OkHttpNetworkFetcherFactory(
-    callFactory: Lazy<Call.Factory>,
-    cacheStrategy: Lazy<CacheStrategy>,
+    callFactory: () -> Call.Factory,
+) = OkHttpNetworkFetcherFactory(
+    callFactory = callFactory,
+    cacheStrategy = { CacheStrategy() },
+)
+
+@JvmName("factory")
+fun OkHttpNetworkFetcherFactory(
+    callFactory: () -> Call.Factory,
+    cacheStrategy: () -> CacheStrategy,
 ) = NetworkFetcher.Factory(
-    networkClient = lazy { callFactory.value.asNetworkClient() },
-    cacheStrategy = cacheStrategy,
+    networkClient = lazy { callFactory().asNetworkClient() },
+    cacheStrategy = lazy(cacheStrategy),
+)
+
+@JvmName("factory")
+fun OkHttpNetworkFetcherFactory(
+    callFactory: Call.Factory,
+) = OkHttpNetworkFetcherFactory(
+    callFactory = callFactory,
+    cacheStrategy = CacheStrategy(),
+)
+
+@JvmName("factory")
+fun OkHttpNetworkFetcherFactory(
+    callFactory: Call.Factory,
+    cacheStrategy: CacheStrategy,
+) = NetworkFetcher.Factory(
+    networkClient = lazyOf(callFactory.asNetworkClient()),
+    cacheStrategy = lazyOf(cacheStrategy),
 )
 
 fun Call.Factory.asNetworkClient(): NetworkClient {
