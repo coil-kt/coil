@@ -11,8 +11,8 @@ import okhttp3.OkHttpClient
 
 @JvmName("factory")
 fun OkHttpNetworkFetcherFactory() = NetworkFetcher.Factory(
-    networkClient = lazy { OkHttpClient().asNetworkClient() },
-    cacheStrategy = lazy { CacheStrategy() },
+    networkClient = { OkHttpClient().asNetworkClient() },
+    cacheStrategy = { CacheStrategy() },
 )
 
 @JvmName("factory")
@@ -28,8 +28,8 @@ fun OkHttpNetworkFetcherFactory(
     callFactory: () -> Call.Factory,
     cacheStrategy: () -> CacheStrategy,
 ) = NetworkFetcher.Factory(
-    networkClient = lazy { callFactory().asNetworkClient() },
-    cacheStrategy = lazy(cacheStrategy),
+    networkClient = { callFactory().asNetworkClient() },
+    cacheStrategy = cacheStrategy,
 )
 
 @JvmName("factory")
@@ -45,8 +45,8 @@ fun OkHttpNetworkFetcherFactory(
     callFactory: Call.Factory,
     cacheStrategy: CacheStrategy,
 ) = NetworkFetcher.Factory(
-    networkClient = lazyOf(callFactory.asNetworkClient()),
-    cacheStrategy = lazyOf(cacheStrategy),
+    networkClient = { callFactory.asNetworkClient() },
+    cacheStrategy = { cacheStrategy },
 )
 
 fun Call.Factory.asNetworkClient(): NetworkClient {

@@ -62,7 +62,7 @@ public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
-	public fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;)V
+	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)V
 	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 }

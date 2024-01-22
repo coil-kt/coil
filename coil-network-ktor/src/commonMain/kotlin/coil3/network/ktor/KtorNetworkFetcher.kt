@@ -11,8 +11,8 @@ import kotlin.jvm.JvmName
 
 @JvmName("factory")
 fun KtorNetworkFetcherFactory() = NetworkFetcher.Factory(
-    networkClient = lazy { HttpClient().asNetworkClient() },
-    cacheStrategy = lazy { CacheStrategy() },
+    networkClient = { HttpClient().asNetworkClient() },
+    cacheStrategy = { CacheStrategy() },
 )
 
 @JvmName("factory")
@@ -28,8 +28,8 @@ fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient,
     cacheStrategy: () -> CacheStrategy,
 ) = NetworkFetcher.Factory(
-    networkClient = lazy { httpClient().asNetworkClient() },
-    cacheStrategy = lazy(cacheStrategy),
+    networkClient = { httpClient().asNetworkClient() },
+    cacheStrategy = cacheStrategy,
 )
 
 @JvmName("factory")
@@ -45,8 +45,8 @@ fun KtorNetworkFetcherFactory(
     httpClient: HttpClient,
     cacheStrategy: CacheStrategy,
 ) = NetworkFetcher.Factory(
-    networkClient = lazyOf(httpClient.asNetworkClient()),
-    cacheStrategy = lazyOf(cacheStrategy),
+    networkClient = { httpClient.asNetworkClient() },
+    cacheStrategy = { cacheStrategy },
 )
 
 fun HttpClient.asNetworkClient(): NetworkClient {
