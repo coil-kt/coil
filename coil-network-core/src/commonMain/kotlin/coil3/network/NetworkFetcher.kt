@@ -258,9 +258,11 @@ class NetworkFetcher(
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
     class Factory(
-        private val networkClient: Lazy<NetworkClient>,
-        private val cacheStrategy: Lazy<CacheStrategy>,
+        networkClient: () -> NetworkClient,
+        cacheStrategy: () -> CacheStrategy,
     ) : Fetcher.Factory<Uri> {
+        private val networkClientLazy = lazy(networkClient)
+        private val cacheStrategyLazy = lazy(cacheStrategy)
 
         override fun create(
             data: Uri,
@@ -271,9 +273,9 @@ class NetworkFetcher(
             return NetworkFetcher(
                 url = data.toString(),
                 options = options,
-                networkClient = networkClient,
+                networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
-                cacheStrategy = cacheStrategy,
+                cacheStrategy = cacheStrategyLazy,
             )
         }
 
