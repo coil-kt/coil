@@ -15,13 +15,13 @@ import coil3.network.internal.CONTENT_TYPE
 import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
+import coil3.network.internal.readBuffer
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import coil3.util.closeQuietly
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException
-import okio.use
 
 class NetworkFetcher(
     private val url: String,
@@ -68,8 +68,7 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                val responseBodyBuffer = Buffer()
-                responseBody.use { it.writeTo(responseBodyBuffer) }
+                val responseBodyBuffer = responseBody.readBuffer()
                 if (responseBodyBuffer.size > 0) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = responseBodyBuffer.toImageSource(),
@@ -183,6 +182,7 @@ class NetworkFetcher(
             url = url,
             method = options.httpMethod,
             headers = headers.build(),
+            body = options.httpBody,
         )
     }
 

@@ -12,6 +12,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.Buffer
+import okio.ByteString
 
 @JvmInline
 internal value class CallFactoryNetworkClient(
@@ -25,18 +26,18 @@ internal value class CallFactoryNetworkClient(
     }
 }
 
-private suspend fun NetworkRequest.toRequest(): Request = body.use { body ->
+private suspend fun NetworkRequest.toRequest(): Request {
     val request = Request.Builder()
     request.url(url)
-    request.method(method, body?.readByteArray()?.toRequestBody())
+    request.method(method, body?.readByteString()?.toRequestBody())
     request.headers(headers.toHeaders())
     return request.build()
 }
 
-private suspend fun NetworkRequestBody.readByteArray(): ByteArray {
+private suspend fun NetworkRequestBody.readByteString(): ByteString {
     val buffer = Buffer()
     writeTo(buffer)
-    return buffer.readByteArray()
+    return buffer.readByteString()
 }
 
 private fun Response.toNetworkResponse(request: NetworkRequest): NetworkResponse {

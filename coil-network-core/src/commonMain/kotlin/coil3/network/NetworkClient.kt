@@ -8,6 +8,7 @@ import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
+import okio.ByteString
 import okio.Closeable
 import okio.FileSystem
 import okio.Path
@@ -53,27 +54,22 @@ class NetworkRequest(
 }
 
 @ExperimentalCoilApi
-interface NetworkRequestBody : Closeable {
+interface NetworkRequestBody {
     suspend fun writeTo(sink: BufferedSink)
 }
 
 @ExperimentalCoilApi
 fun NetworkRequestBody(
-    source: BufferedSource,
-): NetworkRequestBody = SourceRequestBody(source)
+    bytes: ByteString,
+): NetworkRequestBody = ByteStringNetworkRequestBody(bytes)
 
-@ExperimentalCoilApi
 @JvmInline
-private value class SourceRequestBody(
-    private val source: BufferedSource,
+private value class ByteStringNetworkRequestBody(
+    private val bytes: ByteString,
 ) : NetworkRequestBody {
 
     override suspend fun writeTo(sink: BufferedSink) {
-        source.readAll(sink)
-    }
-
-    override fun close() {
-        source.close()
+        sink.write(bytes)
     }
 }
 

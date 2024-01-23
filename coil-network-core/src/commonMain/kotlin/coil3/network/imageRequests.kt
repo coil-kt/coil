@@ -9,10 +9,10 @@ import coil3.request.Options
 // region httpMethod
 
 /**
- * Set the HTTP method for any network operations performed by this image request.
+ * Set the HTTP request method for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpMethod(method: String) = apply {
-    extras[httpMethodKey] = method
+    extras[httpMethodKey] = method.uppercase()
 }
 
 val ImageRequest.httpMethod: String
@@ -30,7 +30,7 @@ private val httpMethodKey = Extras.Key(default = HTTP_METHOD_GET)
 // region httpHeaders
 
 /**
- * Set the HTTP headers for any network operations performed by this image request.
+ * Set the HTTP request headers for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpHeaders(headers: NetworkHeaders) = apply {
     extras[httpHeadersKey] = headers
@@ -46,5 +46,26 @@ val Extras.Key.Companion.httpHeaders: Extras.Key<NetworkHeaders>
     get() = httpHeadersKey
 
 private val httpHeadersKey = Extras.Key(default = NetworkHeaders.EMPTY)
+
+// endregion
+// region httpBody
+
+/**
+ * Set the HTTP request body for any network operations performed by this image request.
+ */
+fun ImageRequest.Builder.httpBody(body: NetworkRequestBody) = apply {
+    extras[httpBodyKey] = body
+}
+
+val ImageRequest.httpBody: NetworkRequestBody?
+    get() = getExtra(httpBodyKey)
+
+val Options.httpBody: NetworkRequestBody?
+    get() = getExtra(httpBodyKey)
+
+val Extras.Key.Companion.httpBody: Extras.Key<NetworkRequestBody?>
+    get() = httpBodyKey
+
+private val httpBodyKey = Extras.Key<NetworkRequestBody?>(default = null)
 
 // endregion

@@ -23,7 +23,6 @@ import okio.Buffer
 import okio.BufferedSink
 import okio.FileSystem
 import okio.Path
-import okio.use
 
 @JvmInline
 internal value class KtorNetworkClient(
@@ -37,7 +36,7 @@ internal value class KtorNetworkClient(
     }
 }
 
-private suspend fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder = body.use { body ->
+private suspend fun NetworkRequest.toHttpRequestBuilder(): HttpRequestBuilder {
     val request = HttpRequestBuilder()
     request.url.takeFrom(url)
     request.method = HttpMethod.parse(method)

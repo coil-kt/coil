@@ -8,6 +8,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import kotlin.test.assertIs
+import okio.ByteString
 
 class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
@@ -17,13 +18,13 @@ class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
     override fun newFetcher(
         path: String,
-        responseBody: ByteArray,
+        responseBody: ByteString,
         options: Options,
     ): NetworkFetcher {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler {
-                    respond(responseBody)
+                    respond(responseBody.toByteArray())
                 }
             }
         }

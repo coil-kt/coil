@@ -37,12 +37,16 @@ public final class coil3/network/HttpException : java/lang/RuntimeException {
 }
 
 public final class coil3/network/ImageRequestsKt {
+	public static final fun getHttpBody (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getHttpBody (Lcoil3/request/ImageRequest;)Lcoil3/network/NetworkRequestBody;
+	public static final fun getHttpBody (Lcoil3/request/Options;)Lcoil3/network/NetworkRequestBody;
 	public static final fun getHttpHeaders (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getHttpHeaders (Lcoil3/request/ImageRequest;)Lcoil3/network/NetworkHeaders;
 	public static final fun getHttpHeaders (Lcoil3/request/Options;)Lcoil3/network/NetworkHeaders;
 	public static final fun getHttpMethod (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getHttpMethod (Lcoil3/request/ImageRequest;)Ljava/lang/String;
 	public static final fun getHttpMethod (Lcoil3/request/Options;)Ljava/lang/String;
+	public static final fun httpBody (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkRequestBody;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpHeaders (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkHeaders;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
 }
@@ -52,7 +56,7 @@ public abstract interface class coil3/network/NetworkClient {
 }
 
 public final class coil3/network/NetworkClientKt {
-	public static final fun NetworkRequestBody (Lokio/BufferedSource;)Lcoil3/network/NetworkRequestBody;
+	public static final fun NetworkRequestBody (Lokio/ByteString;)Lcoil3/network/NetworkRequestBody;
 	public static final fun NetworkResponseBody (Lokio/BufferedSource;)Lcoil3/network/NetworkResponseBody;
 }
 
@@ -106,7 +110,7 @@ public final class coil3/network/NetworkRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class coil3/network/NetworkRequestBody : java/io/Closeable {
+public abstract interface class coil3/network/NetworkRequestBody {
 	public abstract fun writeTo (Lokio/BufferedSink;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
