@@ -22,7 +22,7 @@ baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-ben
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
 dokka = "org.jetbrains.dokka:1.9.10"
 poko = "dev.drewhamilton.poko:0.15.2"
-spotless = "com.diffplug.spotless:6.24.0"
+spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.2.2"
