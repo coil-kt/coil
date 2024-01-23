@@ -48,7 +48,7 @@ val Project.enableComposeMetrics: Boolean
     get() = booleanProperty("enableComposeMetrics") { false }
 
 val Project.enableWasm: Boolean
-    get() = booleanProperty("enableWasm") { true }
+    get() = booleanProperty("enableWasm") { false }
 
 private fun Project.intProperty(
     name: String,

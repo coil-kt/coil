@@ -185,6 +185,17 @@ allprojects {
                 }
             }
         }
+
+        // Use Compose's alpha version, which supports WASM.
+        configurations.configureEach {
+            resolutionStrategy.eachDependency {
+                if (requested.group.startsWith("org.jetbrains.compose") &&
+                    requested.name != "compiler"
+                ) {
+                    useVersion(libs.versions.jetbrains.compose.wasm.get())
+                }
+            }
+        }
     }
 
     applyOkioJsTestWorkaround()
