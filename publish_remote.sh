@@ -5,4 +5,4 @@ set -e
 ./gradlew generateBaselineProfile
 
 # Build and upload the artifacts to 'mavenCentral'.
-./gradlew publish -PenableWasm=false
+./gradlew publish

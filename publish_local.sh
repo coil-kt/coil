@@ -5,4 +5,4 @@ set -e
 ./gradlew generateBaselineProfile
 
 # Build and install the artifacts locally to 'mavenLocal'.
-./gradlew publishToMavenLocal -PenableWasm=false
+./gradlew publishToMavenLocal
