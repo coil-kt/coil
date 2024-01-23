@@ -38,15 +38,15 @@ public final class coil3/network/HttpException : java/lang/RuntimeException {
 
 public final class coil3/network/ImageRequestsKt {
 	public static final fun getHttpBody (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getHttpBody (Lcoil3/request/ImageRequest;)Lokio/ByteString;
-	public static final fun getHttpBody (Lcoil3/request/Options;)Lokio/ByteString;
+	public static final fun getHttpBody (Lcoil3/request/ImageRequest;)Lcoil3/network/NetworkRequestBody;
+	public static final fun getHttpBody (Lcoil3/request/Options;)Lcoil3/network/NetworkRequestBody;
 	public static final fun getHttpHeaders (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getHttpHeaders (Lcoil3/request/ImageRequest;)Lcoil3/network/NetworkHeaders;
 	public static final fun getHttpHeaders (Lcoil3/request/Options;)Lcoil3/network/NetworkHeaders;
 	public static final fun getHttpMethod (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getHttpMethod (Lcoil3/request/ImageRequest;)Ljava/lang/String;
 	public static final fun getHttpMethod (Lcoil3/request/Options;)Ljava/lang/String;
-	public static final fun httpBody (Lcoil3/request/ImageRequest$Builder;Lokio/ByteString;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun httpBody (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkRequestBody;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpHeaders (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkHeaders;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
 }
@@ -56,6 +56,7 @@ public abstract interface class coil3/network/NetworkClient {
 }
 
 public final class coil3/network/NetworkClientKt {
+	public static final fun NetworkRequestBody (Lokio/ByteString;)Lcoil3/network/NetworkRequestBody;
 	public static final fun NetworkResponseBody (Lokio/BufferedSource;)Lcoil3/network/NetworkResponseBody;
 }
 
@@ -96,17 +97,21 @@ public final class coil3/network/NetworkHeaders$Companion {
 }
 
 public final class coil3/network/NetworkRequest {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lokio/ByteString;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lokio/ByteString;)Lcoil3/network/NetworkRequest;
-	public static synthetic fun copy$default (Lcoil3/network/NetworkRequest;Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lokio/ByteString;ILjava/lang/Object;)Lcoil3/network/NetworkRequest;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lcoil3/network/NetworkRequestBody;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lcoil3/network/NetworkRequestBody;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lcoil3/network/NetworkRequestBody;)Lcoil3/network/NetworkRequest;
+	public static synthetic fun copy$default (Lcoil3/network/NetworkRequest;Ljava/lang/String;Ljava/lang/String;Lcoil3/network/NetworkHeaders;Lcoil3/network/NetworkRequestBody;ILjava/lang/Object;)Lcoil3/network/NetworkRequest;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getBody ()Lokio/ByteString;
+	public final fun getBody ()Lcoil3/network/NetworkRequestBody;
 	public final fun getHeaders ()Lcoil3/network/NetworkHeaders;
 	public final fun getMethod ()Ljava/lang/String;
 	public final fun getUrl ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class coil3/network/NetworkRequestBody {
+	public abstract fun writeTo (Lokio/BufferedSink;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/network/NetworkResponse {

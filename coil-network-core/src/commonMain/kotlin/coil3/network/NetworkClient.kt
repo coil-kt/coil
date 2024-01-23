@@ -38,19 +38,39 @@ class NetworkRequest(
     val url: String,
     val method: String = HTTP_METHOD_GET,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
-    val body: ByteString? = null,
+    val body: NetworkRequestBody? = null,
 ) {
     fun copy(
         url: String = this.url,
         method: String = this.method,
         headers: NetworkHeaders = this.headers,
-        body: ByteString? = this.body,
+        body: NetworkRequestBody? = this.body,
     ) = NetworkRequest(
         url = url,
         method = method,
         headers = headers,
         body = body,
     )
+}
+
+@ExperimentalCoilApi
+interface NetworkRequestBody {
+    suspend fun writeTo(sink: BufferedSink)
+}
+
+@ExperimentalCoilApi
+fun NetworkRequestBody(
+    bytes: ByteString,
+): NetworkRequestBody = ByteStringNetworkRequestBody(bytes)
+
+@JvmInline
+private value class ByteStringNetworkRequestBody(
+    private val bytes: ByteString,
+) : NetworkRequestBody {
+
+    override suspend fun writeTo(sink: BufferedSink) {
+        sink.write(bytes)
+    }
 }
 
 /**

@@ -22,7 +22,7 @@ class NetworkFetcherTest : RobolectricTest() {
         val headers = NetworkHeaders.Builder()
             .set("key", "value")
             .build()
-        val body = ByteArray(500).toByteString()
+        val body = NetworkRequestBody(ByteArray(500).toByteString())
         val options = Options(
             context = context,
             extras = Extras.Builder()

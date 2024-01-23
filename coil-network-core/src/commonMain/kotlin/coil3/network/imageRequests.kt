@@ -54,19 +54,19 @@ private val httpHeadersKey = Extras.Key(default = NetworkHeaders.EMPTY)
 /**
  * Set the HTTP request body for any network operations performed by this image request.
  */
-fun ImageRequest.Builder.httpBody(body: ByteString) = apply {
+fun ImageRequest.Builder.httpBody(body: NetworkRequestBody) = apply {
     extras[httpBodyKey] = body
 }
 
-val ImageRequest.httpBody: ByteString?
+val ImageRequest.httpBody: NetworkRequestBody?
     get() = getExtra(httpBodyKey)
 
-val Options.httpBody: ByteString?
+val Options.httpBody: NetworkRequestBody?
     get() = getExtra(httpBodyKey)
 
-val Extras.Key.Companion.httpBody: Extras.Key<ByteString?>
+val Extras.Key.Companion.httpBody: Extras.Key<NetworkRequestBody?>
     get() = httpBodyKey
 
-private val httpBodyKey = Extras.Key<ByteString?>(default = null)
+private val httpBodyKey = Extras.Key<NetworkRequestBody?>(default = null)
 
 // endregion
