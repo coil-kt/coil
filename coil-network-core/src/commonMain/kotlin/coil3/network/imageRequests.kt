@@ -5,7 +5,6 @@ import coil3.getExtra
 import coil3.network.internal.HTTP_METHOD_GET
 import coil3.request.ImageRequest
 import coil3.request.Options
-import okio.ByteString
 
 // region httpMethod
 
