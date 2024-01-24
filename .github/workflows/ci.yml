@@ -115,7 +115,7 @@ jobs:
                   gradle-home-cache-cleanup: true
 
             - name: Build samples
-              run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
+              run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug -PenableWasm=true
 
             - name: Build iOS app
               run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
