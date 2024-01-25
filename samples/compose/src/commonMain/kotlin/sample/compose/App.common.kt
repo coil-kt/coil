@@ -129,6 +129,8 @@ private fun Toolbar(
     )
 }
 
+// TODO: Remove suppression when we update to Compose 1.6.0.
+@Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
 @Composable
 private fun BackIconButton(
     onBackPressed: () -> Unit,

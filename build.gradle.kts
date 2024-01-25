@@ -189,10 +189,10 @@ allprojects {
         // Use Compose's alpha version, which supports WASM.
         configurations.configureEach {
             resolutionStrategy.eachDependency {
-                if (requested.group.startsWith("org.jetbrains.compose") &&
-                    requested.name != "compiler"
-                ) {
-                    useVersion(libs.versions.jetbrains.compose.wasm.get())
+                if (requested.group.startsWith("org.jetbrains.compose")) {
+                    if (requested.name.startsWith("annotation")) return@eachDependency
+                    if (requested.name == "compiler") return@eachDependency
+                    useVersion("1.6.0-beta01")
                 }
             }
         }
