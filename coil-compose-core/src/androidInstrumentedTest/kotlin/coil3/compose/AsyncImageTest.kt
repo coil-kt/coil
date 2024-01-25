@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -97,6 +96,7 @@ class AsyncImageTest {
     @After
     fun after() {
         composeTestRule.unregisterIdlingResource(requestTracker)
+        imageLoader.shutdown()
     }
 
     @Test
@@ -436,21 +436,19 @@ class AsyncImageTest {
                     .testTag(Image)
             ) {
                 val state = painter.state
-                SideEffect {
-                    when (index) {
-                        0 -> {
-                            assertIs<State.Loading>(state)
-                            assertEquals(painter.state, state)
-                            assertNull(state.painter)
-                        }
-                        1 -> {
-                            assertIs<State.Success>(state)
-                            assertEquals(painter.state, state)
-                        }
-                        else -> fail("Recomposed too many times. State: $state")
+                when (index) {
+                    0 -> {
+                        assertIs<State.Loading>(state)
+                        assertEquals(painter.state, state)
+                        assertNull(state.painter)
                     }
-                    index++
+                    1 -> {
+                        assertIs<State.Success>(state)
+                        assertEquals(painter.state, state)
+                    }
+                    else -> fail("Recomposed too many times. State: $state")
                 }
+                index++
                 SubcomposeAsyncImageContent(
                     modifier = Modifier.clip(CircleShape)
                 )
