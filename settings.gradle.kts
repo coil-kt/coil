@@ -3,7 +3,20 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+
+    val enableWasm = settings.providers
+        .gradleProperty("enableWasm")
+        .getOrElse("false")
+        .toBoolean()
+    if (enableWasm) {
+        resolutionStrategy {
+            eachPlugin {
+                if (requested.id.id == "org.jetbrains.compose") {
+                    useVersion("1.6.0-beta01")
+                }
+            }
+        }
     }
 }
 
