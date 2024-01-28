@@ -129,8 +129,6 @@ private fun Toolbar(
     )
 }
 
-// TODO: Remove suppression when we update to Compose 1.6.0.
-@Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
 @Composable
 private fun BackIconButton(
     onBackPressed: () -> Unit,
@@ -138,6 +136,8 @@ private fun BackIconButton(
     IconButton(
         onClick = onBackPressed,
         content = {
+            // https://github.com/JetBrains/compose-multiplatform/issues/4172
+            @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
