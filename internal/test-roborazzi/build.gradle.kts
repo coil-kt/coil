@@ -17,8 +17,8 @@ dependencies {
 
     testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
-    testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.roborazzi.junit)
+    testImplementation(compose.desktop.uiTestJUnit4)
 }
