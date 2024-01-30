@@ -38,7 +38,7 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
-                implementation(libs.androidx.compose.ui.test)
+                implementation(compose.desktop.uiTestJUnit4)
             }
         }
     }
