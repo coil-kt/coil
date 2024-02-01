@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0-alpha04] - February 1, 2024
+
+- **Breaking**: Remove `Lazy` from `OkHttpNetworkFetcherFactory` and `KtorNetworkFetcherFactory`'s public API.
+- Expose `Call.Factory` instead of `OkHttpClient` in `OkHttpNetworkFetcherFactory`.
+- Convert `NetworkResponseBody` to wrap a `ByteString`.
+- Downgrade Compose to 1.5.12.
+
 ## [3.0.0-alpha03] - January 20, 2024
 
 - **Breaking**: `coil-network` has been renamed to `coil-network-ktor`. Additionally, there is a new `coil-network-okhttp` artifact that depends on OkHttp and doesn't require specifying a Ktor engine.

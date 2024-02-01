@@ -89,7 +89,7 @@ HSPLcoil3/Extras;-><init>(Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructor
 HSPLcoil3/Extras;->access$getData$p(Lcoil3/Extras;)Ljava/util/Map;
 HSPLcoil3/Extras;->asMap()Ljava/util/Map;
 HPLcoil3/Extras;->get(Lcoil3/Extras$Key;)Ljava/lang/Object;
-HSPLcoil3/Extras;->toString()Ljava/lang/String;
+HPLcoil3/Extras;->toString()Ljava/lang/String;
 Lcoil3/Extras$Builder;
 HPLcoil3/Extras$Builder;-><init>()V
 HSPLcoil3/Extras$Builder;->build()Lcoil3/Extras;
@@ -464,7 +464,6 @@ HSPLcoil3/decode/StaticImageDecoder$Factory;-><init>(Lkotlinx/coroutines/sync/Se
 HSPLcoil3/decode/StaticImageDecoder$Factory;->create(Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 Lcoil3/decode/StaticImageDecoder$decode$1;
 HSPLcoil3/decode/StaticImageDecoder$decode$1;-><init>(Lcoil3/decode/StaticImageDecoder;Lkotlin/coroutines/Continuation;)V
-HSPLcoil3/decode/StaticImageDecoder$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil3/decode/StaticImageDecoder$decode$lambda$3$$inlined$decodeBitmap$1;
 HSPLcoil3/decode/StaticImageDecoder$decode$lambda$3$$inlined$decodeBitmap$1;-><init>(Lkotlin/jvm/internal/Ref$ObjectRef;Lcoil3/decode/StaticImageDecoder;Lkotlin/jvm/internal/Ref$BooleanRef;)V
 HSPLcoil3/decode/StaticImageDecoder$decode$lambda$3$$inlined$decodeBitmap$1;->onHeaderDecoded(Landroid/graphics/ImageDecoder;Landroid/graphics/ImageDecoder$ImageInfo;Landroid/graphics/ImageDecoder$Source;)V
@@ -604,7 +603,6 @@ HSPLcoil3/intercept/EngineInterceptor$ExecuteResult;->getImage()Lcoil3/Image;
 HSPLcoil3/intercept/EngineInterceptor$ExecuteResult;->isSampled()Z
 Lcoil3/intercept/EngineInterceptor$decode$1;
 HSPLcoil3/intercept/EngineInterceptor$decode$1;-><init>(Lcoil3/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
-HSPLcoil3/intercept/EngineInterceptor$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil3/intercept/EngineInterceptor$execute$1;
 HSPLcoil3/intercept/EngineInterceptor$execute$1;-><init>(Lcoil3/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
 HSPLcoil3/intercept/EngineInterceptor$execute$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
@@ -768,14 +766,14 @@ HPLcoil3/request/ImageRequest;-><init>(Landroid/content/Context;Ljava/lang/Objec
 HSPLcoil3/request/ImageRequest;-><init>(Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLcoil3/request/ImageRequest;->equals(Ljava/lang/Object;)Z
 HPLcoil3/request/ImageRequest;->getContext()Landroid/content/Context;
-HSPLcoil3/request/ImageRequest;->getData()Ljava/lang/Object;
+HPLcoil3/request/ImageRequest;->getData()Ljava/lang/Object;
 HSPLcoil3/request/ImageRequest;->getDecoderDispatcher()Lkotlinx/coroutines/CoroutineDispatcher;
 HSPLcoil3/request/ImageRequest;->getDecoderFactory()Lcoil3/decode/Decoder$Factory;
 HPLcoil3/request/ImageRequest;->getDefaults()Lcoil3/request/ImageRequest$Defaults;
 HPLcoil3/request/ImageRequest;->getDefined()Lcoil3/request/ImageRequest$Defined;
 HSPLcoil3/request/ImageRequest;->getDiskCacheKey()Ljava/lang/String;
 HSPLcoil3/request/ImageRequest;->getDiskCachePolicy()Lcoil3/request/CachePolicy;
-HPLcoil3/request/ImageRequest;->getExtras()Lcoil3/Extras;
+HSPLcoil3/request/ImageRequest;->getExtras()Lcoil3/Extras;
 HSPLcoil3/request/ImageRequest;->getFetcherDispatcher()Lkotlinx/coroutines/CoroutineDispatcher;
 HSPLcoil3/request/ImageRequest;->getFetcherFactory()Lkotlin/Pair;
 HSPLcoil3/request/ImageRequest;->getFileSystem()Lokio/FileSystem;
@@ -788,7 +786,7 @@ HSPLcoil3/request/ImageRequest;->getNetworkCachePolicy()Lcoil3/request/CachePoli
 HSPLcoil3/request/ImageRequest;->getPlaceholderMemoryCacheKey()Lcoil3/memory/MemoryCache$Key;
 HSPLcoil3/request/ImageRequest;->getPrecision()Lcoil3/size/Precision;
 HSPLcoil3/request/ImageRequest;->getScale()Lcoil3/size/Scale;
-HSPLcoil3/request/ImageRequest;->getSizeResolver()Lcoil3/size/SizeResolver;
+HPLcoil3/request/ImageRequest;->getSizeResolver()Lcoil3/size/SizeResolver;
 HPLcoil3/request/ImageRequest;->getTarget()Lcoil3/target/Target;
 HPLcoil3/request/ImageRequest;->newBuilder$default(Lcoil3/request/ImageRequest;Landroid/content/Context;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
 HSPLcoil3/request/ImageRequest;->newBuilder(Landroid/content/Context;)Lcoil3/request/ImageRequest$Builder;
@@ -1017,7 +1015,6 @@ HSPLcoil3/util/RealNetworkObserver;->onConnectivityChange(Landroid/net/Network;Z
 Lcoil3/util/RealNetworkObserver$networkCallback$1;
 HSPLcoil3/util/RealNetworkObserver$networkCallback$1;-><init>(Lcoil3/util/RealNetworkObserver;)V
 HSPLcoil3/util/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
-PLcoil3/util/RealNetworkObserver$networkCallback$1;->onLost(Landroid/net/Network;)V
 Lcoil3/util/ServiceLoaderComponentRegistry;
 HSPLcoil3/util/ServiceLoaderComponentRegistry;-><clinit>()V
 HSPLcoil3/util/ServiceLoaderComponentRegistry;-><init>()V
@@ -1038,7 +1035,7 @@ Lcoil3/util/SystemCallbacksKt;
 HSPLcoil3/util/SystemCallbacksKt;->SystemCallbacks()Lcoil3/util/SystemCallbacks;
 Lcoil3/util/Utils_androidKt;
 HSPLcoil3/util/Utils_androidKt;-><clinit>()V
-HPLcoil3/util/Utils_androidKt;->getAllowInexactSize(Lcoil3/request/ImageRequest;)Z
+HSPLcoil3/util/Utils_androidKt;->getAllowInexactSize(Lcoil3/request/ImageRequest;)Z
 HSPLcoil3/util/Utils_androidKt;->getDEFAULT_BITMAP_CONFIG()Landroid/graphics/Bitmap$Config;
 HSPLcoil3/util/Utils_androidKt;->getNULL_COLOR_SPACE()Landroid/graphics/ColorSpace;
 Lcoil3/util/Utils_androidKt$WhenMappings;
