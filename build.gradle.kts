@@ -181,18 +181,18 @@ allprojects {
         configurations.configureEach {
             resolutionStrategy.eachDependency {
                 if (requested.group == "io.ktor") {
-                    useVersion(libs.versions.ktor.wasm.get())
+                    useVersion(libs.versions.ktor.beta.get())
                 }
             }
         }
 
-        // Use Compose's alpha version, which supports WASM.
+        // Use Compose's beta version, which supports WASM.
         configurations.configureEach {
             resolutionStrategy.eachDependency {
                 if (requested.group.startsWith("org.jetbrains.compose")) {
                     if (requested.name.startsWith("annotation")) return@eachDependency
                     if (requested.name == "compiler") return@eachDependency
-                    useVersion("1.6.0-beta01")
+                    useVersion(libs.versions.jetbrains.compose.beta.get())
                 }
             }
         }
