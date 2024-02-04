@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import coil3.DrawableImage
 import coil3.Image
 import coil3.PlatformContext
 import coil3.compose.internal.CrossfadePainter
@@ -15,10 +16,18 @@ import coil3.request.crossfadeMillis
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
-): Painter = BitmapPainter(
-    image = asBitmap().asComposeImageBitmap(),
-    filterQuality = filterQuality,
-)
+): Painter {
+    return when (this) {
+        is DrawableImage ->
+            DrawablePainter(this)
+
+        else ->
+            BitmapPainter(
+                image = toBitmap().asComposeImageBitmap(),
+                filterQuality = filterQuality,
+            )
+    }
+}
 
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,

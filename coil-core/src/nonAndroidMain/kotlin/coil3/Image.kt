@@ -18,16 +18,14 @@ actual interface Image {
     actual val height: Int
     actual val shareable: Boolean
 
-    fun asBitmap(): Bitmap
+    fun toBitmap(): Bitmap
 }
-
 @ExperimentalCoilApi
 @Data
 class BitmapImage internal constructor(
     val bitmap: Bitmap,
     override val shareable: Boolean,
 ) : Image {
-
     override val size: Long
         get() {
             var size = bitmap.imageInfo.computeMinByteSize().toLong()
@@ -44,7 +42,5 @@ class BitmapImage internal constructor(
     override val height: Int
         get() = bitmap.height
 
-    override fun asBitmap(): Bitmap {
-        return bitmap
-    }
+    override fun toBitmap(): Bitmap = bitmap
 }

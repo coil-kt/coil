@@ -23,7 +23,7 @@ actual class FakeImage actual constructor(
     override val shareable: Boolean,
     actual val color: Int,
 ) : Image {
-    override fun asBitmap(): Bitmap {
+    override fun toBitmap(): Bitmap {
         val bitmap = Bitmap()
         bitmap.setImageInfo(ImageInfo(colorInfo, width, height))
         Canvas(bitmap).use { canvas ->

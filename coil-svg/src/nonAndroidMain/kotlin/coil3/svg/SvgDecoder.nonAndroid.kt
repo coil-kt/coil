@@ -16,8 +16,6 @@ import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
 import coil3.util.toPx
 import kotlin.math.roundToInt
-import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
@@ -88,15 +86,8 @@ actual class SvgDecoder actual constructor(
 
         svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
 
-        val bitmap = Bitmap().apply {
-            allocN32Pixels(bitmapWidth, bitmapHeight)
-        }
-
-        svg.render(Canvas(bitmap))
-        bitmap.setImmutable()
-
         return DecodeResult(
-            image = bitmap.asCoilImage(shareable = true),
+            image = svg.asCoilImage(bitmapWidth, bitmapHeight),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }

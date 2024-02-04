@@ -84,6 +84,12 @@ public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public final fun getLambda-1$coil_compose_core ()Lkotlin/jvm/functions/Function3;
 }
 
+public final class coil3/compose/DrawablePainter : androidx/compose/ui/graphics/painter/Painter {
+	public static final field $stable I
+	public fun <init> (Lcoil3/DrawableImage;)V
+	public fun getIntrinsicSize-NH-jbRc ()J
+}
+
 public abstract interface class coil3/compose/EqualityDelegate {
 	public abstract fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
 	public abstract fun hashCode (Ljava/lang/Object;)I

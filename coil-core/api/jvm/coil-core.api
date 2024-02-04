@@ -1,5 +1,4 @@
 public final class coil3/BitmapImage : coil3/Image {
-	public fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun getHeight ()I
@@ -7,6 +6,7 @@ public final class coil3/BitmapImage : coil3/Image {
 	public fun getSize ()J
 	public fun getWidth ()I
 	public fun hashCode ()I
+	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -40,6 +40,12 @@ public final class coil3/ComponentRegistry$Builder {
 	public final fun addDecoderFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun addFetcherFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun build ()Lcoil3/ComponentRegistry;
+}
+
+public abstract class coil3/DrawableImage : coil3/Image {
+	public fun <init> ()V
+	public abstract fun onDraw (Lorg/jetbrains/skia/Canvas;)V
+	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 }
 
 public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener {
@@ -114,11 +120,11 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
-	public abstract fun asBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J
 	public abstract fun getWidth ()I
+	public abstract fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 }
 
 public final class coil3/ImageKt {

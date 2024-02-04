@@ -9,7 +9,7 @@ actual class FakeImage actual constructor(
     override val size: Long,
     override val shareable: Boolean,
 ) : Image {
-    override fun asBitmap(): Bitmap {
+    override fun toBitmap(): Bitmap {
         throw UnsupportedOperationException()
     }
 }

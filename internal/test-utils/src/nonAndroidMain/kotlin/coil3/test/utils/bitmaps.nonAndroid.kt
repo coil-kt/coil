@@ -15,7 +15,7 @@ actual interface CoilBitmap {
     actual suspend fun CoilBitmap.computeSimilarity(other: CoilBitmap): Double
 }
 
-actual fun Image.asCoilBitmap(): CoilBitmap = this.asBitmap().toCoilBitmap()
+actual fun Image.asCoilBitmap(): CoilBitmap = this.toBitmap().toCoilBitmap()
 
 class CoilBitmapImpl(
     override val bitmap: Bitmap
