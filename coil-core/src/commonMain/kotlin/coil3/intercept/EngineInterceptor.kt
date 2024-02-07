@@ -18,6 +18,7 @@ import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
 import coil3.util.Logger
+import coil3.util.SystemCallbacks
 import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
@@ -28,10 +29,10 @@ import kotlinx.coroutines.withContext
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
     private val imageLoader: ImageLoader,
+    private val systemCallbacks: SystemCallbacks,
     private val requestService: RequestService,
     private val logger: Logger?,
 ) : Interceptor {
-
     private val memoryCacheService = MemoryCacheService(imageLoader, requestService, logger)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
@@ -61,6 +62,9 @@ internal class EngineInterceptor(
             return withContext(request.fetcherDispatcher) {
                 // Fetch and decode the image.
                 val result = execute(request, mappedData, options, eventListener)
+
+                // Register memory pressure callbacks.
+                systemCallbacks.registerMemoryPressureCallbacks()
 
                 // Write the result to the memory cache.
                 val isCached = memoryCacheService.setCacheValue(cacheKey, request, result)

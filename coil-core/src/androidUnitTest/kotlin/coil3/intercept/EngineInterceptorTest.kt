@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import coil3.EventListener
 import coil3.ImageLoader
+import coil3.RealImageLoader
 import coil3.asCoilImage
 import coil3.decode.DataSource
 import coil3.intercept.EngineInterceptor.ExecuteResult
@@ -79,10 +80,12 @@ class EngineInterceptorTest : RobolectricTest() {
             .components {
                 add(Keyer { _: Any, _ -> key })
             }
-            .build()
+            .build() as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader)
         return EngineInterceptor(
             imageLoader = imageLoader,
-            requestService = RequestService(imageLoader, SystemCallbacks(), null),
+            systemCallbacks = systemCallbacks,
+            requestService = RequestService(imageLoader, systemCallbacks, null),
             logger = null,
         )
     }

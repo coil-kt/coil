@@ -28,7 +28,7 @@ class RequestServiceTest : RobolectricTest() {
     @Before
     fun before() {
         val imageLoader = ImageLoader(context) as RealImageLoader
-        service = RequestService(imageLoader, SystemCallbacks(), null)
+        service = RequestService(imageLoader, SystemCallbacks(imageLoader), null)
     }
 
     @Test

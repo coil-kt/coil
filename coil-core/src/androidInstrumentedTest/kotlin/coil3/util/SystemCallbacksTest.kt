@@ -17,11 +17,18 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val systemCallbacks = SystemCallbacks() as AndroidSystemCallbacks
-        systemCallbacks.register(ImageLoader(context) as RealImageLoader)
+        var imageLoader: RealImageLoader?
+        imageLoader = ImageLoader(context) as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
+        systemCallbacks.registerMemoryPressureCallbacks()
+        systemCallbacks.isOnline
+
+        // Clear the local reference.
+        @Suppress("UNUSED_VALUE")
+        imageLoader = null
 
         val bitmaps = mutableListOf<Bitmap>()
-        while (systemCallbacks.imageLoader?.get() != null) {
+        while (systemCallbacks.imageLoader.get() != null) {
             // Request that garbage collection occur.
             Runtime.getRuntime().gc()
 
@@ -33,7 +40,7 @@ class SystemCallbacksTest {
         // Ensure that the next system callback is called.
         systemCallbacks.onTrimMemory(TRIM_MEMORY_BACKGROUND)
 
-        assertTrue(systemCallbacks.isShutdown)
+        assertTrue(systemCallbacks.shutdown)
     }
 
     @Test
@@ -43,9 +50,9 @@ class SystemCallbacksTest {
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .memoryCache(memoryCache)
-            .build()
-        val systemCallbacks = SystemCallbacks() as AndroidSystemCallbacks
-        systemCallbacks.register(imageLoader as RealImageLoader)
+            .build() as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
+        systemCallbacks.registerMemoryPressureCallbacks()
 
         memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)

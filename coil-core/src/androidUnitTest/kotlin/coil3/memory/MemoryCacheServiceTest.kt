@@ -3,6 +3,7 @@ package coil3.memory
 import android.graphics.Bitmap
 import coil3.EventListener
 import coil3.ImageLoader
+import coil3.RealImageLoader
 import coil3.asCoilImage
 import coil3.key.Keyer
 import coil3.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
@@ -517,10 +518,11 @@ class MemoryCacheServiceTest : RobolectricTest() {
             .components {
                 add(Keyer { _: Any, _ -> key })
             }
-            .build()
+            .build() as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader)
         return MemoryCacheService(
             imageLoader = imageLoader,
-            requestService = RequestService(imageLoader, SystemCallbacks(), null),
+            requestService = RequestService(imageLoader, systemCallbacks, null),
             logger = null
         )
     }

@@ -69,7 +69,7 @@ internal class AndroidRequestService(
             request.fileSystem,
             request.memoryCachePolicy,
             request.diskCachePolicy,
-            request.resolveNetworkCachePolicy(),
+            request.networkCachePolicy,
             request.resolveExtras(size),
         )
     }
@@ -80,15 +80,6 @@ internal class AndroidRequestService(
             return Scale.FIT
         } else {
             return scale
-        }
-    }
-
-    private fun ImageRequest.resolveNetworkCachePolicy(): CachePolicy {
-        // Disable fetching from the network if we know we're offline.
-        if (systemCallbacks.isOnline) {
-            return networkCachePolicy
-        } else {
-            return CachePolicy.DISABLED
         }
     }
 
@@ -119,11 +110,27 @@ internal class AndroidRequestService(
     }
 
     override fun updateOptionsOnWorkerThread(options: Options): Options {
+        var changed = false
+        var networkCachePolicy = options.networkCachePolicy
+        var extras = options.extras
+
         if (!isBitmapConfigValidWorkerThread(options)) {
+            extras = extras.newBuilder()
+                .set(Extras.Key.bitmapConfig, Bitmap.Config.ARGB_8888)
+                .build()
+            changed = true
+        }
+
+        if (options.networkCachePolicy.readEnabled && !systemCallbacks.isOnline) {
+            // Disable fetching from the network if we know we're offline.
+            networkCachePolicy = CachePolicy.DISABLED
+            changed = true
+        }
+
+        if (changed) {
             return options.copy(
-                extras = options.extras.newBuilder()
-                    .set(Extras.Key.bitmapConfig, Bitmap.Config.ARGB_8888)
-                    .build(),
+                networkCachePolicy = networkCachePolicy,
+                extras = extras,
             )
         } else {
             return options

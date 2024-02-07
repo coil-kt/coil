@@ -7,12 +7,13 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.content.Context
 import android.content.res.Configuration
-import androidx.annotation.VisibleForTesting
 import coil3.RealImageLoader
+import coil3.annotation.VisibleForTesting
 import coil3.networkObserverEnabled
-import java.lang.ref.WeakReference
 
-internal actual fun SystemCallbacks(): SystemCallbacks = AndroidSystemCallbacks()
+internal actual fun SystemCallbacks(
+    imageLoader: RealImageLoader,
+): SystemCallbacks = AndroidSystemCallbacks(imageLoader)
 
 /**
  * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a weakly referenced
@@ -22,40 +23,53 @@ internal actual fun SystemCallbacks(): SystemCallbacks = AndroidSystemCallbacks(
  * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
  * its callbacks.
  */
-internal class AndroidSystemCallbacks : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
-
+internal class AndroidSystemCallbacks(
+    imageLoader: RealImageLoader,
+) : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
+    @VisibleForTesting val imageLoader = WeakReference(imageLoader)
     private var application: Context? = null
     private var networkObserver: NetworkObserver? = null
-    @VisibleForTesting var imageLoader: WeakReference<RealImageLoader>? = null
+    @VisibleForTesting var shutdown = false
 
-    @Volatile override var isOnline = true
-    @Volatile override var isShutdown = false
+    private var _isOnline = true
+    override val isOnline: Boolean
+        @Synchronized get() {
+            // Register the network observer lazily.
+            registerNetworkObserver()
+            return _isOnline
+        }
 
     @Synchronized
-    override fun register(imageLoader: RealImageLoader) {
+    override fun registerMemoryPressureCallbacks() = withImageLoader { imageLoader ->
+        if (application != null) return@withImageLoader
+
         val application = imageLoader.options.application
         this.application = application
-        this.imageLoader = WeakReference(imageLoader)
         application.registerComponentCallbacks(this)
+    }
 
-        val networkObserver = if (imageLoader.options.networkObserverEnabled) {
-            NetworkObserver(application, this, imageLoader.options.logger)
+    @Synchronized
+    private fun registerNetworkObserver() = withImageLoader { imageLoader ->
+        if (networkObserver != null) return@withImageLoader
+
+        val options = imageLoader.options
+        val networkObserver = if (options.networkObserverEnabled) {
+            NetworkObserver(options.application, this, options.logger)
         } else {
             EmptyNetworkObserver()
         }
         this.networkObserver = networkObserver
-        this.isOnline = networkObserver.isOnline
+        this._isOnline = networkObserver.isOnline
     }
 
     @Synchronized
     override fun shutdown() {
-        if (isShutdown) return
-        isShutdown = true
+        if (shutdown) return
+        shutdown = true
 
         application?.unregisterComponentCallbacks(this)
         networkObserver?.shutdown()
-        imageLoader?.clear()
-        imageLoader = null
+        imageLoader.clear()
     }
 
     @Synchronized
@@ -79,17 +93,13 @@ internal class AndroidSystemCallbacks : SystemCallbacks, ComponentCallbacks2, Ne
     @Synchronized
     override fun onConnectivityChange(isOnline: Boolean) = withImageLoader { imageLoader ->
         imageLoader.options.logger?.log(TAG, Logger.Level.Info) {
-            if (isOnline) {
-                "onConnectivityChange: The device is online."
-            } else {
-                "onConnectivityChange: The device is offline."
-            }
+            "onConnectivityChange: The device is ${if (isOnline) "online" else "offline"}."
         }
-        this.isOnline = isOnline
+        _isOnline = isOnline
     }
 
     private inline fun withImageLoader(block: (RealImageLoader) -> Unit) {
-        imageLoader?.get()?.let(block) ?: shutdown()
+        imageLoader.get()?.let(block) ?: shutdown()
     }
 
     private companion object {
