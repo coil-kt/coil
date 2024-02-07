@@ -1,7 +1,6 @@
 package coil3.util
 
 import coil3.RealImageLoader
-import kotlinx.atomicfu.atomic
 
 internal actual fun SystemCallbacks(
     imageLoader: RealImageLoader,
