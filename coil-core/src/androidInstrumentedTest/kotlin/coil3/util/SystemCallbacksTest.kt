@@ -17,11 +17,15 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val systemCallbacks = SystemCallbacks(
-            imageLoader = ImageLoader(context) as RealImageLoader,
-        ) as AndroidSystemCallbacks
+        var imageLoader: RealImageLoader?
+        imageLoader = ImageLoader(context) as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
         systemCallbacks.registerMemoryPressureCallbacks()
         systemCallbacks.isOnline
+
+        // Clear the local reference.
+        @Suppress("UNUSED_VALUE")
+        imageLoader = null
 
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader.get() != null) {
