@@ -17,8 +17,9 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val imageLoader = ImageLoader(context) as RealImageLoader
-        val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
+        val systemCallbacks = SystemCallbacks(
+            imageLoader = ImageLoader(context) as RealImageLoader,
+        ) as AndroidSystemCallbacks
         systemCallbacks.registerMemoryPressureCallbacks()
         systemCallbacks.isOnline
 
