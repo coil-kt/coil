@@ -20,6 +20,7 @@ class SystemCallbacksTest {
         val imageLoader = ImageLoader(context) as RealImageLoader
         val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
         systemCallbacks.registerMemoryPressureCallbacks()
+        systemCallbacks.isOnline
 
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader.get() != null) {
