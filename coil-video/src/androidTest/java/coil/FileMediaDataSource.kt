@@ -1,11 +1,11 @@
 package coil
 
 import android.media.MediaDataSource
-import androidx.annotation.RequiresApi
+import androidx.test.filters.SdkSuppress
 import java.io.File
 import java.io.RandomAccessFile
 
-@RequiresApi(23)
+@SdkSuppress(minSdkVersion = 23)
 class FileMediaDataSource(private val file: File) : MediaDataSource() {
 
     private var randomAccessFile: RandomAccessFile? = null

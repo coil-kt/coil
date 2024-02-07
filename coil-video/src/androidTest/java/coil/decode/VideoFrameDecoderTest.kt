@@ -156,6 +156,7 @@ class VideoFrameDecoderTest {
     fun mediaDataSource() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
+
         val file = context.copyAssetToFile("video.mp4")
 
         val dataSource = FileMediaDataSource(file)
