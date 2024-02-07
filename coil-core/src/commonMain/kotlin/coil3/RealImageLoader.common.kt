@@ -45,9 +45,8 @@ import kotlinx.coroutines.withContext
 internal class RealImageLoader(
     val options: Options,
 ) : ImageLoader {
-
     private val scope = CoroutineScope(options.logger)
-    private val systemCallbacks = SystemCallbacks()
+    private val systemCallbacks = SystemCallbacks(this)
     private val requestService = RequestService(this, systemCallbacks, options.logger)
     override val defaults get() = options.defaults
     override val memoryCache by options.memoryCacheLazy
@@ -58,14 +57,9 @@ internal class RealImageLoader(
         .addJvmComponents(options)
         .addAppleComponents(options)
         .addCommonComponents(options)
-        .add(EngineInterceptor(this, requestService, options.logger))
+        .add(EngineInterceptor(this, systemCallbacks, requestService, options.logger))
         .build()
     private val shutdown = atomic(false)
-
-    init {
-        // Must be called after the image loader is fully initialized.
-        systemCallbacks.register(this)
-    }
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
