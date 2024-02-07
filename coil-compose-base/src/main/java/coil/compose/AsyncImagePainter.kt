@@ -242,7 +242,7 @@ class AsyncImagePainter internal constructor(
         // Observe the current request and execute any emissions.
         scope.launch {
             snapshotFlow { request }
-                .mapLatest { imageLoader.execute(updateRequest(request)).toState() }
+                .mapLatest { imageLoader.execute(updateRequest(it)).toState() }
                 .collect(::updateState)
         }
     }
