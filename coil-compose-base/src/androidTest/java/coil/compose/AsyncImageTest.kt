@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -60,7 +63,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.fail
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
@@ -712,6 +717,90 @@ class AsyncImageTest {
             .assertHeightIsEqualTo(expectedSize)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.vertical_gradient)
+    }
+
+    @Test
+    fun requestWithUnstableParamsComposesAtMostOnce() {
+        val tickerFlow = flow {
+            var count = 0
+            while (true) {
+                emit(count++)
+                delay(50.milliseconds)
+            }
+        }
+        val compositionCount = AtomicInteger()
+        val onStartCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val count by tickerFlow.collectAsState(0)
+
+            compositionCount.getAndIncrement()
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://example.com/image")
+                    .listener(
+                        onStart = {
+                            onStartCount.getAndIncrement()
+                        },
+                    )
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+            )
+
+            BasicText("Count: $count")
+        }
+
+        waitUntil { compositionCount.get() >= 10 }
+
+        assertEquals(1, onStartCount.get())
+    }
+
+    @Test
+    fun newRequestStartsWhenDataChanges() {
+        val tickerFlow = flow {
+            var count = 0
+            while (true) {
+                emit(count++)
+                delay(100.milliseconds)
+            }
+        }
+        val compositionCount = AtomicInteger()
+        val onStartCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val count by tickerFlow.collectAsState(0)
+
+            compositionCount.getAndIncrement()
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://example.com/image${count.coerceAtMost(1)}")
+                    .listener(
+                        onStart = {
+                            onStartCount.getAndIncrement()
+                        },
+                    )
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+            )
+
+            BasicText("Count: $count")
+        }
+
+        waitUntil { compositionCount.get() >= 3 }
+
+        assertEquals(2, onStartCount.get())
+    }
+
+    private fun waitUntil(condition: () -> Boolean) {
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(10_000, condition)
+        composeTestRule.waitForIdle()
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
