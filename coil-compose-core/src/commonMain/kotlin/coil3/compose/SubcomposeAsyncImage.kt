@@ -276,6 +276,7 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
+    clipToBounds: Boolean = this.clipToBounds,
 ) = Layout(
     modifier = modifier
         .contentDescription(contentDescription)
