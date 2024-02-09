@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -22,7 +23,6 @@ import coil.request.NullRequestDataException
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size as CoilSize
-import androidx.compose.ui.platform.LocalContext
 import coil.size.SizeResolver
 import kotlin.math.roundToInt
 

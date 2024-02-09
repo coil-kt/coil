@@ -12,10 +12,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import coil.request.ImageRequest
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
+import coil.request.ImageRequest
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
