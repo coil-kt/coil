@@ -88,9 +88,10 @@ class EngineInterceptorTest {
                 add(Keyer { _: Any, _ -> key })
             }
             .build()
-        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader)
         return EngineInterceptor(
             imageLoader = imageLoader,
+            systemCallbacks = systemCallbacks,
             requestService = RequestService(imageLoader, systemCallbacks, null),
             logger = null
         )

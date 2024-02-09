@@ -60,13 +60,6 @@ internal class RequestService(
             isConfigValidForHardwareAllocation(request, size)
         val config = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
 
-        // Disable fetching from the network if we know we're offline.
-        val networkCachePolicy = if (systemCallbacks.isOnline) {
-            request.networkCachePolicy
-        } else {
-            CachePolicy.DISABLED
-        }
-
         // Use `Scale.FIT` if either dimension is undefined.
         val scale = if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
             Scale.FIT
@@ -96,7 +89,7 @@ internal class RequestService(
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy
+            networkCachePolicy = request.networkCachePolicy,
         )
     }
 
@@ -124,9 +117,35 @@ internal class RequestService(
         return true
     }
 
+    fun updateOptionsOnWorkerThread(options: Options): Options {
+        var changed = false
+        var bitmapConfig = options.config
+        var networkCachePolicy = options.networkCachePolicy
+
+        if (!isBitmapConfigValidWorkerThread(options)) {
+            bitmapConfig = Bitmap.Config.ARGB_8888
+            changed = true
+        }
+
+        if (options.networkCachePolicy.readEnabled && !systemCallbacks.isOnline) {
+            // Disable fetching from the network if we know we're offline.
+            networkCachePolicy = CachePolicy.DISABLED
+            changed = true
+        }
+
+        if (changed) {
+            return options.copy(
+                config = bitmapConfig,
+                networkCachePolicy = networkCachePolicy,
+            )
+        } else {
+            return options
+        }
+    }
+
     /** Return 'true' if we can allocate a hardware bitmap. */
     @WorkerThread
-    fun allowHardwareWorkerThread(options: Options): Boolean {
+    private fun isBitmapConfigValidWorkerThread(options: Options): Boolean {
         return !options.config.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
     }
 

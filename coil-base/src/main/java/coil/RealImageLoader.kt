@@ -76,7 +76,7 @@ internal class RealImageLoader(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
-    private val systemCallbacks = SystemCallbacks(this, context, options.networkObserverEnabled)
+    private val systemCallbacks = SystemCallbacks(this)
     private val requestService = RequestService(this, systemCallbacks, logger)
     override val memoryCache by memoryCacheLazy
     override val diskCache by diskCacheLazy
@@ -103,13 +103,9 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism, options.bitmapFactoryExifOrientationPolicy))
         .build()
-    private val interceptors = components.interceptors + EngineInterceptor(this, requestService, logger)
+    private val interceptors = components.interceptors +
+        EngineInterceptor(this, systemCallbacks, requestService, logger)
     private val shutdown = AtomicBoolean(false)
-
-    init {
-        // Must be called only after the image loader is fully initialized.
-        systemCallbacks.register()
-    }
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
