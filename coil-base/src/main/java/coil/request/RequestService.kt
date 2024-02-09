@@ -60,13 +60,6 @@ internal class RequestService(
             isConfigValidForHardwareAllocation(request, size)
         val config = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
 
-        // Disable fetching from the network if we know we're offline.
-        val networkCachePolicy = if (systemCallbacks.isOnline) {
-            request.networkCachePolicy
-        } else {
-            CachePolicy.DISABLED
-        }
-
         // Use `Scale.FIT` if either dimension is undefined.
         val scale = if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
             Scale.FIT
@@ -96,7 +89,7 @@ internal class RequestService(
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy
+            networkCachePolicy = request.networkCachePolicy,
         )
     }
 
