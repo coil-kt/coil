@@ -41,7 +41,37 @@ import coil.request.ImageRequest
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = LocalImageLoader.current,
+    placeholder = placeholder,
+    error = error,
+    fallback = fallback,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+    modelEqualityDelegate = modelEqualityDelegate,
+)
+
+@Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(
@@ -64,7 +94,7 @@ fun rememberAsyncImagePainter(
     onSuccess = onSuccess,
     onError = onError,
     contentScale = contentScale,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -89,7 +119,29 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = LocalImageLoader.current,
+    transform = transform,
+    onState = onState,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+    modelEqualityDelegate = modelEqualityDelegate,
+)
+
+@Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(
@@ -104,5 +156,5 @@ fun rememberAsyncImagePainter(
     transform = transform,
     onState = onState,
     contentScale = contentScale,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )

@@ -1,6 +1,7 @@
 package coil.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
+import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
@@ -26,6 +28,7 @@ import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
+@NonRestartableComposable
 internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
@@ -41,6 +44,7 @@ internal fun requestOf(model: Any?): ImageRequest {
 
 /** Create an [ImageRequest] with a not-null [SizeResolver] from the [model]. */
 @Composable
+@NonRestartableComposable
 internal fun requestOfWithSizeResolver(
     model: Any?,
     contentScale: ContentScale,
@@ -117,6 +121,28 @@ internal fun onStateOf(
     }
 }
 
+/** Wrap [AsyncImage]'s unstable arguments to make them stable. */
+@Stable
+internal class AsyncImageState(
+    val model: Any?,
+    val modelEqualityDelegate: EqualityDelegate,
+    val imageLoader: ImageLoader,
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is AsyncImageState &&
+            modelEqualityDelegate.equals(model, other.model) &&
+            imageLoader == other.imageLoader
+    }
+
+    override fun hashCode(): Int {
+        var result = modelEqualityDelegate.hashCode(model)
+        result = 31 * result + imageLoader.hashCode()
+        return result
+    }
+}
+
 @Stable
 internal fun Modifier.contentDescription(contentDescription: String?): Modifier {
     if (contentDescription != null) {
@@ -155,6 +181,8 @@ internal fun Constraints.constrainHeight(height: Float) =
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
+
+internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
 internal val ZeroConstraints = Constraints.fixed(0, 0)
 

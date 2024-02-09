@@ -40,7 +40,52 @@ import coil.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+) = SubcomposeAsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = LocalImageLoader.current,
+    modifier = modifier,
+    transform = transform,
+    loading = loading,
+    success = success,
+    error = error,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    clipToBounds = clipToBounds,
+    modelEqualityDelegate = modelEqualityDelegate,
+    filterQuality = filterQuality,
+)
+
+@Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 @Composable
 @NonRestartableComposable
 fun SubcomposeAsyncImage(
@@ -63,6 +108,7 @@ fun SubcomposeAsyncImage(
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
+    transform = DefaultTransform,
     loading = loading,
     success = success,
     error = error,
@@ -73,7 +119,7 @@ fun SubcomposeAsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -97,8 +143,45 @@ fun SubcomposeAsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
+ * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
+ * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
+) = SubcomposeAsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = LocalImageLoader.current,
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+    modelEqualityDelegate = modelEqualityDelegate,
+    content = content,
+)
+
+@Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 @Composable
 @NonRestartableComposable
 fun SubcomposeAsyncImage(
@@ -125,5 +208,5 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
-    content = content
+    content = content,
 )
