@@ -24,6 +24,7 @@ import coil.request.SuccessResult
 import coil.transform.Transformation
 import coil.util.DrawableUtils
 import coil.util.Logger
+import coil.util.SystemCallbacks
 import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.addFirst
 import coil.util.closeQuietly
@@ -40,6 +41,7 @@ import kotlinx.coroutines.withContext
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
     private val imageLoader: ImageLoader,
+    private val systemCallbacks: SystemCallbacks,
     private val requestService: RequestService,
     private val logger: Logger?,
 ) : Interceptor {
@@ -73,6 +75,9 @@ internal class EngineInterceptor(
             return withContext(request.fetcherDispatcher) {
                 // Fetch and decode the image.
                 val result = execute(request, mappedData, options, eventListener)
+
+                // Register memory pressure callbacks.
+                systemCallbacks.registerMemoryPressureCallbacks()
 
                 // Write the result to the memory cache.
                 val isCached = memoryCacheService.setCacheValue(cacheKey, request, result)
@@ -108,9 +113,8 @@ internal class EngineInterceptor(
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
-            if (!requestService.allowHardwareWorkerThread(options)) {
-                options = options.copy(config = Bitmap.Config.ARGB_8888)
-            }
+            options = requestService.updateOptionsOnWorkerThread(options)
+
             if (request.fetcherFactory != null || request.decoderFactory != null) {
                 components = components.newBuilder()
                     .addFirst(request.fetcherFactory)

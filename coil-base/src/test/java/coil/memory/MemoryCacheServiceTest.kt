@@ -516,7 +516,7 @@ class MemoryCacheServiceTest {
                 add(Keyer { _: Any, _ -> key })
             }
             .build()
-        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader)
         return MemoryCacheService(
             imageLoader = imageLoader,
             requestService = RequestService(imageLoader, systemCallbacks, null),

@@ -33,7 +33,7 @@ class RequestServiceTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         val imageLoader = ImageLoader(context) as RealImageLoader
-        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
+        val systemCallbacks = SystemCallbacks(imageLoader)
         service = RequestService(imageLoader, systemCallbacks, null)
     }
 

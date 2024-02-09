@@ -10,59 +10,79 @@ import coil.RealImageLoader
 import coil.network.EmptyNetworkObserver
 import coil.network.NetworkObserver
 import java.lang.ref.WeakReference
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a
- * weakly referenced [imageLoader].
+ * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a weakly referenced
+ * [imageLoader].
  *
  * This prevents the system from having a strong reference to the [imageLoader], which allows
- * it be freed naturally by the garbage collector. If the [imageLoader] is freed, it unregisters
+ * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
  * its callbacks.
  */
 internal class SystemCallbacks(
     imageLoader: RealImageLoader,
-    private val context: Context,
-    isNetworkObserverEnabled: Boolean
 ) : ComponentCallbacks2, NetworkObserver.Listener {
+    @VisibleForTesting val imageLoader = WeakReference(imageLoader)
+    private var application: Context? = null
+    private var networkObserver: NetworkObserver? = null
+    @VisibleForTesting var shutdown = false
 
-    @VisibleForTesting internal val imageLoader = WeakReference(imageLoader)
-    private val networkObserver = if (isNetworkObserverEnabled) {
-        NetworkObserver(context, this, imageLoader.logger)
-    } else {
-        EmptyNetworkObserver()
+    private var _isOnline = true
+    val isOnline: Boolean
+        @Synchronized get() {
+            // Register the network observer lazily.
+            registerNetworkObserver()
+            return _isOnline
+        }
+
+    @Synchronized
+    fun registerMemoryPressureCallbacks() = withImageLoader { imageLoader ->
+        if (application != null) return@withImageLoader
+
+        val application = imageLoader.context
+        this.application = application
+        application.registerComponentCallbacks(this)
     }
 
-    @Volatile private var _isOnline = networkObserver.isOnline
-    private val _isShutdown = AtomicBoolean(false)
+    @Synchronized
+    private fun registerNetworkObserver() = withImageLoader { imageLoader ->
+        if (networkObserver != null) return@withImageLoader
 
-    val isOnline get() = _isOnline
-    val isShutdown get() = _isShutdown.get()
-
-    fun register() {
-        context.registerComponentCallbacks(this)
+        val networkObserver = if (imageLoader.options.networkObserverEnabled) {
+            NetworkObserver(imageLoader.context, this, imageLoader.logger)
+        } else {
+            EmptyNetworkObserver()
+        }
+        this.networkObserver = networkObserver
+        this._isOnline = networkObserver.isOnline
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        imageLoader.get() ?: shutdown()
+    @Synchronized
+    fun shutdown() {
+        if (shutdown) return
+        shutdown = true
+
+        application?.unregisterComponentCallbacks(this)
+        networkObserver?.shutdown()
+        imageLoader.clear()
     }
 
+    @Synchronized
+    override fun onConfigurationChanged(newConfig: Configuration) = withImageLoader {}
+
+    @Synchronized
     override fun onTrimMemory(level: Int) = withImageLoader { imageLoader ->
         imageLoader.logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         imageLoader.onTrimMemory(level)
     }
 
+    @Synchronized
     override fun onLowMemory() = onTrimMemory(TRIM_MEMORY_COMPLETE)
 
+    @Synchronized
     override fun onConnectivityChange(isOnline: Boolean) = withImageLoader { imageLoader ->
         imageLoader.logger?.log(TAG, Log.INFO) { if (isOnline) ONLINE else OFFLINE }
         _isOnline = isOnline
-    }
-
-    fun shutdown() {
-        if (_isShutdown.getAndSet(true)) return
-        context.unregisterComponentCallbacks(this)
-        networkObserver.shutdown()
     }
 
     private inline fun withImageLoader(block: (RealImageLoader) -> Unit) {
