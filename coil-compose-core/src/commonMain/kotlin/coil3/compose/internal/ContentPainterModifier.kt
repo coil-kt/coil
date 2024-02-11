@@ -34,11 +34,11 @@ import kotlin.math.roundToInt
  * A custom [paint] modifier used by [AsyncImage] and [SubcomposeAsyncImage].
  */
 internal data class ContentPainterElement(
-    val painter: Painter,
-    val alignment: Alignment,
-    val contentScale: ContentScale,
-    val alpha: Float,
-    val colorFilter: ColorFilter?
+    private val painter: Painter,
+    private val alignment: Alignment,
+    private val contentScale: ContentScale,
+    private val alpha: Float,
+    private val colorFilter: ColorFilter?,
 ) : ModifierNodeElement<ContentPainterNode>() {
 
     override fun create(): ContentPainterNode {
