@@ -1,9 +1,7 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.compose.internal
 
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.DrawModifier
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
@@ -15,40 +13,81 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
-import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.times
-import androidx.compose.ui.platform.InspectorValueInfo
-import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
+import androidx.compose.ui.node.invalidateMeasurement
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
-import coil3.annotation.Data
-import coil3.compose.Content
+import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier used by [Content].
+ * A custom [paint] modifier used by [AsyncImage] and [SubcomposeAsyncImage].
  */
-@Data
-internal class ContentPainterModifier(
+internal data class ContentPainterElement(
     private val painter: Painter,
     private val alignment: Alignment,
     private val contentScale: ContentScale,
     private val alpha: Float,
     private val colorFilter: ColorFilter?,
-) : LayoutModifier, DrawModifier, InspectorValueInfo(
-    debugInspectorInfo {
+) : ModifierNodeElement<ContentPainterNode>() {
+
+    override fun create(): ContentPainterNode {
+        return ContentPainterNode(
+            painter = painter,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter,
+        )
+    }
+
+    override fun update(node: ContentPainterNode) {
+        val intrinsicsChanged = node.painter.intrinsicSize != painter.intrinsicSize
+
+        node.painter = painter
+        node.alignment = alignment
+        node.contentScale = contentScale
+        node.alpha = alpha
+        node.colorFilter = colorFilter
+
+        // Only remeasure if intrinsics have changed.
+        if (intrinsicsChanged) {
+            node.invalidateMeasurement()
+        }
+
+        // Redraw because one of the node properties has changed.
+        node.invalidateDraw()
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
         name = "content"
         properties["painter"] = painter
         properties["alignment"] = alignment
         properties["contentScale"] = contentScale
         properties["alpha"] = alpha
         properties["colorFilter"] = colorFilter
-    },
-) {
+    }
+}
+
+internal class ContentPainterNode(
+    var painter: Painter,
+    var alignment: Alignment,
+    var contentScale: ContentScale,
+    var alpha: Float,
+    var colorFilter: ColorFilter?,
+) : Modifier.Node(), DrawModifierNode, LayoutModifierNode {
+
+    override val shouldAutoInvalidate get() = false
 
     override fun MeasureScope.measure(
         measurable: Measurable,

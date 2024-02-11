@@ -17,7 +17,7 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.ConstraintsSizeResolver
-import coil3.compose.internal.ContentPainterModifier
+import coil3.compose.internal.ContentPainterElement
 import coil3.compose.internal.contentDescription
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOfWithSizeResolver
@@ -207,7 +207,7 @@ private fun Content(
         .contentDescription(contentDescription)
         .run { if (clipToBounds) clipToBounds() else this }
         .then(
-            ContentPainterModifier(
+            ContentPainterElement(
                 painter = painter,
                 alignment = alignment,
                 contentScale = contentScale,
