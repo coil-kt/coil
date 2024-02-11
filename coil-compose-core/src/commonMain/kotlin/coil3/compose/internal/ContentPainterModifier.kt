@@ -85,10 +85,9 @@ internal class ContentPainterNode(
     var contentScale: ContentScale,
     var alpha: Float,
     var colorFilter: ColorFilter?,
-) : LayoutModifierNode, Modifier.Node(), DrawModifierNode {
+) : Modifier.Node(), DrawModifierNode, LayoutModifierNode {
 
-    override val shouldAutoInvalidate: Boolean
-        get() = false
+    override val shouldAutoInvalidate get() = false
 
     override fun MeasureScope.measure(
         measurable: Measurable,
