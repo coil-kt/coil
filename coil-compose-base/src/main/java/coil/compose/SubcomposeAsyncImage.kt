@@ -338,13 +338,13 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
         .contentDescription(contentDescription)
         .run { if (clipToBounds) clipToBounds() else this }
         .then(
-            ContentPainterModifier(
+            ContentPainterElement(
                 painter = painter,
                 alignment = alignment,
                 contentScale = contentScale,
                 alpha = alpha,
-                colorFilter = colorFilter
-            )
+                colorFilter = colorFilter,
+            ),
         ),
     measurePolicy = { _, constraints ->
         layout(constraints.minWidth, constraints.minHeight) {}

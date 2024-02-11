@@ -262,7 +262,7 @@ private fun Content(
         .contentDescription(contentDescription)
         .run { if (clipToBounds) clipToBounds() else this }
         .then(
-            ContentPainterModifier(
+            ContentPainterElement(
                 painter = painter,
                 alignment = alignment,
                 contentScale = contentScale,
