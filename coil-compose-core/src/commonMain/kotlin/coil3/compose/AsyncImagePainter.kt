@@ -35,6 +35,7 @@ import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.CrossfadePainter
 import coil3.compose.internal.isPositive
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.rememberAsyncImageState
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
@@ -101,7 +102,7 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     contentScale = contentScale,
@@ -145,7 +146,7 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transform,
     onState = onState,
     contentScale = contentScale,

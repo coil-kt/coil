@@ -29,6 +29,7 @@ import coil3.compose.internal.ConstraintsSizeResolver
 import coil3.compose.internal.ContentPainterElement
 import coil3.compose.internal.contentDescription
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.rememberAsyncImageState
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.request.ImageRequest
 
@@ -83,7 +84,7 @@ fun SubcomposeAsyncImage(
     clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
@@ -142,7 +143,7 @@ fun SubcomposeAsyncImage(
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
