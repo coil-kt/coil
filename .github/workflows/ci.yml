@@ -124,7 +124,7 @@ jobs:
         name: Deploy snapshot
         runs-on: macos-14
         timeout-minutes: 60
-        if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
+        if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
             - uses: actions/checkout@v4
