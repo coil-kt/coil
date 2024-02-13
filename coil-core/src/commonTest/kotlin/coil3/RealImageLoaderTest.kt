@@ -2,12 +2,15 @@ package coil3
 
 import coil3.fetch.Fetcher
 import coil3.request.ImageRequest
+import coil3.test.utils.FakeImage
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,5 +82,30 @@ class RealImageLoaderTest : RobolectricTest() {
 
         // Suspend until the request is cancelled.
         isCancelled.first { it }
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2119 */
+    @Test
+    fun imageLoaderPlaceholderIsRespected() = runTest {
+        val expected = FakeImage()
+        var actual: Image? = null
+        val imageLoader = ImageLoader.Builder(context)
+            .placeholder(expected)
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .target(
+                onStart = {
+                    actual = it
+                    throw CancellationException()
+                },
+            )
+            .build()
+
+        try {
+            imageLoader.execute(request)
+        } catch (_: CancellationException) {}
+
+        assertSame(expected, actual)
     }
 }
