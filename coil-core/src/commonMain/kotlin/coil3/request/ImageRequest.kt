@@ -116,13 +116,19 @@ class ImageRequest private constructor(
 ) {
 
     /** Create and return a new placeholder image. */
-    fun placeholder(): Image? = placeholderFactory(this)
+    fun placeholder(): Image? {
+        return placeholderFactory(this) ?: defaults.placeholderFactory(this)
+    }
 
     /** Create and return a new error image. */
-    fun error(): Image? = errorFactory(this)
+    fun error(): Image? {
+        return errorFactory(this) ?: defaults.errorFactory(this)
+    }
 
     /** Create and return a new fallback image. */
-    fun fallback(): Image? = fallbackFactory(this)
+    fun fallback(): Image? {
+        return fallbackFactory(this) ?: defaults.fallbackFactory(this)
+    }
 
     @JvmOverloads
     fun newBuilder(
