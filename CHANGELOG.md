@@ -155,7 +155,7 @@ AsyncImage(
 
 - **New**: Introduce a public `DiskCache` API.
     - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
-    - You should not use OkHttp's `Cache` with Coil 2.0. See [here](https://coil-kt.github.io/coil/upgrading/#disk-cache) for more info.
+    - You should not use OkHttp's `Cache` with Coil 2.0. See [here](https://coil-kt.github.io/coil/upgrading_to_coil2/#disk-cache) for more info.
     - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
     - Existing disk caches will be cleared when upgrading to 2.0.
 - The minimum supported API is now 21.
