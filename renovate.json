@@ -3,6 +3,7 @@
     "extends": [
         "config:base"
     ],
+    "dependencyDashboard": false,
     "packageRules": [
         {
             "matchUpdateTypes": ["minor", "patch"],
