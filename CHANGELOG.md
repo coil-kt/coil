@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.6.0] - February 23, 2024
+
+- Make `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability#functions). This should improve performance by avoiding recomposition unless one of the composable's arguments changes.
+    - Add an optional `modelEqualityDelegate` argument to `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` to control whether the `model` will trigger a recomposition.
+- Update `ContentPainterModifier` to implement `Modifier.Node`.
+- Fix: Lazily register component callbacks and the network observer on a background thread. This fixes slow initialization that would often occur on the main thread.
+- Fix: Avoid relaunching a new image request in `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` if `ImageRequest.listener` or `ImageRequest.target` change.
+- Fix: Don't observe the image request twice in `AsyncImagePainter`.
+- Update Kotlin to 1.9.22.
+- Update Compose to 1.6.1.
+- Update Okio to 3.8.0.
+- Update `androidx.collection` to 1.4.0.
+- Update `androidx.lifecycle` to 2.7.0.
+
 ## [3.0.0-alpha04] - February 1, 2024
 
 - **Breaking**: Remove `Lazy` from `OkHttpNetworkFetcherFactory` and `KtorNetworkFetcherFactory`'s public API.
