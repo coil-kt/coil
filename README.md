@@ -9,14 +9,14 @@ An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Translations: [한국어](README-ko.md), [中文](README-zh.md), [Türkçe](README-tr.md), [日本語](README-ja.md)
+Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
 
 ## Download
 
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.5.0")
+implementation("io.coil-kt:coil:2.6.0")
 ```
 
 ## Quick Start
@@ -50,7 +50,7 @@ imageView.load("https://example.com/image.jpg") {
 Import the [Jetpack Compose](https://developer.android.com/jetpack/compose) extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.5.0")
+implementation("io.coil-kt:coil-compose:2.6.0")
 ```
 
 To load an image, use the `AsyncImage` composable:

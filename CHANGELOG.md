@@ -2,7 +2,7 @@
 
 ## [2.6.0] - February 23, 2024
 
-- Make `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability#functions). This should improve performance by avoiding recomposition unless one of the composable's arguments changes.
+- Make `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability#functions). This improves performance by avoiding recomposition unless one of the composable's arguments changes.
     - Add an optional `modelEqualityDelegate` argument to `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` to control whether the `model` will trigger a recomposition.
 - Update `ContentPainterModifier` to implement `Modifier.Node`.
 - Fix: Lazily register component callbacks and the network observer on a background thread. This fixes slow initialization that would often occur on the main thread.
