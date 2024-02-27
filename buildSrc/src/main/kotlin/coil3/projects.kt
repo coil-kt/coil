@@ -117,7 +117,9 @@ private fun <T : BaseExtension> Project.androidBase(
             disable += listOf(
                 "ComposableNaming",
                 "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
                 "UnusedResources",
+                "UseSdkSuppress",
                 "VectorPath",
                 "VectorRaster",
             )
