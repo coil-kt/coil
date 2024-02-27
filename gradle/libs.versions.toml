@@ -3,8 +3,7 @@ androidx-activity = "1.8.2"
 androidx-benchmark = "1.2.3"
 androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0"
-jetbrains-compose = "1.5.12"
-jetbrains-compose-beta = "1.6.0-rc02"
+jetbrains-compose = "1.6.0"
 jetbrains-compose-compiler = "1.5.8.1"
 kotlin = "1.9.22"
 ktlint = "1.1.0"
@@ -24,7 +23,7 @@ poko = "dev.drewhamilton.poko:0.15.2"
 spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.2.2"
+gradlePlugin-android = "com.android.tools.build:gradle:8.3.0-rc02"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.23.2"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
