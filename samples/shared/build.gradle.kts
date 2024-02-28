@@ -1,5 +1,6 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
+import coil3.applyKtorWasmWorkaround
 
 plugins {
     id("com.android.library")
@@ -8,6 +9,7 @@ plugins {
 
 addAllMultiplatformTargets()
 androidLibrary(name = "sample.common", config = true)
+applyKtorWasmWorkaround(libs.versions.ktor.wasm.get())
 
 kotlin {
     sourceSets {
@@ -43,6 +45,11 @@ kotlin {
             dependencies {
                 api(projects.coilNetworkOkhttp)
                 api(libs.coroutines.swing)
+            }
+        }
+        named("wasmJsMain") {
+            dependencies {
+                api(projects.coilNetworkKtor)
             }
         }
     }

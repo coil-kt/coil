@@ -9,7 +9,7 @@ import coil3.util.DebugLogger
 
 fun newImageLoader(
     context: PlatformContext,
-    debug: Boolean = false,
+    debug: Boolean,
 ): ImageLoader {
     return ImageLoader.Builder(context)
         .memoryCache {
