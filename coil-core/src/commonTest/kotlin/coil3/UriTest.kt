@@ -76,6 +76,19 @@ class UriTest {
     }
 
     @Test
+    fun encodedSingle() {
+        val string = "https://example.com/something%20"
+        val uri = string.toUri()
+        assertEquals("https", uri.scheme)
+        assertEquals("example.com", uri.authority)
+        assertEquals("/something ", uri.path)
+        assertEquals(listOf("something "), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+        assertEquals(string, uri.toString())
+    }
+
+    @Test
     fun encodedMalformed() {
         val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B%"
         val uri = string.toUri()

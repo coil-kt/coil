@@ -138,16 +138,19 @@ private fun parseUri(data: String): Uri {
         fragment = data.substring(fragmentStartIndex, data.length)
     }
 
-    val size = maxOf(
-        scheme.length,
-        authority.length,
+    val maxLength = maxOf(
+        0,
         maxOf(
-            path.length,
-            query.length,
-            fragment.length,
-        ),
+            scheme.length,
+            authority.length,
+            maxOf(
+                path.length,
+                query.length,
+                fragment.length,
+            ),
+        ) - 2,
     )
-    val bytes = ByteArray(size)
+    val bytes = ByteArray(maxLength)
     return Uri(
         data = data,
         scheme = scheme?.percentDecode(bytes),
@@ -161,9 +164,19 @@ private fun parseUri(data: String): Uri {
 private fun String.percentDecode(bytes: ByteArray): String {
     var size = 0
     var index = 0
+    val length = length
+    val searchLength = maxOf(0, length - 2)
 
-    while (index < length) {
-        if (get(index) == '%' && index + 2 < length) {
+    while (true) {
+        if (index >= searchLength) {
+            if (index == size) {
+                // Fast path: the string doesn't have any encoded characters.
+                return this
+            } else if (index >= length) {
+                // Slow path: decode the byte array.
+                return bytes.decodeToString(endIndex = size)
+            }
+        } else if (get(index) == '%') {
             try {
                 val hex = substring(index + 1, index + 3)
                 bytes[size] = hex.toInt(16).toByte()
@@ -176,14 +189,6 @@ private fun String.percentDecode(bytes: ByteArray): String {
         bytes[size] = get(index).code.toByte()
         size++
         index++
-    }
-
-    if (size == length) {
-        // Fast path: the string doesn't have any encoded characters.
-        return this
-    } else {
-        // Slow path: decode the byte array.
-        return bytes.decodeToString(endIndex = size)
     }
 }
 
