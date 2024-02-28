@@ -47,9 +47,6 @@ val Project.versionCode: Int
 val Project.enableComposeMetrics: Boolean
     get() = booleanProperty("enableComposeMetrics") { false }
 
-val Project.enableWasm: Boolean
-    get() = booleanProperty("enableWasm") { false }
-
 private fun Project.intProperty(
     name: String,
     default: () -> Int = { error("unknown property: $name") },

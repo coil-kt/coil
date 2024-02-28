@@ -34,3 +34,18 @@ kotlin {
         }
     }
 }
+
+// https://youtrack.jetbrains.com/issue/KTOR-5587
+repositories {
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
+}
+project.configurations.all {
+    if (name.startsWith("wasmJs")) {
+        resolutionStrategy.eachDependency {
+            if (requested.group.startsWith("io.ktor") &&
+                requested.name.startsWith("ktor-client-")) {
+                useVersion("3.0.0-wasm2")
+            }
+        }
+    }
+}

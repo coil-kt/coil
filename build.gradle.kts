@@ -1,5 +1,4 @@
 import coil3.enableComposeMetrics
-import coil3.enableWasm
 import coil3.groupId
 import coil3.publicModules
 import coil3.versionName
@@ -170,20 +169,6 @@ allprojects {
             compilerOptions.freeCompilerArgs.addAll(
                 "-P", "$composePlugin:stabilityConfigurationPath=$outputDir",
             )
-        }
-    }
-
-    if (enableWasm) {
-        // Use ktor's experimental wasm artifact.
-        repositories {
-            maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
-        }
-        configurations.configureEach {
-            resolutionStrategy.eachDependency {
-                if (requested.group == "io.ktor") {
-                    useVersion(libs.versions.ktor.beta.get())
-                }
-            }
         }
     }
 
