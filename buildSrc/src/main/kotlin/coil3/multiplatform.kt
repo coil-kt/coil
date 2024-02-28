@@ -125,7 +125,7 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
 }
 
 // https://youtrack.jetbrains.com/issue/KTOR-5587
-fun Project.applyKtorWasmWorkaround(ktorWasmVersion: String) {
+fun Project.applyKtorWasmWorkaround(version: String) {
     repositories {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
     }
@@ -134,7 +134,7 @@ fun Project.applyKtorWasmWorkaround(ktorWasmVersion: String) {
             resolutionStrategy.eachDependency {
                 if (requested.group.startsWith("io.ktor") &&
                     requested.name.startsWith("ktor-client-")) {
-                    useVersion(ktorWasmVersion)
+                    useVersion(version)
                 }
             }
         }
