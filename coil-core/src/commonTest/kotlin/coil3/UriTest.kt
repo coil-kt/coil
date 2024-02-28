@@ -77,12 +77,12 @@ class UriTest {
 
     @Test
     fun encodedSingle() {
-        val string = "https://example.com/%20something"
+        val string = "https://example.com/something%20"
         val uri = string.toUri()
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
-        assertEquals("/ something", uri.path)
-        assertEquals(listOf(" something"), uri.pathSegments)
+        assertEquals("/something ", uri.path)
+        assertEquals(listOf("something "), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
         assertEquals(string, uri.toString())
