@@ -63,11 +63,12 @@ kotlin {
 baselineProfile {
     mergeIntoMain = true
     saveInSrc = true
-    baselineProfileOutputDir = ""
+    baselineProfileOutputDir = "."
     filter {
         include("coil3.**")
-        exclude("coil3.network.**")
+        exclude("coil3.compose.**")
         exclude("coil3.gif.**")
+        exclude("coil3.network.**")
         exclude("coil3.svg.**")
         exclude("coil3.video.**")
     }
