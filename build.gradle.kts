@@ -20,7 +20,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
@@ -55,7 +54,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 
     // Necessary to publish to Maven.
