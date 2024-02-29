@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.0-alpha06] - February 29, 2024
+
+- Downgrade Skiko to 0.7.93.
+- [For the full list of important changes in 3.x, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
+
 ## [3.0.0-alpha05] - February 28, 2024
 
 - **New**: Support the `wasmJs` target.
