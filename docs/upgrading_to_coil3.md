@@ -15,7 +15,7 @@ The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` an
 
 ## Multiplatform
 
-Coil 3 is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, and Javascript. Once [Ktor](https://ktor.io/) releases WASM support on Maven Central, Coil will merge WASM support into the main artifact.
+Coil 3 is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, Javascript, and WASM.
 
 On Android, Coil uses the standard graphics classes to render images. On non-Android platforms, Coil uses [Skiko](https://github.com/JetBrains/skiko) to render images. Skiko is a set of Kotlin bindings that wrap the [Skia](https://github.com/google/skia) graphics engine developed by Google.
 

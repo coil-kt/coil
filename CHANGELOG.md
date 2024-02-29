@@ -1,11 +1,25 @@
 # Changelog
 
+## [3.0.0-alpha05] - February 28, 2024
+
+- **New**: Support the `wasmJs` target.
+- Create `DrawablePainter` and `DrawableImage` to support drawing `Image`s that aren't backed by a `Bitmap` on non-Android platforms.
+    - The `Image` APIs are experimental and likely to change between alpha releases.
+- Update `ContentPainterModifier` to implement `Modifier.Node`.
+- Fix: Lazily register component callbacks and the network observer on a background thread. This fixes slow initialization that would typically occur on the main thread.
+- Fix: Fix `ImageLoader.Builder.placeholder/error/fallback` not being used by `ImageRequest`.
+- Update Compose to 1.6.0.
+- Update Coroutines to 1.8.0.
+- Update Okio to 3.8.0.
+- Update Skiko to 0.7.94.
+- [For the full list of important changes in 3.x, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
+
 ## [2.6.0] - February 23, 2024
 
 - Make `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability#functions). This improves performance by avoiding recomposition unless one of the composable's arguments changes.
     - Add an optional `modelEqualityDelegate` argument to `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` to control whether the `model` will trigger a recomposition.
 - Update `ContentPainterModifier` to implement `Modifier.Node`.
-- Fix: Lazily register component callbacks and the network observer on a background thread. This fixes slow initialization that would often occur on the main thread.
+- Fix: Lazily register component callbacks and the network observer on a background thread. This fixes slow initialization that would typically occur on the main thread.
 - Fix: Avoid relaunching a new image request in `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` if `ImageRequest.listener` or `ImageRequest.target` change.
 - Fix: Don't observe the image request twice in `AsyncImagePainter`.
 - Update Kotlin to 1.9.22.
@@ -20,6 +34,7 @@
 - Expose `Call.Factory` instead of `OkHttpClient` in `OkHttpNetworkFetcherFactory`.
 - Convert `NetworkResponseBody` to wrap a `ByteString`.
 - Downgrade Compose to 1.5.12.
+- [For the full list of important changes, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
 
 ## [3.0.0-alpha03] - January 20, 2024
 
