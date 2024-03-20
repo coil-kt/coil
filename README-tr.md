@@ -3,7 +3,7 @@
 Kotlin Coroutines tarafından desteklenen Android için bir görüntü yükleme kütüphanesi. Coil şunlardır:
 
 - **Hızlı**: Coil, bellek ve disk önbellekleme, bellekteki görüntünün örnekleme yapılması, otomatik olarak isteklerin durdurulması/iptal edilmesi ve daha fazlası dahil olmak üzere bir dizi optimizasyon gerçekleştirir.
-- **Hafif**: Coil, APK'nıza ~2000 yöntem ekler (zaten OkHttp ve Coroutines kullanan uygulamalar için), bu da Picasso ile karşılaştırılabilir ve Glide ve Fresco'dan önemli ölçüde daha azdır.
+- **Hafif**: Coil, APK'nıza ~2000 yöntem ekler (halihazırda OkHttp ve Coroutines kullanan uygulamalar için), bu da Picasso ile karşılaştırılabilir ve Glide ve Fresco'dan önemli ölçüde daha azdır.
 - **Kullanımı Kolay**: Coil'in API'si, basitlik ve minimum kod tekrarı için Kotlin'in dil özelliklerinden yararlanır.
 - **Modern**: Coil, öncelikle Kotlin'e dayanır ve Coroutines, OkHttp, Okio ve AndroidX Lifecycle gibi modern kütüphaneleri kullanır.
 
@@ -23,7 +23,7 @@ implementation("io.coil-kt:coil:2.6.0")
 
 #### ImageViews
 
-Bir görüntüyü bir `ImageView`'a yüklemek için `load` genişletme fonksiyonunu kullanın:
+Bir görüntüyü bir `ImageView`'a yüklemek için `load` uzantı fonksiyonunu kullanın:
 
 ```kotlin
 // URL
@@ -92,7 +92,7 @@ val request = ImageRequest.Builder(context)
 val disposable = imageLoader.enqueue(request)
 ```
 
-Bir görüntüyü emperatif olarak yüklemek için bir `ImageRequest`'i `execute` edin:
+Bir görüntüyü mecburi bir şekilde yüklemek için bir `ImageRequest`'i `execute` edin:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
