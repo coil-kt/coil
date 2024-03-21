@@ -50,4 +50,3 @@ internal fun MediaMetadataRetriever.getFrameAtIndex(
     frameIndex: Int,
     config: Bitmap.Config,
 ): Bitmap? = getFrameAtIndex(frameIndex, BitmapParams().apply { preferredConfig = config })
-

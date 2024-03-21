@@ -32,9 +32,9 @@ import coil3.toAndroidUri
 import coil3.util.heightPx
 import coil3.util.widthPx
 import coil3.video.MediaDataSourceFetcher.MediaSourceMetadata
+import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.getFrameAtTime
 import coil3.video.internal.getScaledFrameAtTime
-import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.use
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
