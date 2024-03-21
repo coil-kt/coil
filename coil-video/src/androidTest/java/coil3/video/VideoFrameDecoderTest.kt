@@ -98,6 +98,32 @@ class VideoFrameDecoderTest {
     }
 
     @Test
+    fun specificFrameIndex() = runTest(timeout = 1.minutes) {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video.mp4").source().buffer(),
+                fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(
+                context = context,
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFrameIndex, 807)
+                    .build(),
+            )
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_2.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
     fun rotation() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)

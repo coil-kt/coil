@@ -10,6 +10,32 @@ import coil3.getExtra
 import coil3.request.ImageRequest
 import coil3.request.Options
 
+// region videoFrameIndex
+
+/**
+ * Set the the frame index to extract from a video.
+ *
+ * When both [videoFrameIndex] and other videoFrame-prefixed properties are set,
+ * [videoFrameIndex] will take precedence.
+ */
+fun ImageRequest.Builder.videoFrameIndex(frameIndex: Int) = apply {
+    require(frameIndex >= 0) { "frameIndex must be >= 0." }
+    memoryCacheKeyExtra("coil#videoFrameIndex", frameIndex.toString())
+    extras[videoFrameIndexKey] = frameIndex
+}
+
+val ImageRequest.videoFrameIndex: Int
+    get() = getExtra(videoFrameIndexKey)
+
+val Options.videoFrameIndex: Int
+    get() = getExtra(videoFrameIndexKey)
+
+val Extras.Key.Companion.videoFrameIndex: Extras.Key<Int>
+    get() = videoFrameIndexKey
+
+private val videoFrameIndexKey = Extras.Key(default = -1)
+
+// endregion
 // region videoFrameMicros
 
 /**
