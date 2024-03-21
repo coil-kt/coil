@@ -1,18 +1,19 @@
 ![Coil](logo.svg)
 
-Android için Kotlin Coroutines tarafından desteklenen bir görüntü yükleme kütüphanesi. Coil:
+Kotlin Coroutines tarafından desteklenen Android için bir görüntü yükleme kütüphanesi. Coil şunlardır:
 
-- **Hızlıdır**: Coil bellek ve disk önbellekleme, bellekteki görüntüyü alt-örnekleme, biteşlemlerin tekrar kullanımı, isteklerin otomatik olarak durdurulması/iptali ve daha fazlasını içeren pek çok sayıda optimizasyon gerçekleştirir.
-- **Hafiftir**: Coil, APK'nıza Picasso ile benzer ve Glide ve Fresco'dan önemli ölçüde daha az sayıda, 2000 civarında metod ekler.(Halihazırda OkHttp ve Coroutines kullanan uygulamalar için)
-- **Kullanımı kolaydır**: Coil'in API'si basitlik ve mininum basmakalıp için Kotlin'in dil özelliklerini sonuna kadar kullanır.
-- **Moderndir**: Coil Kotlin-önceliklidir ve Coroutines, OkHttp, Okio ve AndroidX Lifecycles gibi modern kütüphaneleri kullanır.
+- **Hızlı**: Coil, bellek ve disk önbellekleme, bellekteki görüntünün örnekleme yapılması, otomatik olarak isteklerin durdurulması/iptal edilmesi ve daha fazlası dahil olmak üzere bir dizi optimizasyon gerçekleştirir.
+- **Hafif**: Coil, APK'nıza ~2000 yöntem ekler (halihazırda OkHttp ve Coroutines kullanan uygulamalar için), bu da Picasso ile karşılaştırılabilir ve Glide ve Fresco'dan önemli ölçüde daha azdır.
+- **Kullanımı Kolay**: Coil'in API'si, basitlik ve minimum kod tekrarı için Kotlin'in dil özelliklerinden yararlanır.
+- **Modern**: Coil, öncelikle Kotlin'e dayanır ve Coroutines, OkHttp, Okio ve AndroidX Lifecycle gibi modern kütüphaneleri kullanır.
 
+Coil, **Co**routine **I**mage **L**oader'ın kısaltmasıdır.
 
-Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
+Çeviriler: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
 
-## Yükleme
+## İndirme
 
-Coil `mavenCentral()`'da mevcuttur.
+Coil, `mavenCentral()` üzerinde mevcuttur.
 
 ```kotlin
 implementation("io.coil-kt:coil:2.6.0")
@@ -20,22 +21,21 @@ implementation("io.coil-kt:coil:2.6.0")
 
 ## Hızlı Başlangıç
 
-Görüntüyü `ImageView`'e yüklemek için `load` uzantı fonksiyonunu kullanın:
+#### ImageViews
+
+Bir görüntüyü bir `ImageView`'a yüklemek için `load` uzantı fonksiyonunu kullanın:
 
 ```kotlin
 // URL
 imageView.load("https://example.com/image.jpg")
 
-// Resource
-imageView.load(R.drawable.image)
-
-// File
+// Dosya
 imageView.load(File("/path/to/image.jpg"))
 
 // Ve daha fazlası...
 ```
 
-İstekler tercihe bağlı bir takip eden lambda ile yapılandırılabilir:
+İstekler, isteğe bağlı bir kapanan lambda ile yapılandırılabilir:
 
 ```kotlin
 imageView.load("https://example.com/image.jpg") {
@@ -45,25 +45,42 @@ imageView.load("https://example.com/image.jpg") {
 }
 ```
 
+#### Jetpack Compose
+
+[Jetpack Compose](https://developer.android.com/jetpack/compose) uzantı kütüphanesini içe aktarın:
+
+```kotlin
+implementation("io.coil-kt:coil-compose:2.6.0")
+```
+
+Bir görüntü yüklemek için, `AsyncImage` bileşenini kullanın:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null,
+)
+```
+
 #### Görüntü Yükleyiciler
 
-`imageView.load` bir `ImageRequest`'i kuyruğa eklemek için yegane `ImageLoader` kullanır. Yegane `ImageLoader` uzantı fonksiyonu kullanılarak erişilebilir:
+`imageView.load` ve `AsyncImage` hem görüntü isteklerini yürütmek için singleton `ImageLoader`'ı kullanır. Singleton `ImageLoader`'a bir `Context` genişletme fonksiyonu kullanarak erişilebilir:
 
 ```kotlin
 val imageLoader = context.imageLoader
 ```
 
-İsteğe bağlı olarak, kendi `ImageLoader` kopya(ları)nızı oluşturabilir ve bağımlılık enjeksiyonu ile enjekte edebilirsiniz:
+`ImageLoader`'lar paylaşılabilir olarak tasarlanmıştır ve uygulamanız boyunca tek bir örnek oluşturup paylaştığınızda en verimlidir. Bununla birlikte, kendi `ImageLoader` örneğinizi de oluşturabilirsiniz:
 
 ```kotlin
 val imageLoader = ImageLoader(context)
 ```
 
-Eğer yegane `ImageLoader` istemiyorsanız, `io.coil-kt:coil-base`'e bağlı kalabilirsiniz.
+Eğer singleton `ImageLoader` istemiyorsanız, `io.coil-kt:coil` yerine `io.coil-kt:coil-base` bağımlılığını kullanın.
 
 #### İstekler
 
-Bir görüntüyü özel bir hedefe yüklemek için, bir `ImageRequest`'i `enqueue` edin:
+Bir görüntüyü özel bir hedefe yüklemek için bir `ImageRequest`'i `enqueue` edin:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
@@ -75,7 +92,7 @@ val request = ImageRequest.Builder(context)
 val disposable = imageLoader.enqueue(request)
 ```
 
-Bir görüntüyü mecburi bir şekilde yüklemek için, bir `ImageRequest`'i `execute` edin:
+Bir görüntüyü mecburi bir şekilde yüklemek için bir `ImageRequest`'i `execute` edin:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
@@ -84,13 +101,13 @@ val request = ImageRequest.Builder(context)
 val drawable = imageLoader.execute(request).drawable
 ```
 
-Coil'in [dokümantasyonunun tamamına buradan](https://coil-kt.github.io/coil/getting_started/) ulaşabilirsiniz.
+Coil'in [tam belgelerini buradan](https://coil-kt.github.io/coil/getting_started/) inceleyin.
 
 ## R8 / Proguard
 
-Coil R8 ile tamamen uyumludur ve ek kurallar eklemeyi gerektirmez.
+Coil, R8 ile uyumlu olarak kutudan çıkar ve ekstra kurallar eklemeyi gerektirmez.
 
-Eğer Proguard kullanıyorsanız, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro) ve [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro) için kurallar eklemeniz gerekebilir.
+Eğer Proguard kullanıyorsanız, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro) ve [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro) için kurallar eklemeniz gerekebilir.
 
 ## Lisans
 
