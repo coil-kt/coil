@@ -123,12 +123,26 @@ internal fun onStateOf(
     }
 }
 
+@Composable
+@NonRestartableComposable
+internal fun rememberAsyncImageState(
+    model: Any?,
+    modelEqualityDelegate: EqualityDelegate,
+    imageLoader: ImageLoader,
+): AsyncImageState {
+    val state = remember { AsyncImageState(model, modelEqualityDelegate, imageLoader) }
+    state.model = model
+    state.modelEqualityDelegate = modelEqualityDelegate
+    state.imageLoader = imageLoader
+    return state
+}
+
 /** Wrap [AsyncImage]'s unstable arguments to make them stable. */
 @Stable
 internal class AsyncImageState(
-    val model: Any?,
-    val modelEqualityDelegate: EqualityDelegate,
-    val imageLoader: ImageLoader,
+    var model: Any?,
+    var modelEqualityDelegate: EqualityDelegate,
+    var imageLoader: ImageLoader,
 ) {
 
     override fun equals(other: Any?): Boolean {

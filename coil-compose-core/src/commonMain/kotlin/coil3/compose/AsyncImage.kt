@@ -20,6 +20,7 @@ import coil3.compose.internal.ConstraintsSizeResolver
 import coil3.compose.internal.ContentPainterElement
 import coil3.compose.internal.contentDescription
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.rememberAsyncImageState
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.compose.internal.transformOf
 import coil3.request.ImageRequest
@@ -74,7 +75,7 @@ fun AsyncImage(
     clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transformOf(placeholder, error, fallback),
@@ -130,7 +131,7 @@ fun AsyncImage(
     clipToBounds: Boolean = true,
     modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = rememberAsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
