@@ -90,9 +90,7 @@ class VideoFrameDecoder(
 
         val frameMicros = computeFrameMicros(retriever)
         val (dstWidth, dstHeight) = dstSize
-        val rawBitmap: Bitmap?
-
-        rawBitmap = if (SDK_INT >= 28 && options.videoFrameIndex >= 0) {
+        val rawBitmap: Bitmap? = if (SDK_INT >= 28 && options.videoFrameIndex >= 0) {
             retriever.getFrameAtIndex(
                 frameIndex = options.videoFrameIndex,
                 config = options.bitmapConfig,
