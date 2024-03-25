@@ -99,8 +99,8 @@ class VideoFrameDecoderTest {
 
     @Test
     fun specificFrameIndex() = runTest(timeout = 1.minutes) {
-        // MediaMetadataRetriever does not work on the emulator pre-API 23.
-        assumeTrue(SDK_INT >= 23)
+        // MediaMetadataRetriever#getFrameAtIndex does not work on the emulator pre-API 28.
+        assumeTrue(SDK_INT >= 28)
 
         val result = VideoFrameDecoder(
             source = ImageSource(
