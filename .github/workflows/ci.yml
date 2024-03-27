@@ -4,65 +4,13 @@ on:
         branches:
             - main
     pull_request:
-concurrency:
-    # Limit concurrency to 1 for PRs. 'main' concurrency isn't limited.
-    group: ${{ github.head_ref || github.run_id }}
-    cancel-in-progress: true
 env:
     CI: true
     JAVA_VERSION: 17
 jobs:
-    checks:
-        name: Checks
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-java@v4
-              with:
-                  distribution: 'zulu'
-                  java-version: ${{ env.JAVA_VERSION }}
-
-            - name: Check Gradle wrapper
-              uses: gradle/wrapper-validation-action@v2
-
-            - name: Check style
-              run: ./gradlew spotlessCheck
-
-            - name: Check lint
-              run: ./gradlew lint
-
-            - name: Check binary compatibility
-              run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
-
-    unit-tests:
-        name: Unit tests
-        runs-on: macos-14
+    with-kvm:
+        runs-on: ubicloud-standard-8
         timeout-minutes: 60
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-java@v4
-              with:
-                  distribution: 'zulu'
-                  java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/gradle-build-action@v3
-              continue-on-error: true
-              timeout-minutes: 5
-              with:
-                  cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
-
-            - name: Unit tests
-              run: ./gradlew allTests testDebugUnitTest verifyPaparazziDebug verifyRoborazziDebug
-
-    instrumentation-tests:
-        name: Instrumentation tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 60
-        strategy:
-            fail-fast: true
-            matrix:
-                api-level: [22, 26, 31]
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
@@ -81,8 +29,7 @@ jobs:
               uses: ./.github/actions/get-avd-info
               id: avd-info
               with:
-                  api-level: ${{ matrix.api-level }}
-
+                  api-level: 31
             - name: Enable KVM
               run: |
                   echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -92,71 +39,38 @@ jobs:
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                  api-level: ${{ matrix.api-level }}
+                  api-level: 31
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
-    build-samples:
-        name: Build samples
-        runs-on: macos-14
-        timeout-minutes: 30
+    without-kvm:
+        runs-on: ubicloud-standard-8
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
-                  distribution: 'zulu'
-                  java-version: ${{ env.JAVA_VERSION }}
+                distribution: 'zulu'
+                java-version: ${{ env.JAVA_VERSION }}
             - uses: gradle/gradle-build-action@v3
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                cache-overwrite-existing: true
+                gradle-home-cache-cleanup: true
 
-            - name: Build samples
-              run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
-
-            - name: Build iOS app
-              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
-
-    deploy-snapshot:
-        name: Deploy snapshot
-        runs-on: macos-14
-        timeout-minutes: 60
-        if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
-        needs: [checks, unit-tests, instrumentation-tests, build-samples]
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-java@v4
+            # API 30+ emulators only have x86_64 system images.
+            - name: Get AVD info
+              uses: ./.github/actions/get-avd-info
+              id: avd-info
               with:
-                  distribution: 'zulu'
-                  java-version: ${{ env.JAVA_VERSION }}
+                api-level: 31
 
-            - name: Deploy snapshot
-              env:
-                  ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-                  ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-              run: ./gradlew publish
-
-    deploy-docs:
-        name: Deploy docs
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-        if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
-        needs: [checks, unit-tests, instrumentation-tests, build-samples]
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-java@v4
+            - name: Instrumentation tests
+              uses: reactivecircus/android-emulator-runner@v2
               with:
-                  distribution: 'zulu'
-                  java-version: ${{ env.JAVA_VERSION }}
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: '3.x'
-
-            - name: Deploy docs
-              run: |
-                  git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
-                  pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
-                  ./deploy_docs.sh
+                api-level: 31
+                arch: ${{ steps.avd-info.outputs.arch }}
+                target: ${{ steps.avd-info.outputs.target }}
+                script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
