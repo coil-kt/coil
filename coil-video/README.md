@@ -24,7 +24,7 @@ imageView.load("/path/to/video.mp4") {
 }
 ```
 
-For specifying the exact frame number, use `videoFrameIndex`:
+For specifying the exact frame number, use `videoFrameIndex` (requires API level 28):
 
 ```kotlin
 imageView.load("/path/to/video.mp4") {
