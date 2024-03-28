@@ -32,6 +32,7 @@ import coil3.toAndroidUri
 import coil3.util.heightPx
 import coil3.util.widthPx
 import coil3.video.MediaDataSourceFetcher.MediaSourceMetadata
+import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.getFrameAtTime
 import coil3.video.internal.getScaledFrameAtTime
 import coil3.video.internal.use
@@ -89,7 +90,15 @@ class VideoFrameDecoder(
 
         val frameMicros = computeFrameMicros(retriever)
         val (dstWidth, dstHeight) = dstSize
-        val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
+        val rawBitmap: Bitmap? = if (SDK_INT >= 28 && options.videoFrameIndex >= 0) {
+            retriever.getFrameAtIndex(
+                frameIndex = options.videoFrameIndex,
+                config = options.bitmapConfig,
+            )?.also {
+                srcWidth = it.width
+                srcHeight = it.height
+            }
+        } else if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
             retriever.getScaledFrameAtTime(
                 timeUs = frameMicros,
                 option = options.videoFrameOption,
