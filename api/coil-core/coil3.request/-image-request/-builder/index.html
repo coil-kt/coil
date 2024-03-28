@@ -1,0 +1,531 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Builder</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../index.html">
+                            coil-root
+                    </a>            </div>
+            <div class="library-version">3.0.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="coil-core::coil3.request/ImageRequest.Builder///PointingToDeclaration//1772253480">
+  <div class="breadcrumbs"><a href="../../../index.html">coil-core</a><span class="delimiter">/</span><a href="../../index.html">coil3.request</a><span class="delimiter">/</span><a href="../index.html">ImageRequest</a><span class="delimiter">/</span><span class="current">Builder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Builder</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1853923300%2FConstructors%2F1772253480" anchor-label="Builder" id="-1853923300%2FConstructors%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1853923300%2FConstructors%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="../../../coil3/-platform-context/index.html">PlatformContext</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">context<span class="token operator">: </span><a href="../../../coil3/-platform-context/index.html">PlatformContext</a><span class="token operator"> = </span>request.context</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1486479030%2FProperties%2F1772253480" anchor-label="extras" id="1486479030%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="extras.html"><span><span>extras</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1486479030%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="extras.html">extras</a><span class="token operator">: </span><a href="../../../coil3/-extras/-builder/index.html">Extras.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-2645613%2FFunctions%2F1772253480" anchor-label="build" id="-2645613%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build.html"><span><span>build</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2645613%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">ImageRequest</a></div><div class="brief "><p class="paragraph">Create a new <a href="../index.html">ImageRequest</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1181448507%2FFunctions%2F-874330140" anchor-label="crossfade" id="-1181448507%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../crossfade.html"><span><span>crossfade</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1181448507%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><a href="index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="../../crossfade.html"><span class="token function">crossfade</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Enable a crossfade animation when a request completes successfully.</p></div><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><a href="index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="../../crossfade.html"><span class="token function">crossfade</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">durationMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="../../crossfade.html"><span class="token function">crossfade</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Enable a crossfade animation when a request completes successfully.</p></div><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><a href="index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="../../crossfade.html"><span class="token function">crossfade</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">durationMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1465304493%2FFunctions%2F1772253480" anchor-label="data" id="-1465304493%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="data.html"><span><span>data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1465304493%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="data.html"><span class="token function">data</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the data to load.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-391574381%2FFunctions%2F1772253480" anchor-label="decoderDispatcher" id="-391574381%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="decoder-dispatcher.html"><span>decoder</span><wbr><span><span>Dispatcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-391574381%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="decoder-dispatcher.html"><span class="token function">decoderDispatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dispatcher<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-dispatcher/index.html">CoroutineDispatcher</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1623547575%2FFunctions%2F1772253480" anchor-label="decoderFactory" id="-1623547575%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="decoder-factory.html"><span>decoder</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1623547575%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="decoder-factory.html"><span class="token function">decoderFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="../../../coil3.decode/-decoder/-factory/index.html">Decoder.Factory</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Use <a href="decoder-factory.html">factory</a> to handle decoding any image data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="240678680%2FFunctions%2F1772253480" anchor-label="defaults" id="240678680%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="defaults.html"><span><span>defaults</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="240678680%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="defaults.html"><span class="token function">defaults</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">defaults<span class="token operator">: </span><a href="../-defaults/index.html">ImageRequest.Defaults</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the defaults for any unset request values.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-804272162%2FFunctions%2F1772253480" anchor-label="diskCacheKey" id="-804272162%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disk-cache-key.html"><span>disk</span><wbr><span>Cache</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804272162%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="disk-cache-key.html"><span class="token function">diskCacheKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the disk cache key for this request.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="93043533%2FFunctions%2F1772253480" anchor-label="diskCachePolicy" id="93043533%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disk-cache-policy.html"><span>disk</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="93043533%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="disk-cache-policy.html"><span class="token function">diskCachePolicy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">policy<span class="token operator">: </span><a href="../../-cache-policy/index.html">CachePolicy</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Enable/disable reading/writing from/to the disk cache.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1749954065%2FFunctions%2F1772253480" anchor-label="dispatcher" id="-1749954065%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dispatcher.html"><span><span>dispatcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1749954065%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="dispatcher.html"><span class="token function">dispatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dispatcher<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-dispatcher/index.html">CoroutineDispatcher</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1010179449%2FFunctions%2F1772253480" anchor-label="error" id="1010179449%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="error.html"><span><span>error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1010179449%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="error.html"><span class="token function">error</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">image<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="error.html"><span class="token function">error</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><span class="token punctuation">(</span><a href="../index.html">ImageRequest</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the error image to use if the request fails.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="613074847%2FFunctions%2F1772253480" anchor-label="fallback" id="613074847%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fallback.html"><span><span>fallback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="613074847%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="fallback.html"><span class="token function">fallback</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">image<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="fallback.html"><span class="token function">fallback</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><span class="token punctuation">(</span><a href="../index.html">ImageRequest</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the fallback image to use if <a href="data.html">data</a> is null.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1280641872%2FFunctions%2F1772253480" anchor-label="fetcherDispatcher" id="1280641872%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetcher-dispatcher.html"><span>fetcher</span><wbr><span><span>Dispatcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1280641872%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="fetcher-dispatcher.html"><span class="token function">fetcherDispatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dispatcher<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-dispatcher/index.html">CoroutineDispatcher</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1867184163%2FFunctions%2F1772253480" anchor-label="fetcherFactory" id="1867184163%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetcher-factory.html"><span>fetcher</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1867184163%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="fetcher-factory.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="fetcher-factory.html"><span class="token function">fetcherFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="../../../coil3.fetch/-fetcher/-factory/index.html">Fetcher.Factory</a><span class="token operator">&lt;</span><a href="fetcher-factory.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="fetcher-factory.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="fetcher-factory.html"><span class="token function">fetcherFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><a href="../../../coil3.fetch/-fetcher/-factory/index.html">Fetcher.Factory</a><span class="token operator">&lt;</span><a href="fetcher-factory.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><a href="fetcher-factory.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Use <a href="fetcher-factory.html">factory</a> to handle fetching any image data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="178509565%2FFunctions%2F1772253480" anchor-label="fileSystem" id="178509565%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="file-system.html"><span>file</span><wbr><span><span>System</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="178509565%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="file-system.html"><span class="token function">fileSystem</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">The <a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a> that will be used to perform any disk read/write operations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1185637842%2FFunctions%2F1772253480" anchor-label="interceptorDispatcher" id="1185637842%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="interceptor-dispatcher.html"><span>interceptor</span><wbr><span><span>Dispatcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1185637842%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="interceptor-dispatcher.html"><span class="token function">interceptorDispatcher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dispatcher<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-dispatcher/index.html">CoroutineDispatcher</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1866304566%2FFunctions%2F1772253480" anchor-label="listener" id="1866304566%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="listener.html"><span><span>listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1866304566%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="listener.html"><span class="token function">listener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="../-listener/index.html">ImageRequest.Listener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the <a href="../-listener/index.html">Listener</a>.</p></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="listener.html"><span class="token function">listener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">crossinline </span>onStart<span class="token operator">: </span><span class="token punctuation">(</span>request<span class="token operator">: </span><a href="../index.html">ImageRequest</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>onCancel<span class="token operator">: </span><span class="token punctuation">(</span>request<span class="token operator">: </span><a href="../index.html">ImageRequest</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>onError<span class="token operator">: </span><span class="token punctuation">(</span>request<span class="token operator">: </span><a href="../index.html">ImageRequest</a><span class="token punctuation">, </span>result<span class="token operator">: </span><a href="../../-error-result/index.html">ErrorResult</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{ _, _ -&gt; }<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>onSuccess<span class="token operator">: </span><span class="token punctuation">(</span>request<span class="token operator">: </span><a href="../index.html">ImageRequest</a><span class="token punctuation">, </span>result<span class="token operator">: </span><a href="../../-success-result/index.html">SuccessResult</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{ _, _ -&gt; }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Convenience function to create and set the <a href="../-listener/index.html">Listener</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-335742331%2FFunctions%2F1772253480" anchor-label="memoryCacheKey" id="-335742331%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="memory-cache-key.html"><span>memory</span><wbr><span>Cache</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-335742331%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="memory-cache-key.html"><span class="token function">memoryCacheKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="../../../coil3.memory/-memory-cache/-key/index.html">MemoryCache.Key</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="memory-cache-key.html"><span class="token function">memoryCacheKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the memory cache key for this request.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1637656329%2FFunctions%2F1772253480" anchor-label="memoryCacheKeyExtra" id="1637656329%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="memory-cache-key-extra.html"><span>memory</span><wbr><span>Cache</span><wbr><span>Key</span><wbr><span><span>Extra</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1637656329%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="memory-cache-key-extra.html"><span class="token function">memoryCacheKeyExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set extra values to be added to this image request's memory cache key.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2022461672%2FFunctions%2F1772253480" anchor-label="memoryCacheKeyExtras" id="-2022461672%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="memory-cache-key-extras.html"><span>memory</span><wbr><span>Cache</span><wbr><span>Key</span><wbr><span><span>Extras</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2022461672%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="memory-cache-key-extras.html"><span class="token function">memoryCacheKeyExtras</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">extras<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set extra values to be added to this image request's memory cache key.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1794328727%2FFunctions%2F1772253480" anchor-label="memoryCachePolicy" id="-1794328727%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="memory-cache-policy.html"><span>memory</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1794328727%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="memory-cache-policy.html"><span class="token function">memoryCachePolicy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">policy<span class="token operator">: </span><a href="../../-cache-policy/index.html">CachePolicy</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Enable/disable reading/writing from/to the memory cache.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1469469468%2FFunctions%2F1772253480" anchor-label="networkCachePolicy" id="-1469469468%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="network-cache-policy.html"><span>network</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1469469468%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="network-cache-policy.html"><span class="token function">networkCachePolicy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">policy<span class="token operator">: </span><a href="../../-cache-policy/index.html">CachePolicy</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Enable/disable reading from the network.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1956674329%2FFunctions%2F1772253480" anchor-label="placeholder" id="1956674329%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="placeholder.html"><span><span>placeholder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1956674329%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="placeholder.html"><span class="token function">placeholder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">image<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="placeholder.html"><span class="token function">placeholder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">factory<span class="token operator">: </span><span class="token punctuation">(</span><a href="../index.html">ImageRequest</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the placeholder image to use when the request starts.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="3814329%2FFunctions%2F1772253480" anchor-label="placeholderMemoryCacheKey" id="3814329%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="placeholder-memory-cache-key.html"><span>placeholder</span><wbr><span>Memory</span><wbr><span>Cache</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="3814329%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="placeholder-memory-cache-key.html"><span class="token function">placeholderMemoryCacheKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="../../../coil3.memory/-memory-cache/-key/index.html">MemoryCache.Key</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the memory cache <a href="placeholder-memory-cache-key.html">key</a> whose value will be used as the placeholder image.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="placeholder-memory-cache-key.html"><span class="token function">placeholderMemoryCacheKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the memory cache <a href="placeholder-memory-cache-key.html">key</a> whose value will be used as the placeholder drawable.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-665982520%2FFunctions%2F1772253480" anchor-label="precision" id="-665982520%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="precision.html"><span><span>precision</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-665982520%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="precision.html"><span class="token function">precision</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">precision<span class="token operator">: </span><a href="../../../coil3.size/-precision/index.html">Precision</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the precision for the size of the loaded image.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2106157904%2FFunctions%2F1772253480" anchor-label="scale" id="-2106157904%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale.html"><span><span>scale</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2106157904%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="scale.html"><span class="token function">scale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scale<span class="token operator">: </span><a href="../../../coil3.size/-scale/index.html">Scale</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the scaling algorithm that will be used to fit/fill the image into the size provided by <a href="../../../../coil-core/coil3.request/-image-request/-builder/size-resolver.html">sizeResolver</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1139244772%2FFunctions%2F1772253480" anchor-label="size" id="-1139244772%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1139244772%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="../../../coil3.size/-size/index.html">Size</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">width<span class="token operator">: </span><a href="../../../coil3.size/-dimension/index.html">Dimension</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="../../../coil3.size/-dimension/index.html">Dimension</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the requested width/height.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">resolver<span class="token operator">: </span><a href="../../../coil3.size/-size-resolver/index.html">SizeResolver</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the <a href="../../../coil3.size/-size-resolver/index.html">SizeResolver</a> to resolve the requested width/height.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-749312541%2FFunctions%2F1772253480" anchor-label="target" id="-749312541%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="target.html"><span><span>target</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-749312541%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="target.html"><span class="token function">target</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">target<span class="token operator">: </span><a href="../../../coil3.target/-target/index.html">Target</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the <a href="../../../coil3.target/-target/index.html">Target</a>.</p></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="target.html"><span class="token function">target</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">crossinline </span>onStart<span class="token operator">: </span><span class="token punctuation">(</span>placeholder<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>onError<span class="token operator">: </span><span class="token punctuation">(</span>error<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">crossinline </span>onSuccess<span class="token operator">: </span><span class="token punctuation">(</span>result<span class="token operator">: </span><a href="../../../coil3/-image/index.html">Image</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Convenience function to create and set the <a href="../../../coil3.target/-target/index.html">Target</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

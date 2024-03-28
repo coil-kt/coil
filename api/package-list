@@ -1,0 +1,66 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:coil3.svg/SvgDecoder.Factory/create/#coil3.fetch.SourceFetchResult#coil3.request.Options#coil3.ImageLoader/PointingToDeclaration/coil-svg/coil3.svg/-svg-decoder/-factory/[non-android]create.html
+$dokka.location:coil3.svg/SvgDecoder.Factory/useViewBoundsAsIntrinsicSize/#/PointingToDeclaration/coil-svg/coil3.svg/-svg-decoder/-factory/[non-android]use-view-bounds-as-intrinsic-size.html
+$dokka.location:coil3.svg/SvgDecoder/decode/#/PointingToDeclaration/coil-svg/coil3.svg/-svg-decoder/[non-android]decode.html
+$dokka.location:coil3.svg/SvgDecoder/useViewBoundsAsIntrinsicSize/#/PointingToDeclaration/coil-svg/coil3.svg/-svg-decoder/[non-android]use-view-bounds-as-intrinsic-size.html
+$dokka.location:coil3.test/FakeImage/height/#/PointingToDeclaration/coil-test/coil3.test/-fake-image/[non-android]height.html
+$dokka.location:coil3.test/FakeImage/shareable/#/PointingToDeclaration/coil-test/coil3.test/-fake-image/[non-android]shareable.html
+$dokka.location:coil3.test/FakeImage/size/#/PointingToDeclaration/coil-test/coil3.test/-fake-image/[non-android]size.html
+$dokka.location:coil3.test/FakeImage/width/#/PointingToDeclaration/coil-test/coil3.test/-fake-image/[non-android]width.html
+$dokka.location:coil3/BitmapImage///PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/index.html
+$dokka.location:coil3/BitmapImage/asDrawable/#android.content.res.Resources/PointingToDeclaration/coil-core/coil3/[android]-bitmap-image/as-drawable.html
+$dokka.location:coil3/BitmapImage/bitmap/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/bitmap.html
+$dokka.location:coil3/BitmapImage/height/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/height.html
+$dokka.location:coil3/BitmapImage/shareable/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/shareable.html
+$dokka.location:coil3/BitmapImage/size/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/size.html
+$dokka.location:coil3/BitmapImage/toBitmap/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/to-bitmap.html
+$dokka.location:coil3/BitmapImage/width/#/PointingToDeclaration/coil-core/coil3/[non-android]-bitmap-image/width.html
+$dokka.location:coil3/DrawableImage.SizeProvider///PointingToDeclaration/coil-core/coil3/[android]-drawable-image/-size-provider/index.html
+$dokka.location:coil3/DrawableImage.SizeProvider/size/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/-size-provider/size.html
+$dokka.location:coil3/DrawableImage///PointingToDeclaration/coil-core/coil3/[non-android]-drawable-image/index.html
+$dokka.location:coil3/DrawableImage/DrawableImage/#/PointingToDeclaration/coil-core/coil3/[non-android]-drawable-image/-drawable-image.html
+$dokka.location:coil3/DrawableImage/asDrawable/#android.content.res.Resources/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/as-drawable.html
+$dokka.location:coil3/DrawableImage/drawable/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/drawable.html
+$dokka.location:coil3/DrawableImage/height/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/height.html
+$dokka.location:coil3/DrawableImage/onDraw/org.jetbrains.skia.Canvas#/PointingToDeclaration/coil-core/coil3/[non-android]-drawable-image/on-draw.html
+$dokka.location:coil3/DrawableImage/shareable/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/shareable.html
+$dokka.location:coil3/DrawableImage/size/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/size.html
+$dokka.location:coil3/DrawableImage/toBitmap/#/PointingToDeclaration/coil-core/coil3/[non-android]-drawable-image/to-bitmap.html
+$dokka.location:coil3/DrawableImage/width/#/PointingToDeclaration/coil-core/coil3/[android]-drawable-image/width.html
+module:coil
+coil3
+module:coil-compose
+coil3.compose
+module:coil-compose-core
+coil3.compose
+module:coil-core
+coil3
+coil3.annotation
+coil3.decode
+coil3.disk
+coil3.fetch
+coil3.intercept
+coil3.key
+coil3.map
+coil3.memory
+coil3.request
+coil3.size
+coil3.target
+coil3.transform
+coil3.transition
+coil3.util
+module:coil-gif
+coil3.gif
+module:coil-network-core
+coil3.network
+module:coil-network-ktor
+coil3.network.ktor
+module:coil-network-okhttp
+coil3.network.okhttp
+module:coil-svg
+coil3.svg
+module:coil-test
+coil3.test
+module:coil-video
+coil3.video

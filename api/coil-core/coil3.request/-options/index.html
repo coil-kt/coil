@@ -1,0 +1,288 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Options</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            coil-root
+                    </a>            </div>
+            <div class="library-version">3.0.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="coil-core::coil3.request/Options///PointingToDeclaration//1772253480">
+  <div class="breadcrumbs"><a href="../../index.html">coil-core</a><span class="delimiter">/</span><a href="../index.html">coil3.request</a><span class="delimiter">/</span><span class="current">Options</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Options</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../../coil-core/coil3.annotation/-data/index.html"><span class="token annotation builtin">Data</span></a></div></div><span class="token keyword">class </span><a href="index.html">Options</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>context<span class="token operator">: </span><a href="../../coil3/-platform-context/index.html">PlatformContext</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>size<span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a><span class="token operator"> = </span>Size.ORIGINAL<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>scale<span class="token operator">: </span><a href="../../coil3.size/-scale/index.html">Scale</a><span class="token operator"> = </span>Scale.FIT<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>allowInexactSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>diskCacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a><span class="token operator"> = </span>defaultFileSystem()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>memoryCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>diskCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>networkCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>extras<span class="token operator">: </span><a href="../../coil3/-extras/index.html">Extras</a><span class="token operator"> = </span>Extras.EMPTY</span></span><span class="token punctuation">)</span></div><p class="paragraph">A set of configuration options for fetching and decoding an image.</p><p class="paragraph"><a href="../../coil3.fetch/-fetcher/index.html">Fetcher</a>s and <a href="../../coil3.decode/-decoder/index.html">Decoder</a>s should respect these options as best as possible.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="2021111233%2FConstructors%2F1772253480" anchor-label="Options" id="2021111233%2FConstructors%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-options.html"><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2021111233%2FConstructors%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="../../coil3/-platform-context/index.html">PlatformContext</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a><span class="token operator"> = </span>Size.ORIGINAL<span class="token punctuation">, </span></span><span class="parameter ">scale<span class="token operator">: </span><a href="../../coil3.size/-scale/index.html">Scale</a><span class="token operator"> = </span>Scale.FIT<span class="token punctuation">, </span></span><span class="parameter ">allowInexactSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">diskCacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a><span class="token operator"> = </span>defaultFileSystem()<span class="token punctuation">, </span></span><span class="parameter ">memoryCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter ">diskCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter ">networkCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>CachePolicy.ENABLED<span class="token punctuation">, </span></span><span class="parameter ">extras<span class="token operator">: </span><a href="../../coil3/-extras/index.html">Extras</a><span class="token operator"> = </span>Extras.EMPTY</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1718555856%2FProperties%2F1772253480" anchor-label="allowInexactSize" id="-1718555856%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="allow-inexact-size.html"><span>allow</span><wbr><span>Inexact</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1718555856%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="allow-inexact-size.html">allowInexactSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">'true' if the output image does not need to fit/fill the target's dimensions exactly. For instance, if 'true' <code class="lang-kotlin">BitmapFactoryDecoder</code> will not decode an image at a larger size than its source dimensions as an optimization.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1507655433%2FProperties%2F1772253480" anchor-label="context" id="1507655433%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="context.html"><span><span>context</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1507655433%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="context.html">context</a><span class="token operator">: </span><a href="../../coil3/-platform-context/index.html">PlatformContext</a></div><div class="brief "><p class="paragraph">The <a href="../../coil3/-platform-context/index.html">PlatformContext</a> used to execute this request.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-333987960%2FProperties%2F1772253480" anchor-label="diskCacheKey" id="-333987960%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disk-cache-key.html"><span>disk</span><wbr><span>Cache</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-333987960%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="disk-cache-key.html">diskCacheKey</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The cache key to use when persisting images to the disk cache or 'null' if the component can compute its own.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-498877119%2FProperties%2F1772253480" anchor-label="diskCachePolicy" id="-498877119%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disk-cache-policy.html"><span>disk</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-498877119%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="disk-cache-policy.html">diskCachePolicy</a><span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a></div><div class="brief "><p class="paragraph">Determines if this request is allowed to read/write from/to disk.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-888222401%2FProperties%2F1772253480" anchor-label="extras" id="-888222401%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="extras.html"><span><span>extras</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-888222401%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="extras.html">extras</a><span class="token operator">: </span><a href="../../coil3/-extras/index.html">Extras</a></div><div class="brief "><p class="paragraph">Extras that are used to configure/extend an image loader's base functionality.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1934266537%2FProperties%2F1772253480" anchor-label="fileSystem" id="-1934266537%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="file-system.html"><span>file</span><wbr><span><span>System</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1934266537%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="file-system.html">fileSystem</a><span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a></div><div class="brief "><p class="paragraph">The <a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a> that will be used to perform any disk read/write operations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="714223589%2FProperties%2F1772253480" anchor-label="memoryCachePolicy" id="714223589%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="memory-cache-policy.html"><span>memory</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="714223589%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="memory-cache-policy.html">memoryCachePolicy</a><span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a></div><div class="brief "><p class="paragraph">Determines if this request is allowed to read/write from/to memory.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-920349380%2FProperties%2F1772253480" anchor-label="networkCachePolicy" id="-920349380%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="network-cache-policy.html"><span>network</span><wbr><span>Cache</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-920349380%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="network-cache-policy.html">networkCachePolicy</a><span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a></div><div class="brief "><p class="paragraph">Determines if this request is allowed to read from the network.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1482730126%2FProperties%2F1772253480" anchor-label="scale" id="1482730126%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale.html"><span><span>scale</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1482730126%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="scale.html">scale</a><span class="token operator">: </span><a href="../../coil3.size/-scale/index.html">Scale</a></div><div class="brief "><p class="paragraph">The scaling algorithm for how to fit the source image's dimensions into the target's dimensions.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1385486687%2FProperties%2F1772253480" anchor-label="size" id="-1385486687%2FProperties%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1385486687%2FProperties%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a></div><div class="brief "><p class="paragraph">The requested output size for the image request.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1565652274%2FFunctions%2F1772253480" anchor-label="copy" id="-1565652274%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="copy.html"><span><span>copy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1565652274%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy.html"><span class="token function">copy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="../../coil3/-platform-context/index.html">PlatformContext</a><span class="token operator"> = </span>this.context<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a><span class="token operator"> = </span>this.size<span class="token punctuation">, </span></span><span class="parameter ">scale<span class="token operator">: </span><a href="../../coil3.size/-scale/index.html">Scale</a><span class="token operator"> = </span>this.scale<span class="token punctuation">, </span></span><span class="parameter ">allowInexactSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span>this.allowInexactSize<span class="token punctuation">, </span></span><span class="parameter ">diskCacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>this.diskCacheKey<span class="token punctuation">, </span></span><span class="parameter ">fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a><span class="token operator"> = </span>this.fileSystem<span class="token punctuation">, </span></span><span class="parameter ">memoryCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>this.memoryCachePolicy<span class="token punctuation">, </span></span><span class="parameter ">diskCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>this.diskCachePolicy<span class="token punctuation">, </span></span><span class="parameter ">networkCachePolicy<span class="token operator">: </span><a href="../-cache-policy/index.html">CachePolicy</a><span class="token operator"> = </span>this.networkCachePolicy<span class="token punctuation">, </span></span><span class="parameter ">extras<span class="token operator">: </span><a href="../../coil3/-extras/index.html">Extras</a><span class="token operator"> = </span>this.extras</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Options</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1039765914%2FFunctions%2F1772253480" anchor-label="getExtra" id="1039765914%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../coil3/get-extra.html"><span>get</span><wbr><span><span>Extra</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1039765914%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../../coil3/get-extra.html">T</a><span class="token operator">&gt; </span><a href="index.html">Options</a><span class="token punctuation">.</span><a href="../../coil3/get-extra.html"><span class="token function">getExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="../../coil3/-extras/-key/index.html">Extras.Key</a><span class="token operator">&lt;</span><a href="../../coil3/get-extra.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../coil3/get-extra.html">T</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,377 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>coil3.gif</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            coil-root
+                    </a>            </div>
+            <div class="library-version">3.0.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":coil-gif:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="coil-gif::coil3.gif////PointingToDeclaration//204182669">
+  <div class="breadcrumbs"><a href="../index.html">coil-gif</a><span class="delimiter">/</span><span class="current">coil3.gif</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1246339856%2FClasslikes%2F204182669" anchor-label="AnimatedImageDecoder" id="-1246339856%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-image-decoder/index.html"><span>Animated</span><wbr><span>Image</span><wbr><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1246339856%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html"><span class="token annotation builtin">RequiresApi</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">28</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="-animated-image-decoder/index.html">AnimatedImageDecoder</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="../../coil-core/coil3.decode/-image-source/index.html">ImageSource</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">enforceMinimumFrameDelay<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span> : <a href="../../coil-core/coil3.decode/-decoder/index.html">Decoder</a></div><div class="brief "><p class="paragraph">A <a href="../../coil-core/coil3.decode/-decoder/index.html">Decoder</a> that uses <a href="https://developer.android.com/reference/kotlin/android/graphics/ImageDecoder.html">ImageDecoder</a> to decode GIFs, animated WebPs, and animated HEIFs.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1148515760%2FClasslikes%2F204182669" anchor-label="AnimatedTransformation" id="-1148515760%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-animated-transformation/index.html"><span>Animated</span><wbr><span><span>Transformation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1148515760%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../coil-core/coil3.annotation/-experimental-coil-api/index.html"><span class="token annotation builtin">ExperimentalCoilApi</span></a></div></div><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-animated-transformation/index.html">AnimatedTransformation</a></div><div class="brief "><p class="paragraph">An interface for making transformations to an animated image's pixel data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="566147324%2FClasslikes%2F204182669" anchor-label="GifDecoder" id="566147324%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gif-decoder/index.html"><span>Gif</span><wbr><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="566147324%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-gif-decoder/index.html">GifDecoder</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="../../coil-core/coil3.decode/-image-source/index.html">ImageSource</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">enforceMinimumFrameDelay<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span> : <a href="../../coil-core/coil3.decode/-decoder/index.html">Decoder</a></div><div class="brief "><p class="paragraph">A <a href="../../coil-core/coil3.decode/-decoder/index.html">Decoder</a> that uses <a href="https://developer.android.com/reference/kotlin/android/graphics/Movie.html">Movie</a> to decode GIFs.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-785969288%2FClasslikes%2F204182669" anchor-label="MovieDrawable" id="-785969288%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-movie-drawable/index.html"><span>Movie</span><wbr><span><span>Drawable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-785969288%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-movie-drawable/index.html">MovieDrawable</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">movie<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Movie.html">Movie</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>config<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Bitmap.Config.html">Bitmap.Config</a><span class="token operator"> = </span>Bitmap.Config.ARGB_8888<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>scale<span class="token operator">: </span><a href="../../coil-core/coil3.size/-scale/index.html">Scale</a><span class="token operator"> = </span>Scale.FIT</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>, <a href="https://developer.android.com/reference/kotlin/androidx/vectordrawable/graphics/drawable/Animatable2Compat.html">Animatable2Compat</a></div><div class="brief "><p class="paragraph">A <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a> that supports rendering <a href="https://developer.android.com/reference/kotlin/android/graphics/Movie.html">Movie</a>s (i.e. GIFs).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="971777815%2FClasslikes%2F204182669" anchor-label="PixelOpacity" id="971777815%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pixel-opacity/index.html"><span>Pixel</span><wbr><span><span>Opacity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="971777815%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../coil-core/coil3.annotation/-experimental-coil-api/index.html"><span class="token annotation builtin">ExperimentalCoilApi</span></a></div></div><span class="token keyword">enum </span><a href="-pixel-opacity/index.html">PixelOpacity</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-pixel-opacity/index.html">PixelOpacity</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Represents the opacity of an image's pixels after applying an <a href="-animated-transformation/index.html">AnimatedTransformation</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-661426018%2FClasslikes%2F204182669" anchor-label="ScaleDrawable" id="-661426018%2FClasslikes%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-scale-drawable/index.html"><span>Scale</span><wbr><span><span>Drawable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-661426018%2FClasslikes%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-scale-drawable/index.html">ScaleDrawable</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>child<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>scale<span class="token operator">: </span><a href="../../coil-core/coil3.size/-scale/index.html">Scale</a><span class="token operator"> = </span>Scale.FIT</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>, <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.Callback.html">Drawable.Callback</a>, <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Animatable.html">Animatable</a></div><div class="brief "><p class="paragraph">A <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a> that centers and scales its <a href="-scale-drawable/child.html">child</a> to fill its bounds.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1432029963%2FProperties%2F204182669" anchor-label="animatedTransformation" id="1432029963%2FProperties%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animated-transformation.html"><span>animated</span><wbr><span><span>Transformation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1432029963%2FProperties%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3/-extras/-key/-companion/index.html">Extras.Key.Companion</a><span class="token punctuation">.</span><a href="animated-transformation.html">animatedTransformation</a><span class="token operator">: </span><a href="../../coil-core/coil3/-extras/-key/index.html">Extras.Key</a><span class="token operator">&lt;</span><a href="-animated-transformation/index.html">AnimatedTransformation</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">.</span><a href="animated-transformation.html">animatedTransformation</a><span class="token operator">: </span><a href="-animated-transformation/index.html">AnimatedTransformation</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">.</span><a href="animated-transformation.html">animatedTransformation</a><span class="token operator">: </span><a href="-animated-transformation/index.html">AnimatedTransformation</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1243313477%2FProperties%2F204182669" anchor-label="animationEndCallback" id="-1243313477%2FProperties%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animation-end-callback.html"><span>animation</span><wbr><span>End</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1243313477%2FProperties%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3/-extras/-key/-companion/index.html">Extras.Key.Companion</a><span class="token punctuation">.</span><a href="animation-end-callback.html">animationEndCallback</a><span class="token operator">: </span><a href="../../coil-core/coil3/-extras/-key/index.html">Extras.Key</a><span class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">.</span><a href="animation-end-callback.html">animationEndCallback</a><span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">.</span><a href="animation-end-callback.html">animationEndCallback</a><span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1483127088%2FProperties%2F204182669" anchor-label="animationStartCallback" id="-1483127088%2FProperties%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animation-start-callback.html"><span>animation</span><wbr><span>Start</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1483127088%2FProperties%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3/-extras/-key/-companion/index.html">Extras.Key.Companion</a><span class="token punctuation">.</span><a href="animation-start-callback.html">animationStartCallback</a><span class="token operator">: </span><a href="../../coil-core/coil3/-extras/-key/index.html">Extras.Key</a><span class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">.</span><a href="animation-start-callback.html">animationStartCallback</a><span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">.</span><a href="animation-start-callback.html">animationStartCallback</a><span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="645159055%2FProperties%2F204182669" anchor-label="repeatCount" id="645159055%2FProperties%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="repeat-count.html"><span>repeat</span><wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="645159055%2FProperties%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3/-extras/-key/-companion/index.html">Extras.Key.Companion</a><span class="token punctuation">.</span><a href="repeat-count.html">repeatCount</a><span class="token operator">: </span><a href="../../coil-core/coil3/-extras/-key/index.html">Extras.Key</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">.</span><a href="repeat-count.html">repeatCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="symbol monospace"><span class="token keyword">val </span><a href="../../coil-core/coil3.request/-options/index.html">Options</a><span class="token punctuation">.</span><a href="repeat-count.html">repeatCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1018556354%2FFunctions%2F204182669" anchor-label="animatedTransformation" id="1018556354%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="animated-transformation.html"><span>animated</span><wbr><span><span>Transformation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1018556354%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../coil-core/coil3.annotation/-experimental-coil-api/index.html"><span class="token annotation builtin">ExperimentalCoilApi</span></a></div></div><span class="token keyword">fun </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="animated-transformation.html"><span class="token function">animatedTransformation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">animatedTransformation<span class="token operator">: </span><a href="-animated-transformation/index.html">AnimatedTransformation</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the <a href="-animated-transformation/index.html">AnimatedTransformation</a> that will be applied to the result if it is an animated <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-729378093%2FFunctions%2F204182669" anchor-label="isAnimatedHeif" id="-729378093%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-animated-heif.html"><span>is</span><wbr><span>Animated</span><wbr><span><span>Heif</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-729378093%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.decode/-decode-utils/index.html">DecodeUtils</a><span class="token punctuation">.</span><a href="is-animated-heif.html"><span class="token function">isAnimatedHeif</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Return 'true' if the <a href="is-animated-heif.html">source</a> contains an animated HEIF image sequence. The <a href="is-animated-heif.html">source</a> is not consumed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="734147189%2FFunctions%2F204182669" anchor-label="isAnimatedWebP" id="734147189%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-animated-web-p.html"><span>is</span><wbr><span>Animated</span><wbr><span>Web</span><wbr><span><span>P</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="734147189%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.decode/-decode-utils/index.html">DecodeUtils</a><span class="token punctuation">.</span><a href="is-animated-web-p.html"><span class="token function">isAnimatedWebP</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Return 'true' if the <a href="is-animated-web-p.html">source</a> contains an animated WebP image. The <a href="is-animated-web-p.html">source</a> is not consumed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1073155698%2FFunctions%2F204182669" anchor-label="isGif" id="1073155698%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-gif.html"><span>is</span><wbr><span><span>Gif</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1073155698%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.decode/-decode-utils/index.html">DecodeUtils</a><span class="token punctuation">.</span><a href="is-gif.html"><span class="token function">isGif</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Return 'true' if the <a href="is-gif.html">source</a> contains a GIF image. The <a href="is-gif.html">source</a> is not consumed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="605991952%2FFunctions%2F204182669" anchor-label="isHeif" id="605991952%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-heif.html"><span>is</span><wbr><span><span>Heif</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="605991952%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.decode/-decode-utils/index.html">DecodeUtils</a><span class="token punctuation">.</span><a href="is-heif.html"><span class="token function">isHeif</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Return 'true' if the <a href="is-heif.html">source</a> contains an HEIF image. The <a href="is-heif.html">source</a> is not consumed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2069517234%2FFunctions%2F204182669" anchor-label="isWebP" id="2069517234%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-web-p.html"><span>is</span><wbr><span>Web</span><wbr><span><span>P</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2069517234%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.decode/-decode-utils/index.html">DecodeUtils</a><span class="token punctuation">.</span><a href="is-web-p.html"><span class="token function">isWebP</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Return 'true' if the <a href="is-web-p.html">source</a> contains a WebP image. The <a href="is-web-p.html">source</a> is not consumed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2014314420%2FFunctions%2F204182669" anchor-label="onAnimationEnd" id="2014314420%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-animation-end.html"><span>on</span><wbr><span>Animation</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2014314420%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="on-animation-end.html"><span class="token function">onAnimationEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the callback to be invoked at the end of the animation if the result is an animated <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1623729331%2FFunctions%2F204182669" anchor-label="onAnimationStart" id="-1623729331%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-animation-start.html"><span>on</span><wbr><span>Animation</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1623729331%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="on-animation-start.html"><span class="token function">onAnimationStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the callback to be invoked at the start of the animation if the result is an animated <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-540341909%2FFunctions%2F204182669" anchor-label="repeatCount" id="-540341909%2FFunctions%2F204182669" data-filterable-set=":coil-gif:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":coil-gif:dokkaHtmlPartial/release" data-filterable-set=":coil-gif:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="repeat-count.html"><span>repeat</span><wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-540341909%2FFunctions%2F204182669"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-gif:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a><span class="token punctuation">.</span><a href="repeat-count.html"><span class="token function">repeatCount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">repeatCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../coil-core/coil3.request/-image-request/-builder/index.html">ImageRequest.Builder</a></div><div class="brief "><p class="paragraph">Set the number of times to repeat the animation if the result is an animated <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
