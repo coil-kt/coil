@@ -40,6 +40,8 @@ jobs:
 
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
+              env:
+                  ANDROID_HOME: /usr/local/lib/android
               with:
                   api-level: 31
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -70,6 +72,8 @@ jobs:
                   api-level: 31
 
             - name: Instrumentation tests
+              env:
+                  ANDROID_HOME: /usr/local/lib/android
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: 31
