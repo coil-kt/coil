@@ -53,7 +53,7 @@ jobs:
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     without-kvm:
-        runs-on: runs-on,runner=4cpu-linux-x64,ami=ami-0ce38e750448922e5,hdd=80,env=dev
+        runs-on: runs-on,family=c5.metal,ami=ami-0ce38e750448922e5,hdd=80,env=dev
         timeout-minutes: 60
         steps:
             - uses: actions/checkout@v4
