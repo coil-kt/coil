@@ -41,7 +41,7 @@ jobs:
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               env:
-                  ANDROID_HOME: /usr/local/lib/android
+                  ANDROID_HOME: /usr/local/lib/android/sdk
               with:
                   api-level: 31
                   arch: ${{ steps.avd-info.outputs.arch }}
