@@ -85,6 +85,7 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: 31
+                  disable-linux-hw-accel: true
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
