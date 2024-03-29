@@ -9,13 +9,13 @@ env:
     JAVA_VERSION: 17
 jobs:
     with-kvm:
-        runs-on: ubicloud-standard-8
+        runs-on: runs-on,family=c5.metal,ami=ami-0ce38e750448922e5
         timeout-minutes: 60
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
-                  distribution: 'zulu'
+                  distribution: "zulu"
                   java-version: ${{ env.JAVA_VERSION }}
             - uses: gradle/gradle-build-action@v3
               continue-on-error: true
@@ -45,32 +45,32 @@ jobs:
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     without-kvm:
-        runs-on: ubicloud-standard-8
+        runs-on: runs-on,runner=4cpu-linux-x64,ami=ami-0ce38e750448922e5
         timeout-minutes: 60
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
-                distribution: 'zulu'
-                java-version: ${{ env.JAVA_VERSION }}
+                  distribution: "zulu"
+                  java-version: ${{ env.JAVA_VERSION }}
             - uses: gradle/gradle-build-action@v3
               continue-on-error: true
               timeout-minutes: 5
               with:
-                cache-overwrite-existing: true
-                gradle-home-cache-cleanup: true
+                  cache-overwrite-existing: true
+                  gradle-home-cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
               uses: ./.github/actions/get-avd-info
               id: avd-info
               with:
-                api-level: 31
+                  api-level: 31
 
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: 31
-                arch: ${{ steps.avd-info.outputs.arch }}
-                target: ${{ steps.avd-info.outputs.target }}
-                script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
+                  api-level: 31
+                  arch: ${{ steps.avd-info.outputs.arch }}
+                  target: ${{ steps.avd-info.outputs.target }}
+                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
