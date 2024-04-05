@@ -5,11 +5,13 @@ import coil3.ImageLoader
 /**
  * Enable a crossfade animation when a request completes successfully.
  */
-expect fun ImageRequest.Builder.crossfade(enable: Boolean): ImageRequest.Builder
+fun ImageRequest.Builder.crossfade(enable: Boolean) =
+    crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
 
 expect fun ImageRequest.Builder.crossfade(durationMillis: Int): ImageRequest.Builder
 
-expect fun ImageLoader.Builder.crossfade(enable: Boolean): ImageLoader.Builder
+fun ImageLoader.Builder.crossfade(enable: Boolean) =
+    crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
 
 expect fun ImageLoader.Builder.crossfade(durationMillis: Int): ImageLoader.Builder
 
