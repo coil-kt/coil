@@ -72,15 +72,9 @@ private val transformationsKey = Extras.Key<List<Transformation>>(default = empt
 /**
  * Enable a crossfade animation when a request completes successfully.
  */
-actual fun ImageRequest.Builder.crossfade(enable: Boolean) =
-    crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
-
 actual fun ImageRequest.Builder.crossfade(durationMillis: Int): ImageRequest.Builder {
     return transitionFactory(newCrossfadeTransitionFactory(durationMillis))
 }
-
-actual fun ImageLoader.Builder.crossfade(enable: Boolean) =
-    crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
 
 actual fun ImageLoader.Builder.crossfade(durationMillis: Int): ImageLoader.Builder {
     return transitionFactory(newCrossfadeTransitionFactory(durationMillis))
