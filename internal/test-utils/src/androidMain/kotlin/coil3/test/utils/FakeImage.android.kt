@@ -5,10 +5,10 @@ import android.graphics.drawable.Drawable
 import coil3.Image
 
 actual class FakeImage actual constructor(
-    override val width: Int,
-    override val height: Int,
-    override val size: Long,
-    override val shareable: Boolean,
+    actual override val width: Int,
+    actual override val height: Int,
+    actual override val size: Long,
+    actual override val shareable: Boolean,
 ) : Image {
     override fun asDrawable(resources: Resources): Drawable {
         throw UnsupportedOperationException()

@@ -1,7 +1,10 @@
 package coil3.svg
 
+import coil3.ImageLoader
+import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
+import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 
 /**
@@ -17,8 +20,15 @@ expect class SvgDecoder(
     options: Options,
     useViewBoundsAsIntrinsicSize: Boolean = true,
 ) : Decoder {
+    override suspend fun decode(): DecodeResult?
 
     class Factory(
         useViewBoundsAsIntrinsicSize: Boolean = true,
-    ) : Decoder.Factory
+    ) : Decoder.Factory {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder?
+    }
 }
