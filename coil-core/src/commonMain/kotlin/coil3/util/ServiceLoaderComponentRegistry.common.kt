@@ -9,6 +9,10 @@ import kotlin.reflect.KClass
 expect object ServiceLoaderComponentRegistry {
     val fetchers: List<FetcherServiceLoaderTarget<*>>
     val decoders: List<DecoderServiceLoaderTarget>
+
+    // Only available on non-JVM. Added these declarations to work-around a compiler bug.
+    fun register(fetcher: FetcherServiceLoaderTarget<*>)
+    fun register(decoder: DecoderServiceLoaderTarget)
 }
 
 @InternalCoilApi
