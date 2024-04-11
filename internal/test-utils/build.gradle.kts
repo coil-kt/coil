@@ -28,8 +28,13 @@ kotlin {
                 api(libs.androidx.core)
                 api(libs.androidx.test.core)
                 api(libs.androidx.test.junit)
-                api(libs.junit)
                 compileOnly(libs.robolectric)
+            }
+        }
+        named("jvmCommonMain") {
+            dependencies {
+                api(libs.kotlin.test.junit)
+                api(libs.junit)
             }
         }
     }

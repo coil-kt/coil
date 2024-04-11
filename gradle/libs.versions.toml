@@ -66,6 +66,7 @@ junit = "junit:junit:4.13.2"
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
