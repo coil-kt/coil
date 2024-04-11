@@ -16,7 +16,7 @@ actual fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun containerSize(): IntSize {
-    return LocalWindowInfo.current.containerSize
+    return IntSize.Zero
 }
 
 @Composable

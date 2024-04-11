@@ -123,5 +123,6 @@ afterEvaluate {
             dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
         }
         named("jsBrowserProductionWebpack").configure(configureJs)
+        named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }
