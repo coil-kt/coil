@@ -38,7 +38,7 @@ private fun KotlinHierarchyBuilder.groupNonAndroid() {
 private fun KotlinHierarchyBuilder.groupJsCommon() {
     group("jsCommon") {
         withJs()
-        withWasm()
+        withWasmJs()
     }
 }
 

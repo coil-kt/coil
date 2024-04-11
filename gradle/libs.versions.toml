@@ -4,8 +4,8 @@ androidx-benchmark = "1.2.3"
 androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0"
 jetbrains-compose = "1.6.2"
-jetbrains-compose-compiler = "1.5.10.1"
-kotlin = "1.9.23"
+jetbrains-compose-compiler = "1.5.11-kt-2.0.0-RC1"
+kotlin = "2.0.0-RC1"
 ktlint = "1.1.0"
 ktor = "2.3.10"
 ktor-wasm = "3.0.0-wasm2"
@@ -65,7 +65,7 @@ google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.3
 junit = "junit:junit:4.13.2"
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"

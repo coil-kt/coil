@@ -143,11 +143,11 @@ allprojects {
         }
     }
 
-    plugins.withId("dev.drewhamilton.poko") {
-        extensions.configure<PokoPluginExtension> {
-            pokoAnnotation = "coil3.annotation.Data"
-        }
-    }
+//    plugins.withId("dev.drewhamilton.poko") {
+//        extensions.configure<PokoPluginExtension> {
+//            pokoAnnotation = "coil3.annotation.Data"
+//        }
+//    }
 
     if (enableComposeMetrics && name in publicModules) {
         plugins.withId("org.jetbrains.compose") {

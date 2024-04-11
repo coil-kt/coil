@@ -144,11 +144,11 @@ expect abstract class EventListener : ImageRequest.Listener {
         fun create(request: ImageRequest): EventListener
 
         companion object {
-            @JvmField val NONE: Factory
+            val NONE: Factory
         }
     }
 
     companion object {
-        @JvmField val NONE: EventListener
+        val NONE: EventListener
     }
 }
