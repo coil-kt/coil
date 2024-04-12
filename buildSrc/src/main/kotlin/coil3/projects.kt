@@ -154,7 +154,8 @@ private fun <T : BaseExtension> Project.androidBase(
     }
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
+            // Temporarily disable due to https://youtrack.jetbrains.com/issue/KT-60866.
+            // allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
             val arguments = mutableListOf<String>()
 
