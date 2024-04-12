@@ -137,14 +137,16 @@ private fun <T : BaseExtension> Project.androidBase(
             }
             targets.configureEach {
                 compilations.configureEach {
-                    compilerOptions.configure {
-                        val arguments = listOf(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                        freeCompilerArgs.addAll(arguments)
+                    compileTaskProvider.configure {
+                        compilerOptions {
+                            val arguments = listOf(
+                                // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                                "-progressive",
+                                // https://youtrack.jetbrains.com/issue/KT-61573
+                                "-Xexpect-actual-classes",
+                            )
+                            freeCompilerArgs.addAll(arguments)
+                        }
                     }
                 }
             }
