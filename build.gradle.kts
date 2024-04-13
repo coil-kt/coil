@@ -20,6 +20,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
@@ -54,6 +55,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
 
     // Necessary to publish to Maven.
