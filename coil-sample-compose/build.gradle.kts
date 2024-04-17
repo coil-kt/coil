@@ -42,4 +42,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.compose.material)
+    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-beta01")
 }

@@ -7,10 +7,16 @@ plugins {
 }
 
 setupTestModule(name = "coil.benchmark", config = true) {
-    val targetProject = System.getProperty("project", "view")
+    // TODO: temporary, should pass instead
+    val targetProject = "compose" //System.getProperty("project", "view")
     defaultConfig {
         minSdk = 23
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
+        // TODO temporary, should pass with run configuration
+        testInstrumentationRunnerArguments["androidx.benchmark.fullTracing.enable"] = "true"
+        // TODO just temporary
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "LOW-BATTERY"
+        testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"]= "MethodTracing"
     }
     buildTypes {
         create("benchmark") {
@@ -39,6 +45,8 @@ dependencies {
     implementation(libs.androidx.test.espresso)
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.uiautomator)
+    implementation("androidx.tracing:tracing-perfetto:1.0.0")
+    implementation("androidx.tracing:tracing-perfetto-binary:1.0.0")
 }
 
 androidComponents {
