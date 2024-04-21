@@ -37,7 +37,7 @@ androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.1"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
-androidx-core = "androidx.core:core-ktx:1.12.0"
+androidx-core = "androidx.core:core-ktx:1.13.0"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.7"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
