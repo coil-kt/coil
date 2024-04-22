@@ -46,5 +46,6 @@ rm docs/index.md \
    docs/README-sv.md \
    docs/README-tr.md \
    docs/README-zh.md
-rm -r docs/api
-rm -r site
+rm -r docs/api \
+      docs/sample \
+      site
