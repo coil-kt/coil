@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Build the Compose WASM sample.
+./gradlew samples:compose:wasmJsBrowserDistribution
+
+# Copy outside files into the docs folder.
+cp -R samples/compose/build/dist/wasmJs/productionExecutable docs/sample
+
 # Build the Dokka docs.
 ./assemble_docs.sh
 
