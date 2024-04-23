@@ -65,7 +65,6 @@ class ScrollBenchmark {
     }
 }
 
-
 @OptIn(ExperimentalMetricApi::class)
 class AverageTraceSectionMetric(
     private val sectionName: String,
@@ -90,6 +89,5 @@ class AverageTraceSectionMetric(
                 data = slices.sumOf { it.dur } / 1_000_000.0 / slices.size,
             ),
         )
-
     }
 }
