@@ -13,10 +13,8 @@ setupTestModule(name = "coil.benchmark", config = true) {
         minSdk = 23
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
         // TODO temporary, should pass with run configuration
-        testInstrumentationRunnerArguments["androidx.benchmark.fullTracing.enable"] = "true"
-        // TODO just temporary
-        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "LOW-BATTERY"
-        testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"] = "MethodTracing"
+//        testInstrumentationRunnerArguments["androidx.benchmark.fullTracing.enable"] = "true"
+//        testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"] = "MethodTracing"
     }
     buildTypes {
         create("benchmark") {

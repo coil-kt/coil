@@ -5,18 +5,15 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
-import androidx.benchmark.macro.ExperimentalMetricApi
 import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
-import androidx.benchmark.macro.TraceMetric
-import androidx.benchmark.macro.TraceSectionMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
-import androidx.benchmark.perfetto.ExperimentalPerfettoTraceProcessorApi
-import androidx.benchmark.perfetto.PerfettoTraceProcessor
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
 import coil.benchmark.BuildConfig.PROJECT
+import coil.benchmark.MicrosTraceSectionMetric.Mode.Average
+import coil.benchmark.MicrosTraceSectionMetric.Mode.Sum
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,64 +27,40 @@ class ScrollBenchmark {
     @RequiresApi(Build.VERSION_CODES.N)
     @Test
     fun baselineProfile() {
-        startup(CompilationMode.Partial(BaselineProfileMode.Require))
+        benchmark(CompilationMode.Partial(BaselineProfileMode.Require))
     }
 
     @Test
     fun fullCompilation() {
-        startup(CompilationMode.Full())
+        benchmark(CompilationMode.Full())
     }
 
-    @OptIn(ExperimentalMetricApi::class)
-    private fun startup(compilationMode: CompilationMode) {
+    private fun benchmark(compilationMode: CompilationMode) {
         benchmarkRule.measureRepeated(
             packageName = "sample.$PROJECT",
             metrics = listOf(
                 FrameTimingMetric(),
                 StartupTimingMetric(),
-                TraceSectionMetric(
-                    "coil.compose.rememberAsyncImagePainter%",
-                    TraceSectionMetric.Mode.Sum,
+                MicrosTraceSectionMetric(
+                    "rememberAsyncImagePainter",
+                    Sum, Average,
                 ),
-                AverageTraceSectionMetric("coil.compose.rememberAsyncImagePainter%"),
+                MicrosTraceSectionMetric(
+                    "AsyncImagePainter.onRemembered",
+                    Sum, Average,
+                ),
             ),
-            iterations = 1,
+            iterations = 20,
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
             measureBlock = {
                 startActivityAndWait()
+                Thread.sleep(3_000)
                 val list = device.findObject(By.res("list"))
                 list.setGestureMargin(device.displayWidth / 5)
                 list.drag(Point(list.visibleBounds.centerX(), list.visibleBounds.top))
                 Thread.sleep(300)
             },
-        )
-    }
-}
-
-@OptIn(ExperimentalMetricApi::class)
-class AverageTraceSectionMetric(
-    private val sectionName: String,
-    private val label: String = sectionName,
-    private val targetPackageOnly: Boolean = true,
-) : TraceMetric() {
-
-    @ExperimentalPerfettoTraceProcessorApi
-    @Suppress("RestrictedApi")
-    override fun getResult(
-        captureInfo: CaptureInfo,
-        traceSession: PerfettoTraceProcessor.Session,
-    ): List<Measurement> {
-        val slices = traceSession.querySlices(
-            sectionName,
-            packageName = if (targetPackageOnly) captureInfo.targetPackageName else null,
-        )
-
-        return listOf(
-            Measurement(
-                name = label + "AverageMs",
-                data = slices.sumOf { it.dur } / 1_000_000.0 / slices.size,
-            ),
         )
     }
 }
