@@ -76,6 +76,7 @@ nav:
   - 'Upgrading to Coil 3.x': upgrading_to_coil3.md
   - 'Works with Coil': works_with_coil.md
   - 'API ⏏': api/index.html
+  - 'Sample ⏏': sample/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

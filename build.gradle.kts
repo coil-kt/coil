@@ -175,6 +175,11 @@ allprojects {
 
 // https://github.com/square/okio/issues/1163
 fun Project.applyOkioJsTestWorkaround() {
+    if (displayName.startsWith(":samples")) {
+        // The polyfills cause issues with the samples.
+        return
+    }
+
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         val applyNodePolyfillPlugin by lazy {
             tasks.register("applyNodePolyfillPlugin") {
