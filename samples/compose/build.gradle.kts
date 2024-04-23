@@ -71,7 +71,11 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "coilSample"
-        browser()
+        browser {
+            commonWebpackConfig {
+                outputFileName = "coilSample.js"
+            }
+        }
         binaries.executable()
         applyBinaryen()
     }
