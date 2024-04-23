@@ -49,6 +49,9 @@ compose {
             }
         }
     }
+    experimental {
+        web.application {}
+    }
 }
 
 kotlin {
