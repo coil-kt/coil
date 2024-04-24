@@ -175,7 +175,7 @@ allprojects {
 
 // https://github.com/square/okio/issues/1163
 fun Project.applyOkioJsTestWorkaround() {
-    if (displayName.startsWith(":samples")) {
+    if (":samples" in displayName) {
         // The polyfills cause issues with the samples.
         return
     }
