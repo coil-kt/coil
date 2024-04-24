@@ -10,7 +10,7 @@ public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics
 	public static final field Companion Lcoil/compose/AsyncImagePainter$Companion;
 	public final fun getImageLoader ()Lcoil/ImageLoader;
 	public fun getIntrinsicSize-NH-jbRc ()J
-	public final fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getRequest (Landroidx/compose/runtime/Composer;I)Lcoil/request/ImageRequest;
 	public final fun getState ()Lcoil/compose/AsyncImagePainter$State;
 	public fun onAbandoned ()V
 	public fun onForgotten ()V
