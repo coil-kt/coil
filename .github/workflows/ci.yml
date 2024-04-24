@@ -142,7 +142,7 @@ jobs:
     deploy-docs:
         name: Deploy docs
         runs-on: ubuntu-latest
-        timeout-minutes: 20
+        timeout-minutes: 40
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
