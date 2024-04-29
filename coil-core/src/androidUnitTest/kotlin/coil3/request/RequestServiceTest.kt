@@ -131,11 +131,13 @@ class RequestServiceTest : RobolectricTest() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2221 */
     @Test
-    @Config(sdk = [30])
-    fun `bitmapConfig is preserved if hardware bitmaps are enabled`() {
+    fun `ImageLoader bitmapConfig is preserved`() {
+        val imageLoader = ImageLoader.Builder(context)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build()
         val request = ImageRequest.Builder(context)
             .data(Unit)
-            .bitmapConfig(Bitmap.Config.RGB_565)
+            .defaults(imageLoader.defaults)
             .build()
         val options = service.options(request, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
