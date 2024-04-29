@@ -128,4 +128,16 @@ class RequestServiceTest : RobolectricTest() {
         val options = service.options(request, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2221 */
+    @Test
+    @Config(sdk = [30])
+    fun `bitmapConfig is preserved if hardware bitmaps are enabled`() {
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build()
+        val options = service.options(request, Size(100, 100))
+        assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
+    }
 }
