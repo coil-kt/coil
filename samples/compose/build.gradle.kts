@@ -49,6 +49,9 @@ compose {
             }
         }
     }
+    experimental {
+        web.application {}
+    }
 }
 
 kotlin {
@@ -71,7 +74,11 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "coilSample"
-        browser()
+        browser {
+            commonWebpackConfig {
+                outputFileName = "coilSample.js"
+            }
+        }
         binaries.executable()
     }
 

@@ -42,8 +42,8 @@ fun DecodeUtils.isWebP(source: BufferedSource): Boolean {
 fun DecodeUtils.isAnimatedWebP(source: BufferedSource): Boolean {
     return isWebP(source) &&
         source.rangeEquals(12, WEBP_HEADER_VPX8) &&
-        source.request(17) &&
-        (source.buffer[16] and 0b00000010) > 0
+        source.request(21) &&
+        (source.buffer[20] and 0b00000010) > 0
 }
 
 /**
