@@ -50,7 +50,7 @@ androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.5"
 androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
-androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
+androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
 jetbrains-compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "jetbrains-compose-compiler" }
 
