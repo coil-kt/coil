@@ -23,7 +23,7 @@ poko = "dev.drewhamilton.poko:0.16.0-SNAPSHOT"
 spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.3.2"
+gradlePlugin-android = "com.android.tools.build:gradle:8.4.0"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.24.0"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -37,7 +37,7 @@ androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.1"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
-androidx-core = "androidx.core:core-ktx:1.13.0"
+androidx-core = "androidx.core:core-ktx:1.13.1"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.7"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
@@ -50,7 +50,7 @@ androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.5"
 androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
-androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
+androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
 jetbrains-compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "jetbrains-compose-compiler" }
 
@@ -59,7 +59,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
-google-material = "com.google.android.material:material:1.11.0"
+google-material = "com.google.android.material:material:1.12.0"
 google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.34.0"
 
 junit = "junit:junit:4.13.2"

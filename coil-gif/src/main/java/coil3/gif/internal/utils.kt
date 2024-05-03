@@ -33,6 +33,6 @@ internal fun animatable2CompatCallbackOf(
     onStart: (() -> Unit)?,
     onEnd: (() -> Unit)?
 ) = object : Animatable2Compat.AnimationCallback() {
-    override fun onAnimationStart(drawable: Drawable?) { onStart?.invoke() }
-    override fun onAnimationEnd(drawable: Drawable?) { onEnd?.invoke() }
+    override fun onAnimationStart(drawable: Drawable) { onStart?.invoke() }
+    override fun onAnimationEnd(drawable: Drawable) { onEnd?.invoke() }
 }
