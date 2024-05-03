@@ -4,7 +4,7 @@ androidx-benchmark = "1.2.4"
 androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0"
 jetbrains-compose = "1.6.2"
-jetbrains-compose-compiler = "1.5.11-kt-2.0.0-RC2"
+jetbrains-compose-compiler = "2.0.0-RC2"
 kotlin = "2.0.0-RC2"
 ktlint = "1.1.0"
 ktor = "2.3.10"
@@ -52,7 +52,7 @@ androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
-jetbrains-compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "jetbrains-compose-compiler" }
+jetbrains-compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "jetbrains-compose-compiler" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
