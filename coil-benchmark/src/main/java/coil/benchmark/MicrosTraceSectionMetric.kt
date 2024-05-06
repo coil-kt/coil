@@ -6,7 +6,7 @@ import androidx.benchmark.perfetto.ExperimentalPerfettoTraceProcessorApi
 import androidx.benchmark.perfetto.PerfettoTraceProcessor
 
 /**
- * TraceSectionMode to give average/sum in microseconds measurements
+ * TraceSectionMetric to give average/sum in microseconds measurements.
  */
 @OptIn(ExperimentalMetricApi::class)
 class MicrosTraceSectionMetric(

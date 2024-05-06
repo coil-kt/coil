@@ -179,7 +179,7 @@ internal class RealImageLoader(
 
             // Resolve the size.
             eventListener.resolveSizeStart(request)
-            val size = request.sizeResolver.size() // TODO this shows up as taking the most time
+            val size = request.sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.

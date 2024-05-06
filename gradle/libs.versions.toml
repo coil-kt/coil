@@ -8,6 +8,7 @@ ktlint = "1.0.1"
 okhttp = "4.12.0"
 okio = "3.8.0"
 roborazzi = "1.7.0"
+perfetto = "1.0.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.14.0"
@@ -43,6 +44,8 @@ androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.5"
 androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.2.0"
+androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "perfetto" }
+androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "perfetto" }
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
 
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
