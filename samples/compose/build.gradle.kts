@@ -80,7 +80,6 @@ kotlin {
             }
         }
         binaries.executable()
-        applyBinaryen()
     }
 
     arrayOf(
@@ -131,6 +130,6 @@ afterEvaluate {
             dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
         }
         named("jsBrowserProductionWebpack").configure(configureJs)
-        named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
+        named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }

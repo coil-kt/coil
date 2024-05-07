@@ -19,4 +19,12 @@ actual object ServiceLoaderComponentRegistry {
             DecoderServiceLoaderTarget::class.java.classLoader,
         ).iterator().asSequence().toList().toImmutableList()
     }
+
+    actual fun register(fetcher: FetcherServiceLoaderTarget<*>) {
+        throw UnsupportedOperationException()
+    }
+
+    actual fun register(decoder: DecoderServiceLoaderTarget) {
+        throw UnsupportedOperationException()
+    }
 }

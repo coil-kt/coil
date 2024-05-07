@@ -7,6 +7,11 @@ expect class FakeImage(
     height: Int = 100,
     size: Long = 4L * width * height,
     shareable: Boolean = true,
-) : Image
+) : Image {
+    override val size: Long
+    override val width: Int
+    override val height: Int
+    override val shareable: Boolean
+}
 
 const val DEFAULT_FAKE_IMAGE_SIZE = 4L * 100 * 100

@@ -1072,6 +1072,8 @@ public final class coil3/util/ServiceLoaderComponentRegistry {
 	public static final field INSTANCE Lcoil3/util/ServiceLoaderComponentRegistry;
 	public final fun getDecoders ()Ljava/util/List;
 	public final fun getFetchers ()Ljava/util/List;
+	public final fun register (Lcoil3/util/DecoderServiceLoaderTarget;)V
+	public final fun register (Lcoil3/util/FetcherServiceLoaderTarget;)V
 }
 
 public final class coil3/util/Utils_commonKt {

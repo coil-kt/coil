@@ -35,7 +35,7 @@ actual class SvgDecoder actual constructor(
     val useViewBoundsAsIntrinsicSize: Boolean,
 ) : Decoder {
 
-    override suspend fun decode(): DecodeResult {
+    actual override suspend fun decode(): DecodeResult? {
         val bytes = source.source().readByteArray()
         val svg = SVGDOM(Data.makeFromBytes(bytes))
 
@@ -107,7 +107,7 @@ actual class SvgDecoder actual constructor(
         val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
 
-        override fun create(
+        actual override fun create(
             result: SourceFetchResult,
             options: Options,
             imageLoader: ImageLoader,

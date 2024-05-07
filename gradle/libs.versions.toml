@@ -4,8 +4,8 @@ androidx-benchmark = "1.2.4"
 androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0"
 jetbrains-compose = "1.6.2"
-jetbrains-compose-compiler = "1.5.10.2"
-kotlin = "1.9.23"
+jetbrains-compose-compiler = "2.0.0-RC2"
+kotlin = "2.0.0-RC2"
 ktlint = "1.1.0"
 ktor = "2.3.10"
 ktor-wasm = "3.0.0-wasm2"
@@ -19,7 +19,7 @@ skiko = "0.7.97"
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark"}
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.14.0"
 dokka = "org.jetbrains.dokka:1.9.20"
-poko = "dev.drewhamilton.poko:0.15.2"
+poko = "dev.drewhamilton.poko:0.16.0-SNAPSHOT"
 spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
@@ -52,7 +52,7 @@ androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
-jetbrains-compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "jetbrains-compose-compiler" }
+jetbrains-compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "jetbrains-compose-compiler" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -65,7 +65,8 @@ google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.3
 junit = "junit:junit:4.13.2"
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.5.0"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
