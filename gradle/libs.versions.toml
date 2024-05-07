@@ -13,7 +13,7 @@ okhttp = "4.12.0"
 okio = "3.9.0"
 paparazzi = "1.3.3"
 roborazzi = "1.15.0"
-skiko = "0.7.97"
+skiko = "0.8.4"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark"}
