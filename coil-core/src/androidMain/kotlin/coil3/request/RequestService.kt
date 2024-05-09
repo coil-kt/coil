@@ -99,14 +99,14 @@ internal class AndroidRequestService(
             transformations.isEmpty() &&
             bitmapConfig != Bitmap.Config.ALPHA_8
 
-        var builder: Extras.Builder? = null
+        var builder = Extras.Builder(defaults.extras.asMap() + extras.asMap())
         if (bitmapConfig != this.bitmapConfig) {
-            builder = extras.newBuilder().set(Extras.Key.bitmapConfig, bitmapConfig)
+            builder = builder.set(Extras.Key.bitmapConfig, bitmapConfig)
         }
         if (allowRgb565 != this.allowRgb565) {
-            builder = (builder ?: extras.newBuilder()).set(Extras.Key.allowRgb565, allowRgb565)
+            builder = builder.set(Extras.Key.allowRgb565, allowRgb565)
         }
-        return builder?.build() ?: extras
+        return builder.build()
     }
 
     override fun updateOptionsOnWorkerThread(options: Options): Options {
