@@ -203,7 +203,7 @@ interface ImageLoader {
         }
 
         /**
-         * A convenience function to set [fetcherDispatcher] and [decoderDispatcher] in one call.
+         * A convenience method to set [fetcherDispatcher] and [decoderDispatcher] in one call.
          */
         fun dispatcher(dispatcher: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(
