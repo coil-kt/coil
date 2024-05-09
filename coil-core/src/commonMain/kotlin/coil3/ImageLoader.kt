@@ -15,6 +15,7 @@ import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.util.Logger
 import coil3.util.application
+import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.FileSystem
@@ -204,7 +205,7 @@ interface ImageLoader {
         /**
          * A convenience function to set [fetcherDispatcher] and [decoderDispatcher] in one call.
          */
-        fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun dispatcher(dispatcher: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(
                 fetcherDispatcher = dispatcher,
                 decoderDispatcher = dispatcher,
@@ -212,29 +213,29 @@ interface ImageLoader {
         }
 
         /**
-         * The [CoroutineDispatcher] that the [Interceptor] chain will be executed on.
+         * The [CoroutineContext] that the [Interceptor] chain will be executed in.
          *
          * Default: `Dispatchers.Main.immediate`
          */
-        fun interceptorDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun interceptorDispatcher(dispatcher: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(interceptorDispatcher = dispatcher)
         }
 
         /**
-         * The [CoroutineDispatcher] that [Fetcher.fetch] will be executed on.
+         * The [CoroutineContext] that [Fetcher.fetch] will be executed in.
          *
          * Default: `Dispatchers.IO`
          */
-        fun fetcherDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun fetcherDispatcher(dispatcher: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(fetcherDispatcher = dispatcher)
         }
 
         /**
-         * The [CoroutineDispatcher] that [Decoder.decode] will be executed on.
+         * The [CoroutineContext] that [Decoder.decode] will be executed in.
          *
          * Default: `Dispatchers.IO`
          */
-        fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun decoderDispatcher(dispatcher: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(decoderDispatcher = dispatcher)
         }
 
