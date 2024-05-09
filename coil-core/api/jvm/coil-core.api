@@ -95,6 +95,7 @@ public final class coil3/Extras {
 public final class coil3/Extras$Builder {
 	public fun <init> ()V
 	public fun <init> (Lcoil3/Extras;)V
+	public fun <init> (Ljava/util/Map;)V
 	public final fun build ()Lcoil3/Extras;
 	public final fun set (Lcoil3/Extras$Key;Ljava/lang/Object;)Lcoil3/Extras$Builder;
 	public final fun setAll (Lcoil3/Extras;)Lcoil3/Extras$Builder;
@@ -117,6 +118,7 @@ public final class coil3/ExtrasKt {
 	public static final fun getExtra (Lcoil3/request/Options;Lcoil3/Extras$Key;)Ljava/lang/Object;
 	public static final fun getOrDefault (Lcoil3/Extras;Lcoil3/Extras$Key;)Ljava/lang/Object;
 	public static final fun orEmpty (Lcoil3/Extras;)Lcoil3/Extras;
+	public static final fun plus (Lcoil3/Extras;Lcoil3/Extras;)Lcoil3/Extras;
 }
 
 public abstract interface class coil3/Image {

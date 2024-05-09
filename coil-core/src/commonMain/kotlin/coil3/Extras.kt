@@ -41,6 +41,10 @@ class Extras private constructor(
             data = mutableMapOf()
         }
 
+        constructor(map: Map<Key<*>, Any>) {
+            data = map.toMutableMap()
+        }
+
         constructor(extras: Extras) {
             data = extras.data.toMutableMap()
         }
@@ -68,6 +72,10 @@ class Extras private constructor(
     companion object {
         @JvmField val EMPTY = Builder().build()
     }
+}
+
+operator fun Extras.plus(other: Extras): Extras {
+    return Extras.Builder(asMap() + other.asMap()).build()
 }
 
 fun <T> Extras.getOrDefault(key: Extras.Key<T>): T {
