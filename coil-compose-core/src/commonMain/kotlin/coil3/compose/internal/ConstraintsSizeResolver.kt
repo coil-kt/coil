@@ -9,19 +9,15 @@ import coil3.size.Size
 import coil3.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * A [SizeResolver] that computes the size from the constraints passed during the layout phase.
  */
 internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-
     private val currentConstraints = MutableStateFlow(ZeroConstraints)
 
     override suspend fun size(): Size {
-        return currentConstraints
-            .mapNotNull(Constraints::toSizeOrNull)
-            .first()
+        return currentConstraints.first { !it.isZero }.toSize()
     }
 
     override fun MeasureScope.measure(
