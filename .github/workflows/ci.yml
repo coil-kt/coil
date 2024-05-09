@@ -45,7 +45,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/gradle-build-action@v3
+            - uses: gradle/actions/setup-gradle@v3
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -69,7 +69,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/gradle-build-action@v3
+            - uses: gradle/actions/setup-gradle@v3
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -107,7 +107,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/gradle-build-action@v3
+            - uses: gradle/actions/setup-gradle@v3
               continue-on-error: true
               timeout-minutes: 5
               with:
