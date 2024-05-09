@@ -164,14 +164,15 @@ internal fun ContentScale.toScale() = when (this) {
 }
 
 @Stable
+internal fun Constraints.toSize(): CoilSize {
+    val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
+    val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
+    return CoilSize(width, height)
+}
+
+@Stable
 internal fun Constraints.toSizeOrNull(): CoilSize? {
-    if (isZero) {
-        return null
-    } else {
-        val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
-        val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-        return CoilSize(width, height)
-    }
+    return if (isZero) null else toSize()
 }
 
 internal fun Constraints.constrainWidth(width: Float) =
