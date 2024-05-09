@@ -17,7 +17,6 @@ import coil3.util.Logger
 import coil3.util.application
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmSynthetic
-import kotlinx.coroutines.CoroutineDispatcher
 import okio.FileSystem
 
 /**
