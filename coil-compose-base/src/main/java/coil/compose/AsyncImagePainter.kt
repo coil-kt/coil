@@ -1,6 +1,5 @@
 package coil.compose
 
-import android.annotation.SuppressLint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
@@ -10,12 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
@@ -210,9 +209,7 @@ private fun rememberAsyncImagePainter(
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
     painter.imageLoader = state.imageLoader
-    @SuppressLint("StateFlowValueCalledInComposition")
-    painter.requestInternal.value =
-        request // Update request last so all other properties are up to date.
+    painter.request = request // Update request last so all other properties are up to date.
     painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
     return painter
 }
@@ -251,19 +248,17 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
-    internal val requestInternal = MutableStateFlow(request)
 
     /** The current [AsyncImagePainter.State]. */
     var state: State by mutableStateOf(State.Empty)
         private set
 
     /** The current [ImageRequest]. */
-    val request
-        @Composable
-        get() = requestInternal.collectAsState().value
+    var request by mutableStateOf(request)
+        internal set
 
     /** The current [ImageLoader]. */
-    var imageLoader: ImageLoader = imageLoader
+    var imageLoader: ImageLoader by mutableStateOf(imageLoader)
         internal set
 
     override val intrinsicSize: Size
@@ -301,14 +296,14 @@ class AsyncImagePainter internal constructor(
 
         // If we're in inspection mode skip the image request and set the state to loading.
         if (isPreview) {
-            val request = requestInternal.value.newBuilder().defaults(imageLoader.defaults).build()
+            val request = request.newBuilder().defaults(imageLoader.defaults).build()
             updateState(State.Loading(request.placeholder?.toPainter()))
             return@trace
         }
 
         // Observe the current request and execute any emissions.
         scope.launch {
-            requestInternal
+            snapshotFlow { request }
                 .mapLatest { imageLoader.execute(updateRequest(it)).toState() }
                 .collect(::updateState)
         }
