@@ -152,7 +152,9 @@ allprojects {
             stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
 
             if (enableComposeMetrics && name in publicModules) {
-                metricsDestination = layout.buildDirectory.dir("composeMetrics").get().asFile
+                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile
+                metricsDestination = outputDir
+                reportsDestination = outputDir
             }
         }
     }
