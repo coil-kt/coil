@@ -3,8 +3,7 @@ androidx-activity = "1.9.0"
 androidx-benchmark = "1.2.4"
 androidx-lifecycle = "2.7.0"
 coroutines = "1.8.0"
-jetbrains-compose = "1.6.2"
-jetbrains-compose-compiler = "2.0.0-RC2"
+jetbrains-compose = "1.6.10-rc01"
 kotlin = "2.0.0-RC2"
 ktlint = "1.1.0"
 ktor = "2.3.11"
@@ -16,7 +15,7 @@ roborazzi = "1.15.0"
 skiko = "0.8.4"
 
 [plugins]
-baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark"}
+baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.14.0"
 dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.16.0-SNAPSHOT"
@@ -26,6 +25,7 @@ spotless = "com.diffplug.spotless:6.25.0"
 gradlePlugin-android = "com.android.tools.build:gradle:8.4.0"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.24.0"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
+gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.28.0"
 gradlePlugin-paparazzi = { module = "app.cash.paparazzi:paparazzi-gradle-plugin", version.ref = "paparazzi" }
@@ -51,8 +51,6 @@ androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
-
-jetbrains-compose-compiler = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable", version.ref = "jetbrains-compose-compiler" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }

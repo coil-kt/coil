@@ -8,6 +8,7 @@ plugins {
     id("com.android.application")
     id("kotlin-multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 androidApplication(name = "sample.compose") {

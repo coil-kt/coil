@@ -10,10 +10,10 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -26,6 +26,7 @@ buildscript {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.atomicFu)
         classpath(libs.gradlePlugin.jetbrainsCompose)
+        classpath(libs.gradlePlugin.composeCompiler)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
@@ -138,9 +139,22 @@ allprojects {
 
     plugins.withId("org.jetbrains.compose") {
         extensions.configure<ComposeExtension> {
-            kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
             extensions.configure<ExperimentalExtension> {
                 web.application {}
+            }
+        }
+    }
+
+    plugins.withId("org.jetbrains.kotlin.plugin.compose") {
+        extensions.configure<ComposeCompilerGradlePluginExtension> {
+            enableIntrinsicRemember = true
+            enableNonSkippingGroupOptimization = true
+            stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
+
+            if (enableComposeMetrics && name in publicModules) {
+                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile
+                metricsDestination = outputDir
+                reportsDestination = outputDir
             }
         }
     }
@@ -148,27 +162,6 @@ allprojects {
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
             pokoAnnotation = "coil3/annotation/Data"
-        }
-    }
-
-    if (enableComposeMetrics && name in publicModules) {
-        plugins.withId("org.jetbrains.compose") {
-            tasks.withType<KotlinCompile> {
-                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile.path
-                compilerOptions.freeCompilerArgs.addAll(
-                    "-P", "$composePlugin:metricsDestination=$outputDir",
-                    "-P", "$composePlugin:reportsDestination=$outputDir",
-                )
-            }
-        }
-    }
-
-    plugins.withId("org.jetbrains.compose") {
-        tasks.withType<KotlinCompile> {
-            val outputDir = rootDir.resolve("coil-core/compose_compiler_config.conf").path
-            compilerOptions.freeCompilerArgs.addAll(
-                "-P", "$composePlugin:stabilityConfigurationPath=$outputDir",
-            )
         }
     }
 

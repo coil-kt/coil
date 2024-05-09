@@ -5,6 +5,7 @@ plugins {
     id("kotlin-android")
     id("io.github.takahirom.roborazzi")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 androidLibrary(name = "coil3.test.roborazzi")
