@@ -16,6 +16,7 @@ import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
 import okio.Closeable
 
@@ -109,3 +110,11 @@ internal fun isFileUri(uri: Uri): Boolean {
 }
 
 internal expect fun isAssetUri(uri: Uri): Boolean
+
+@ExperimentalNativeApi // This must be propagated from the underlying native implementation.
+internal expect class WeakReference<T : Any>(referred: T) {
+    fun get(): T?
+    fun clear()
+}
+
+internal expect fun Any.identityHashCode(): Int
