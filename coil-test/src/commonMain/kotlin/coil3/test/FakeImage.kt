@@ -11,5 +11,9 @@ expect class FakeImage(
     shareable: Boolean = true,
     color: Int = 0x000000,
 ) : Image {
+    override val width: Int
+    override val height: Int
+    override val size: Long
+    override val shareable: Boolean
     val color: Int
 }

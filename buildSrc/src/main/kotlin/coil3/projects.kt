@@ -137,14 +137,16 @@ private fun <T : BaseExtension> Project.androidBase(
             }
             targets.configureEach {
                 compilations.configureEach {
-                    compilerOptions.configure {
-                        val arguments = listOf(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                        freeCompilerArgs.addAll(arguments)
+                    compileTaskProvider.configure {
+                        compilerOptions {
+                            val arguments = listOf(
+                                // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                                "-progressive",
+                                // https://youtrack.jetbrains.com/issue/KT-61573
+                                "-Xexpect-actual-classes",
+                            )
+                            freeCompilerArgs.addAll(arguments)
+                        }
                     }
                 }
             }
@@ -152,7 +154,8 @@ private fun <T : BaseExtension> Project.androidBase(
     }
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
+            // Temporarily disable due to https://youtrack.jetbrains.com/issue/KT-60866.
+            // allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
             val arguments = mutableListOf<String>()
 

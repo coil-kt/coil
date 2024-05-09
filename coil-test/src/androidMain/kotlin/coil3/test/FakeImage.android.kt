@@ -14,10 +14,10 @@ import coil3.annotation.ExperimentalCoilApi
 @ExperimentalCoilApi
 @Data
 actual class FakeImage actual constructor(
-    override val width: Int,
-    override val height: Int,
-    override val size: Long,
-    override val shareable: Boolean,
+    actual override val width: Int,
+    actual override val height: Int,
+    actual override val size: Long,
+    actual override val shareable: Boolean,
     actual val color: Int,
 ) : Image {
     override fun asDrawable(resources: Resources): Drawable {

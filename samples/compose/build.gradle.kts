@@ -8,6 +8,7 @@ plugins {
     id("com.android.application")
     id("kotlin-multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 androidApplication(name = "sample.compose") {
@@ -80,7 +81,6 @@ kotlin {
             }
         }
         binaries.executable()
-        applyBinaryen()
     }
 
     arrayOf(
@@ -131,6 +131,6 @@ afterEvaluate {
             dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
         }
         named("jsBrowserProductionWebpack").configure(configureJs)
-        named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
+        named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }
