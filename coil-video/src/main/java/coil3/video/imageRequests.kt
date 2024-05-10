@@ -14,7 +14,7 @@ import coil3.request.Options
 // region videoFrameIndex
 
 /**
- * Set the the frame index to extract from a video.
+ * Set the frame index to extract from a video.
  *
  * When both [videoFrameIndex] and other videoFrame-prefixed properties are set,
  * [videoFrameIndex] will take precedence.
