@@ -2,6 +2,8 @@
 androidx-activity = "1.9.0"
 androidx-benchmark = "1.3.0-alpha04"
 androidx-lifecycle = "2.7.0"
+androidx-tracing-perfetto = "1.0.0"
+androidx-runtime-tracing = "1.0.0-beta01"
 coroutines = "1.8.0"
 jetbrains-compose = "1.6.10-rc01"
 kotlin = "2.0.0-RC3"
@@ -35,7 +37,8 @@ androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.1"
-androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
+androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.2.4"
+androidx-compose-runtime-tracing = { module = "androidx.compose.runtime:runtime-tracing", version.ref = "androidx-runtime-tracing" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core = "androidx.core:core-ktx:1.13.1"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.7"
@@ -50,6 +53,8 @@ androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.5"
 androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
+androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing-perfetto" }
+androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing-perfetto" }
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }

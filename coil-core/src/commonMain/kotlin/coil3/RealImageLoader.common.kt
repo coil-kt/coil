@@ -73,14 +73,23 @@ internal class RealImageLoader(
         return getDisposable(request, job)
     }
 
-    override suspend fun execute(request: ImageRequest) = coroutineScope {
-        // Start executing the request on the main thread.
-        val job = async(Dispatchers.Main.immediate) {
-            executeMain(request, REQUEST_TYPE_EXECUTE)
-        }
+    override suspend fun execute(request: ImageRequest): ImageResult {
+        if (skipCreatingDisposable(request)) {
+            // Avoid creating the disposable to optimize performance.
+            return withContext(Dispatchers.Main.immediate) {
+                executeMain(request, REQUEST_TYPE_EXECUTE)
+            }
+        } else {
+            return coroutineScope {
+                // Start executing the request on the main thread.
+                val job = async(Dispatchers.Main.immediate) {
+                    executeMain(request, REQUEST_TYPE_EXECUTE)
+                }
 
-        // Update the current request attached to the view and await the result.
-        return@coroutineScope getDisposable(request, job).job.await()
+                // Update the current request attached to the view and await the result.
+                getDisposable(request, job).job.await()
+            }
+        }
     }
 
     @MainThread
@@ -226,6 +235,10 @@ private fun CoroutineScope(logger: Logger?): CoroutineScope {
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }
+
+internal expect fun skipCreatingDisposable(
+    request: ImageRequest,
+): Boolean
 
 internal expect fun getDisposable(
     request: ImageRequest,
