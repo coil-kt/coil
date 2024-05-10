@@ -224,6 +224,8 @@ private fun ListScreen(
             // for the detail screen.
             var placeholder: MemoryCache.Key? = remember { null }
 
+            org.jetbrains.skia.Bitmap
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(image.uri)
