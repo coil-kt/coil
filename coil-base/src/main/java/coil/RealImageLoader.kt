@@ -123,25 +123,27 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun execute(request: ImageRequest) =
+    override suspend fun execute(request: ImageRequest): ImageResult {
         if (request.target is ViewTarget<*>) {
             // We don't use the async call that returns the job for Compose to micro-optimize the performance.
             // The job is only needed in case of the Views implementation.
-            coroutineScope {            // Start executing the request on the main thread.
+            return coroutineScope {
+                // Start executing the request on the main thread.
                 val job = async(Dispatchers.Main.immediate) {
                     executeMain(request, REQUEST_TYPE_EXECUTE)
                 }
+
                 // Update the current request attached to the view and await the result.
                 request.target.view.requestManager.getDisposable(job)
-
                 job.await()
             }
         } else {
             // Start executing the request on the main thread.
-            withContext(Dispatchers.Main.immediate) {
+            return withContext(Dispatchers.Main.immediate) {
                 executeMain(request, REQUEST_TYPE_EXECUTE)
             }
         }
+    }
 
     @MainThread
     private suspend fun executeMain(initialRequest: ImageRequest, type: Int): ImageResult {
