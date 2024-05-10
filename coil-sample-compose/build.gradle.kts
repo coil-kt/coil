@@ -42,4 +42,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.compose.material)
+    implementation(libs.androidx.compose.runtime.tracing)
 }

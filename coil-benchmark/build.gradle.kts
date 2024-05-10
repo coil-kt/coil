@@ -11,6 +11,12 @@ setupTestModule(name = "coil.benchmark", config = true) {
     defaultConfig {
         minSdk = 23
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
+
+        // Enables Composition Tracing for benchmarks
+        // testInstrumentationRunnerArguments["androidx.benchmark.fullTracing.enable"] = "true"
+        // Enables Method tracing for benchmarks. Be aware this skews the performance results,
+        // so don't use it for measuring exact timinig
+        // testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"] = "MethodTracing"
     }
     buildTypes {
         create("benchmark") {
@@ -39,6 +45,8 @@ dependencies {
     implementation(libs.androidx.test.espresso)
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.uiautomator)
+    implementation(libs.androidx.tracing.perfetto)
+    implementation(libs.androidx.tracing.perfetto.binary)
 }
 
 androidComponents {

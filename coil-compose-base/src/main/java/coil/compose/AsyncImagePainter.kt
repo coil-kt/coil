@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.util.trace
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
@@ -197,7 +198,7 @@ private fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)?,
     contentScale: ContentScale,
     filterQuality: FilterQuality,
-): AsyncImagePainter {
+): AsyncImagePainter = trace("rememberAsyncImagePainter") {
     val request = requestOf(state.model)
     validateRequest(request)
 
@@ -253,7 +254,7 @@ class AsyncImagePainter internal constructor(
         private set
 
     /** The current [ImageRequest]. */
-    var request: ImageRequest by mutableStateOf(request)
+    var request by mutableStateOf(request)
         internal set
 
     /** The current [ImageLoader]. */
@@ -282,9 +283,9 @@ class AsyncImagePainter internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun onRemembered() {
+    override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         // Short circuit if we're already remembered.
-        if (rememberScope != null) return
+        if (rememberScope != null) return@trace
 
         // Create a new scope to observe state and execute requests while we're remembered.
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -297,7 +298,7 @@ class AsyncImagePainter internal constructor(
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
             updateState(State.Loading(request.placeholder?.toPainter()))
-            return
+            return@trace
         }
 
         // Observe the current request and execute any emissions.
