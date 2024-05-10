@@ -216,7 +216,7 @@ class AsyncImagePainter internal constructor(
         private set
 
     /** The current [ImageRequest]. */
-    var request by mutableStateOf(request)
+    var request: ImageRequest by mutableStateOf(request)
         internal set
 
     /** The current [ImageLoader]. */
