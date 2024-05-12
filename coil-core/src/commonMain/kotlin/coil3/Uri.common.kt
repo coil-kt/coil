@@ -37,7 +37,7 @@ val Uri.pathSegments: List<String>
         val segments = mutableListOf<String>()
         val separator: Char
         if (isFileUri(this)) {
-            if (path.contains(":\\")) { //windows path
+            if (path.contains(":\\")) { // windows path
                 separator = '\\'
                 path = "\\$path"
             } else {
@@ -90,7 +90,7 @@ private fun parseUri(data: String): Uri {
                 ) {
                     authorityStartIndex = index + 3
                     index += 2
-                } else if (index == 1 && data[index + 1] == '\\') { //windows path D:\test\relative\image.jpg
+                } else if (index == 1 && data[index + 1] == '\\') { // windows path D:\test\relative\image.jpg
                     if (queryStartIndex == -1 &&
                         fragmentStartIndex == -1 &&
                         pathStartIndex == -1
