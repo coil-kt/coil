@@ -40,6 +40,17 @@ class UriTest {
     }
 
     @Test
+    fun windows() {
+        val uri = "D:\\test\\relative\\image.jpg".toUri()
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals(uri.path, "D:\\test\\relative\\image.jpg")
+        assertEquals(listOf("D:", "test", "relative", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
     fun veryMalformed() {
         val uri = "/#02dkfj;anc%%2".toUri()
         assertNull(uri.scheme)

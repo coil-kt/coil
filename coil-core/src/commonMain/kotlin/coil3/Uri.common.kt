@@ -1,5 +1,7 @@
 package coil3
 
+import coil3.util.isFileUri
+
 /**
  * A uniform resource locator.
  */
@@ -31,13 +33,24 @@ class Uri internal constructor(
  */
 val Uri.pathSegments: List<String>
     get() {
-        val path = path ?: return emptyList()
-
+        var path = path ?: return emptyList()
         val segments = mutableListOf<String>()
+        val separator: Char
+        if (isFileUri(this)) {
+            if (path.contains(":\\")) { //windows path
+                separator = '\\'
+                path = "\\$path"
+            } else {
+                separator = '/'
+            }
+        } else {
+            separator = '/'
+        }
+
         var index = 0
         while (index < path.length) {
             val startIndex = index + 1
-            index = path.indexOf('/', startIndex)
+            index = path.indexOf(separator, startIndex)
             if (index == -1) {
                 index = path.length
             }
@@ -77,6 +90,13 @@ private fun parseUri(data: String): Uri {
                 ) {
                     authorityStartIndex = index + 3
                     index += 2
+                } else if (index == 1 && data[index + 1] == '\\') { //windows path D:\test\relative\image.jpg
+                    if (queryStartIndex == -1 &&
+                        fragmentStartIndex == -1 &&
+                        pathStartIndex == -1
+                    ) {
+                        pathStartIndex = 0
+                    }
                 }
             }
             '/' -> {
