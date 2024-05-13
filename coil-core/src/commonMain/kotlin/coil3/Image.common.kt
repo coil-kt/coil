@@ -13,7 +13,7 @@ import coil3.annotation.ExperimentalCoilApi
 expect interface Image {
 
     /** The size of the image in memory in bytes. */
-    val size: Long
+    val size: Int
 
     /** The width of the image in pixels. */
     val width: Int

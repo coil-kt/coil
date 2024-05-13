@@ -18,6 +18,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.androidx.collection)
                 api(libs.coroutines.core)
                 api(libs.kotlin.stdlib)
                 api(libs.okio.core)

@@ -37,7 +37,7 @@ fun Bitmap.asCoilImage(
 
 @ExperimentalCoilApi
 actual interface Image {
-    actual val size: Long
+    actual val size: Int
     actual val width: Int
     actual val height: Int
     actual val shareable: Boolean
@@ -52,12 +52,12 @@ class DrawableImage internal constructor(
     override val shareable: Boolean,
 ) : Image {
 
-    override val size: Long
+    override val size: Int
         get() = if (drawable is SizeProvider) {
             drawable.size
         } else {
             // Estimate 4 bytes per pixel.
-            4L * drawable.width * drawable.height
+            4 * drawable.width * drawable.height
         }
 
     override val width: Int
@@ -71,7 +71,7 @@ class DrawableImage internal constructor(
     }
 
     interface SizeProvider {
-        val size: Long
+        val size: Int
     }
 }
 
@@ -82,8 +82,8 @@ class BitmapImage internal constructor(
     override val shareable: Boolean,
 ) : Image {
 
-    override val size: Long
-        get() = bitmap.allocationByteCountCompat.toLong()
+    override val size: Int
+        get() = bitmap.allocationByteCountCompat
 
     override val width: Int
         get() = bitmap.width

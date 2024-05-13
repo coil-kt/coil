@@ -1,9 +1,9 @@
 package coil3.memory
 
+import androidx.collection.LruCache
 import coil3.Image
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
-import coil3.util.LruCache
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 
@@ -14,19 +14,19 @@ import kotlinx.atomicfu.locks.synchronized
  */
 internal interface StrongMemoryCache {
 
-    val size: Long
+    val size: Int
 
-    val maxSize: Long
+    val maxSize: Int
 
     val keys: Set<Key>
 
     fun get(key: Key): Value?
 
-    fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long)
+    fun set(key: Key, image: Image, extras: Map<String, Any>, size: Int)
 
     fun remove(key: Key): Boolean
 
-    fun trimToSize(size: Long)
+    fun trimToSize(size: Int)
 
     fun clear()
 }
@@ -35,27 +35,27 @@ internal class EmptyStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
-    override val size get() = 0L
+    override val size get() = 0
 
-    override val maxSize get() = 0L
+    override val maxSize get() = 0
 
     override val keys get() = emptySet<Key>()
 
     override fun get(key: Key): Value? = null
 
-    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long) {
-        weakMemoryCache.set(key, image, extras, size)
+    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Int) {
+        weakMemoryCache.set(key, image, extras, size.toLong())
     }
 
     override fun remove(key: Key) = false
 
-    override fun trimToSize(size: Long) {}
+    override fun trimToSize(size: Int) {}
 
     override fun clear() {}
 }
 
 internal class RealStrongMemoryCache(
-    maxSize: Long,
+    maxSize: Int,
     private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
@@ -67,20 +67,21 @@ internal class RealStrongMemoryCache(
         ) = value.size
 
         override fun entryRemoved(
+            evicted: Boolean,
             key: Key,
             oldValue: InternalValue,
             newValue: InternalValue?,
-        ) = weakMemoryCache.set(key, oldValue.image, oldValue.extras, oldValue.size)
+        ) = weakMemoryCache.set(key, oldValue.image, oldValue.extras, oldValue.size.toLong())
     }
 
-    override val size: Long
-        get() = synchronized(lock) { cache.size }
+    override val size: Int
+        get() = synchronized(lock) { cache.size() }
 
-    override val maxSize: Long
-        get() = synchronized(lock) { cache.maxSize }
+    override val maxSize: Int
+        get() = synchronized(lock) { cache.maxSize() }
 
     override val keys: Set<Key>
-        get() = synchronized(lock) { cache.keys }
+        get() = synchronized(lock) { cache.snapshot().keys }
 
     override fun get(key: Key): Value? = synchronized(lock) {
         return cache[key]?.let { Value(it.image, it.extras) }
@@ -90,7 +91,7 @@ internal class RealStrongMemoryCache(
         key: Key,
         image: Image,
         extras: Map<String, Any>,
-        size: Long,
+        size: Int,
     ): Unit = synchronized(lock) {
         if (size <= maxSize) {
             cache.put(key, InternalValue(image, extras, size))
@@ -99,7 +100,7 @@ internal class RealStrongMemoryCache(
             // so will cause the cache to be cleared. Instead, evict an existing element
             // with the same key if it exists and add the value to the weak memory cache.
             cache.remove(key)
-            weakMemoryCache.set(key, image, extras, size)
+            weakMemoryCache.set(key, image, extras, size.toLong())
         }
     }
 
@@ -108,16 +109,16 @@ internal class RealStrongMemoryCache(
     }
 
     override fun clear() = synchronized(lock) {
-        cache.clear()
+        cache.evictAll()
     }
 
-    override fun trimToSize(size: Long) = synchronized(lock) {
+    override fun trimToSize(size: Int) = synchronized(lock) {
         cache.trimToSize(size)
     }
 
     private class InternalValue(
         val image: Image,
         val extras: Map<String, Any>,
-        val size: Long,
+        val size: Int,
     )
 }

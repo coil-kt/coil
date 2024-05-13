@@ -20,10 +20,11 @@ private class SvgImage(
     override val width: Int,
     override val height: Int,
 ) : DrawableImage() {
-    override val size: Long
-        get() = 4L * width * height
+    override val size: Int
+        get() = 4 * width * height
 
-    override val shareable: Boolean = true
+    override val shareable: Boolean
+        get() = true
 
     override fun Canvas.onDraw() {
         svg.render(this)

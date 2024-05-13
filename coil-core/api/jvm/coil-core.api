@@ -3,7 +3,7 @@ public final class coil3/BitmapImage : coil3/Image {
 	public final fun getBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun getHeight ()I
 	public fun getShareable ()Z
-	public fun getSize ()J
+	public fun getSize ()I
 	public fun getWidth ()I
 	public fun hashCode ()I
 	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
@@ -124,7 +124,7 @@ public final class coil3/ExtrasKt {
 public abstract interface class coil3/Image {
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
-	public abstract fun getSize ()J
+	public abstract fun getSize ()I
 	public abstract fun getWidth ()I
 	public abstract fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 }
@@ -403,17 +403,17 @@ public abstract interface class coil3/memory/MemoryCache {
 	public abstract fun clear ()V
 	public abstract fun get (Lcoil3/memory/MemoryCache$Key;)Lcoil3/memory/MemoryCache$Value;
 	public abstract fun getKeys ()Ljava/util/Set;
-	public abstract fun getMaxSize ()J
-	public abstract fun getSize ()J
+	public abstract fun getMaxSize ()I
+	public abstract fun getSize ()I
 	public abstract fun remove (Lcoil3/memory/MemoryCache$Key;)Z
 	public abstract fun set (Lcoil3/memory/MemoryCache$Key;Lcoil3/memory/MemoryCache$Value;)V
-	public abstract fun trimToSize (J)V
+	public abstract fun trimToSize (I)V
 }
 
 public final class coil3/memory/MemoryCache$Builder {
 	public fun <init> ()V
 	public final fun build ()Lcoil3/memory/MemoryCache;
-	public final fun maxSizeBytes (J)Lcoil3/memory/MemoryCache$Builder;
+	public final fun maxSizeBytes (I)Lcoil3/memory/MemoryCache$Builder;
 	public final fun maxSizeBytes (Lkotlin/jvm/functions/Function0;)Lcoil3/memory/MemoryCache$Builder;
 	public final fun maxSizePercent (Lcoil3/PlatformContext;D)Lcoil3/memory/MemoryCache$Builder;
 	public static synthetic fun maxSizePercent$default (Lcoil3/memory/MemoryCache$Builder;Lcoil3/PlatformContext;DILjava/lang/Object;)Lcoil3/memory/MemoryCache$Builder;

@@ -35,7 +35,7 @@ internal class RealMemoryCache(
         return removedStrong || removedWeak
     }
 
-    override fun trimToSize(size: Long) {
+    override fun trimToSize(size: Int) {
         strongMemoryCache.trimToSize(size)
     }
 

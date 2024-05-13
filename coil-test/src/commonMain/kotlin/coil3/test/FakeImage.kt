@@ -7,13 +7,13 @@ import coil3.annotation.ExperimentalCoilApi
 expect class FakeImage(
     width: Int = 100,
     height: Int = 100,
-    size: Long = 4L * width * height,
+    size: Int = 4 * width * height,
     shareable: Boolean = true,
     color: Int = 0x000000,
 ) : Image {
     override val width: Int
     override val height: Int
-    override val size: Long
+    override val size: Int
     override val shareable: Boolean
     val color: Int
 }

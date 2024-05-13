@@ -5,10 +5,10 @@ import coil3.Image
 expect class FakeImage(
     width: Int = 100,
     height: Int = 100,
-    size: Long = 4L * width * height,
+    size: Int = 4 * width * height,
     shareable: Boolean = true,
 ) : Image {
-    override val size: Long
+    override val size: Int
     override val width: Int
     override val height: Int
     override val shareable: Boolean

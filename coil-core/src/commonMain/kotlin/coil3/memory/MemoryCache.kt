@@ -14,10 +14,10 @@ import kotlin.jvm.JvmOverloads
 interface MemoryCache {
 
     /** The current size of the cache in bytes. */
-    val size: Long
+    val size: Int
 
     /** The maximum size of the cache in bytes. */
-    val maxSize: Long
+    val maxSize: Int
 
     /** The keys present in the cache. */
     val keys: Set<Key>
@@ -36,7 +36,7 @@ interface MemoryCache {
     fun remove(key: Key): Boolean
 
     /** Remove the eldest entries until the cache's size is at or below [size]. */
-    fun trimToSize(size: Long)
+    fun trimToSize(size: Int)
 
     /** Remove all values from the memory cache. */
     fun clear()
@@ -114,21 +114,21 @@ interface MemoryCache {
 
     class Builder {
 
-        private var maxSizeBytesFactory: (() -> Long)? = null
+        private var maxSizeBytesFactory: (() -> Int)? = null
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
 
         /**
          * Set the maximum size of the memory cache in bytes.
          */
-        fun maxSizeBytes(size: Long) = apply {
+        fun maxSizeBytes(size: Int) = apply {
             this.maxSizeBytesFactory = { size }
         }
 
         /**
          * Set the maximum size of the memory cache in bytes.
          */
-        fun maxSizeBytes(size: () -> Long) = apply {
+        fun maxSizeBytes(size: () -> Int) = apply {
             this.maxSizeBytesFactory = size
         }
 
@@ -141,7 +141,7 @@ interface MemoryCache {
             percent: Double = context.defaultMemoryCacheSizePercent(),
         ) = apply {
             require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
-            this.maxSizeBytesFactory = { (percent * context.totalAvailableMemoryBytes()).toLong() }
+            this.maxSizeBytesFactory = { (percent * context.totalAvailableMemoryBytes()).toInt() }
         }
 
         /**
