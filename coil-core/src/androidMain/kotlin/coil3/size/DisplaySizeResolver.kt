@@ -1,12 +1,12 @@
 package coil3.size
 
 import android.content.Context
-import coil3.annotation.Data
+import coil3.annotation.Poko
 
 /**
  * The default [SizeResolver] that returns the maximum dimension of the display as the size.
  */
-@Data
+@Poko
 internal class DisplaySizeResolver(
     private val context: Context,
 ) : SizeResolver {

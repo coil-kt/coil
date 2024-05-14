@@ -161,7 +161,7 @@ allprojects {
 
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
-            pokoAnnotation = "coil3/annotation/Data"
+            pokoAnnotation = "coil3/annotation/Poko"
         }
     }
 
