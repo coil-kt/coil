@@ -1,5 +1,3 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.network
 
 import coil3.ImageLoader
@@ -16,10 +14,10 @@ import coil3.network.internal.CONTENT_TYPE
 import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
+import coil3.network.internal.closeQuietly
 import coil3.network.internal.readBuffer
 import coil3.request.Options
 import coil3.util.MimeTypeMap
-import coil3.util.closeQuietly
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException

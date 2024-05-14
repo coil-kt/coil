@@ -4,6 +4,7 @@ import coil3.ComponentRegistry
 import coil3.EventListener
 import coil3.Image
 import coil3.Uri
+import coil3.annotation.InternalCoilApi
 import coil3.decode.DataSource
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
@@ -42,7 +43,6 @@ internal val DataSource.emoji: String
         DataSource.NETWORK -> "☁️"
     }
 
-@PublishedApi // Used by extension modules.
 internal fun Closeable.closeQuietly() {
     try {
         close()
@@ -83,18 +83,18 @@ internal val Interceptor.Chain.eventListener: EventListener
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
-@PublishedApi // Used by extension modules.
-internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
+@InternalCoilApi
+inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
     return if (isOriginal) original() else width.toPx(scale)
 }
 
-@PublishedApi // Used by extension modules.
-internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
+@InternalCoilApi
+inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
     return if (isOriginal) original() else height.toPx(scale)
 }
 
-@PublishedApi // Used by extension modules.
-internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
+@InternalCoilApi
+fun Dimension.toPx(scale: Scale): Int = pxOrElse {
     when (scale) {
         Scale.FILL -> Int.MIN_VALUE
         Scale.FIT -> Int.MAX_VALUE

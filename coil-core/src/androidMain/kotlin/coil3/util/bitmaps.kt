@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
+import coil3.annotation.InternalCoilApi
 
 @Suppress("DEPRECATION")
 internal val Bitmap.Config?.bytesPerPixel: Int
@@ -37,8 +38,8 @@ internal val Bitmap.allocationByteCountCompat: Int
 internal val Bitmap.isImmutable: Boolean
     get() = !isMutable
 
-@PublishedApi // Used by extension modules.
-internal val Bitmap.Config.isHardware: Boolean
+@InternalCoilApi
+val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
 
 /**
@@ -53,7 +54,7 @@ internal val Bitmap.safeConfig: Bitmap.Config
 internal inline fun Bitmap.toDrawable(context: Context) = toDrawable(context.resources)
 
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
-@PublishedApi // Used by extension modules.
-internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {
+@InternalCoilApi
+fun Bitmap.Config?.toSoftware(): Bitmap.Config {
     return if (this == null || isHardware) Bitmap.Config.ARGB_8888 else this
 }

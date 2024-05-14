@@ -759,10 +759,6 @@ public abstract interface class coil3/target/Target {
 	public fun onSuccess (Lcoil3/Image;)V
 }
 
-public final class coil3/util/Collections_commonKt {
-	public static final fun forEachIndices (Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
-}
-
 public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun <init> ()V
 	public fun <init> (Lcoil3/util/Logger$Level;)V
@@ -787,12 +783,5 @@ public final class coil3/util/Logger$Level : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil3/util/Logger$Level;
 	public static fun values ()[Lcoil3/util/Logger$Level;
-}
-
-public final class coil3/util/Utils_commonKt {
-	public static final fun closeQuietly (Ljava/io/Closeable;)V
-	public static final fun heightPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
-	public static final fun toPx (Lcoil3/size/Dimension;Lcoil3/size/Scale;)I
-	public static final fun widthPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
 }
 

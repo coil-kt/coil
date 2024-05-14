@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+@file:Suppress("DEPRECATION")
 
 package coil3.gif
 
@@ -22,7 +22,6 @@ import coil3.decode.DecodeUtils
 import coil3.gif.PixelOpacity.OPAQUE
 import coil3.gif.PixelOpacity.UNCHANGED
 import coil3.size.Scale
-import coil3.util.forEachIndices
 import coil3.util.isHardware
 
 /**
@@ -255,7 +254,9 @@ class MovieDrawable @JvmOverloads constructor(
         loopIteration = 0
         startTimeMillis = SystemClock.uptimeMillis()
 
-        callbacks.forEachIndices { it.onAnimationStart(this) }
+        for (index in callbacks.indices) {
+            callbacks[index].onAnimationStart(this)
+        }
         invalidateSelf()
     }
 
@@ -263,7 +264,9 @@ class MovieDrawable @JvmOverloads constructor(
         if (!isRunning) return
         isRunning = false
 
-        callbacks.forEachIndices { it.onAnimationEnd(this) }
+        for (index in callbacks.indices) {
+            callbacks[index].onAnimationEnd(this)
+        }
     }
 
     override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {

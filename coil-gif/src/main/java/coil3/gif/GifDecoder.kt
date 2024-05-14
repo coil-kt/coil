@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+@file:Suppress("DEPRECATION")
 
 package coil3.gif
 
