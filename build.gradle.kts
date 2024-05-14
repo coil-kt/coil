@@ -43,6 +43,7 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
+    nonPublicMarkers += "coil3/annotation/InternalCoilApi"
     ignoredProjects += project.subprojects.mapNotNull { project ->
         if (project.name in publicModules) null else project.name
     }

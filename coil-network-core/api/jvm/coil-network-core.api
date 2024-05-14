@@ -63,7 +63,6 @@ public final class coil3/network/NetworkClientKt {
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
 	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getMimeType (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
