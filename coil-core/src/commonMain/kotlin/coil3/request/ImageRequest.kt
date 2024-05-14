@@ -5,8 +5,8 @@ import coil3.Extras
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.annotation.Poko
 import coil3.annotation.MainThread
+import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache

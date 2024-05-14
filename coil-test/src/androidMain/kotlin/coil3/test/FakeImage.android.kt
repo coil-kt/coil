@@ -6,8 +6,8 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import coil3.Image
-import coil3.annotation.Poko
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 
 @ExperimentalCoilApi
 @Poko

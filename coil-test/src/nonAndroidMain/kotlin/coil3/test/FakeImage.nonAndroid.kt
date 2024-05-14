@@ -1,8 +1,8 @@
 package coil3.test
 
 import coil3.Image
-import coil3.annotation.Poko
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.ColorAlphaType

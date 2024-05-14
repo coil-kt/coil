@@ -1,7 +1,7 @@
 package coil3.network
 
-import coil3.annotation.Poko
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
