@@ -1,7 +1,5 @@
 package coil3
 
-import coil3.util.isFileUri
-
 /**
  * A uniform resource locator.
  */
@@ -36,13 +34,9 @@ val Uri.pathSegments: List<String>
         var path = path ?: return emptyList()
         val segments = mutableListOf<String>()
         val separator: Char
-        if (isFileUri(this)) {
-            if (path.contains(":\\")) { // windows path
-                separator = '\\'
-                path = "\\$path"
-            } else {
-                separator = '/'
-            }
+        if (scheme == null && path.contains(":\\")) {
+            separator = '\\'
+            path = "\\$path"
         } else {
             separator = '/'
         }
