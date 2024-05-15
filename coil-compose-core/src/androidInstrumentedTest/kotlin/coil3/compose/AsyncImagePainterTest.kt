@@ -102,7 +102,37 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = "https://example.com/image",
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(128.dp, 166.dp)
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(128.dp)
+            .assertHeightIsEqualTo(166.dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun basicLoad_http_drawScopeSizeResolver() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://example.com/image")
+                        .size(DrawScopeSizeResolver())
+                        .build(),
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -131,7 +161,37 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = R.drawable.sample,
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(128.dp, 166.dp)
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertWidthIsEqualTo(128.dp, tolerance = 1.dp)
+            .assertHeightIsEqualTo(166.dp, tolerance = 1.dp)
+            .assertIsDisplayed()
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun basicLoad_drawableId_drawScopeSizeResolver() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.sample)
+                        .size(DrawScopeSizeResolver())
+                        .build(),
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -160,7 +220,37 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = resourceUri(R.drawable.sample),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(128.dp, 166.dp)
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertWidthIsEqualTo(128.dp)
+            .assertHeightIsEqualTo(166.dp)
+            .assertIsDisplayed()
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun basicLoad_drawableUri_drawScopeSizeResolver() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(resourceUri(R.drawable.sample))
+                        .size(DrawScopeSizeResolver())
+                        .build(),
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -191,6 +281,7 @@ class AsyncImagePainterTest {
             override fun onSuccess(request: ImageRequest, result: SuccessResult) {
                 requestCompleted = true
             }
+
             override fun onError(request: ImageRequest, result: ErrorResult) {
                 requestThrowable = result.throwable
             }
@@ -228,7 +319,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = data,
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -269,7 +360,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             val painter = rememberAsyncImagePainter(
                 model = "https://example.com/image",
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
             )
 
             Image(
@@ -277,7 +368,7 @@ class AsyncImagePainterTest {
                 contentDescription = null,
                 modifier = Modifier
                     .size(size)
-                    .testTag(Image)
+                    .testTag(Image),
             )
 
             LaunchedEffect(painter) {
@@ -309,7 +400,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = "https://example.com/image",
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier.testTag(Image),
@@ -329,13 +420,13 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             LazyColumn(
                 modifier = Modifier
-                    .size(240.dp, 200.dp)
+                    .size(240.dp, 200.dp),
             ) {
                 item {
                     Image(
                         painter = rememberAsyncImagePainter(
                             model = "https://example.com/image",
-                            imageLoader = imageLoader
+                            imageLoader = imageLoader,
                         ),
                         contentDescription = null,
                         modifier = Modifier
@@ -365,7 +456,7 @@ class AsyncImagePainterTest {
                         .data("https://example.com/noimage")
                         .error(R.drawable.red_rectangle)
                         .build(),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -397,7 +488,7 @@ class AsyncImagePainterTest {
                             .data("https://example.com/image")
                             .placeholder(R.drawable.red_rectangle)
                             .build(),
-                        imageLoader = imageLoader
+                        imageLoader = imageLoader,
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -426,7 +517,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = "https://example.com/noimage",
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -450,7 +541,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = painterResource(R.drawable.sample),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -478,7 +569,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ColorPainter(Color.Magenta),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -498,7 +589,7 @@ class AsyncImagePainterTest {
                         .placeholder(R.drawable.red_rectangle)
                         .crossfade(true)
                         .build(),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -557,12 +648,12 @@ class AsyncImagePainterTest {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(rememberScrollState()),
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(
                             model = "https://example.com/image",
-                            imageLoader = imageLoader
+                            imageLoader = imageLoader,
                         ),
                         contentDescription = null,
                         modifier = Modifier
@@ -627,7 +718,7 @@ class AsyncImagePainterTest {
                     onSuccess = { successCount.getAndIncrement() },
                     onError = { errorCount.getAndIncrement() },
                 ),
-                contentDescription = null
+                contentDescription = null,
             )
         }
 
@@ -656,7 +747,7 @@ class AsyncImagePainterTest {
                     onSuccess = { successCount.getAndIncrement() },
                     onError = { errorCount.getAndIncrement() },
                 ),
-                contentDescription = null
+                contentDescription = null,
             )
         }
 
@@ -676,9 +767,9 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = "https://example.com/image",
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
                 ),
-                contentDescription = null
+                contentDescription = null,
             )
         }
 

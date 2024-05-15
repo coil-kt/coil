@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
@@ -181,12 +182,19 @@ internal fun Constraints.constrainWidth(width: Float) =
 internal fun Constraints.constrainHeight(height: Float) =
     height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
 
+internal fun Size.toCoilSizeOrNull() = when {
+    isUnspecified -> CoilSize.ORIGINAL
+    isPositive -> CoilSize(
+        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
+    )
+    else -> null
+}
+
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
-
-internal val ZeroConstraints = Constraints.fixed(0, 0)
 
 internal val OriginalSizeResolver = SizeResolver(CoilSize.ORIGINAL)
