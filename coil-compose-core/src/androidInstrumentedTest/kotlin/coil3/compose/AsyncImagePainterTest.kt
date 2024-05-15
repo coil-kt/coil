@@ -49,6 +49,7 @@ import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
 import coil3.test.utils.ComposeTestActivity
+import coil3.test.utils.context
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -114,10 +115,10 @@ class AsyncImagePainterTest {
         waitForRequestComplete()
 
         // Assert that the loaded image is the lesser of the image source and the display size.
-        val (displayWidth, displayHeight) = displaySize
+        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         assertLoadedBitmapSize(
-            width = displayWidth.coerceAtMost(1024).toDp(),
-            height = displayHeight.coerceAtMost(1326).toDp(),
+            width = displaySize.coerceAtMost(1024).toDp(),
+            height = displaySize.coerceAtMost(1326).toDp(),
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -180,10 +181,10 @@ class AsyncImagePainterTest {
         waitForRequestComplete()
 
         // Assert that the loaded image is the lesser of the image source and the display size.
-        val (displayWidth, displayHeight) = displaySize
+        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         assertLoadedBitmapSize(
-            width = displayWidth.coerceAtMost(1024).toDp(),
-            height = displayHeight.coerceAtMost(1326).toDp(),
+            width = displaySize.coerceAtMost(1024).toDp(),
+            height = displaySize.coerceAtMost(1326).toDp(),
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -246,10 +247,10 @@ class AsyncImagePainterTest {
         waitForRequestComplete()
 
         // Assert that the loaded image is the lesser of the image source and the display size.
-        val (displayWidth, displayHeight) = displaySize
+        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         assertLoadedBitmapSize(
-            width = displayWidth.coerceAtMost(1024).toDp(),
-            height = displayHeight.coerceAtMost(1326).toDp(),
+            width = displaySize.coerceAtMost(1024).toDp(),
+            height = displaySize.coerceAtMost(1326).toDp(),
         )
 
         composeTestRule.onNodeWithTag(Image)
