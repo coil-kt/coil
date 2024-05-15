@@ -31,9 +31,10 @@ include(
 // Private modules
 include(
     "internal:benchmark",
-    "internal:test-utils",
+    "internal:test-compose-screenshot",
     "internal:test-paparazzi",
     "internal:test-roborazzi",
+    "internal:test-utils",
     "samples:compose",
     "samples:shared",
     "samples:view",

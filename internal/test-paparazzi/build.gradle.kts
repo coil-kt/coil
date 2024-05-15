@@ -3,8 +3,9 @@ import coil3.androidLibrary
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("app.cash.paparazzi")
+    id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("app.cash.paparazzi")
 }
 
 androidLibrary(name = "coil3.test.paparazzi")

@@ -5,10 +5,15 @@ plugins {
     id("kotlin-android")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("io.github.takahirom.roborazzi")
+    alias(libs.plugins.screenshot)
 }
 
-androidLibrary(name = "coil3.test.roborazzi")
+androidLibrary(name = "coil3.test.composescreenshot") {
+    buildFeatures {
+        compose = true
+    }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+}
 
 dependencies {
     api(projects.coilCore)
@@ -18,8 +23,6 @@ dependencies {
 
     testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
-    testImplementation(libs.roborazzi.compose)
-    testImplementation(libs.roborazzi.core)
-    testImplementation(libs.roborazzi.junit)
-    testImplementation(compose.desktop.uiTestJUnit4)
+
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }

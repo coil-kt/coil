@@ -5,6 +5,7 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
+    id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
