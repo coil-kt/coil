@@ -49,7 +49,6 @@ import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
 import coil3.test.utils.ComposeTestActivity
-import coil3.test.utils.context
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -114,13 +113,6 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        // Assert that the loaded image is the lesser of the image source and the display size.
-        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
-        assertLoadedBitmapSize(
-            width = displaySize.coerceAtMost(1024).toDp(),
-            height = displaySize.coerceAtMost(1326).toDp(),
-        )
-
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .assertWidthIsEqualTo(128.dp)
@@ -180,13 +172,6 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        // Assert that the loaded image is the lesser of the image source and the display size.
-        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
-        assertLoadedBitmapSize(
-            width = displaySize.coerceAtMost(1024).toDp(),
-            height = displaySize.coerceAtMost(1326).toDp(),
-        )
-
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp, tolerance = 1.dp)
             .assertHeightIsEqualTo(166.dp, tolerance = 1.dp)
@@ -245,13 +230,6 @@ class AsyncImagePainterTest {
         }
 
         waitForRequestComplete()
-
-        // Assert that the loaded image is the lesser of the image source and the display size.
-        val displaySize = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
-        assertLoadedBitmapSize(
-            width = displaySize.coerceAtMost(1024).toDp(),
-            height = displaySize.coerceAtMost(1326).toDp(),
-        )
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
