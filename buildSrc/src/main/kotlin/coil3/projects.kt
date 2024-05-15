@@ -117,7 +117,9 @@ private fun <T : BaseExtension> Project.androidBase(
             disable += listOf(
                 "ComposableNaming",
                 "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
                 "UnusedResources",
+                "UseSdkSuppress",
                 "VectorPath",
                 "VectorRaster",
             )
@@ -135,14 +137,16 @@ private fun <T : BaseExtension> Project.androidBase(
             }
             targets.configureEach {
                 compilations.configureEach {
-                    compilerOptions.configure {
-                        val arguments = listOf(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                        freeCompilerArgs.addAll(arguments)
+                    compileTaskProvider.configure {
+                        compilerOptions {
+                            val arguments = listOf(
+                                // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                                "-progressive",
+                                // https://youtrack.jetbrains.com/issue/KT-61573
+                                "-Xexpect-actual-classes",
+                            )
+                            freeCompilerArgs.addAll(arguments)
+                        }
                     }
                 }
             }
@@ -150,6 +154,7 @@ private fun <T : BaseExtension> Project.androidBase(
     }
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
+            // Temporarily disable due to https://youtrack.jetbrains.com/issue/KT-60866.
             allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
             val arguments = mutableListOf<String>()
@@ -181,5 +186,5 @@ private fun <T : BaseExtension> Project.android(action: T.() -> Unit) {
 }
 
 private fun BaseExtension.lint(action: Lint.() -> Unit) {
-    (this as CommonExtension<*, *, *, *, *>).lint(action)
+    (this as CommonExtension<*, *, *, *, *, *>).lint(action)
 }

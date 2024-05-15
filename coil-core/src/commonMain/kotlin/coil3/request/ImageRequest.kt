@@ -5,8 +5,8 @@ import coil3.Extras
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.annotation.Data
 import coil3.annotation.MainThread
+import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
@@ -22,10 +22,10 @@ import coil3.util.EMPTY_IMAGE_FACTORY
 import coil3.util.allowInexactSize
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
+import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okio.FileSystem
 
@@ -35,7 +35,7 @@ import okio.FileSystem
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-@Data
+@Poko
 class ImageRequest private constructor(
     val context: PlatformContext,
 
@@ -67,13 +67,13 @@ class ImageRequest private constructor(
     val decoderFactory: Decoder.Factory?,
 
     /** @see Builder.interceptorDispatcher */
-    val interceptorDispatcher: CoroutineDispatcher,
+    val interceptorDispatcher: CoroutineContext,
 
     /** @see Builder.fetcherDispatcher */
-    val fetcherDispatcher: CoroutineDispatcher,
+    val fetcherDispatcher: CoroutineContext,
 
     /** @see Builder.decoderDispatcher */
-    val decoderDispatcher: CoroutineDispatcher,
+    val decoderDispatcher: CoroutineContext,
 
     /** @see Builder.memoryCachePolicy */
     val memoryCachePolicy: CachePolicy,
@@ -116,13 +116,19 @@ class ImageRequest private constructor(
 ) {
 
     /** Create and return a new placeholder image. */
-    fun placeholder(): Image? = placeholderFactory(this)
+    fun placeholder(): Image? {
+        return placeholderFactory(this) ?: defaults.placeholderFactory(this)
+    }
 
     /** Create and return a new error image. */
-    fun error(): Image? = errorFactory(this)
+    fun error(): Image? {
+        return errorFactory(this) ?: defaults.errorFactory(this)
+    }
 
     /** Create and return a new fallback image. */
-    fun fallback(): Image? = fallbackFactory(this)
+    fun fallback(): Image? {
+        return fallbackFactory(this) ?: defaults.fallbackFactory(this)
+    }
 
     @JvmOverloads
     fun newBuilder(
@@ -163,11 +169,11 @@ class ImageRequest private constructor(
      * Tracks which values have been set (instead of computed automatically using a default)
      * when building an [ImageRequest].
      */
-    @Data
+    @Poko
     class Defined(
-        val interceptorDispatcher: CoroutineDispatcher?,
-        val fetcherDispatcher: CoroutineDispatcher?,
-        val decoderDispatcher: CoroutineDispatcher?,
+        val interceptorDispatcher: CoroutineContext?,
+        val fetcherDispatcher: CoroutineContext?,
+        val decoderDispatcher: CoroutineContext?,
         val memoryCachePolicy: CachePolicy?,
         val diskCachePolicy: CachePolicy?,
         val networkCachePolicy: CachePolicy?,
@@ -180,9 +186,9 @@ class ImageRequest private constructor(
     ) {
 
         fun copy(
-            interceptorDispatcher: CoroutineDispatcher? = this.interceptorDispatcher,
-            fetcherDispatcher: CoroutineDispatcher? = this.fetcherDispatcher,
-            decoderDispatcher: CoroutineDispatcher? = this.decoderDispatcher,
+            interceptorDispatcher: CoroutineContext? = this.interceptorDispatcher,
+            fetcherDispatcher: CoroutineContext? = this.fetcherDispatcher,
+            decoderDispatcher: CoroutineContext? = this.decoderDispatcher,
             memoryCachePolicy: CachePolicy? = this.memoryCachePolicy,
             diskCachePolicy: CachePolicy? = this.diskCachePolicy,
             networkCachePolicy: CachePolicy? = this.networkCachePolicy,
@@ -211,12 +217,12 @@ class ImageRequest private constructor(
     /**
      * A set of default options that are used to fill in unset [ImageRequest] values.
      */
-    @Data
+    @Poko
     class Defaults(
         val fileSystem: FileSystem = defaultFileSystem(),
-        val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-        val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
-        val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
+        val interceptorDispatcher: CoroutineContext = Dispatchers.Main.immediate,
+        val fetcherDispatcher: CoroutineContext = ioCoroutineDispatcher(),
+        val decoderDispatcher: CoroutineContext = ioCoroutineDispatcher(),
         val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
@@ -229,9 +235,9 @@ class ImageRequest private constructor(
 
         fun copy(
             fileSystem: FileSystem = this.fileSystem,
-            interceptorDispatcher: CoroutineDispatcher = this.interceptorDispatcher,
-            fetcherDispatcher: CoroutineDispatcher = this.fetcherDispatcher,
-            decoderDispatcher: CoroutineDispatcher = this.decoderDispatcher,
+            interceptorDispatcher: CoroutineContext = this.interceptorDispatcher,
+            fetcherDispatcher: CoroutineContext = this.fetcherDispatcher,
+            decoderDispatcher: CoroutineContext = this.decoderDispatcher,
             memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
             diskCachePolicy: CachePolicy = this.diskCachePolicy,
             networkCachePolicy: CachePolicy = this.networkCachePolicy,
@@ -276,9 +282,9 @@ class ImageRequest private constructor(
         internal var fileSystem: FileSystem?
         internal var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         internal var decoderFactory: Decoder.Factory?
-        internal var interceptorDispatcher: CoroutineDispatcher?
-        internal var fetcherDispatcher: CoroutineDispatcher?
-        internal var decoderDispatcher: CoroutineDispatcher?
+        internal var interceptorDispatcher: CoroutineContext?
+        internal var fetcherDispatcher: CoroutineContext?
+        internal var decoderDispatcher: CoroutineContext?
         internal var memoryCachePolicy: CachePolicy?
         internal var diskCachePolicy: CachePolicy?
         internal var networkCachePolicy: CachePolicy?
@@ -484,7 +490,7 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.dispatcher
          */
-        fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun dispatcher(dispatcher: CoroutineContext) = apply {
             this.fetcherDispatcher = dispatcher
             this.decoderDispatcher = dispatcher
         }
@@ -492,21 +498,21 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.interceptorDispatcher
          */
-        fun interceptorDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun interceptorDispatcher(dispatcher: CoroutineContext) = apply {
             this.interceptorDispatcher = dispatcher
         }
 
         /**
          * @see ImageLoader.Builder.fetcherDispatcher
          */
-        fun fetcherDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun fetcherDispatcher(dispatcher: CoroutineContext) = apply {
             this.fetcherDispatcher = dispatcher
         }
 
         /**
          * @see ImageLoader.Builder.decoderDispatcher
          */
-        fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
+        fun decoderDispatcher(dispatcher: CoroutineContext) = apply {
             this.decoderDispatcher = dispatcher
         }
 

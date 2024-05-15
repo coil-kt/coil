@@ -2,7 +2,7 @@ package coil3.request
 
 import coil3.Extras
 import coil3.PlatformContext
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.size.Scale
@@ -15,7 +15,7 @@ import okio.FileSystem
  *
  * [Fetcher]s and [Decoder]s should respect these options as best as possible.
  */
-@Data
+@Poko
 class Options(
     /**
      * The [PlatformContext] used to execute this request.

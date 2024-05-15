@@ -1,0 +1,23 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base"
+    ],
+    "dependencyDashboard": false,
+    "packageRules": [
+        {
+            "matchUpdateTypes": ["minor", "patch"],
+            "automerge": true
+        },
+        {
+            "groupName": "Kotlin compiler plugins",
+            "matchPackagePrefixes": [
+                "dev.drewhamilton.poko",
+                "org.jetbrains.kotlin:kotlin",
+                "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable",
+                "org.jetbrains.kotlinx:atomicfu-gradle-plugin",
+                "org.jetbrains.kotlinx.binary-compatibility-validator"
+            ]
+        }
+    ]
+}

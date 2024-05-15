@@ -9,13 +9,13 @@ Using Coil 3 in a Compose Multiplatform project? Check out the [`samples`](https
 
 ## Maven Coordinates and Package Name
 
-Coil's Maven coordinates were updated to `io.coil-kt.coil3` and its package name was updated to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.5.0` is now `io.coil-kt.coil3:coil:3.0.0-alpha01`.
+Coil's Maven coordinates were updated to `io.coil-kt.coil3` and its package name was updated to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.6.0` is now `io.coil-kt.coil3:coil:3.0.0-alpha01`.
 
 The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` and `coil-compose-core` respectively to align with the naming conventions used by Coroutines, Ktor, and AndroidX.
 
 ## Multiplatform
 
-Coil 3 is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, and Javascript. Once [Ktor](https://ktor.io/) releases WASM support on Maven Central, Coil will merge WASM support into the main artifact.
+Coil 3 is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, Javascript, and WASM.
 
 On Android, Coil uses the standard graphics classes to render images. On non-Android platforms, Coil uses [Skiko](https://github.com/JetBrains/skiko) to render images. Skiko is a set of Kotlin bindings that wrap the [Skia](https://github.com/google/skia) graphics engine developed by Google.
 

@@ -14,7 +14,7 @@ Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
 Coil 可以在 `mavenCentral()` 下载
 
 ```kotlin
-implementation("io.coil-kt:coil:2.5.0")
+implementation("io.coil-kt:coil:2.6.0")
 ```
 
 ## 快速上手
@@ -49,7 +49,7 @@ imageView.load("https://example.com/image.jpg") {
 引入 [Jetpack Compose](https://developer.android.com/jetpack/compose) 扩展库:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.5.0")
+implementation("io.coil-kt:coil-compose:2.6.0")
 ```
 
 使用 `AsyncImage` 加载图片:

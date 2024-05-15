@@ -9,6 +9,7 @@ plugins {
     id("kotlinx-atomicfu")
     id("dev.drewhamilton.poko")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("androidx.baselineprofile")
 }
 
@@ -47,7 +48,7 @@ kotlin {
 baselineProfile {
     mergeIntoMain = true
     saveInSrc = true
-    baselineProfileOutputDir = ""
+    baselineProfileOutputDir = "."
     filter {
         include("coil3.compose.**")
     }

@@ -16,7 +16,7 @@ class RealMemoryCacheTest {
     private val cache = RealMemoryCache(strongCache, weakCache)
 
     @Test
-    fun `can retrieve strong cached value`() {
+    fun canRetrieveStrongCachedValue() {
         val key = Key("strong")
         val image = FakeImage()
 
@@ -28,7 +28,7 @@ class RealMemoryCacheTest {
     }
 
     @Test
-    fun `can retrieve weak cached value`() {
+    fun canRetrieveWeakCachedValue() {
         val key = Key("weak")
         val image = FakeImage()
 
@@ -40,7 +40,7 @@ class RealMemoryCacheTest {
     }
 
     @Test
-    fun `remove removes from both caches`() {
+    fun removeRemovesFromBothCaches() {
         val key = Key("key")
         val image = FakeImage()
 
@@ -55,7 +55,7 @@ class RealMemoryCacheTest {
     }
 
     @Test
-    fun `clear clears all values`() {
+    fun clearClearsAllValues() {
         assertEquals(0, cache.size)
 
         strongCache.set(Key("a"), FakeImage(), emptyMap(), 100)
@@ -75,7 +75,7 @@ class RealMemoryCacheTest {
     }
 
     @Test
-    fun `set can be retrieved with get`() {
+    fun setCanBeRetrievedWithGet() {
         val key = Key("a")
         val image = FakeImage()
         cache[key] = Value(image)
@@ -84,7 +84,7 @@ class RealMemoryCacheTest {
     }
 
     @Test
-    fun `setting the same bitmap multiple times can only be removed once`() {
+    fun settingTheSameImageMultipleTimesCanOnlyBeRemovedOnce() {
         val key = Key("a")
         val image = FakeImage()
 

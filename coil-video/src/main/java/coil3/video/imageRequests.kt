@@ -5,11 +5,42 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
+import androidx.annotation.RequiresApi
 import coil3.Extras
 import coil3.getExtra
 import coil3.request.ImageRequest
 import coil3.request.Options
 
+// region videoFrameIndex
+
+/**
+ * Set the frame index to extract from a video.
+ *
+ * When both [videoFrameIndex] and other videoFrame-prefixed properties are set,
+ * [videoFrameIndex] will take precedence.
+ */
+@RequiresApi(28)
+fun ImageRequest.Builder.videoFrameIndex(frameIndex: Int) = apply {
+    require(frameIndex >= 0) { "frameIndex must be >= 0." }
+    memoryCacheKeyExtra("coil#videoFrameIndex", frameIndex.toString())
+    extras[videoFrameIndexKey] = frameIndex
+}
+
+val ImageRequest.videoFrameIndex: Int
+    @RequiresApi(28)
+    get() = getExtra(videoFrameIndexKey)
+
+val Options.videoFrameIndex: Int
+    @RequiresApi(28)
+    get() = getExtra(videoFrameIndexKey)
+
+val Extras.Key.Companion.videoFrameIndex: Extras.Key<Int>
+    @RequiresApi(28)
+    get() = videoFrameIndexKey
+
+private val videoFrameIndexKey = Extras.Key(default = -1)
+
+// endregion
 // region videoFrameMicros
 
 /**

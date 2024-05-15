@@ -17,7 +17,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -136,10 +136,8 @@ private fun BackIconButton(
     IconButton(
         onClick = onBackPressed,
         content = {
-            // https://github.com/JetBrains/compose-multiplatform/issues/4172
-            @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = null,
             )
         },

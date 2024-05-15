@@ -109,6 +109,7 @@ public final class coil3/Extras {
 public final class coil3/Extras$Builder {
 	public fun <init> ()V
 	public fun <init> (Lcoil3/Extras;)V
+	public fun <init> (Ljava/util/Map;)V
 	public final fun build ()Lcoil3/Extras;
 	public final fun set (Lcoil3/Extras$Key;Ljava/lang/Object;)Lcoil3/Extras$Builder;
 	public final fun setAll (Lcoil3/Extras;)Lcoil3/Extras$Builder;
@@ -131,6 +132,7 @@ public final class coil3/ExtrasKt {
 	public static final fun getExtra (Lcoil3/request/Options;Lcoil3/Extras$Key;)Ljava/lang/Object;
 	public static final fun getOrDefault (Lcoil3/Extras;Lcoil3/Extras$Key;)Ljava/lang/Object;
 	public static final fun orEmpty (Lcoil3/Extras;)Lcoil3/Extras;
+	public static final fun plus (Lcoil3/Extras;Lcoil3/Extras;)Lcoil3/Extras;
 }
 
 public abstract interface class coil3/Image {
@@ -165,21 +167,21 @@ public final class coil3/ImageLoader$Builder {
 	public final fun build ()Lcoil3/ImageLoader;
 	public final fun components (Lcoil3/ComponentRegistry;)Lcoil3/ImageLoader$Builder;
 	public final synthetic fun components (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
-	public final fun decoderDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
+	public final fun decoderDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
 	public final fun diskCache (Lcoil3/disk/DiskCache;)Lcoil3/ImageLoader$Builder;
 	public final fun diskCache (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
 	public final fun diskCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
-	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
+	public final fun dispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
 	public final fun error (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
 	public final fun error (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
 	public final fun eventListener (Lcoil3/EventListener;)Lcoil3/ImageLoader$Builder;
 	public final fun eventListenerFactory (Lcoil3/EventListener$Factory;)Lcoil3/ImageLoader$Builder;
 	public final fun fallback (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
 	public final fun fallback (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
-	public final fun fetcherDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
+	public final fun fetcherDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
 	public final fun fileSystem (Lokio/FileSystem;)Lcoil3/ImageLoader$Builder;
 	public final fun getExtras ()Lcoil3/Extras$Builder;
-	public final fun interceptorDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
+	public final fun interceptorDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
 	public final fun logger (Lcoil3/util/Logger;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCache (Lcoil3/memory/MemoryCache;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCache (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
@@ -225,9 +227,6 @@ public final class coil3/UriKt {
 public final class coil3/Uri_commonKt {
 	public static final fun getPathSegments (Lcoil3/Uri;)Ljava/util/List;
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;
-}
-
-public abstract interface annotation class coil3/annotation/Data : java/lang/annotation/Annotation {
 }
 
 public abstract interface annotation class coil3/annotation/DelicateCoilApi : java/lang/annotation/Annotation {
@@ -531,13 +530,13 @@ public final class coil3/request/ErrorResult : coil3/request/ImageResult {
 }
 
 public final class coil3/request/ImageRequest {
-	public synthetic fun <init> (Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun error ()Lcoil3/Image;
 	public final fun fallback ()Lcoil3/Image;
 	public final fun getContext ()Landroid/content/Context;
 	public final fun getData ()Ljava/lang/Object;
-	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getDecoderDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDecoderFactory ()Lcoil3/decode/Decoder$Factory;
 	public final fun getDefaults ()Lcoil3/request/ImageRequest$Defaults;
 	public final fun getDefined ()Lcoil3/request/ImageRequest$Defined;
@@ -546,10 +545,10 @@ public final class coil3/request/ImageRequest {
 	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getExtras ()Lcoil3/Extras;
 	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
-	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getFetcherDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getFetcherFactory ()Lkotlin/Pair;
 	public final fun getFileSystem ()Lokio/FileSystem;
-	public final fun getInterceptorDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getInterceptorDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getListener ()Lcoil3/request/ImageRequest$Listener;
 	public final fun getMemoryCacheKey ()Ljava/lang/String;
 	public final fun getMemoryCacheKeyExtras ()Ljava/util/Map;
@@ -576,21 +575,21 @@ public final class coil3/request/ImageRequest$Builder {
 	public synthetic fun <init> (Lcoil3/request/ImageRequest;Landroid/content/Context;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun build ()Lcoil3/request/ImageRequest;
 	public final fun data (Ljava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
-	public final fun decoderDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
+	public final fun decoderDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/request/ImageRequest$Builder;
 	public final fun decoderFactory (Lcoil3/decode/Decoder$Factory;)Lcoil3/request/ImageRequest$Builder;
 	public final fun defaults (Lcoil3/request/ImageRequest$Defaults;)Lcoil3/request/ImageRequest$Builder;
 	public final fun diskCacheKey (Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
 	public final fun diskCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/request/ImageRequest$Builder;
-	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
+	public final fun dispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/request/ImageRequest$Builder;
 	public final fun error (Lcoil3/Image;)Lcoil3/request/ImageRequest$Builder;
 	public final fun error (Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fallback (Lcoil3/Image;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fallback (Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
-	public final fun fetcherDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
+	public final fun fetcherDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fetcherFactory (Lcoil3/fetch/Fetcher$Factory;Lkotlin/reflect/KClass;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fileSystem (Lokio/FileSystem;)Lcoil3/request/ImageRequest$Builder;
 	public final fun getExtras ()Lcoil3/Extras$Builder;
-	public final fun interceptorDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
+	public final fun interceptorDispatcher (Lkotlin/coroutines/CoroutineContext;)Lcoil3/request/ImageRequest$Builder;
 	public final fun listener (Lcoil3/request/ImageRequest$Listener;)Lcoil3/request/ImageRequest$Builder;
 	public final fun listener (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)Lcoil3/request/ImageRequest$Builder;
 	public static synthetic fun listener$default (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
@@ -620,19 +619,19 @@ public final class coil3/request/ImageRequest$Defaults {
 	public static final field Companion Lcoil3/request/ImageRequest$Defaults$Companion;
 	public static final field DEFAULT Lcoil3/request/ImageRequest$Defaults;
 	public fun <init> ()V
-	public fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)V
-	public synthetic fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
-	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
+	public fun <init> (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)V
+	public synthetic fun <init> (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
+	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getDecoderDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getExtras ()Lcoil3/Extras;
 	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
-	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getFetcherDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getFileSystem ()Lokio/FileSystem;
-	public final fun getInterceptorDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getInterceptorDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
@@ -645,16 +644,16 @@ public final class coil3/request/ImageRequest$Defaults$Companion {
 }
 
 public final class coil3/request/ImageRequest$Defined {
-	public fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)V
-	public final fun copy (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
-	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
+	public fun <init> (Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)V
+	public final fun copy (Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
+	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getDecoderDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
-	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun getInterceptorDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public final fun getFetcherDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getInterceptorDispatcher ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
@@ -684,9 +683,7 @@ public final class coil3/request/ImageRequestsKt {
 	public static final fun colorSpace (Lcoil3/ImageLoader$Builder;Landroid/graphics/ColorSpace;)Lcoil3/ImageLoader$Builder;
 	public static final fun colorSpace (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/ColorSpace;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
-	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
-	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun error (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 	public static final fun error (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun fallback (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
@@ -729,6 +726,11 @@ public final class coil3/request/ImageRequestsKt {
 	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun transitionFactory (Lcoil3/ImageLoader$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/ImageLoader$Builder;
 	public static final fun transitionFactory (Lcoil3/request/ImageRequest$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/request/ImageRequests_commonKt {
+	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 }
 
 public abstract interface class coil3/request/ImageResult {
@@ -1007,19 +1009,10 @@ public abstract interface class coil3/transition/TransitionTarget : coil3/target
 	public abstract fun getView ()Landroid/view/View;
 }
 
-public final class coil3/util/BitmapsKt {
-	public static final fun isHardware (Landroid/graphics/Bitmap$Config;)Z
-	public static final fun toSoftware (Landroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap$Config;
-}
-
 public final class coil3/util/CoilUtils {
 	public static final field INSTANCE Lcoil3/util/CoilUtils;
 	public static final fun dispose (Landroid/view/View;)V
 	public static final fun result (Landroid/view/View;)Lcoil3/request/ImageResult;
-}
-
-public final class coil3/util/Collections_commonKt {
-	public static final fun forEachIndices (Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
 }
 
 public final class coil3/util/DebugLogger : coil3/util/Logger {
@@ -1029,17 +1022,6 @@ public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun getMinLevel ()Lcoil3/util/Logger$Level;
 	public fun log (Ljava/lang/String;Lcoil3/util/Logger$Level;Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun setMinLevel (Lcoil3/util/Logger$Level;)V
-}
-
-public abstract interface class coil3/util/DecoderServiceLoaderTarget {
-	public abstract fun factory ()Lcoil3/decode/Decoder$Factory;
-	public fun priority ()I
-}
-
-public abstract interface class coil3/util/FetcherServiceLoaderTarget {
-	public abstract fun factory ()Lcoil3/fetch/Fetcher$Factory;
-	public fun priority ()I
-	public abstract fun type ()Lkotlin/reflect/KClass;
 }
 
 public abstract interface class coil3/util/Logger {
@@ -1057,24 +1039,5 @@ public final class coil3/util/Logger$Level : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil3/util/Logger$Level;
 	public static fun values ()[Lcoil3/util/Logger$Level;
-}
-
-public final class coil3/util/MimeTypeMap {
-	public static final field INSTANCE Lcoil3/util/MimeTypeMap;
-	public final fun getMimeTypeFromExtension (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getMimeTypeFromUrl (Ljava/lang/String;)Ljava/lang/String;
-}
-
-public final class coil3/util/ServiceLoaderComponentRegistry {
-	public static final field INSTANCE Lcoil3/util/ServiceLoaderComponentRegistry;
-	public final fun getDecoders ()Ljava/util/List;
-	public final fun getFetchers ()Ljava/util/List;
-}
-
-public final class coil3/util/Utils_commonKt {
-	public static final fun closeQuietly (Ljava/io/Closeable;)V
-	public static final fun heightPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
-	public static final fun toPx (Lcoil3/size/Dimension;Lcoil3/size/Scale;)I
-	public static final fun widthPx (Lcoil3/size/Size;Lcoil3/size/Scale;Lkotlin/jvm/functions/Function0;)I
 }
 

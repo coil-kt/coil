@@ -1,9 +1,7 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.network
 
-import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
@@ -33,7 +31,7 @@ interface NetworkClient {
  * @param body The HTTP request body.
  */
 @ExperimentalCoilApi
-@Data
+@Poko
 class NetworkRequest(
     val url: String,
     val method: String = HTTP_METHOD_GET,
@@ -86,7 +84,7 @@ private value class ByteStringNetworkRequestBody(
  *  `okhttp3.Response`. If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
  */
 @ExperimentalCoilApi
-@Data
+@Poko
 class NetworkResponse(
     val request: NetworkRequest,
     val code: Int = 200,

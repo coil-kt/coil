@@ -7,15 +7,9 @@ import coil3.getExtra
 /**
  * Enable a crossfade animation when a request completes successfully.
  */
-actual fun ImageRequest.Builder.crossfade(enable: Boolean) =
-    crossfade(DEFAULT_CROSSFADE_MILLIS)
-
 actual fun ImageRequest.Builder.crossfade(durationMillis: Int) = apply {
     extras[crossfadeMillisKey] = durationMillis
 }
-
-actual fun ImageLoader.Builder.crossfade(enable: Boolean) =
-    crossfade(DEFAULT_CROSSFADE_MILLIS)
 
 actual fun ImageLoader.Builder.crossfade(durationMillis: Int) = apply {
     extras[crossfadeMillisKey] = durationMillis

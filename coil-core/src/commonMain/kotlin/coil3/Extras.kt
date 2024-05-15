@@ -1,6 +1,6 @@
 package coil3
 
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.util.toImmutableMap
@@ -9,7 +9,7 @@ import kotlin.jvm.JvmField
 /**
  * A map of key/value pairs to support extensions.
  */
-@Data
+@Poko
 class Extras private constructor(
     private val data: Map<Key<*>, Any>,
 ) {
@@ -41,6 +41,10 @@ class Extras private constructor(
             data = mutableMapOf()
         }
 
+        constructor(map: Map<Key<*>, Any>) {
+            data = map.toMutableMap()
+        }
+
         constructor(extras: Extras) {
             data = extras.data.toMutableMap()
         }
@@ -68,6 +72,10 @@ class Extras private constructor(
     companion object {
         @JvmField val EMPTY = Builder().build()
     }
+}
+
+operator fun Extras.plus(other: Extras): Extras {
+    return Extras.Builder(asMap() + other.asMap()).build()
 }
 
 fun <T> Extras.getOrDefault(key: Extras.Key<T>): T {

@@ -1,16 +1,14 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.network
 
-import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import kotlin.jvm.JvmField
 
 /**
  * Represents a list of HTTP headers.
  */
 @ExperimentalCoilApi
-@Data
+@Poko
 class NetworkHeaders private constructor(
     private val data: Map<String, List<String>>,
 ) {

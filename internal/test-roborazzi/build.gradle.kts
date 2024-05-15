@@ -3,8 +3,9 @@ import coil3.androidLibrary
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("io.github.takahirom.roborazzi")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("io.github.takahirom.roborazzi")
 }
 
 androidLibrary(name = "coil3.test.roborazzi")

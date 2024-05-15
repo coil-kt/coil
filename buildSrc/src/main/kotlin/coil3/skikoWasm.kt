@@ -95,13 +95,13 @@ private value class ResolvedDependencyDescriptor(
     private val dependency: ResolvedDependency,
 ) : DependencyDescriptor {
 
-    override val group: String?
+    override val group: String
         get() = dependency.moduleGroup
 
-    override val name: String?
+    override val name: String
         get() = dependency.moduleName
 
-    override val version: String?
+    override val version: String
         get() = dependency.moduleVersion
 }
 

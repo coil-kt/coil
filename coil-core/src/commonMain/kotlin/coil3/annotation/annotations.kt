@@ -61,7 +61,7 @@ internal annotation class WorkerThread
  * by the Poko plugin based on the properties in their primary constructor. Unlike the `data class`
  * language feature, classes do not have `component` and `copy` methods generated.
  */
-@PublishedApi
+@InternalCoilApi
 @MustBeDocumented
 @Retention(value = AnnotationRetention.SOURCE)
-internal annotation class Data
+annotation class Poko

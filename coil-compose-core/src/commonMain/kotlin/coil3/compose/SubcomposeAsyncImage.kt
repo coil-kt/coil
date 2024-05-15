@@ -1,5 +1,3 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.compose
 
 import androidx.compose.foundation.layout.Box
@@ -21,7 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import coil3.ImageLoader
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
@@ -318,7 +316,7 @@ private fun contentOf(
     }
 }
 
-@Data
+@Poko
 private class RealSubcomposeAsyncImageScope(
     private val parentScope: BoxScope,
     override val painter: AsyncImagePainter,

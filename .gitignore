@@ -18,6 +18,7 @@ build
 
 # Docs
 docs/api
+docs/sample
 site
 
 # Xcode

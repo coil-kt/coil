@@ -28,6 +28,10 @@ import coil3.util.awaitStarted
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.sync.Semaphore
 
+internal actual fun skipCreatingDisposable(
+    request: ImageRequest,
+) = request.target !is ViewTarget<*>
+
 internal actual fun getDisposable(
     request: ImageRequest,
     job: Deferred<ImageResult>,

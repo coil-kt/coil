@@ -13,11 +13,11 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalNativeApi::class)
 class WeakMemoryCacheTest {
 
-    private val weakMemoryCache = WeakReferenceMemoryCache()
+    private val weakMemoryCache = RealWeakMemoryCache()
     private val references = mutableSetOf<Image>()
 
     @Test
-    fun `can retrieve cached value`() {
+    fun canRetrieveCachedValue() {
         val key = Key("key")
         val image = reference(FakeImage())
         val extras = mapOf("test" to 4)
@@ -32,7 +32,7 @@ class WeakMemoryCacheTest {
     }
 
     @Test
-    fun `can hold multiple values`() {
+    fun canHoldMultipleValues() {
         val image1 = reference(FakeImage())
         weakMemoryCache.set(Key("key1"), image1, emptyMap(), 100)
 
@@ -54,7 +54,7 @@ class WeakMemoryCacheTest {
     }
 
     @Test
-    fun `empty references are removed from cache`() {
+    fun emptyReferencesAreRemovedFromCache() {
         val key = Key("key")
         val image = reference(FakeImage())
 
@@ -65,7 +65,7 @@ class WeakMemoryCacheTest {
     }
 
     @Test
-    fun `bitmaps with same key are retrieved by size descending`() {
+    fun imagesWithSameKeyAreRetrievedBySizeDescending() {
         val image1 = reference(FakeImage())
         val image2 = reference(FakeImage())
         val image3 = reference(FakeImage())
@@ -113,7 +113,7 @@ class WeakMemoryCacheTest {
     }
 
     @Test
-    fun `cleanUp clears all collected values`() {
+    fun cleanUpClearsAllCollectedValues() {
         val image1 = reference(FakeImage())
         weakMemoryCache.set(Key("key1"), image1, emptyMap(), 100)
 
@@ -141,7 +141,7 @@ class WeakMemoryCacheTest {
     }
 
     @Test
-    fun `value is removed after invalidate is called`() {
+    fun valueIsRemovedAfterInvalidateIsCalled() {
         val key = Key("1")
         val image = FakeImage()
         weakMemoryCache.set(key, image, emptyMap(), image.size)
@@ -153,7 +153,7 @@ class WeakMemoryCacheTest {
     /**
      * Clears [image]'s weak reference without removing its entry from the cache.
      */
-    private fun WeakReferenceMemoryCache.garbageCollect(image: Image) {
+    private fun RealWeakMemoryCache.garbageCollect(image: Image) {
         cache.values.forEach { values ->
             values.forEachIndices { value ->
                 if (value.image.get() === image) {

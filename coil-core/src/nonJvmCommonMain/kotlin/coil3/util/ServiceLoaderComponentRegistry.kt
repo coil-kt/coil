@@ -17,11 +17,11 @@ actual object ServiceLoaderComponentRegistry {
     actual val decoders: List<DecoderServiceLoaderTarget>
         get() = synchronized(lock) { _decoders.toImmutableList() }
 
-    fun register(fetcher: FetcherServiceLoaderTarget<*>) = synchronized(lock) {
+    actual fun register(fetcher: FetcherServiceLoaderTarget<*>) = synchronized(lock) {
         _fetchers += fetcher
     }
 
-    fun register(decoder: DecoderServiceLoaderTarget) = synchronized(lock) {
+    actual fun register(decoder: DecoderServiceLoaderTarget) = synchronized(lock) {
         _decoders += decoder
     }
 }

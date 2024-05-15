@@ -1,6 +1,7 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
 import coil3.androidUnitTest
+import coil3.applyKtorWasmWorkaround
 
 plugins {
     id("com.android.library")
@@ -10,6 +11,7 @@ plugins {
 
 addAllMultiplatformTargets()
 androidLibrary(name = "coil3.network.ktor")
+applyKtorWasmWorkaround(libs.versions.ktor.wasm.get())
 
 kotlin {
     sourceSets {

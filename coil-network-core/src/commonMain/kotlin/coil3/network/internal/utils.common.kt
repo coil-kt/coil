@@ -4,6 +4,7 @@ import coil3.disk.DiskCache
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkResponseBody
 import okio.Buffer
+import okio.Closeable
 import okio.use
 
 internal fun NetworkHeaders.Builder.append(line: String) = apply {
@@ -30,3 +31,11 @@ internal const val CACHE_CONTROL = "Cache-Control"
 internal const val CONTENT_TYPE = "Content-Type"
 internal const val HTTP_METHOD_GET = "GET"
 internal const val MIME_TYPE_TEXT_PLAIN = "text/plain"
+
+internal fun Closeable.closeQuietly() {
+    try {
+        close()
+    } catch (e: RuntimeException) {
+        throw e
+    } catch (_: Exception) {}
+}

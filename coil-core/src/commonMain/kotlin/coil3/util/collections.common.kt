@@ -15,7 +15,6 @@ internal expect fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V>
 internal expect fun <T> List<T>.toImmutableList(): List<T>
 
 /** @see forEach */
-@PublishedApi // Used by extension modules.
 internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     for (i in indices) {
         action(get(i))

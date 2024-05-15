@@ -1,7 +1,7 @@
 package coil3.fetch
 
 import coil3.Image
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.decode.DataSource
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
@@ -16,7 +16,7 @@ sealed interface FetchResult
  * @param mimeType An optional MIME type for the [source].
  * @param dataSource The source that [source] was fetched from.
  */
-@Data
+@Poko
 class SourceFetchResult(
     val source: ImageSource,
     val mimeType: String?,
@@ -32,7 +32,7 @@ class SourceFetchResult(
  *  at less than its original size).
  * @param dataSource The source that [image] was fetched from.
  */
-@Data
+@Poko
 class ImageFetchResult(
     val image: Image,
     val isSampled: Boolean,

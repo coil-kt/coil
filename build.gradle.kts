@@ -1,5 +1,4 @@
 import coil3.enableComposeMetrics
-import coil3.enableWasm
 import coil3.groupId
 import coil3.publicModules
 import coil3.versionName
@@ -11,22 +10,23 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     repositories {
         google()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.atomicFu)
         classpath(libs.gradlePlugin.jetbrainsCompose)
+        classpath(libs.gradlePlugin.composeCompiler)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
@@ -43,6 +43,7 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
+    nonPublicMarkers += "coil3/annotation/InternalCoilApi"
     ignoredProjects += project.subprojects.mapNotNull { project ->
         if (project.name in publicModules) null else project.name
     }
@@ -56,7 +57,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
 
     // Necessary to publish to Maven.
@@ -139,62 +140,29 @@ allprojects {
 
     plugins.withId("org.jetbrains.compose") {
         extensions.configure<ComposeExtension> {
-            kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
             extensions.configure<ExperimentalExtension> {
                 web.application {}
             }
         }
     }
 
+    plugins.withId("org.jetbrains.kotlin.plugin.compose") {
+        extensions.configure<ComposeCompilerGradlePluginExtension> {
+            enableIntrinsicRemember = true
+            enableNonSkippingGroupOptimization = true
+            stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
+
+            if (enableComposeMetrics && name in publicModules) {
+                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile
+                metricsDestination = outputDir
+                reportsDestination = outputDir
+            }
+        }
+    }
+
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
-            pokoAnnotation = "coil3.annotation.Data"
-        }
-    }
-
-    if (enableComposeMetrics && name in publicModules) {
-        plugins.withId("org.jetbrains.compose") {
-            tasks.withType<KotlinCompile> {
-                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile.path
-                compilerOptions.freeCompilerArgs.addAll(
-                    "-P", "$composePlugin:metricsDestination=$outputDir",
-                    "-P", "$composePlugin:reportsDestination=$outputDir",
-                )
-            }
-        }
-    }
-
-    plugins.withId("org.jetbrains.compose") {
-        tasks.withType<KotlinCompile> {
-            val outputDir = rootDir.resolve("coil-core/compose_compiler_config.conf").path
-            compilerOptions.freeCompilerArgs.addAll(
-                "-P", "$composePlugin:stabilityConfigurationPath=$outputDir",
-            )
-        }
-    }
-
-    if (enableWasm) {
-        // Use ktor's experimental wasm artifact.
-        repositories {
-            maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
-        }
-        configurations.configureEach {
-            resolutionStrategy.eachDependency {
-                if (requested.group == "io.ktor") {
-                    useVersion(libs.versions.ktor.beta.get())
-                }
-            }
-        }
-
-        // Use Compose's beta version, which supports WASM.
-        configurations.configureEach {
-            resolutionStrategy.eachDependency {
-                if (requested.group.startsWith("org.jetbrains.compose")) {
-                    if (requested.name.startsWith("annotation")) return@eachDependency
-                    if (requested.name == "compiler") return@eachDependency
-                    useVersion(libs.versions.jetbrains.compose.beta.get())
-                }
-            }
+            pokoAnnotation = "coil3/annotation/Poko"
         }
     }
 
@@ -203,6 +171,11 @@ allprojects {
 
 // https://github.com/square/okio/issues/1163
 fun Project.applyOkioJsTestWorkaround() {
+    if (":samples" in displayName) {
+        // The polyfills cause issues with the samples.
+        return
+    }
+
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         val applyNodePolyfillPlugin by lazy {
             tasks.register("applyNodePolyfillPlugin") {

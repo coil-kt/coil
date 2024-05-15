@@ -1,5 +1,3 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.svg
 
 import android.graphics.Canvas
@@ -38,7 +36,7 @@ actual class SvgDecoder @JvmOverloads actual constructor(
     val useViewBoundsAsIntrinsicSize: Boolean,
 ) : Decoder {
 
-    override suspend fun decode() = runInterruptible {
+    actual override suspend fun decode(): DecodeResult? = runInterruptible {
         val svg = source.source().use { SVG.getFromInputStream(it.inputStream()) }
 
         val svgWidth: Float
@@ -103,7 +101,7 @@ actual class SvgDecoder @JvmOverloads actual constructor(
         val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
 
-        override fun create(
+        actual override fun create(
             result: SourceFetchResult,
             options: Options,
             imageLoader: ImageLoader,
