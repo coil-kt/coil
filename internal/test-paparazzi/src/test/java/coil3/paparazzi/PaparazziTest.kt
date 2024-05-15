@@ -15,7 +15,6 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.decode.ImageSource
 import coil3.request.ImageRequest
 import coil3.request.target
-import coil3.size.Size
 import coil3.test.FakeImageLoaderEngine
 import coil3.test.intercept
 import kotlin.test.assertTrue
@@ -104,11 +103,7 @@ class PaparazziTest {
         paparazzi.snapshot {
             Image(
                 painter = rememberAsyncImagePainter(
-                    // TODO: Figure out how to avoid having to specify an immediate size.
-                    model = ImageRequest.Builder(paparazzi.context)
-                        .data(url)
-                        .size(Size.ORIGINAL)
-                        .build(),
+                    model = url,
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,

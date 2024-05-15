@@ -84,6 +84,14 @@ public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public final fun getLambda-1$coil_compose_core_release ()Lkotlin/jvm/functions/Function3;
 }
 
+public abstract interface class coil3/compose/DrawScopeSizeResolver : coil3/size/SizeResolver {
+	public abstract fun connect (Lkotlinx/coroutines/flow/Flow;)V
+}
+
+public final class coil3/compose/DrawScopeSizeResolverKt {
+	public static final fun DrawScopeSizeResolver ()Lcoil3/compose/DrawScopeSizeResolver;
+}
+
 public abstract interface class coil3/compose/EqualityDelegate {
 	public abstract fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
 	public abstract fun hashCode (Ljava/lang/Object;)I

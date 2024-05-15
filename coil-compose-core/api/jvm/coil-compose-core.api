@@ -84,6 +84,14 @@ public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public final fun getLambda-1$coil_compose_core ()Lkotlin/jvm/functions/Function3;
 }
 
+public abstract interface class coil3/compose/DrawScopeSizeResolver : coil3/size/SizeResolver {
+	public abstract fun connect (Lkotlinx/coroutines/flow/Flow;)V
+}
+
+public final class coil3/compose/DrawScopeSizeResolverKt {
+	public static final fun DrawScopeSizeResolver ()Lcoil3/compose/DrawScopeSizeResolver;
+}
+
 public final class coil3/compose/DrawablePainter : androidx/compose/ui/graphics/painter/Painter {
 	public static final field $stable I
 	public fun <init> (Lcoil3/DrawableImage;)V

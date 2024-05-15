@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
@@ -34,7 +33,6 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.CrossfadePainter
-import coil3.compose.internal.isPositive
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
@@ -43,19 +41,15 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
-import coil3.size.Dimension
 import coil3.size.Precision
-import coil3.size.Size as CoilSize
-import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 /**
@@ -186,7 +180,10 @@ class AsyncImagePainter internal constructor(
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
-    private val drawSize = MutableStateFlow(Size.Zero)
+    private val drawSize = MutableSharedFlow<Size>(
+        replay = 1,
+        onBufferOverflow = DROP_OLDEST,
+    )
 
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
@@ -227,8 +224,8 @@ class AsyncImagePainter internal constructor(
         get() = painter?.intrinsicSize ?: Size.Unspecified
 
     override fun DrawScope.onDraw() {
-        // Update the draw scope's current size.
-        drawSize.value = size
+        // Cache the draw scope's current size.
+        drawSize.tryEmit(size)
 
         // Draw the current painter.
         painter?.apply { draw(size, alpha, colorFilter) }
@@ -289,6 +286,12 @@ class AsyncImagePainter internal constructor(
 
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
+        // Connect the size resolver to the draw scope if necessary.
+        val sizeResolver = request.sizeResolver
+        if (sizeResolver is DrawScopeSizeResolver) {
+            sizeResolver.connect(drawSize)
+        }
+
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
@@ -297,10 +300,6 @@ class AsyncImagePainter internal constructor(
                 },
             )
             .apply {
-                if (request.defined.sizeResolver == null) {
-                    // If the size resolver isn't set, suspend until the canvas size is positive.
-                    size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
-                }
                 if (request.defined.scale == null) {
                     // If the scale isn't set, use the content scale.
                     scale(contentScale.toScale())
@@ -396,15 +395,6 @@ private fun unsupportedData(
     name: String,
     description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
 ): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
-
-private fun Size.toSizeOrNull() = when {
-    isUnspecified -> CoilSize.ORIGINAL
-    isPositive -> CoilSize(
-        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
-    )
-    else -> null
-}
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
 internal expect fun Image.toPainter(
