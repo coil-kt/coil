@@ -150,6 +150,7 @@ allprojects {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
             enableIntrinsicRemember = true
             enableNonSkippingGroupOptimization = true
+            enableStrongSkippingMode = true
             stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
 
             if (enableComposeMetrics && name in publicModules) {
