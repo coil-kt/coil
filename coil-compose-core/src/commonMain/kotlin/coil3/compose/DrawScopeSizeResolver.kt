@@ -1,10 +1,10 @@
 package coil3.compose
 
+import coil3.size.Size as CoilSize
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.internal.toCoilSizeOrNull
-import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.js.JsName
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.mapNotNull
 
 @ExperimentalCoilApi
 @JsName("newDrawScopeSizeResolver")
-fun DrawScopeSizeResolver(): DrawScopeSizeResolver {
-    return RealDrawScopeSizeResolver()
-}
+fun DrawScopeSizeResolver(): DrawScopeSizeResolver = RealDrawScopeSizeResolver()
 
 /**
  * A special [SizeResolver] that waits until [AsyncImagePainter.onDraw] to return the
