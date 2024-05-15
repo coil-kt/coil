@@ -1,5 +1,6 @@
 package coil3.compose.internal
 
+import coil3.size.Size as CoilSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
@@ -25,7 +26,6 @@ import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.size.Dimension
 import coil3.size.Scale
-import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.math.roundToInt
 
@@ -196,7 +196,5 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
-
-internal val ZeroConstraints = Constraints.fixed(0, 0)
 
 internal val OriginalSizeResolver = SizeResolver(CoilSize.ORIGINAL)
