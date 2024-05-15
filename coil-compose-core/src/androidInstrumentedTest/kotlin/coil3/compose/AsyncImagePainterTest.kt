@@ -113,7 +113,12 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        assertLoadedBitmapSize(1024.toDp(), 1326.toDp())
+        // Assert that the loaded image is the lesser of the image source and the display size.
+        val (displayWidth, displayHeight) = displaySize
+        assertLoadedBitmapSize(
+            width = displayWidth.coerceAtMost(1024).toDp(),
+            height = displayHeight.coerceAtMost(1326).toDp(),
+        )
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -174,7 +179,12 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        assertLoadedBitmapSize(1024.toDp(), 1326.toDp())
+        // Assert that the loaded image is the lesser of the image source and the display size.
+        val (displayWidth, displayHeight) = displaySize
+        assertLoadedBitmapSize(
+            width = displayWidth.coerceAtMost(1024).toDp(),
+            height = displayHeight.coerceAtMost(1326).toDp(),
+        )
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp, tolerance = 1.dp)
@@ -235,7 +245,12 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        assertLoadedBitmapSize(1024.toDp(), 1326.toDp())
+        // Assert that the loaded image is the lesser of the image source and the display size.
+        val (displayWidth, displayHeight) = displaySize
+        assertLoadedBitmapSize(
+            width = displayWidth.coerceAtMost(1024).toDp(),
+            height = displayHeight.coerceAtMost(1326).toDp(),
+        )
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
