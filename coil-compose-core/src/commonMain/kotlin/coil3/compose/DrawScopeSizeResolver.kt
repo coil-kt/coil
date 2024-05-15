@@ -7,11 +7,14 @@ import coil3.compose.internal.toCoilSizeOrNull
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.js.JsName
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.transformLatest
 
 @ExperimentalCoilApi
 @JsName("newDrawScopeSizeResolver")
@@ -36,13 +39,11 @@ private class RealDrawScopeSizeResolver : DrawScopeSizeResolver {
         this.sizes.tryEmit(sizes)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun size(): CoilSize {
         return sizes
-            .mapNotNull { sizes ->
-                sizes
-                    .mapNotNull { it.toCoilSizeOrNull() }
-                    .first()
-            }
+            .transformLatest { emitAll(it) }
+            .mapNotNull { it.toCoilSizeOrNull() }
             .first()
     }
 }
