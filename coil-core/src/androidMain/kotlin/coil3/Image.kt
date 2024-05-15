@@ -4,8 +4,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import coil3.util.allocationByteCountCompat
 import coil3.util.height
 import coil3.util.isImmutable
@@ -46,7 +46,7 @@ actual interface Image {
 }
 
 @ExperimentalCoilApi
-@Data
+@Poko
 class DrawableImage internal constructor(
     val drawable: Drawable,
     override val shareable: Boolean,
@@ -76,7 +76,7 @@ class DrawableImage internal constructor(
 }
 
 @ExperimentalCoilApi
-@Data
+@Poko
 class BitmapImage internal constructor(
     val bitmap: Bitmap,
     override val shareable: Boolean,

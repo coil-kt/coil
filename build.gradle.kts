@@ -43,6 +43,7 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
+    nonPublicMarkers += "coil3/annotation/InternalCoilApi"
     ignoredProjects += project.subprojects.mapNotNull { project ->
         if (project.name in publicModules) null else project.name
     }
@@ -161,7 +162,7 @@ allprojects {
 
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
-            pokoAnnotation = "coil3/annotation/Data"
+            pokoAnnotation = "coil3/annotation/Poko"
         }
     }
 

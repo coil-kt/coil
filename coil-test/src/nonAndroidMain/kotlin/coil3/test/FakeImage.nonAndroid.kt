@@ -1,10 +1,8 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.test
 
 import coil3.Image
-import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
+import coil3.annotation.Poko
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.ColorAlphaType
@@ -15,7 +13,7 @@ import org.jetbrains.skia.Paint
 import org.jetbrains.skia.impl.use
 
 @ExperimentalCoilApi
-@Data
+@Poko
 actual class FakeImage actual constructor(
     actual override val width: Int,
     actual override val height: Int,

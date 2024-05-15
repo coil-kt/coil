@@ -5,8 +5,8 @@ import coil3.Extras
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.annotation.Data
 import coil3.annotation.MainThread
+import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
@@ -35,7 +35,7 @@ import okio.FileSystem
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-@Data
+@Poko
 class ImageRequest private constructor(
     val context: PlatformContext,
 
@@ -169,7 +169,7 @@ class ImageRequest private constructor(
      * Tracks which values have been set (instead of computed automatically using a default)
      * when building an [ImageRequest].
      */
-    @Data
+    @Poko
     class Defined(
         val interceptorDispatcher: CoroutineContext?,
         val fetcherDispatcher: CoroutineContext?,
@@ -217,7 +217,7 @@ class ImageRequest private constructor(
     /**
      * A set of default options that are used to fill in unset [ImageRequest] values.
      */
-    @Data
+    @Poko
     class Defaults(
         val fileSystem: FileSystem = defaultFileSystem(),
         val interceptorDispatcher: CoroutineContext = Dispatchers.Main.immediate,

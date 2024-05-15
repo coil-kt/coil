@@ -2,7 +2,7 @@ package coil3.request
 
 import coil3.Image
 import coil3.ImageLoader
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.decode.DataSource
 import coil3.memory.MemoryCache
 
@@ -20,7 +20,7 @@ sealed interface ImageResult {
 /**
  * Indicates that the request completed successfully.
  */
-@Data
+@Poko
 class SuccessResult(
     /**
      * The success drawable.
@@ -82,7 +82,7 @@ class SuccessResult(
 /**
  * Indicates that an error occurred while executing the request.
  */
-@Data
+@Poko
 class ErrorResult(
     /**
      * The error drawable.

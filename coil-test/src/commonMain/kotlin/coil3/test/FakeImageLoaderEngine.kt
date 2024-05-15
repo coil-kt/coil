@@ -1,10 +1,8 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package coil3.test
 
 import coil3.Image
 import coil3.ImageLoader
-import coil3.annotation.Data
+import coil3.annotation.Poko
 import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -78,13 +76,13 @@ class FakeImageLoaderEngine private constructor(
      */
     fun newBuilder() = Builder(this)
 
-    @Data
+    @Poko
     class RequestValue(
         val request: ImageRequest,
         val size: Size,
     )
 
-    @Data
+    @Poko
     class ResultValue(
         val request: RequestValue,
         val result: ImageResult,
