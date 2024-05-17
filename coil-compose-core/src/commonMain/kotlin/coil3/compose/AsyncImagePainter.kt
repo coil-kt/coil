@@ -329,6 +329,7 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun computePreviewState(previewHandler: AsyncImagePreviewHandler): State {
+        val imageLoader = imageLoader
         val request = request.newBuilder()
             .defaults(imageLoader.defaults)
             .build()
