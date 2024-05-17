@@ -77,6 +77,15 @@ public final class coil3/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-10Xjiaw (Ljava/lang/Object;Lcoil3/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILcoil3/compose/EqualityDelegate;Landroidx/compose/runtime/Composer;III)Lcoil3/compose/AsyncImagePainter;
 }
 
+public abstract interface class coil3/compose/AsyncImagePreviewHandler {
+	public static final field Companion Lcoil3/compose/AsyncImagePreviewHandler$Companion;
+	public static final field Default Lcoil3/compose/AsyncImagePreviewHandler;
+	public abstract fun handle (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;Lkotlin/jvm/functions/Function1;)Lcoil3/compose/AsyncImagePainter$State;
+}
+
+public final class coil3/compose/AsyncImagePreviewHandler$Companion {
+}
+
 public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public static final field INSTANCE Lcoil3/compose/ComposableSingletons$SubcomposeAsyncImageKt;
 	public static field lambda-1 Lkotlin/jvm/functions/Function3;
@@ -105,6 +114,10 @@ public abstract interface class coil3/compose/EqualityDelegate {
 
 public final class coil3/compose/EqualityDelegateKt {
 	public static final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
+}
+
+public final class coil3/compose/LocalAsyncImagePreviewHandlerKt {
+	public static final fun getLocalAsyncImagePreviewHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
 public final class coil3/compose/LocalPlatformContext_nonAndroidKt {
