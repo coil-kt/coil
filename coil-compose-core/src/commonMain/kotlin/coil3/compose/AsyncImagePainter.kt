@@ -254,7 +254,7 @@ class AsyncImagePainter internal constructor(
         // Manually notify the child painter that we're remembered.
         (_painter as? RememberObserver)?.onRemembered()
 
-        // If we're in inspection mode skip the image request and set the state to loading.
+        // If we're in inspection mode use the preview renderer.
         val previewHandler = previewHandler
         if (previewHandler != null) {
             updateState(computePreviewState(previewHandler))
