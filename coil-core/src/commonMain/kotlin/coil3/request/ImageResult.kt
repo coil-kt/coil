@@ -35,7 +35,7 @@ class SuccessResult(
     /**
      * The data source that the image was loaded from.
      */
-    val dataSource: DataSource,
+    val dataSource: DataSource = DataSource.MEMORY,
 
     /**
      * The cache key for the image in the memory cache.
@@ -61,13 +61,13 @@ class SuccessResult(
 ) : ImageResult {
 
     fun copy(
-        image: Image,
-        request: ImageRequest,
-        dataSource: DataSource,
-        memoryCacheKey: MemoryCache.Key? = null,
-        diskCacheKey: String? = null,
-        isSampled: Boolean = false,
-        isPlaceholderCached: Boolean = false,
+        image: Image = this.image,
+        request: ImageRequest = this.request,
+        dataSource: DataSource = this.dataSource,
+        memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
+        diskCacheKey: String? = this.diskCacheKey,
+        isSampled: Boolean = this.isSampled,
+        isPlaceholderCached: Boolean = this.isPlaceholderCached,
     ) = SuccessResult(
         image = image,
         request = request,
