@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -163,7 +164,7 @@ private fun rememberAsyncImagePainter(
     painter.onState = onState
     painter.contentScale = contentScale
     painter.filterQuality = filterQuality
-    painter.isPreview = LocalInspectionMode.current
+    painter.previewHandler = previewHandler()
     painter.imageLoader = state.imageLoader
     painter.request = request // Update request last so all other properties are up to date.
     painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
@@ -206,7 +207,7 @@ class AsyncImagePainter internal constructor(
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
-    internal var isPreview = false
+    internal var previewHandler: AsyncImagePreviewHandler? = null
 
     /** The current [AsyncImagePainter.State]. */
     var state: State by mutableStateOf(State.Empty)
@@ -254,10 +255,9 @@ class AsyncImagePainter internal constructor(
         (_painter as? RememberObserver)?.onRemembered()
 
         // If we're in inspection mode skip the image request and set the state to loading.
-        if (isPreview) {
-            val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            val painter = request.placeholder()?.toPainter(request.context, filterQuality)
-            updateState(State.Loading(painter))
+        val previewHandler = previewHandler
+        if (previewHandler != null) {
+            updateState(computePreviewState(previewHandler))
             return@trace
         }
 
@@ -328,6 +328,17 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
+    private fun computePreviewState(previewHandler: AsyncImagePreviewHandler): State {
+        val request = request.newBuilder()
+            .defaults(imageLoader.defaults)
+            .build()
+        return previewHandler.handle(
+            imageLoader = imageLoader,
+            request = request,
+            toPainter = { toPainter(request.context, filterQuality) },
+        )
+    }
+
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(
             painter = image.toPainter(request.context, filterQuality),
@@ -375,6 +386,16 @@ class AsyncImagePainter internal constructor(
          * A state transform that does not modify the state.
          */
         val DefaultTransform: (State) -> State = { it }
+    }
+}
+
+@ReadOnlyComposable
+@Composable
+private fun previewHandler(): AsyncImagePreviewHandler? {
+    return if (LocalInspectionMode.current) {
+        LocalAsyncImagePreviewHandler.current
+    } else {
+        null
     }
 }
 
