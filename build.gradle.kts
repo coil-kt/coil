@@ -6,8 +6,6 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
-import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -136,14 +134,6 @@ allprojects {
         extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
     } else {
         extensions.configure(configureSpotless)
-    }
-
-    plugins.withId("org.jetbrains.compose") {
-        extensions.configure<ComposeExtension> {
-            extensions.configure<ExperimentalExtension> {
-                web.application {}
-            }
-        }
     }
 
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {
