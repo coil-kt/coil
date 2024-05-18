@@ -7,12 +7,8 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
-import coil3.size.Scale
-import coil3.size.isOriginal
 import coil3.svg.internal.MIME_TYPE_SVG
-import coil3.svg.internal.SVG_DEFAULT_SIZE
-import coil3.util.toPx
-import kotlin.math.roundToInt
+import coil3.svg.internal.getDstSize
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
@@ -50,7 +46,7 @@ actual class SvgDecoder actual constructor(
 
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val (dstWidth, dstHeight) = getDstSize(svgWidth, svgHeight, options.scale)
+        val (dstWidth, dstHeight) = getDstSize(options, svgWidth, svgHeight, options.scale)
         if (svgWidth > 0f && svgHeight > 0f) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
@@ -87,17 +83,6 @@ actual class SvgDecoder actual constructor(
             image = SvgImage(svg, bitmapWidth, bitmapHeight),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
-    }
-
-    private fun getDstSize(srcWidth: Float, srcHeight: Float, scale: Scale): Pair<Int, Int> {
-        if (options.size.isOriginal) {
-            val dstWidth = if (srcWidth > 0) srcWidth.roundToInt() else SVG_DEFAULT_SIZE
-            val dstHeight = if (srcHeight > 0) srcHeight.roundToInt() else SVG_DEFAULT_SIZE
-            return dstWidth to dstHeight
-        } else {
-            val (dstWidth, dstHeight) = options.size
-            return dstWidth.toPx(scale) to dstHeight.toPx(scale)
-        }
     }
 
     actual class Factory actual constructor(

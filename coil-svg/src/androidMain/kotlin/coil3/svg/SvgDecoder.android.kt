@@ -1,26 +1,17 @@
 package coil3.svg
 
-import android.graphics.Canvas
 import android.graphics.RectF
-import androidx.core.graphics.createBitmap
 import coil3.ImageLoader
-import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
-import coil3.request.bitmapConfig
-import coil3.size.Scale
-import coil3.size.isOriginal
 import coil3.svg.internal.MIME_TYPE_SVG
-import coil3.svg.internal.SVG_DEFAULT_SIZE
-import coil3.util.toPx
-import coil3.util.toSoftware
+import coil3.svg.internal.getDstSize
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
-import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
 /**
@@ -52,7 +43,7 @@ actual class SvgDecoder @JvmOverloads actual constructor(
 
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val (dstWidth, dstHeight) = getDstSize(svgWidth, svgHeight, options.scale)
+        val (dstWidth, dstHeight) = getDstSize(options, svgWidth, svgHeight, options.scale)
         if (svgWidth > 0 && svgHeight > 0) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
@@ -76,25 +67,12 @@ actual class SvgDecoder @JvmOverloads actual constructor(
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
 
-        val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.bitmapConfig.toSoftware())
         val renderOptions = options.css?.let { RenderOptions().css(it) }
-        svg.renderToCanvas(Canvas(bitmap), renderOptions)
 
         DecodeResult(
-            image = bitmap.asImage(shareable = true),
+            image = SvgImage(svg, renderOptions, bitmapWidth, bitmapHeight),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
-    }
-
-    private fun getDstSize(srcWidth: Float, srcHeight: Float, scale: Scale): Pair<Int, Int> {
-        if (options.size.isOriginal) {
-            val dstWidth = if (srcWidth > 0) srcWidth.roundToInt() else SVG_DEFAULT_SIZE
-            val dstHeight = if (srcHeight > 0) srcHeight.roundToInt() else SVG_DEFAULT_SIZE
-            return dstWidth to dstHeight
-        } else {
-            val (dstWidth, dstHeight) = options.size
-            return dstWidth.toPx(scale) to dstHeight.toPx(scale)
-        }
     }
 
     actual class Factory @JvmOverloads actual constructor(

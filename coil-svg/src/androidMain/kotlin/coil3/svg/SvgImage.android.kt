@@ -4,23 +4,26 @@ import coil3.Canvas
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
-import org.jetbrains.skia.svg.SVGDOM
+import coil3.svg.internal.SVG_SIZE_BYTES
+import com.caverock.androidsvg.RenderOptions
+import com.caverock.androidsvg.SVG
 
 @ExperimentalCoilApi
 @Poko
 internal class SvgImage(
-    val svg: SVGDOM,
+    val svg: SVG,
+    val renderOptions: RenderOptions?,
     override val width: Int,
     override val height: Int,
 ) : Image {
 
     override val size: Long
-        get() = 4L * width * height
+        get() = SVG_SIZE_BYTES
 
     override val shareable: Boolean
         get() = true
 
     override fun draw(canvas: Canvas) {
-        svg.render(canvas)
+        svg.renderToCanvas(canvas, renderOptions)
     }
 }
