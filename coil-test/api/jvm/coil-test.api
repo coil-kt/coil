@@ -2,6 +2,7 @@ public final class coil3/test/FakeImage : coil3/Image {
 	public fun <init> ()V
 	public fun <init> (IIJZI)V
 	public synthetic fun <init> (IIJZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun draw (Lorg/jetbrains/skia/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getColor ()I
 	public fun getHeight ()I
@@ -9,7 +10,6 @@ public final class coil3/test/FakeImage : coil3/Image {
 	public fun getSize ()J
 	public fun getWidth ()I
 	public fun hashCode ()I
-	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun toString ()Ljava/lang/String;
 }
 

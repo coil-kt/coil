@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import coil3.EventListener
 import coil3.ImageLoader
 import coil3.RealImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.key.Keyer
 import coil3.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
 import coil3.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
@@ -376,7 +376,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
         )
         val value = MemoryCache.Value(
             image = createBitmap(width = 200, height = 200)
-                .toDrawable(context).asCoilImage(), // The small cached bitmap.
+                .toDrawable(context).asImage(), // The small cached bitmap.
             extras = mapOf(EXTRA_IS_SAMPLED to true)
         )
         val request = createRequest(context)
@@ -486,7 +486,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
         request = request,
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(
-            image = cached.toDrawable(context).asCoilImage(),
+            image = cached.toDrawable(context).asImage(),
             extras = mapOf(EXTRA_IS_SAMPLED to isSampled),
         ),
         size = size,

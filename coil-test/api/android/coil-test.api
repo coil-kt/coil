@@ -2,7 +2,7 @@ public final class coil3/test/FakeImage : coil3/Image {
 	public fun <init> ()V
 	public fun <init> (IIJZI)V
 	public synthetic fun <init> (IIJZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public fun draw (Landroid/graphics/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getColor ()I
 	public fun getHeight ()I

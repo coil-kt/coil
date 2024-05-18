@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
@@ -82,7 +82,7 @@ class BitmapFactoryDecoder(
         val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
 
         return DecodeResult(
-            image = bitmap.toDrawable(options.context).asCoilImage(),
+            image = bitmap.toDrawable(options.context).asImage(),
             isSampled = inSampleSize > 1 || inScaled,
         )
     }

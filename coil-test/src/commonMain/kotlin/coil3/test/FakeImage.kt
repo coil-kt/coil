@@ -1,5 +1,6 @@
 package coil3.test
 
+import coil3.Canvas
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
 
@@ -16,4 +17,5 @@ expect class FakeImage(
     override val size: Long
     override val shareable: Boolean
     val color: Int
+    override fun draw(canvas: Canvas)
 }

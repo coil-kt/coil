@@ -7,8 +7,10 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil3.BitmapImage
+import coil3.DrawableImage
 import coil3.Image
 import coil3.PlatformContext
+import coil3.asDrawable
 import coil3.compose.internal.CrossfadePainter
 import coil3.request.SuccessResult
 import coil3.request.transitionFactory
@@ -19,14 +21,15 @@ import com.google.accompanist.drawablepainter.DrawablePainter
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
-): Painter {
-    return when (this) {
-        is BitmapImage -> BitmapPainter(
-            image = bitmap.asImageBitmap(),
-            filterQuality = filterQuality,
-        )
-        else -> DrawablePainter(asDrawable(context.resources).mutate())
-    }
+): Painter = when (this) {
+    is BitmapImage -> BitmapPainter(
+        image = bitmap.asImageBitmap(),
+        filterQuality = filterQuality,
+    )
+    is DrawableImage -> DrawablePainter(
+        drawable = asDrawable(context.resources).mutate(),
+    )
+    else -> ImagePainter(this)
 }
 
 internal actual fun maybeNewCrossfadePainter(

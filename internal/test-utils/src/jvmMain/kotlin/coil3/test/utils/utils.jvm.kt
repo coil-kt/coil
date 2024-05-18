@@ -11,7 +11,7 @@ import org.jetbrains.skia.impl.use
 
 actual fun decodeBitmapResource(
     path: String,
-): CoilBitmap {
+): Bitmap {
     // Retry multiple times as the emulator can be flaky.
     var failures = 0
     while (true) {
@@ -27,7 +27,7 @@ actual fun decodeBitmapResource(
                     dst = Rect.makeWH(image.width.toFloat(), image.height.toFloat()),
                 )
             }
-            return bitmap.toCoilBitmap()
+            return bitmap
         } catch (e: Exception) {
             if (failures++ > 5) throw e
         }

@@ -1,28 +1,28 @@
 package coil3.test.utils
 
+import coil3.Bitmap
+import coil3.BitmapImage
 import coil3.Image
 import coil3.size.Size
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.Dispatchers
 
-expect interface CoilBitmap {
-    val width: Int
-    val height: Int
+expect val Bitmap.width: Int
 
-    suspend fun CoilBitmap.computeSimilarity(
-        other: CoilBitmap,
-    ): Double
-}
+expect val Bitmap.height: Int
 
-expect fun Image.asCoilBitmap(): CoilBitmap
-
-val CoilBitmap.size: Size
+val Bitmap.size: Size
     get() = Size(width, height)
 
+val Image.bitmap: Bitmap
+    get() = (this as BitmapImage).bitmap
+
 /**
- * Compares two [CoilBitmap]s by ensuring that they are the same size and that
+ * Compares two [Bitmap]s by ensuring that they are the same size and that
  * the cross correlation of their ARGB channels is >= [threshold].
  */
-suspend fun CoilBitmap.isSimilarTo(
-    expected: CoilBitmap,
+suspend fun Bitmap.isSimilarTo(
+    expected: Bitmap,
     threshold: Double = 0.98,
 ): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
@@ -38,8 +38,8 @@ suspend fun CoilBitmap.isSimilarTo(
  * Asserts that [this] and [expected] are the same size and that
  * the cross correlation of their ARGB channels is >= [threshold].
  */
-suspend fun CoilBitmap.assertIsSimilarTo(
-    expected: CoilBitmap,
+suspend fun Bitmap.assertIsSimilarTo(
+    expected: Bitmap,
     threshold: Double = 0.98,
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
@@ -53,3 +53,8 @@ suspend fun CoilBitmap.assertIsSimilarTo(
         "The images are not visually similar. Expected: $threshold; Actual: $similarity."
     }
 }
+
+expect suspend fun Bitmap.computeSimilarity(
+    other: Bitmap,
+    context: CoroutineContext = Dispatchers.Default,
+): Double

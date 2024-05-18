@@ -110,6 +110,12 @@ public final class coil3/compose/EqualityDelegateKt {
 	public static final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
 }
 
+public final class coil3/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter {
+	public static final field $stable I
+	public fun <init> (Lcoil3/Image;)V
+	public fun getIntrinsicSize-NH-jbRc ()J
+}
+
 public final class coil3/compose/LocalAsyncImagePreviewHandlerKt {
 	public static final fun getLocalAsyncImagePreviewHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }

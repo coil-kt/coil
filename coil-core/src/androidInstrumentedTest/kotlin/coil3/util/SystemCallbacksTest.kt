@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import coil3.ImageLoader
 import coil3.RealImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.memory.MemoryCache
 import coil3.test.utils.context
 import kotlin.test.assertEquals
@@ -56,11 +56,11 @@ class SystemCallbacksTest {
 
         memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-                .toDrawable(context).asCoilImage()
+                .toDrawable(context).asImage()
         )
         memoryCache[MemoryCache.Key("2")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-                .toDrawable(context).asCoilImage()
+                .toDrawable(context).asImage()
         )
 
         assertEquals(8_000_000, memoryCache.size)

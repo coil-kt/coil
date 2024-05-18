@@ -6,7 +6,8 @@ import android.graphics.drawable.ColorDrawable
 import coil3.EventListener
 import coil3.ImageLoader
 import coil3.RealImageLoader
-import coil3.asCoilImage
+import coil3.asDrawable
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.key.Keyer
@@ -30,7 +31,7 @@ class EngineInterceptorTest : RobolectricTest() {
 
     @Test
     fun `applyTransformations - transformations convert drawable to bitmap`() = runTest {
-        val image = ColorDrawable(Color.BLACK).asCoilImage()
+        val image = ColorDrawable(Color.BLACK).asImage()
         val size = Size(100, 100)
         val result = transform(
             result = ExecuteResult(
@@ -55,7 +56,7 @@ class EngineInterceptorTest : RobolectricTest() {
 
     @Test
     fun `applyTransformations - empty transformations does not convert drawable to bitmap`() = runTest {
-        val image = ColorDrawable(Color.BLACK).asCoilImage()
+        val image = ColorDrawable(Color.BLACK).asImage()
         val result = transform(
             result = ExecuteResult(
                 image = image,

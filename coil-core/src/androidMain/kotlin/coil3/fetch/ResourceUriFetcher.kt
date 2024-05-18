@@ -4,7 +4,7 @@ import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.util.TypedValue
 import coil3.ImageLoader
 import coil3.Uri
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.decode.ResourceMetadata
@@ -62,7 +62,7 @@ internal class ResourceUriFetcher(
                     ).toDrawable(context)
                 } else {
                     drawable
-                }.asCoilImage(),
+                }.asImage(),
                 isSampled = isVector,
                 dataSource = DataSource.DISK,
             )

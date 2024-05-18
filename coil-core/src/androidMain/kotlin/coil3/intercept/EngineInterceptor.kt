@@ -6,7 +6,8 @@ import android.graphics.drawable.Drawable
 import coil3.BitmapImage
 import coil3.EventListener
 import coil3.Image
-import coil3.asCoilImage
+import coil3.asDrawable
+import coil3.asImage
 import coil3.intercept.EngineInterceptor.Companion.TAG
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.request.ImageRequest
@@ -52,7 +53,7 @@ internal actual suspend fun transform(
         transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
     }
     eventListener.transformEnd(request, output)
-    return result.copy(image = output.toDrawable(request.context).asCoilImage())
+    return result.copy(image = output.toDrawable(request.context).asImage())
 }
 
 /** Convert [drawable] to a [Bitmap]. */

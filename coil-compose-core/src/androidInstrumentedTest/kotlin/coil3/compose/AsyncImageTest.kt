@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.core.test.R
 import coil3.decode.DecodeUtils
@@ -599,7 +599,7 @@ class AsyncImageTest {
         val bitmap = BitmapFactory
             .decodeResource(composeTestRule.activity.resources, R.drawable.sample)
             .toDrawable(composeTestRule.activity.resources)
-            .asCoilImage()
+            .asImage()
         imageLoader.memoryCache!![MemoryCache.Key(url)] = MemoryCache.Value(bitmap)
 
         val outerCompositionCount = AtomicInteger()

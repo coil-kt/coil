@@ -6,7 +6,7 @@ import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
@@ -67,7 +67,7 @@ internal class StaticImageDecoder(
                 configureImageDecoderProperties()
             }
             DecodeResult(
-                image = bitmap.asCoilImage(),
+                image = bitmap.asImage(),
                 isSampled = isSampled,
             )
         } finally {

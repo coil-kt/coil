@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import coil3.ImageLoader
+import coil3.asDrawable
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.bitmapConfig

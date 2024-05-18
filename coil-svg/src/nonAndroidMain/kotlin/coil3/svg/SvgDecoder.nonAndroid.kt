@@ -1,7 +1,6 @@
 package coil3.svg
 
 import coil3.ImageLoader
-import coil3.asCoilImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
@@ -85,7 +84,7 @@ actual class SvgDecoder actual constructor(
         svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
 
         return DecodeResult(
-            image = svg.asCoilImage(bitmapWidth, bitmapHeight),
+            image = SvgImage(svg, bitmapWidth, bitmapHeight),
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }
