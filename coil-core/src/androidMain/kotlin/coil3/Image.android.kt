@@ -44,7 +44,7 @@ fun Image.toBitmap(
         return bitmap
     }
 
-    return createBitmap(width, height).applyCanvas(::draw)
+    return createBitmap(width, height, config).applyCanvas(::draw)
 }
 
 /**
