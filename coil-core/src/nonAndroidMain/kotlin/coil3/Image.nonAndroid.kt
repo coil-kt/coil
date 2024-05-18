@@ -35,15 +35,19 @@ fun Image.toBitmap(
 ): Bitmap {
     if (this is BitmapImage &&
         bitmap.width == width &&
-        bitmap.height == height
+        bitmap.height == height &&
+        bitmap.colorType == colorType &&
+        bitmap.imageInfo.colorAlphaType == colorAlphaType &&
+        bitmap.colorSpace == colorSpace
     ) {
         return bitmap
     }
 
     val bitmap = Bitmap()
     val imageInfo = ImageInfo(ColorInfo(colorType, colorAlphaType, colorSpace), width, height)
-    bitmap.allocPixels(imageInfo)
-    Canvas(bitmap).readPixels(bitmap, 0, 0)
+    check(bitmap.allocPixels(imageInfo)) { "allocPixels($imageInfo) failed" }
+    val canvas = Canvas(bitmap).apply(::draw)
+    check(canvas.readPixels(bitmap, 0, 0)) { "readPixels($bitmap) failed" }
     return bitmap
 }
 
