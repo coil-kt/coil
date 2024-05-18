@@ -1,5 +1,5 @@
 public final class coil3/BitmapImage : coil3/Image {
-	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public fun draw (Landroid/graphics/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBitmap ()Landroid/graphics/Bitmap;
 	public fun getHeight ()I
@@ -43,7 +43,7 @@ public final class coil3/ComponentRegistry$Builder {
 }
 
 public final class coil3/DrawableImage : coil3/Image {
-	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public fun draw (Landroid/graphics/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun getHeight ()I
@@ -136,19 +136,19 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
-	public abstract fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public abstract fun draw (Landroid/graphics/Canvas;)V
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J
 	public abstract fun getWidth ()I
 }
 
-public final class coil3/ImageKt {
-	public static final fun asCoilImage (Landroid/graphics/Bitmap;)Lcoil3/Image;
-	public static final fun asCoilImage (Landroid/graphics/Bitmap;Z)Lcoil3/Image;
-	public static final fun asCoilImage (Landroid/graphics/drawable/Drawable;)Lcoil3/Image;
-	public static final fun asCoilImage (Landroid/graphics/drawable/Drawable;Z)Lcoil3/Image;
-	public static synthetic fun asCoilImage$default (Landroid/graphics/Bitmap;ZILjava/lang/Object;)Lcoil3/Image;
+public final class coil3/ImageDrawable : android/graphics/drawable/Drawable {
+	public fun draw (Landroid/graphics/Canvas;)V
+	public final fun getImage ()Lcoil3/Image;
+	public fun getOpacity ()I
+	public fun setAlpha (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
 }
 
 public abstract interface class coil3/ImageLoader {
@@ -206,6 +206,20 @@ public final class coil3/ImageLoaders_commonKt {
 
 public final class coil3/ImageLoaders_nonJsKt {
 	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
+}
+
+public final class coil3/Image_androidKt {
+	public static final fun asDrawable (Lcoil3/Image;Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public static final fun asImage (Landroid/graphics/Bitmap;)Lcoil3/BitmapImage;
+	public static final fun asImage (Landroid/graphics/Bitmap;Z)Lcoil3/BitmapImage;
+	public static final fun asImage (Landroid/graphics/drawable/Drawable;)Lcoil3/Image;
+	public static final fun asImage (Landroid/graphics/drawable/Drawable;Z)Lcoil3/Image;
+	public static synthetic fun asImage$default (Landroid/graphics/Bitmap;ZILjava/lang/Object;)Lcoil3/BitmapImage;
+	public static final fun toBitmap (Lcoil3/Image;)Landroid/graphics/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;I)Landroid/graphics/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;II)Landroid/graphics/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
+	public static synthetic fun toBitmap$default (Lcoil3/Image;IIILjava/lang/Object;)Landroid/graphics/Bitmap;
 }
 
 public final class coil3/Uri {

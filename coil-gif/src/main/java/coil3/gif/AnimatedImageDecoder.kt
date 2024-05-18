@@ -9,7 +9,7 @@ import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.AssetMetadata
 import coil3.decode.ByteBufferMetadata
 import coil3.decode.ContentMetadata
@@ -96,7 +96,7 @@ class AnimatedImageDecoder @JvmOverloads constructor(
             }
         }
         return DecodeResult(
-            image = wrapDrawable(drawable).asCoilImage(),
+            image = wrapDrawable(drawable).asImage(),
             isSampled = isSampled,
         )
     }

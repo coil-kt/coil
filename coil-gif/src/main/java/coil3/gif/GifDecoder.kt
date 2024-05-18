@@ -5,7 +5,7 @@ package coil3.gif
 import android.graphics.Bitmap
 import android.graphics.Movie
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
@@ -62,7 +62,7 @@ class GifDecoder @JvmOverloads constructor(
         drawable.setAnimatedTransformation(options.animatedTransformation)
 
         DecodeResult(
-            image = drawable.asCoilImage(),
+            image = drawable.asImage(),
             isSampled = false,
         )
     }

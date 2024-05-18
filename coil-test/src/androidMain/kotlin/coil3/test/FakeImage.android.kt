@@ -1,10 +1,6 @@
 package coil3.test
 
-import android.content.res.Resources
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import androidx.core.graphics.applyCanvas
-import androidx.core.graphics.createBitmap
+import coil3.Canvas
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
@@ -18,9 +14,7 @@ actual class FakeImage actual constructor(
     actual override val shareable: Boolean,
     actual val color: Int,
 ) : Image {
-    override fun asDrawable(resources: Resources): Drawable {
-        val bitmap = createBitmap(width, height)
-        bitmap.applyCanvas { drawColor(color) }
-        return BitmapDrawable(resources, bitmap)
+    actual override fun draw(canvas: Canvas) {
+        canvas.drawColor(color)
     }
 }

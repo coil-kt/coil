@@ -1,6 +1,7 @@
 package coil3.transition
 
-import coil3.asCoilImage
+import coil3.asDrawable
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.request.DEFAULT_CROSSFADE_MILLIS
 import coil3.request.ErrorResult
@@ -34,8 +35,8 @@ class CrossfadeTransition @JvmOverloads constructor(
             preferExactIntrinsicSize = preferExactIntrinsicSize,
         )
         when (result) {
-            is SuccessResult -> target.onSuccess(drawable.asCoilImage())
-            is ErrorResult -> target.onError(drawable.asCoilImage())
+            is SuccessResult -> target.onSuccess(drawable.asImage())
+            is ErrorResult -> target.onError(drawable.asImage())
         }
     }
 

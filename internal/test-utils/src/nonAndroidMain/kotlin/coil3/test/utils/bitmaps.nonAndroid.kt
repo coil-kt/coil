@@ -1,6 +1,7 @@
 package coil3.test.utils
 
 import coil3.Image
+import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -15,19 +16,18 @@ actual interface CoilBitmap {
     actual suspend fun CoilBitmap.computeSimilarity(other: CoilBitmap): Double
 }
 
-actual fun Image.asCoilBitmap(): CoilBitmap = this.toBitmap().toCoilBitmap()
+actual fun Image.asCoilBitmap(): CoilBitmap = toBitmap().toCoilBitmap()
 
 class CoilBitmapImpl(
-    override val bitmap: Bitmap
+    override val bitmap: Bitmap,
 ) : CoilBitmap {
     override val width: Int = bitmap.width
 
     override val height: Int = bitmap.height
 
     override suspend fun CoilBitmap.computeSimilarity(
-        other: CoilBitmap
-    ): Double =
-        bitmap.computeSimilarity(other.bitmap)
+        other: CoilBitmap,
+    ): Double = bitmap.computeSimilarity(other.bitmap)
 }
 
 fun Bitmap.toCoilBitmap(): CoilBitmap = CoilBitmapImpl(this)
@@ -35,11 +35,10 @@ fun Bitmap.toCoilBitmap(): CoilBitmap = CoilBitmapImpl(this)
 /**
  * Returns a [ByteArray] of pixel values.
  */
-fun Bitmap.getPixels(): ByteArray =
-    readPixels() ?: byteArrayOf()
+fun Bitmap.getPixels(): ByteArray = readPixels() ?: byteArrayOf()
 
 suspend fun Bitmap.computeSimilarity(
-    other: Bitmap
+    other: Bitmap,
 ): Double = withContext(Dispatchers.Default) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }

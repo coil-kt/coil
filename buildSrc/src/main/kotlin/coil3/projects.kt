@@ -137,16 +137,16 @@ private fun <T : BaseExtension> Project.androidBase(
             }
             targets.configureEach {
                 compilations.configureEach {
-                    compileTaskProvider.configure {
-                        compilerOptions {
-                            val arguments = listOf(
-                                // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                                "-progressive",
-                                // https://youtrack.jetbrains.com/issue/KT-61573
-                                "-Xexpect-actual-classes",
-                            )
-                            freeCompilerArgs.addAll(arguments)
-                        }
+                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
+                    @Suppress("DEPRECATION")
+                    compilerOptions.configure {
+                        val arguments = listOf(
+                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                            "-progressive",
+                            // https://youtrack.jetbrains.com/issue/KT-61573
+                            "-Xexpect-actual-classes",
+                        )
+                        freeCompilerArgs.addAll(arguments)
                     }
                 }
             }
@@ -175,6 +175,8 @@ private fun <T : BaseExtension> Project.androidBase(
                 arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
                 arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }
+
+            arguments += "-Xexpect-actual-classes"
 
             freeCompilerArgs.addAll(arguments)
         }

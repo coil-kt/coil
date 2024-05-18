@@ -1,4 +1,5 @@
 public final class coil3/BitmapImage : coil3/Image {
+	public fun draw (Lorg/jetbrains/skia/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun getHeight ()I
@@ -6,7 +7,6 @@ public final class coil3/BitmapImage : coil3/Image {
 	public fun getSize ()J
 	public fun getWidth ()I
 	public fun hashCode ()I
-	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -40,12 +40,6 @@ public final class coil3/ComponentRegistry$Builder {
 	public final fun addDecoderFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun addFetcherFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun build ()Lcoil3/ComponentRegistry;
-}
-
-public abstract class coil3/DrawableImage : coil3/Image {
-	public fun <init> ()V
-	public abstract fun onDraw (Lorg/jetbrains/skia/Canvas;)V
-	public fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
 }
 
 public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener {
@@ -122,17 +116,11 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
+	public abstract fun draw (Lorg/jetbrains/skia/Canvas;)V
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J
 	public abstract fun getWidth ()I
-	public abstract fun toBitmap ()Lorg/jetbrains/skia/Bitmap;
-}
-
-public final class coil3/ImageKt {
-	public static final fun asCoilImage (Lorg/jetbrains/skia/Bitmap;)Lcoil3/Image;
-	public static final fun asCoilImage (Lorg/jetbrains/skia/Bitmap;Z)Lcoil3/Image;
-	public static synthetic fun asCoilImage$default (Lorg/jetbrains/skia/Bitmap;ZILjava/lang/Object;)Lcoil3/Image;
 }
 
 public abstract interface class coil3/ImageLoader {
@@ -185,6 +173,17 @@ public final class coil3/ImageLoaders_commonKt {
 
 public final class coil3/ImageLoaders_nonJsKt {
 	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
+}
+
+public final class coil3/Image_nonAndroidKt {
+	public static final fun asImage (Lorg/jetbrains/skia/Bitmap;)Lcoil3/BitmapImage;
+	public static final fun asImage (Lorg/jetbrains/skia/Bitmap;Z)Lcoil3/BitmapImage;
+	public static synthetic fun asImage$default (Lorg/jetbrains/skia/Bitmap;ZILjava/lang/Object;)Lcoil3/BitmapImage;
+	public static final fun toBitmap (Lcoil3/Image;)Lorg/jetbrains/skia/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;I)Lorg/jetbrains/skia/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;II)Lorg/jetbrains/skia/Bitmap;
+	public static final fun toBitmap (Lcoil3/Image;IILorg/jetbrains/skia/ColorType;Lorg/jetbrains/skia/ColorAlphaType;Lorg/jetbrains/skia/ColorSpace;)Lorg/jetbrains/skia/Bitmap;
+	public static synthetic fun toBitmap$default (Lcoil3/Image;IIILjava/lang/Object;)Lorg/jetbrains/skia/Bitmap;
 }
 
 public abstract class coil3/PlatformContext {

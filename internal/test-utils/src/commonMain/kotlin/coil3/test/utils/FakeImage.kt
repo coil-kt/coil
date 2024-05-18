@@ -1,5 +1,6 @@
 package coil3.test.utils
 
+import coil3.Canvas
 import coil3.Image
 
 expect class FakeImage(
@@ -12,6 +13,7 @@ expect class FakeImage(
     override val width: Int
     override val height: Int
     override val shareable: Boolean
+    override fun draw(canvas: Canvas)
 }
 
 const val DEFAULT_FAKE_IMAGE_SIZE = 4L * 100 * 100

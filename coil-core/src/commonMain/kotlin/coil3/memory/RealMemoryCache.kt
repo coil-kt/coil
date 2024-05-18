@@ -18,11 +18,14 @@ internal class RealMemoryCache(
     }
 
     override fun set(key: Key, value: MemoryCache.Value) {
+        val size = value.image.size
+        check(size >= 0) { "Image size must be non-negative: $size" }
+
         strongMemoryCache.set(
             key = key,
             image = value.image,
             extras = value.extras,
-            size = value.image.size,
+            size = size,
         )
         // weakMemoryCache.set() is called by strongMemoryCache when
         // a value is evicted from the strong reference cache.

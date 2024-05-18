@@ -12,7 +12,7 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.AssetMetadata
 import coil3.decode.ContentMetadata
 import coil3.decode.DecodeResult
@@ -135,7 +135,7 @@ class VideoFrameDecoder(
         }
 
         DecodeResult(
-            image = bitmap.toDrawable(options.context.resources).asCoilImage(),
+            image = bitmap.toDrawable(options.context.resources).asImage(),
             isSampled = isSampled,
         )
     }

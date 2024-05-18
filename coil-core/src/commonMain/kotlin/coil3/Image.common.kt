@@ -1,24 +1,27 @@
 package coil3
 
 import coil3.annotation.ExperimentalCoilApi
+import kotlin.jvm.JvmOverloads
 
 /**
- * A platform-agnostic image class that exposes basic metadata about the underlying native
- * image representation.
- *
- * To draw the image it must be converted into its platform-specific graphics system representation.
- * See `DrawableImage` on Android and `BitmapImage` on non-Android platforms.
+ * An image that can be drawn on a canvas.
  */
 @ExperimentalCoilApi
-expect interface Image {
+interface Image {
 
-    /** The size of the image in memory in bytes. */
+    /**
+     * The size of the image in memory in bytes.
+     */
     val size: Long
 
-    /** The width of the image in pixels. */
+    /**
+     * The intrinsic width of the image in pixels or -1 if the image has no intrinsic width.
+     */
     val width: Int
 
-    /** The height of the image in pixels. */
+    /**
+     * The intrinsic height of the image in pixels or -1 if the image has no intrinsic height.
+     */
     val height: Int
 
     /**
@@ -29,4 +32,53 @@ expect interface Image {
      * its animation is running.
      */
     val shareable: Boolean
+
+    /**
+     * Draw the image to a [Canvas].
+     */
+    fun draw(canvas: Canvas)
 }
+
+/**
+ * A special implementation of [Image] that's backed by a [Bitmap].
+ */
+@ExperimentalCoilApi
+expect class BitmapImage : Image {
+    val bitmap: Bitmap
+    override val size: Long
+    override val width: Int
+    override val height: Int
+    override val shareable: Boolean
+    override fun draw(canvas: Canvas)
+}
+
+/**
+ * A grid of pixels.
+ */
+@ExperimentalCoilApi
+expect class Bitmap
+
+/**
+ * A graphics surface that can be drawn on.
+ */
+@ExperimentalCoilApi
+expect class Canvas
+
+/**
+ * Convert a [Bitmap] into an [Image].
+ */
+@ExperimentalCoilApi
+@JvmOverloads
+expect fun Bitmap.asImage(
+    shareable: Boolean = true,
+): BitmapImage
+
+/**
+ * Convert an [Image] into a [Bitmap].
+ */
+@ExperimentalCoilApi
+@JvmOverloads
+expect fun Image.toBitmap(
+    width: Int = this.width,
+    height: Int = this.height,
+): Bitmap

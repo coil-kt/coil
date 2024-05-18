@@ -1,7 +1,7 @@
 package coil3.decode
 
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.util.makeFromImage
@@ -30,7 +30,7 @@ class SkiaImageDecoder(
         }
 
         return DecodeResult(
-            image = bitmap.asCoilImage(),
+            image = bitmap.asImage(),
             isSampled = isSampled,
         )
     }

@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil3.Extras
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.getExtra
 import coil3.target.ImageViewTarget
 import coil3.transform.Transformation
@@ -26,22 +26,22 @@ fun ImageRequest.Builder.target(imageView: ImageView) =
     target(ImageViewTarget(imageView))
 
 fun ImageRequest.Builder.placeholder(@DrawableRes drawableResId: Int) =
-    placeholder { it.context.getDrawableCompat(drawableResId).asCoilImage() }
+    placeholder { it.context.getDrawableCompat(drawableResId).asImage() }
 
 fun ImageRequest.Builder.placeholder(drawable: Drawable?) =
-    placeholder(drawable?.asCoilImage())
+    placeholder(drawable?.asImage())
 
 fun ImageRequest.Builder.error(@DrawableRes drawableResId: Int) =
-    error { it.context.getDrawableCompat(drawableResId).asCoilImage() }
+    error { it.context.getDrawableCompat(drawableResId).asImage() }
 
 fun ImageRequest.Builder.error(drawable: Drawable?) =
-    error(drawable?.asCoilImage())
+    error(drawable?.asImage())
 
 fun ImageRequest.Builder.fallback(@DrawableRes drawableResId: Int) =
-    fallback { it.context.getDrawableCompat(drawableResId).asCoilImage() }
+    fallback { it.context.getDrawableCompat(drawableResId).asImage() }
 
 fun ImageRequest.Builder.fallback(drawable: Drawable?) =
-    fallback(drawable?.asCoilImage())
+    fallback(drawable?.asImage())
 
 // region transformations
 

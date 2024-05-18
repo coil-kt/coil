@@ -2,7 +2,7 @@ package coil3.fetch
 
 import android.graphics.drawable.Drawable
 import coil3.ImageLoader
-import coil3.asCoilImage
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.request.Options
 import coil3.request.bitmapConfig
@@ -28,7 +28,7 @@ internal class DrawableFetcher(
                 ).toDrawable(options.context)
             } else {
                 data
-            }.asCoilImage(),
+            }.asImage(),
             isSampled = isVector,
             dataSource = DataSource.MEMORY,
         )
