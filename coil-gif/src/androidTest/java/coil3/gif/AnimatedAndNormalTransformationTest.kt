@@ -14,6 +14,7 @@ import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.asDrawable
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult

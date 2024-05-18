@@ -7,6 +7,7 @@ import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
+import coil3.asDrawable
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.allowRgb565
