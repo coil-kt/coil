@@ -4,7 +4,8 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import coil3.Image
-import coil3.asCoilImage
+import coil3.asDrawable
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
@@ -43,7 +44,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             }
         )
         val result = SuccessResult(
-            image = drawable.asCoilImage(),
+            image = drawable.asImage(),
             request = createRequest(context),
             dataSource = DataSource.MEMORY_CACHE
         )
@@ -70,7 +71,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             }
         )
         val result = SuccessResult(
-            image = drawable.asCoilImage(),
+            image = drawable.asImage(),
             request = createRequest(context),
             dataSource = DataSource.DISK
         )
@@ -93,7 +94,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
                 }
             ),
             result = ErrorResult(
-                image = drawable.asCoilImage(),
+                image = drawable.asImage(),
                 request = createRequest(context),
                 throwable = Throwable()
             )

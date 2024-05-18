@@ -234,8 +234,8 @@ class RealImageLoaderAndroidTest {
 
     @Test
     fun nullRequestDataShowsFallbackDrawable() = runTest {
-        val error = ColorDrawable(Color.BLUE).asCoilImage()
-        val fallback = ColorDrawable(Color.BLACK).asCoilImage()
+        val error = ColorDrawable(Color.BLUE).asImage()
+        val fallback = ColorDrawable(Color.BLACK).asImage()
 
         suspendCancellableCoroutine { continuation ->
             var hasCalledTargetOnError = false
@@ -637,7 +637,7 @@ class RealImageLoaderAndroidTest {
     @Suppress("SameParameterValue")
     private fun decodeAssetAndAddToMemoryCache(key: MemoryCache.Key, fileName: String): Bitmap {
         val bitmap = context.decodeBitmapAsset(fileName)
-        memoryCache[key] = MemoryCache.Value(bitmap.toDrawable(context).asCoilImage())
+        memoryCache[key] = MemoryCache.Value(bitmap.toDrawable(context).asImage())
         return bitmap
     }
 
