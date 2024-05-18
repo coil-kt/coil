@@ -12,11 +12,22 @@ import coil3.Image
 import coil3.PlatformContext
 import coil3.asDrawable
 import coil3.compose.internal.CrossfadePainter
+import coil3.request.ImageRequest
 import coil3.request.SuccessResult
+import coil3.request.lifecycle
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
+import coil3.transition.Transition
 import coil3.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
+
+internal actual fun validateRequestProperties(request: ImageRequest) {
+    require(request.target == null) { "request.target must be null." }
+    require(request.lifecycle == null) { "request.lifecycle must be null." }
+    require(request.transitionFactory == Transition.Factory.NONE) {
+        "request.target must be Transition.Factory.NONE."
+    }
+}
 
 internal actual fun Image.toPainter(
     context: PlatformContext,

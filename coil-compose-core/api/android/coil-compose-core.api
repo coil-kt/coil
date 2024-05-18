@@ -113,6 +113,7 @@ public final class coil3/compose/EqualityDelegateKt {
 public final class coil3/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter {
 	public static final field $stable I
 	public fun <init> (Lcoil3/Image;)V
+	public final fun getImage ()Lcoil3/Image;
 	public fun getIntrinsicSize-NH-jbRc ()J
 }
 

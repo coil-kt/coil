@@ -410,13 +410,16 @@ private fun validateRequest(request: ImageRequest) {
         is ImageVector -> unsupportedData("ImageVector")
         is Painter -> unsupportedData("Painter")
     }
-    require(request.target == null) { "request.target must be null." }
+    validateRequestProperties(request)
 }
 
 private fun unsupportedData(
     name: String,
     description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
 ): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
+
+/** Validate platform-specific properties of an [ImageRequest]. */
+internal expect fun validateRequestProperties(request: ImageRequest)
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
 internal expect fun Image.toPainter(
