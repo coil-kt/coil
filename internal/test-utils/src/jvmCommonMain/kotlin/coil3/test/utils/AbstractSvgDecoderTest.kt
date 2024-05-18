@@ -9,6 +9,7 @@ import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.toBitmap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -84,7 +85,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
 
         val expected = decodeBitmapResource("coil_logo.png")
-        result.image.asCoilBitmap().assertIsSimilarTo(expected)
+        result.image.toBitmap().assertIsSimilarTo(expected)
     }
 
     @Test
@@ -106,7 +107,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
 
         val expected = decodeBitmapResource("instacart_logo.png")
-        result.image.asCoilBitmap().assertIsSimilarTo(expected)
+        result.image.toBitmap().assertIsSimilarTo(expected)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
@@ -130,7 +131,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
 
         val expected = decodeBitmapResource("coil_logo.png")
-        result.image.asCoilBitmap().assertIsSimilarTo(expected)
+        result.image.toBitmap().assertIsSimilarTo(expected)
     }
 
     @Test

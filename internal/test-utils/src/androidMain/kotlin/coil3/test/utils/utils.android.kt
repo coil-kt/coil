@@ -11,8 +11,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import coil3.BitmapImage
-import coil3.Image
 import coil3.PlatformContext
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +35,7 @@ actual val context: PlatformContext
 
 actual fun decodeBitmapResource(
     path: String,
-): CoilBitmap {
+): Bitmap {
     val options: BitmapFactory.Options = BitmapFactory.Options().apply {
         inPreferredConfig = Bitmap.Config.ARGB_8888
     }
@@ -47,7 +45,7 @@ actual fun decodeBitmapResource(
     while (true) {
         try {
             val stream = FileSystem.RESOURCES.source(path.toPath()).buffer().inputStream()
-            return BitmapFactory.decodeStream(stream, null, options)!!.toCoilBitmap()
+            return BitmapFactory.decodeStream(stream, null, options)!!
         } catch (e: Exception) {
             if (failures++ > 5) throw e
         }
@@ -112,6 +110,3 @@ fun Context.copyAssetToFile(fileName: String): File {
     source.use { sink.use { sink.writeAll(source) } }
     return file
 }
-
-val Image.bitmap: Bitmap
-    get() = (this as BitmapImage).bitmap

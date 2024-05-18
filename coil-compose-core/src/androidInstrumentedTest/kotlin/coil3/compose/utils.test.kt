@@ -28,6 +28,7 @@ import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.assumeTrue
 import coil3.toUri
 import kotlin.math.abs
+import kotlinx.coroutines.runBlocking
 
 fun assumeSupportsCaptureToImage() {
     assumeTrue(SDK_INT >= 26, "captureToImage is not supported on SDK_INT=$SDK_INT")
@@ -42,7 +43,7 @@ fun ImageBitmap.assertIsSimilarTo(
     @IdRes resId: Int,
     scale: Scale = Scale.FIT,
     threshold: Double = 0.9,
-) {
+) = runBlocking {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val expected = context.getDrawable(resId)!!.toBitmap().scale(width, height, scale)
     asAndroidBitmap().assertIsSimilarTo(expected, threshold)
@@ -51,7 +52,7 @@ fun ImageBitmap.assertIsSimilarTo(
 fun ImageBitmap.assertIsSimilarTo(
     bitmap: ImageBitmap,
     threshold: Double = 0.9,
-) {
+) = runBlocking {
     asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
 }
 

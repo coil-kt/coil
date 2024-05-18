@@ -1,45 +1,25 @@
 package coil3.test.utils
 
-import coil3.Image
-import coil3.toBitmap
-import kotlinx.coroutines.Dispatchers
+import coil3.Bitmap
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.jetbrains.skia.Bitmap
 
-actual interface CoilBitmap {
-    actual val width: Int
-    actual val height: Int
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+actual val Bitmap.width: Int get() = width
 
-    val bitmap: Bitmap
-
-    actual suspend fun CoilBitmap.computeSimilarity(other: CoilBitmap): Double
-}
-
-actual fun Image.asCoilBitmap(): CoilBitmap = toBitmap().toCoilBitmap()
-
-class CoilBitmapImpl(
-    override val bitmap: Bitmap,
-) : CoilBitmap {
-    override val width: Int = bitmap.width
-
-    override val height: Int = bitmap.height
-
-    override suspend fun CoilBitmap.computeSimilarity(
-        other: CoilBitmap,
-    ): Double = bitmap.computeSimilarity(other.bitmap)
-}
-
-fun Bitmap.toCoilBitmap(): CoilBitmap = CoilBitmapImpl(this)
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+actual val Bitmap.height: Int get() = height
 
 /**
  * Returns a [ByteArray] of pixel values.
  */
 fun Bitmap.getPixels(): ByteArray = readPixels() ?: byteArrayOf()
 
-suspend fun Bitmap.computeSimilarity(
+actual suspend fun Bitmap.computeSimilarity(
     other: Bitmap,
-): Double = withContext(Dispatchers.Default) {
+    context: CoroutineContext,
+): Double = withContext(context) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
 

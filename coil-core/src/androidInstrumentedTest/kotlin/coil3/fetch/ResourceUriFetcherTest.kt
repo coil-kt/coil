@@ -94,6 +94,6 @@ class ResourceUriFetcherTest {
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
         val actual = ((result as ImageFetchResult).image as BitmapImage).bitmap
-        actual.assertIsSimilarTo(expected)
+        runBlocking { actual.assertIsSimilarTo(expected) }
     }
 }

@@ -16,6 +16,7 @@ import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.context
 import coil3.test.utils.size
 import kotlin.test.assertEquals
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class DrawableUtilsTest : RobolectricTest() {
@@ -59,7 +60,7 @@ class DrawableUtilsTest : RobolectricTest() {
             allowInexactSize = true
         )
 
-        actual.assertIsSimilarTo(expected)
+        runBlocking { actual.assertIsSimilarTo(expected) }
     }
 
     @Test
