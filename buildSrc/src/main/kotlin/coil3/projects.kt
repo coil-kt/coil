@@ -176,8 +176,6 @@ private fun <T : BaseExtension> Project.androidBase(
                 arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }
 
-            arguments += "-Xexpect-actual-classes"
-
             freeCompilerArgs.addAll(arguments)
         }
     }
