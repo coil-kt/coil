@@ -93,7 +93,7 @@ fun Drawable.asImage(shareable: Boolean): Image {
 fun Image.asDrawable(resources: Resources): Drawable {
     return when (this) {
         is DrawableImage -> drawable
-        is BitmapDrawable -> BitmapDrawable(resources, bitmap)
+        is BitmapImage -> BitmapDrawable(resources, bitmap)
         else -> ImageDrawable(this)
     }
 }
