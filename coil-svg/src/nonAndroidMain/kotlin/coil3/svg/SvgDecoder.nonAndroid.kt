@@ -1,6 +1,8 @@
 package coil3.svg
 
+import coil3.Image
 import coil3.ImageLoader
+import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
@@ -9,6 +11,8 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.getDstSize
+import coil3.toBitmap
+import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
@@ -16,16 +20,13 @@ import org.jetbrains.skia.svg.SVGLength
 import org.jetbrains.skia.svg.SVGLengthUnit
 
 /**
- * A [Decoder] that uses [SVGDOM](https://api.skia.org/classSkSVGDOM.html/) to decode SVG
- * files.
- *
- * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
- *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
+ * A [Decoder] that uses [SVGDOM](https://api.skia.org/classSkSVGDOM.html/) to decode SVG files.
  */
 actual class SvgDecoder actual constructor(
     private val source: ImageSource,
     private val options: Options,
     val useViewBoundsAsIntrinsicSize: Boolean,
+    val renderToBitmap: Boolean,
 ) : Decoder {
 
     actual override suspend fun decode(): DecodeResult? {
@@ -79,14 +80,20 @@ actual class SvgDecoder actual constructor(
 
         svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
 
+        var image: Image = SvgImage(svg, bitmapWidth, bitmapHeight)
+        if (renderToBitmap) {
+            image = image.toBitmap().asImage()
+        }
+
         return DecodeResult(
-            image = SvgImage(svg, bitmapWidth, bitmapHeight),
+            image = image,
             isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }
 
-    actual class Factory actual constructor(
+    actual class Factory @JvmOverloads actual constructor(
         val useViewBoundsAsIntrinsicSize: Boolean,
+        val renderToBitmap: Boolean,
     ) : Decoder.Factory {
 
         actual override fun create(

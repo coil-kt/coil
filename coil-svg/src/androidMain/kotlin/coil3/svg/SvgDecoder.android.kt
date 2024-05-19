@@ -20,24 +20,14 @@ import com.caverock.androidsvg.SVG
 import kotlinx.coroutines.runInterruptible
 
 /**
- * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG
- * files.
- *
- * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
- *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
+ * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
  */
-actual class SvgDecoder(
+actual class SvgDecoder actual constructor(
     private val source: ImageSource,
     private val options: Options,
     val useViewBoundsAsIntrinsicSize: Boolean,
     val renderToBitmap: Boolean,
 ) : Decoder {
-
-    actual constructor(
-        source: ImageSource,
-        options: Options,
-        useViewBoundsAsIntrinsicSize: Boolean,
-    ) : this(source, options, useViewBoundsAsIntrinsicSize, false)
 
     actual override suspend fun decode(): DecodeResult? = runInterruptible {
         val svg = source.source().use { SVG.getFromInputStream(it.inputStream()) }
@@ -94,22 +84,10 @@ actual class SvgDecoder(
         )
     }
 
-    actual class Factory(
-        val useViewBoundsAsIntrinsicSize: Boolean = true,
-        val renderToBitmap: Boolean = false,
+    actual class Factory @JvmOverloads actual constructor(
+        val useViewBoundsAsIntrinsicSize: Boolean,
+        val renderToBitmap: Boolean,
     ) : Decoder.Factory {
-
-        constructor() : this(
-            useViewBoundsAsIntrinsicSize = true,
-            renderToBitmap = false,
-        )
-
-        actual constructor(
-            useViewBoundsAsIntrinsicSize: Boolean,
-        ) : this(
-            useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
-            renderToBitmap = false,
-        )
 
         actual override fun create(
             result: SourceFetchResult,
