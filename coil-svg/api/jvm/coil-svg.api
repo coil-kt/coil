@@ -3,17 +3,20 @@ public final class coil3/svg/DecodeUtilsKt {
 }
 
 public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
-	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZ)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getRenderToBitmap ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
 public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
-	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZZ)V
+	public synthetic fun <init> (ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+	public final fun getRenderToBitmap ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
