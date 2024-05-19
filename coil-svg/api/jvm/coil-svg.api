@@ -17,3 +17,13 @@ public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
+public final class coil3/svg/SvgImage : coil3/Image {
+	public fun <init> (Lorg/jetbrains/skia/svg/SVGDOM;II)V
+	public fun draw (Lorg/jetbrains/skia/Canvas;)V
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public final fun getSvg ()Lorg/jetbrains/skia/svg/SVGDOM;
+	public fun getWidth ()I
+}
+
