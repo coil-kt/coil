@@ -10,10 +10,11 @@ public final class coil3/svg/ImageRequests_androidKt {
 }
 
 public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZ)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getRenderToBitmap ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
@@ -21,7 +22,21 @@ public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZZ)V
+	public synthetic fun <init> (ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+	public final fun getRenderToBitmap ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+}
+
+public final class coil3/svg/SvgImage : coil3/Image {
+	public fun <init> (Lcom/caverock/androidsvg/SVG;Lcom/caverock/androidsvg/RenderOptions;II)V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun getHeight ()I
+	public final fun getRenderOptions ()Lcom/caverock/androidsvg/RenderOptions;
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public final fun getSvg ()Lcom/caverock/androidsvg/SVG;
+	public fun getWidth ()I
 }
 

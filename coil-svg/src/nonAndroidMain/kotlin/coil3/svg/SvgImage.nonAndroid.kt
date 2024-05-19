@@ -9,7 +9,7 @@ import org.jetbrains.skia.svg.SVGDOM
 
 @ExperimentalCoilApi
 @Poko
-internal class SvgImage(
+class SvgImage(
     val svg: SVGDOM,
     override val width: Int,
     override val height: Int,

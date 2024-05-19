@@ -10,7 +10,7 @@ import com.caverock.androidsvg.SVG
 
 @ExperimentalCoilApi
 @Poko
-internal class SvgImage(
+class SvgImage(
     val svg: SVG,
     val renderOptions: RenderOptions?,
     override val width: Int,
