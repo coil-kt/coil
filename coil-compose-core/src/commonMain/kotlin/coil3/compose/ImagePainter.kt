@@ -14,23 +14,29 @@ import coil3.annotation.ExperimentalCoilApi
  */
 @ExperimentalCoilApi
 class ImagePainter(
-    private val image: Image,
+    val image: Image,
 ) : Painter() {
-
     override val intrinsicSize: Size
-        get() = Size(
-            width = image.width.let { if (it == -1) Float.NaN else it.toFloat() },
-            height = image.height.let { if (it == -1) Float.NaN else it.toFloat() },
-        )
+        get() = Size(intrinsicWidth, intrinsicHeight)
+
+    private val intrinsicWidth: Float
+        get() = image.width.toDimension()
+
+    private val intrinsicHeight: Float
+        get() = image.height.toDimension()
 
     override fun DrawScope.onDraw() {
         scale(
-            scaleX = size.width / intrinsicSize.width,
-            scaleY = size.height / intrinsicSize.height,
+            scaleX = size.width / intrinsicWidth,
+            scaleY = size.height / intrinsicHeight,
             pivot = Offset.Zero,
         ) {
             image.draw(drawContext.canvas.nativeCanvas)
         }
+    }
+
+    private fun Int.toDimension(): Float {
+        return if (this >= 0) toFloat() else Float.NaN
     }
 }
 
