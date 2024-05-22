@@ -840,6 +840,32 @@ public final class coil3/size/Scale : java/lang/Enum {
 	public static fun values ()[Lcoil3/size/Scale;
 }
 
+public final class coil3/size/ScaleDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Animatable, android/graphics/drawable/Drawable$Callback {
+	public fun <init> (Landroid/graphics/drawable/Drawable;)V
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil3/size/Scale;)V
+	public synthetic fun <init> (Landroid/graphics/drawable/Drawable;Lcoil3/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun getAlpha ()I
+	public final fun getChild ()Landroid/graphics/drawable/Drawable;
+	public fun getColorFilter ()Landroid/graphics/ColorFilter;
+	public fun getIntrinsicHeight ()I
+	public fun getIntrinsicWidth ()I
+	public fun getOpacity ()I
+	public final fun getScale ()Lcoil3/size/Scale;
+	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
+	public fun isRunning ()Z
+	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
+	public fun setAlpha (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public fun setTint (I)V
+	public fun setTintBlendMode (Landroid/graphics/BlendMode;)V
+	public fun setTintList (Landroid/content/res/ColorStateList;)V
+	public fun setTintMode (Landroid/graphics/PorterDuff$Mode;)V
+	public fun start ()V
+	public fun stop ()V
+	public fun unscheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;)V
+}
+
 public final class coil3/size/Size {
 	public static final field Companion Lcoil3/size/Size$Companion;
 	public static final field ORIGINAL Lcoil3/size/Size;

@@ -26,6 +26,7 @@ import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
+import coil3.size.ScaleDrawable
 import coil3.toAndroidUri
 import coil3.util.heightPx
 import coil3.util.isHardware
