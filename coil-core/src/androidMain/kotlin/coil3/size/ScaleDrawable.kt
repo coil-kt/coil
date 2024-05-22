@@ -1,4 +1,4 @@
-package coil3.gif
+package coil3.size
 
 import android.content.res.ColorStateList
 import android.graphics.BlendMode
@@ -7,23 +7,20 @@ import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.withSave
 import coil3.decode.DecodeUtils
-import coil3.size.Scale
 import kotlin.math.roundToInt
 
 /**
  * A [Drawable] that centers and scales its [child] to fill its bounds.
  *
- * This allows drawables that only draw within their intrinsic dimensions
- * (e.g. [AnimatedImageDrawable]) to fill their entire bounds.
+ * This allows drawables that only draw within their intrinsic dimensions to fill their entire bounds.
  */
 class ScaleDrawable @JvmOverloads constructor(
     val child: Drawable,
-    val scale: Scale = Scale.FIT
+    val scale: Scale = Scale.FIT,
 ) : Drawable(), Drawable.Callback, Animatable {
 
     private var childDx = 0f
@@ -107,7 +104,9 @@ class ScaleDrawable @JvmOverloads constructor(
     @RequiresApi(29)
     override fun setTintBlendMode(blendMode: BlendMode?) = child.setTintBlendMode(blendMode)
 
-    override fun isRunning() = child is Animatable && child.isRunning
+    override fun isRunning(): Boolean {
+        return child is Animatable && child.isRunning
+    }
 
     override fun start() {
         if (child is Animatable) child.start()
