@@ -10,7 +10,6 @@ public final class coil3/gif/AnimatedImageDecoder$Factory : coil3/decode/Decoder
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-	public final fun getEnforceMinimumFrameDelay ()Z
 }
 
 public abstract interface class coil3/gif/AnimatedTransformation {
