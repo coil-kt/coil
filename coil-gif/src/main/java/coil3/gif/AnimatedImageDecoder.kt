@@ -51,7 +51,8 @@ import okio.FileSystem
 class AnimatedImageDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
-    private val enforceMinimumFrameDelay: Boolean = true,
+    // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
+    private val enforceMinimumFrameDelay: Boolean = SDK_INT < 34,
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult {
@@ -173,7 +174,8 @@ class AnimatedImageDecoder @JvmOverloads constructor(
     }
 
     class Factory @JvmOverloads constructor(
-        val enforceMinimumFrameDelay: Boolean = true,
+        // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
+        private val enforceMinimumFrameDelay: Boolean = SDK_INT < 34,
     ) : Decoder.Factory {
 
         override fun create(

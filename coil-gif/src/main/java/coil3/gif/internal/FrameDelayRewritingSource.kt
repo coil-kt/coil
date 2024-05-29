@@ -2,7 +2,6 @@
 
 package coil3.gif.internal
 
-import android.os.Build.VERSION.SDK_INT
 import coil3.decode.DecodeUtils
 import coil3.decode.ImageSource
 import coil3.gif.isGif
@@ -96,8 +95,7 @@ internal fun maybeWrapImageSourceToRewriteFrameDelay(
     source: ImageSource,
     enforceMinimumFrameDelay: Boolean,
 ): ImageSource {
-    // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
-    if (enforceMinimumFrameDelay && SDK_INT < 34 && DecodeUtils.isGif(source.source())) {
+    if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
         // Wrap the source to rewrite its frame delay as it's read.
         return ImageSource(
             source = FrameDelayRewritingSource(source.source()).buffer(),
