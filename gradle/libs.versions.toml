@@ -13,7 +13,7 @@ ktor-wasm = "3.0.0-wasm2"
 okhttp = "4.12.0"
 okio = "3.9.0"
 paparazzi = "1.3.4"
-roborazzi = "1.19.0"
+roborazzi = "1.20.0"
 skiko = "0.8.4"
 
 [plugins]
