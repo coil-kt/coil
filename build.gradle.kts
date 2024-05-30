@@ -6,6 +6,7 @@ import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
+import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -43,6 +44,11 @@ extensions.configure<ApiValidationExtension> {
     nonPublicMarkers += "coil3/annotation/InternalCoilApi"
     ignoredProjects += project.subprojects.mapNotNull { project ->
         if (project.name in publicModules) null else project.name
+    }
+    @OptIn(ExperimentalBCVApi::class)
+    klib {
+        enabled = true
+        strictValidation = true
     }
 }
 

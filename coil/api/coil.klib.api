@@ -1,0 +1,20 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.coil-kt.coil3:coil>
+final object coil3/SingletonImageLoader { // coil3/SingletonImageLoader|null[0]
+    abstract fun interface Factory { // coil3/SingletonImageLoader.Factory|null[0]
+        abstract fun newImageLoader(coil3/PlatformContext): coil3/ImageLoader // coil3/SingletonImageLoader.Factory.newImageLoader|newImageLoader(coil3.PlatformContext){}[0]
+    }
+    final fun get(coil3/PlatformContext): coil3/ImageLoader // coil3/SingletonImageLoader.get|get(coil3.PlatformContext){}[0]
+    final fun reset() // coil3/SingletonImageLoader.reset|reset(){}[0]
+    final fun set(coil3/ImageLoader) // coil3/SingletonImageLoader.set|set(coil3.ImageLoader){}[0]
+    final fun set(coil3/SingletonImageLoader.Factory) // coil3/SingletonImageLoader.set|set(coil3.SingletonImageLoader.Factory){}[0]
+    final fun setSafe(coil3/SingletonImageLoader.Factory) // coil3/SingletonImageLoader.setSafe|setSafe(coil3.SingletonImageLoader.Factory){}[0]
+    final fun setUnsafe(coil3/ImageLoader) // coil3/SingletonImageLoader.setUnsafe|setUnsafe(coil3.ImageLoader){}[0]
+    final fun setUnsafe(coil3/SingletonImageLoader.Factory) // coil3/SingletonImageLoader.setUnsafe|setUnsafe(coil3.SingletonImageLoader.Factory){}[0]
+}
