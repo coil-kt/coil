@@ -1,0 +1,41 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.coil-kt.coil3:coil-svg>
+final class coil3.svg/SvgDecoder : coil3.decode/Decoder { // coil3.svg/SvgDecoder|null[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean;kotlin.Boolean){}[0]
+    final class Factory : coil3.decode/Decoder.Factory { // coil3.svg/SvgDecoder.Factory|null[0]
+        constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.svg/SvgDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+        final val renderToBitmap // coil3.svg/SvgDecoder.Factory.renderToBitmap|{}renderToBitmap[0]
+            final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
+        final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
+            final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
+    }
+    final suspend fun decode(): coil3.decode/DecodeResult? // coil3.svg/SvgDecoder.decode|decode(){}[0]
+    final val renderToBitmap // coil3.svg/SvgDecoder.renderToBitmap|{}renderToBitmap[0]
+        final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
+    final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
+        final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
+}
+final class coil3.svg/SvgImage : coil3/Image { // coil3.svg/SvgImage|null[0]
+    constructor <init>(org.jetbrains.skia.svg/SVGDOM, kotlin/Int, kotlin/Int) // coil3.svg/SvgImage.<init>|<init>(org.jetbrains.skia.svg.SVGDOM;kotlin.Int;kotlin.Int){}[0]
+    final fun draw(org.jetbrains.skia/Canvas) // coil3.svg/SvgImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
+    final val height // coil3.svg/SvgImage.height|{}height[0]
+        final fun <get-height>(): kotlin/Int // coil3.svg/SvgImage.height.<get-height>|<get-height>(){}[0]
+    final val shareable // coil3.svg/SvgImage.shareable|{}shareable[0]
+        final fun <get-shareable>(): kotlin/Boolean // coil3.svg/SvgImage.shareable.<get-shareable>|<get-shareable>(){}[0]
+    final val size // coil3.svg/SvgImage.size|{}size[0]
+        final fun <get-size>(): kotlin/Long // coil3.svg/SvgImage.size.<get-size>|<get-size>(){}[0]
+    final val svg // coil3.svg/SvgImage.svg|{}svg[0]
+        final fun <get-svg>(): org.jetbrains.skia.svg/SVGDOM // coil3.svg/SvgImage.svg.<get-svg>|<get-svg>(){}[0]
+    final val width // coil3.svg/SvgImage.width|{}width[0]
+        final fun <get-width>(): kotlin/Int // coil3.svg/SvgImage.width.<get-width>|<get-width>(){}[0]
+}
+final fun (coil3.decode/DecodeUtils).coil3.svg/isSvg(okio/BufferedSource): kotlin/Boolean // coil3.svg/isSvg|isSvg@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final val coil3.svg.internal/initHook // coil3.svg.internal/initHook|{}initHook[0]
+    final fun <get-initHook>(): kotlin/Any // coil3.svg.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
