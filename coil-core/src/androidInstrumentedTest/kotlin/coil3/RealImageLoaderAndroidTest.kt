@@ -152,20 +152,6 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun resourceUriString() = runTest {
-        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
-        testEnqueue(data)
-        testExecute(data)
-    }
-
-    @Test
-    fun resourceUriStringVector() = runTest {
-        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
-        testEnqueue(data, Size(100, 100))
-        testExecute(data, Size(100, 100))
-    }
-
-    @Test
     fun file() = runTest {
         val data = copyNormalImageAssetToCacheDir()
         testEnqueue(data)

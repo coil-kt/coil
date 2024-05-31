@@ -12,7 +12,6 @@ import coil3.fetch.ResourceUriFetcher
 import coil3.key.AndroidResourceUriKeyer
 import coil3.map.AndroidUriMapper
 import coil3.map.ResourceIntMapper
-import coil3.map.ResourceUriMapper
 import coil3.request.Disposable
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -76,7 +75,6 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
 ): ComponentRegistry.Builder = apply {
     // Mappers
     add(AndroidUriMapper())
-    add(ResourceUriMapper())
     add(ResourceIntMapper())
 
     // Keyers
