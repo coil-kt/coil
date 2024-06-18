@@ -34,7 +34,7 @@ class RoborazziComposeTest {
         captureRoot = composeTestRule.onRoot(),
         options = RoborazziRule.Options(
             captureType = RoborazziRule.CaptureType.LastImage(),
-            outputDirectoryPath = "src/test/snapshots/images",
+            outputDirectoryPath = "src/androidUnitTest/snapshots/images",
         )
     )
 
