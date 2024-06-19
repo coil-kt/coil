@@ -21,11 +21,11 @@ internal class DrawableFetcher(
         return ImageFetchResult(
             image = if (isVector) {
                 DrawableUtils.convertToBitmap(
-                  drawable = data,
-                  config = options.bitmapConfig,
-                  size = options.size,
-                  scale = options.scale,
-                  allowInexactSize = options.precision == Precision.INEXACT,
+                    drawable = data,
+                    config = options.bitmapConfig,
+                    size = options.size,
+                    scale = options.scale,
+                    allowInexactSize = options.precision == Precision.INEXACT,
                 ).toDrawable(options.context)
             } else {
                 data
