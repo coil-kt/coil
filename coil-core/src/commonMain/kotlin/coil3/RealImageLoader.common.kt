@@ -141,6 +141,7 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
+                    sizeResolver = sizeResolver,
                     eventListener = eventListener,
                     isPlaceholderCached = cachedPlaceholder != null,
                 ).proceed()

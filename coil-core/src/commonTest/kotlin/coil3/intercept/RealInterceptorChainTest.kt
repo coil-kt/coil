@@ -5,6 +5,7 @@ import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.target.Target
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -151,12 +152,14 @@ class RealInterceptorChainTests : RobolectricTest() {
         request: ImageRequest,
         interceptors: List<Interceptor>
     ): ImageResult {
+        val size = Size(100, 100)
         val chain = RealInterceptorChain(
             initialRequest = request,
             interceptors = interceptors + FakeEngineInterceptor(),
             index = 0,
             request = request,
-            size = Size(100, 100),
+            size = size,
+            sizeResolver = SizeResolver(size),
             eventListener = EventListener.NONE,
             isPlaceholderCached = false
         )

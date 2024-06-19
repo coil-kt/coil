@@ -17,6 +17,7 @@ import coil3.request.NullRequestDataException
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import kotlin.experimental.ExperimentalNativeApi
@@ -76,6 +77,9 @@ internal val Interceptor.Chain.isPlaceholderCached: Boolean
 
 internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
+
+internal val Interceptor.Chain.sizeResolver: SizeResolver
+    get() = if (this is RealInterceptorChain) sizeResolver else request.sizeResolver
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
