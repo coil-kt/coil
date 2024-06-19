@@ -54,7 +54,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
-import okio.sink
 import okio.source
 import org.junit.After
 import org.junit.Before
@@ -613,11 +612,11 @@ class RealImageLoaderAndroidTest {
     }
 
     private fun copyNormalImageAssetToCacheDir(): File {
-        val file = File(context.cacheDir, IMAGE)
+        val path = fileSystem.workingDirectory / IMAGE
         val source = context.assets.open(IMAGE).source()
-        val sink = file.sink().buffer()
+        val sink = fileSystem.sink(path).buffer()
         source.use { sink.use { sink.writeAll(source) } }
-        return file
+        return path.toFile()
     }
 
     @Suppress("SameParameterValue")
