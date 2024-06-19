@@ -72,11 +72,11 @@ class VideoFrameDecoder(
                 dstHeight = dstHeight,
                 scale = options.scale,
             )
-          val scale = if (options.precision == Precision.INEXACT) {
-            rawScale.coerceAtMost(1.0)
-          } else {
-            rawScale
-          }
+            val scale = if (options.precision == Precision.INEXACT) {
+                rawScale.coerceAtMost(1.0)
+            } else {
+                rawScale
+            }
             val width = (scale * srcWidth).roundToInt()
             val height = (scale * srcHeight).roundToInt()
             Size(width, height)
@@ -149,7 +149,8 @@ class VideoFrameDecoder(
 
         val framePercent = options.videoFramePercent
         if (framePercent >= 0) {
-            val durationMillis = retriever.extractMetadata(METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+            val durationMillis =
+                retriever.extractMetadata(METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
             return 1000 * (framePercent * durationMillis).roundToLong()
         }
 
@@ -196,15 +197,15 @@ class VideoFrameDecoder(
     }
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
-      if (options.precision == Precision.INEXACT) return true
-      val multiplier = DecodeUtils.computeSizeMultiplier(
-        srcWidth = bitmap.width,
-        srcHeight = bitmap.height,
-        dstWidth = size.width.pxOrElse { bitmap.width },
-        dstHeight = size.height.pxOrElse { bitmap.height },
-        scale = options.scale,
-      )
-      return multiplier == 1.0
+        if (options.precision == Precision.INEXACT) return true
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = bitmap.width,
+            srcHeight = bitmap.height,
+            dstWidth = size.width.pxOrElse { bitmap.width },
+            dstHeight = size.height.pxOrElse { bitmap.height },
+            scale = options.scale,
+        )
+        return multiplier == 1.0
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
