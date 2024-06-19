@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -52,6 +53,8 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import okio.FileSystem
+import okio.Path
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.source
@@ -152,16 +155,36 @@ class RealImageLoaderAndroidTest {
 
     @Test
     fun file() = runTest {
-        val data = copyNormalImageAssetToCacheDir()
-        testEnqueue(data)
-        testExecute(data)
+        // https://github.com/Kotlin/kotlinx-datetime/issues/97
+        val fileSystem: FileSystem
+        val directory: Path
+        if (SDK_INT >= 26) {
+            fileSystem = this@RealImageLoaderAndroidTest.fileSystem
+            directory = fileSystem.workingDirectory
+        } else {
+            fileSystem = FileSystem.SYSTEM
+            directory = FileSystem.SYSTEM_TEMPORARY_DIRECTORY
+        }
+        val data = copyNormalImageAssetToCacheDir(fileSystem, directory)
+        testEnqueue(data, fileSystem = fileSystem)
+        testExecute(data, fileSystem = fileSystem)
     }
 
     @Test
     fun fileUri() = runTest {
-        val data = copyNormalImageAssetToCacheDir().toUri()
-        testEnqueue(data)
-        testExecute(data)
+        // https://github.com/Kotlin/kotlinx-datetime/issues/97
+        val fileSystem: FileSystem
+        val directory: Path
+        if (SDK_INT >= 26) {
+            fileSystem = this@RealImageLoaderAndroidTest.fileSystem
+            directory = fileSystem.workingDirectory
+        } else {
+            fileSystem = FileSystem.SYSTEM
+            directory = FileSystem.SYSTEM_TEMPORARY_DIRECTORY
+        }
+        val data = copyNormalImageAssetToCacheDir(fileSystem, directory).toUri()
+        testEnqueue(data, fileSystem = fileSystem)
+        testExecute(data, fileSystem = fileSystem)
     }
 
     @Test
@@ -571,7 +594,11 @@ class RealImageLoaderAndroidTest {
         assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
     }
 
-    private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
+    private suspend fun testEnqueue(
+        data: Any,
+        expectedSize: Size = Size(80, 100),
+        fileSystem: FileSystem = this.fileSystem,
+    ) {
         val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
@@ -582,6 +609,7 @@ class RealImageLoaderAndroidTest {
                 .data(data)
                 .target(imageView)
                 .size(100, 100)
+                .fileSystem(fileSystem)
                 .listener(
                     onSuccess = { _, _ -> continuation.resume(Unit) },
                     onError = { _, result -> continuation.resumeWithException(result.throwable) },
@@ -595,10 +623,15 @@ class RealImageLoaderAndroidTest {
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
-    private suspend fun testExecute(data: Any, expectedSize: Size = Size(80, 100)) {
+    private suspend fun testExecute(
+        data: Any,
+        expectedSize: Size = Size(80, 100),
+        fileSystem: FileSystem = this.fileSystem,
+    ) {
         val request = ImageRequest.Builder(context)
             .data(data)
             .size(100, 100)
+            .fileSystem(fileSystem)
             .build()
         val result = imageLoader.execute(request)
 
@@ -611,8 +644,11 @@ class RealImageLoaderAndroidTest {
         assertEquals(expectedSize, image.bitmap.size)
     }
 
-    private fun copyNormalImageAssetToCacheDir(): File {
-        val path = fileSystem.workingDirectory / IMAGE
+    private fun copyNormalImageAssetToCacheDir(
+        fileSystem: FileSystem,
+        directory: Path
+    ): File {
+        val path = directory / IMAGE
         val source = context.assets.open(IMAGE).source()
         val sink = fileSystem.sink(path).buffer()
         source.use { sink.use { sink.writeAll(source) } }
