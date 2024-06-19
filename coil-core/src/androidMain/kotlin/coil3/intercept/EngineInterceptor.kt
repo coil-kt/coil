@@ -85,11 +85,11 @@ private fun convertDrawableToBitmap(
 
     // Slow path: draw the drawable on a canvas.
     return DrawableUtils.convertToBitmap(
-      drawable = drawable,
-      config = options.bitmapConfig,
-      size = options.size,
-      scale = options.scale,
-      allowInexactSize = options.precision == Precision.INEXACT,
+        drawable = drawable,
+        config = options.bitmapConfig,
+        size = options.size,
+        scale = options.scale,
+        allowInexactSize = options.precision == Precision.INEXACT,
     )
 }
 
