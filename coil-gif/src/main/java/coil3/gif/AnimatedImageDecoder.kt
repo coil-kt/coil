@@ -83,7 +83,7 @@ class AnimatedImageDecoder @JvmOverloads constructor(
                         // Set the target size if the image is larger than the requested dimensions
                         // or the request requires exact dimensions.
                         isSampled = multiplier < 1
-                        if (isSampled || !(options.precision == Precision.INEXACT)) {
+                        if (isSampled || options.precision == Precision.EXACT) {
                             val targetWidth = (multiplier * srcWidth).roundToInt()
                             val targetHeight = (multiplier * srcHeight).roundToInt()
                             setTargetSize(targetWidth, targetHeight)
