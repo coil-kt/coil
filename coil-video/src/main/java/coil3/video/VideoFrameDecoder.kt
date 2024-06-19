@@ -24,6 +24,7 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
 import coil3.size.Dimension.Pixels
+import coil3.size.Precision
 import coil3.size.Size
 import coil3.size.pxOrElse
 import coil3.toAndroidUri
@@ -71,11 +72,11 @@ class VideoFrameDecoder(
                 dstHeight = dstHeight,
                 scale = options.scale,
             )
-            val scale = if (options.allowInexactSize) {
-                rawScale.coerceAtMost(1.0)
-            } else {
-                rawScale
-            }
+          val scale = if (options.precision == Precision.INEXACT) {
+            rawScale.coerceAtMost(1.0)
+          } else {
+            rawScale
+          }
             val width = (scale * srcWidth).roundToInt()
             val height = (scale * srcHeight).roundToInt()
             Size(width, height)
@@ -195,15 +196,15 @@ class VideoFrameDecoder(
     }
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
-        if (options.allowInexactSize) return true
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = bitmap.width,
-            srcHeight = bitmap.height,
-            dstWidth = size.width.pxOrElse { bitmap.width },
-            dstHeight = size.height.pxOrElse { bitmap.height },
-            scale = options.scale,
-        )
-        return multiplier == 1.0
+      if (options.precision == Precision.INEXACT) return true
+      val multiplier = DecodeUtils.computeSizeMultiplier(
+        srcWidth = bitmap.width,
+        srcHeight = bitmap.height,
+        dstWidth = size.width.pxOrElse { bitmap.width },
+        dstHeight = size.height.pxOrElse { bitmap.height },
+        scale = options.scale,
+      )
+      return multiplier == 1.0
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {

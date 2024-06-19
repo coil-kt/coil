@@ -19,11 +19,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil3.Uri
 import coil3.pathSegments
 import coil3.request.ImageRequest
-import coil3.size.DisplaySizeResolver
-import coil3.size.Precision
 import coil3.size.Scale
-import coil3.size.ViewSizeResolver
-import coil3.target.ViewTarget
 import coil3.transform.Transformation
 import java.io.File
 
@@ -84,27 +80,6 @@ internal fun ImageRequest.getDrawableCompat(
     }
     else -> default
 }
-
-internal actual val ImageRequest.allowInexactSize: Boolean
-    get() = when (precision) {
-        Precision.EXACT -> false
-        Precision.INEXACT -> true
-        Precision.AUTOMATIC -> run {
-            // If we haven't explicitly set a size and fell back to the default size resolver,
-            // always allow inexact size.
-            if (defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
-                return@run true
-            }
-
-            // If both our target and size resolver reference the same ImageView, allow the
-            // dimensions to be inexact as the ImageView will scale the output image
-            // automatically. Else, require the dimensions to be exact.
-            return@run target is ViewTarget<*> &&
-                sizeResolver is ViewSizeResolver<*> &&
-                target.view is ImageView &&
-                target.view === sizeResolver.view
-        }
-    }
 
 internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 

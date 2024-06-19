@@ -26,6 +26,7 @@ import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
+import coil3.size.Precision
 import coil3.size.ScaleDrawable
 import coil3.toAndroidUri
 import coil3.util.heightPx
@@ -82,7 +83,7 @@ class AnimatedImageDecoder @JvmOverloads constructor(
                         // Set the target size if the image is larger than the requested dimensions
                         // or the request requires exact dimensions.
                         isSampled = multiplier < 1
-                        if (isSampled || !options.allowInexactSize) {
+                        if (isSampled || !(options.precision == Precision.INEXACT)) {
                             val targetWidth = (multiplier * srcWidth).roundToInt()
                             val targetHeight = (multiplier * srcHeight).roundToInt()
                             setTargetSize(targetWidth, targetHeight)

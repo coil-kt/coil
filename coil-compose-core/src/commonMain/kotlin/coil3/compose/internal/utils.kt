@@ -57,7 +57,7 @@ internal fun requestOfWithSizeResolver(
     }
 
     val sizeResolver = if (contentScale == ContentScale.None) {
-        OriginalSizeResolver
+        SizeResolver.ORIGINAL
     } else {
         remember { ConstraintsSizeResolver() }
     }
@@ -196,5 +196,3 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
-
-internal val OriginalSizeResolver = SizeResolver(CoilSize.ORIGINAL)

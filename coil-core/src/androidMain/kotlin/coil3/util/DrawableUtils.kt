@@ -34,7 +34,7 @@ internal object DrawableUtils {
         config: Bitmap.Config,
         size: Size,
         scale: Scale,
-        allowInexactSize: Boolean
+        allowInexactSize: Boolean,
     ): Bitmap {
         // Fast path: return the underlying bitmap.
         if (drawable is BitmapDrawable) {

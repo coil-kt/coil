@@ -13,6 +13,10 @@ internal interface RequestDelegate {
     @MainThread
     fun start() {}
 
+    /** Wait until the request's associated lifecycle is started. */
+    @MainThread
+    suspend fun awaitStarted() {}
+
     /** Called when this request's job is cancelled or completes successfully/unsuccessfully. */
     @MainThread
     fun complete() {}

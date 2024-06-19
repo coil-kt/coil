@@ -43,6 +43,7 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
+import coil3.size.SizeResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -300,6 +301,10 @@ class AsyncImagePainter internal constructor(
                 },
             )
             .apply {
+                if (request.defined.sizeResolver == null) {
+                    // If the size resolver isn't set, use the original size.
+                    size(SizeResolver.ORIGINAL)
+                }
                 if (request.defined.scale == null) {
                     // If the scale isn't set, use the content scale.
                     scale(contentScale.toScale())

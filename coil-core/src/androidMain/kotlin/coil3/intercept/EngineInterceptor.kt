@@ -15,6 +15,7 @@ import coil3.request.Options
 import coil3.request.allowConversionToBitmap
 import coil3.request.bitmapConfig
 import coil3.request.transformations
+import coil3.size.Precision
 import coil3.transform.Transformation
 import coil3.util.DrawableUtils
 import coil3.util.Logger
@@ -84,11 +85,11 @@ private fun convertDrawableToBitmap(
 
     // Slow path: draw the drawable on a canvas.
     return DrawableUtils.convertToBitmap(
-        drawable = drawable,
-        config = options.bitmapConfig,
-        size = options.size,
-        scale = options.scale,
-        allowInexactSize = options.allowInexactSize,
+      drawable = drawable,
+      config = options.bitmapConfig,
+      size = options.size,
+      scale = options.scale,
+      allowInexactSize = options.precision == Precision.INEXACT,
     )
 }
 

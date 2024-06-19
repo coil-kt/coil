@@ -13,6 +13,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.transform.Transformation
 import coil3.transition.NoneTransition
 import coil3.transition.Transition
@@ -24,7 +25,7 @@ actual abstract class EventListener : ImageRequest.Listener {
     actual override fun onStart(request: ImageRequest) {}
 
     @MainThread
-    actual open fun resolveSizeStart(request: ImageRequest) {}
+    actual open fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) {}
 
     @MainThread
     actual open fun resolveSizeEnd(request: ImageRequest, size: Size) {}

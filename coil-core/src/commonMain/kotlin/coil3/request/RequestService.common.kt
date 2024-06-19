@@ -5,6 +5,7 @@ import coil3.annotation.MainThread
 import coil3.annotation.WorkerThread
 import coil3.memory.MemoryCache
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import kotlinx.coroutines.Job
@@ -22,29 +23,14 @@ internal interface RequestService {
     fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate
 
     @MainThread
-    fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult
+    fun sizeResolver(request: ImageRequest): SizeResolver
 
     @MainThread
-    fun options(request: ImageRequest, size: Size): Options
+    fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options
 
     @WorkerThread
     fun updateOptionsOnWorkerThread(options: Options): Options
 
     @WorkerThread
     fun isCacheValueValidForHardware(request: ImageRequest, cacheValue: MemoryCache.Value): Boolean
-}
-
-internal fun commonErrorResult(
-    request: ImageRequest,
-    throwable: Throwable,
-): ErrorResult {
-    return ErrorResult(
-        image = if (throwable is NullRequestDataException) {
-            request.fallback() ?: request.error()
-        } else {
-            request.error()
-        },
-        request = request,
-        throwable = throwable,
-    )
 }

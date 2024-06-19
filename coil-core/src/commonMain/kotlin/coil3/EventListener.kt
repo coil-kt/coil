@@ -32,9 +32,11 @@ expect abstract class EventListener : ImageRequest.Listener {
 
     /**
      * Called before [SizeResolver.size].
+     *
+     * @param sizeResolver The [SizeResolver] that will be used to get the [Size] for this request.
      */
     @MainThread
-    open fun resolveSizeStart(request: ImageRequest)
+    open fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver)
 
     /**
      * Called after [SizeResolver.size].

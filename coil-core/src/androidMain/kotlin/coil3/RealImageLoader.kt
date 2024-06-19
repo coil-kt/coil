@@ -16,14 +16,12 @@ import coil3.request.Disposable
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.OneShotDisposable
-import coil3.request.lifecycle
 import coil3.request.requestManager
 import coil3.request.transitionFactory
 import coil3.target.Target
 import coil3.target.ViewTarget
 import coil3.transition.NoneTransition
 import coil3.transition.TransitionTarget
-import coil3.util.awaitStarted
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.sync.Semaphore
 
@@ -40,12 +38,6 @@ internal actual fun getDisposable(
     } else {
         return OneShotDisposable(job)
     }
-}
-
-internal actual suspend fun awaitLifecycleStarted(
-    request: ImageRequest,
-) {
-    request.lifecycle?.awaitStarted()
 }
 
 internal actual inline fun transition(

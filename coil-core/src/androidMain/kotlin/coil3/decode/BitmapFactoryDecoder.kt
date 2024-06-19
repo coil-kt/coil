@@ -12,6 +12,7 @@ import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
 import coil3.request.premultipliedAlpha
+import coil3.size.Precision
 import coil3.size.isOriginal
 import coil3.util.MIME_TYPE_JPEG
 import coil3.util.heightPx
@@ -156,7 +157,7 @@ class BitmapFactoryDecoder(
         )
 
         // Only upscale the image if the options require an exact size.
-        if (options.allowInexactSize) {
+        if (options.precision == Precision.INEXACT) {
             scale = scale.coerceAtMost(1.0)
         }
 

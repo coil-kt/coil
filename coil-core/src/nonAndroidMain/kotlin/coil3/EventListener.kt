@@ -12,6 +12,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
+import coil3.size.SizeResolver
 import kotlin.jvm.JvmField
 
 actual abstract class EventListener : ImageRequest.Listener {
@@ -20,7 +21,7 @@ actual abstract class EventListener : ImageRequest.Listener {
     actual override fun onStart(request: ImageRequest) {}
 
     @MainThread
-    actual open fun resolveSizeStart(request: ImageRequest) {}
+    actual open fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) {}
 
     @MainThread
     actual open fun resolveSizeEnd(request: ImageRequest, size: Size) {}
