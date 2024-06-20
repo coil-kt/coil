@@ -17,35 +17,26 @@ import kotlin.jvm.JvmField
 
 actual abstract class EventListener : ImageRequest.Listener {
 
-    @MainThread
     actual override fun onStart(request: ImageRequest) {}
 
-    @MainThread
     actual open fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) {}
 
-    @MainThread
     actual open fun resolveSizeEnd(request: ImageRequest, size: Size) {}
 
-    @MainThread
     actual open fun mapStart(request: ImageRequest, input: Any) {}
 
-    @MainThread
     actual open fun mapEnd(request: ImageRequest, output: Any) {}
 
-    @MainThread
     actual open fun keyStart(request: ImageRequest, input: Any) {}
 
-    @MainThread
     actual open fun keyEnd(request: ImageRequest, output: String?) {}
 
-    @WorkerThread
     actual open fun fetchStart(
         request: ImageRequest,
         fetcher: Fetcher,
         options: Options,
     ) {}
 
-    @WorkerThread
     actual open fun fetchEnd(
         request: ImageRequest,
         fetcher: Fetcher,
@@ -53,14 +44,12 @@ actual abstract class EventListener : ImageRequest.Listener {
         result: FetchResult?,
     ) {}
 
-    @WorkerThread
     actual open fun decodeStart(
         request: ImageRequest,
         decoder: Decoder,
         options: Options,
     ) {}
 
-    @WorkerThread
     actual open fun decodeEnd(
         request: ImageRequest,
         decoder: Decoder,
@@ -68,13 +57,10 @@ actual abstract class EventListener : ImageRequest.Listener {
         result: DecodeResult?,
     ) {}
 
-    @MainThread
     actual override fun onCancel(request: ImageRequest) {}
 
-    @MainThread
     actual override fun onError(request: ImageRequest, result: ErrorResult) {}
 
-    @MainThread
     actual override fun onSuccess(request: ImageRequest, result: SuccessResult) {}
 
     actual fun interface Factory {

@@ -249,7 +249,7 @@ class AsyncImagePainter internal constructor(
         if (rememberScope != null) return@trace
 
         // Create a new scope to observe state and execute requests while we're remembered.
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         rememberScope = scope
 
         // Manually notify the child painter that we're remembered.
@@ -309,10 +309,11 @@ class AsyncImagePainter internal constructor(
                     // If the scale isn't set, use the content scale.
                     scale(contentScale.toScale())
                 }
-                if (request.defined.precision != Precision.EXACT) {
+                if (request.defined.precision == null) {
                     // AsyncImagePainter scales the image to fit the canvas size at draw time.
                     precision(Precision.INEXACT)
                 }
+                applyGlobalLifecycle()
             }
             .build()
     }
@@ -425,6 +426,9 @@ private fun unsupportedData(
 
 /** Validate platform-specific properties of an [ImageRequest]. */
 internal expect fun validateRequestProperties(request: ImageRequest)
+
+/** Set the request's lifecycle to `GlobalLifecycle` on Android to avoid dispatching. */
+internal expect fun ImageRequest.Builder.applyGlobalLifecycle()
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
 internal expect fun Image.toPainter(

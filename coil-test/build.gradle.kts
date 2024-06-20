@@ -30,11 +30,6 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        jvmTest {
-            dependencies {
-                implementation(libs.coroutines.swing)
-            }
-        }
         androidUnitTest {
             dependencies {
                 implementation(projects.internal.testUtils)

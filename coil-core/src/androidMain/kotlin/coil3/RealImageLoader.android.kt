@@ -13,9 +13,11 @@ import coil3.key.AndroidResourceUriKeyer
 import coil3.map.AndroidUriMapper
 import coil3.map.ResourceIntMapper
 import coil3.request.Disposable
+import coil3.request.GlobalLifecycle
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.OneShotDisposable
+import coil3.request.lifecycle
 import coil3.request.requestManager
 import coil3.request.transitionFactory
 import coil3.target.Target
@@ -25,9 +27,12 @@ import coil3.transition.TransitionTarget
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.sync.Semaphore
 
-internal actual fun skipCreatingDisposable(
+internal actual fun needsExecuteOnMainDispatcher(
     request: ImageRequest,
-) = request.target !is ViewTarget<*>
+): Boolean {
+    return request.target is ViewTarget<*> ||
+        request.lifecycle != GlobalLifecycle
+}
 
 internal actual fun getDisposable(
     request: ImageRequest,

@@ -5,7 +5,6 @@ import coil3.Extras
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.annotation.MainThread
 import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
@@ -142,25 +141,21 @@ class ImageRequest private constructor(
         /**
          * Called immediately after [Target.onStart].
          */
-        @MainThread
         fun onStart(request: ImageRequest) {}
 
         /**
          * Called if the request is cancelled.
          */
-        @MainThread
         fun onCancel(request: ImageRequest) {}
 
         /**
          * Called if an error occurs while executing the request.
          */
-        @MainThread
         fun onError(request: ImageRequest, result: ErrorResult) {}
 
         /**
          * Called if the request completes successfully.
          */
-        @MainThread
         fun onSuccess(request: ImageRequest, result: SuccessResult) {}
     }
 
@@ -221,7 +216,7 @@ class ImageRequest private constructor(
     @Poko
     class Defaults(
         val fileSystem: FileSystem = defaultFileSystem(),
-        val interceptorDispatcher: CoroutineContext = Dispatchers.Main.immediate,
+        val interceptorDispatcher: CoroutineContext = Dispatchers.Unconfined,
         val fetcherDispatcher: CoroutineContext = ioCoroutineDispatcher(),
         val decoderDispatcher: CoroutineContext = ioCoroutineDispatcher(),
         val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
