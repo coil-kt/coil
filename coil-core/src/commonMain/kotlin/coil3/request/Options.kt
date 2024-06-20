@@ -5,6 +5,7 @@ import coil3.PlatformContext
 import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
+import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.util.defaultFileSystem
@@ -34,11 +35,12 @@ class Options(
     val scale: Scale = Scale.FIT,
 
     /**
-     * 'true' if the output image does not need to fit/fill the target's dimensions exactly.
-     * For instance, if 'true' `BitmapFactoryDecoder` will not decode an image at a larger size
-     * than its source dimensions as an optimization.
+     * [Precision.EXACT] if the output image needs to fit/fill the target's dimensions exactly.
+     *
+     * For instance, if [Precision.INEXACT] `BitmapFactoryDecoder` will not decode an image at a
+     * larger size than its source dimensions as an optimization.
      */
-    val allowInexactSize: Boolean = false,
+    val precision: Precision = Precision.EXACT,
 
     /**
      * The cache key to use when persisting images to the disk cache or 'null' if the component can
@@ -76,7 +78,7 @@ class Options(
         context: PlatformContext = this.context,
         size: Size = this.size,
         scale: Scale = this.scale,
-        allowInexactSize: Boolean = this.allowInexactSize,
+        precision: Precision = this.precision,
         diskCacheKey: String? = this.diskCacheKey,
         fileSystem: FileSystem = this.fileSystem,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
@@ -87,7 +89,7 @@ class Options(
         context = context,
         size = size,
         scale = scale,
-        allowInexactSize = allowInexactSize,
+        precision = precision,
         diskCacheKey = diskCacheKey,
         fileSystem = fileSystem,
         memoryCachePolicy = memoryCachePolicy,

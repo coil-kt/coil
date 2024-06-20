@@ -19,7 +19,6 @@ import coil3.size.Size
 import coil3.size.SizeResolver
 import coil3.target.Target
 import coil3.util.EMPTY_IMAGE_FACTORY
-import coil3.util.allowInexactSize
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
@@ -171,6 +170,7 @@ class ImageRequest private constructor(
      */
     @Poko
     class Defined(
+        val fileSystem: FileSystem?,
         val interceptorDispatcher: CoroutineContext?,
         val fetcherDispatcher: CoroutineContext?,
         val decoderDispatcher: CoroutineContext?,
@@ -184,8 +184,8 @@ class ImageRequest private constructor(
         val scale: Scale?,
         val precision: Precision?,
     ) {
-
         fun copy(
+            fileSystem: FileSystem? = this.fileSystem,
             interceptorDispatcher: CoroutineContext? = this.interceptorDispatcher,
             fetcherDispatcher: CoroutineContext? = this.fetcherDispatcher,
             decoderDispatcher: CoroutineContext? = this.decoderDispatcher,
@@ -199,6 +199,7 @@ class ImageRequest private constructor(
             scale: Scale? = this.scale,
             precision: Precision? = this.precision,
         ) = Defined(
+            fileSystem = fileSystem,
             interceptorDispatcher = interceptorDispatcher,
             fetcherDispatcher = fetcherDispatcher,
             decoderDispatcher = decoderDispatcher,
@@ -229,10 +230,11 @@ class ImageRequest private constructor(
         val placeholderFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
         val errorFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
         val fallbackFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
-        val precision: Precision = Precision.AUTOMATIC,
+        val sizeResolver: SizeResolver = SizeResolver.ORIGINAL,
+        val scale: Scale = Scale.FIT,
+        val precision: Precision = Precision.EXACT,
         val extras: Extras = Extras.EMPTY,
     ) {
-
         fun copy(
             fileSystem: FileSystem = this.fileSystem,
             interceptorDispatcher: CoroutineContext = this.interceptorDispatcher,
@@ -267,40 +269,36 @@ class ImageRequest private constructor(
     }
 
     class Builder {
-
-        internal val context: PlatformContext
-        internal var defaults: Defaults
-        internal var data: Any?
-        internal var target: Target?
-        internal var listener: Listener?
-        internal var memoryCacheKey: String?
-        internal var lazyMemoryCacheKeyExtras: MutableMap<String, String>?
-        internal val memoryCacheKeyExtras: MutableMap<String, String>
-            get() = lazyMemoryCacheKeyExtras ?: mutableMapOf<String, String>()
-                .also { lazyMemoryCacheKeyExtras = it }
-        internal var diskCacheKey: String?
-        internal var fileSystem: FileSystem?
-        internal var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
-        internal var decoderFactory: Decoder.Factory?
-        internal var interceptorDispatcher: CoroutineContext?
-        internal var fetcherDispatcher: CoroutineContext?
-        internal var decoderDispatcher: CoroutineContext?
-        internal var memoryCachePolicy: CachePolicy?
-        internal var diskCachePolicy: CachePolicy?
-        internal var networkCachePolicy: CachePolicy?
-        internal var placeholderMemoryCacheKey: MemoryCache.Key?
-        internal var placeholderFactory: ((ImageRequest) -> Image?)?
-        internal var errorFactory: ((ImageRequest) -> Image?)?
-        internal var fallbackFactory: ((ImageRequest) -> Image?)?
-        internal var precision: Precision?
-        internal var lazyExtras: Extras.Builder?
+        private val context: PlatformContext
+        private var defaults: Defaults
+        private var data: Any?
+        private var target: Target?
+        private var listener: Listener?
+        private var memoryCacheKey: String?
+        private var lazyMemoryCacheKeyExtras: MutableMap<String, String>?
+        private val memoryCacheKeyExtras: MutableMap<String, String>
+            get() = lazyMemoryCacheKeyExtras
+                ?: mutableMapOf<String, String>().also { lazyMemoryCacheKeyExtras = it }
+        private var diskCacheKey: String?
+        private var fileSystem: FileSystem?
+        private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
+        private var decoderFactory: Decoder.Factory?
+        private var interceptorDispatcher: CoroutineContext?
+        private var fetcherDispatcher: CoroutineContext?
+        private var decoderDispatcher: CoroutineContext?
+        private var memoryCachePolicy: CachePolicy?
+        private var diskCachePolicy: CachePolicy?
+        private var networkCachePolicy: CachePolicy?
+        private var placeholderMemoryCacheKey: MemoryCache.Key?
+        private var placeholderFactory: ((ImageRequest) -> Image?)?
+        private var errorFactory: ((ImageRequest) -> Image?)?
+        private var fallbackFactory: ((ImageRequest) -> Image?)?
+        private var sizeResolver: SizeResolver?
+        private var scale: Scale?
+        private var precision: Precision?
+        private var lazyExtras: Extras.Builder?
         val extras: Extras.Builder
             get() = lazyExtras ?: Extras.Builder().also { lazyExtras = it }
-
-        internal var sizeResolver: SizeResolver?
-        internal var scale: Scale?
-        internal var resolvedSizeResolver: SizeResolver?
-        internal var resolvedScale: Scale?
 
         constructor(context: PlatformContext) {
             this.context = context
@@ -324,13 +322,10 @@ class ImageRequest private constructor(
             placeholderFactory = EMPTY_IMAGE_FACTORY
             errorFactory = EMPTY_IMAGE_FACTORY
             fallbackFactory = EMPTY_IMAGE_FACTORY
-            precision = null
-            lazyExtras = null
-
             sizeResolver = null
             scale = null
-            resolvedSizeResolver = null
-            resolvedScale = null
+            precision = null
+            lazyExtras = null
         }
 
         @JvmOverloads
@@ -347,7 +342,7 @@ class ImageRequest private constructor(
                 request.memoryCacheKeyExtras.toMutableMap()
             }
             diskCacheKey = request.diskCacheKey
-            fileSystem = request.fileSystem
+            fileSystem = request.defined.fileSystem
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
             interceptorDispatcher = request.defined.interceptorDispatcher
@@ -360,23 +355,13 @@ class ImageRequest private constructor(
             placeholderFactory = request.defined.placeholderFactory
             errorFactory = request.defined.errorFactory
             fallbackFactory = request.defined.fallbackFactory
+            sizeResolver = request.defined.sizeResolver
+            scale = request.defined.scale
             precision = request.defined.precision
             lazyExtras = if (request.extras.asMap().isEmpty()) {
                 null
             } else {
                 request.extras.newBuilder()
-            }
-
-            sizeResolver = request.defined.sizeResolver
-            scale = request.defined.scale
-
-            // If the context changes, recompute the resolved values.
-            if (request.context === context) {
-                resolvedSizeResolver = request.sizeResolver
-                resolvedScale = request.scale
-            } else {
-                resolvedSizeResolver = null
-                resolvedScale = null
             }
         }
 
@@ -393,7 +378,7 @@ class ImageRequest private constructor(
         inline fun target(
             crossinline onStart: (placeholder: Image?) -> Unit = {},
             crossinline onError: (error: Image?) -> Unit = {},
-            crossinline onSuccess: (result: Image) -> Unit = {}
+            crossinline onSuccess: (result: Image) -> Unit = {},
         ) = target(object : Target {
             override fun onStart(placeholder: Image?) = onStart(placeholder)
             override fun onError(error: Image?) = onError(error)
@@ -405,7 +390,6 @@ class ImageRequest private constructor(
          */
         fun target(target: Target?) = apply {
             this.target = target
-            resetResolvedValues()
         }
 
         /**
@@ -472,7 +456,7 @@ class ImageRequest private constructor(
             crossinline onStart: (request: ImageRequest) -> Unit = {},
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
             crossinline onError: (request: ImageRequest, result: ErrorResult) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: ImageRequest, result: SuccessResult) -> Unit = { _, _ -> }
+            crossinline onSuccess: (request: ImageRequest, result: SuccessResult) -> Unit = { _, _ -> },
         ) = listener(object : Listener {
             override fun onStart(request: ImageRequest) = onStart(request)
             override fun onCancel(request: ImageRequest) = onCancel(request)
@@ -541,7 +525,6 @@ class ImageRequest private constructor(
          */
         fun size(resolver: SizeResolver) = apply {
             this.sizeResolver = resolver
-            resetResolvedValues()
         }
 
         /**
@@ -554,9 +537,6 @@ class ImageRequest private constructor(
 
         /**
          * Set the precision for the size of the loaded image.
-         *
-         * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
-         * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
          * NOTE: If [size] is [Size.ORIGINAL], the returned image's size will always be equal to or
          * greater than the image's original size.
@@ -677,7 +657,6 @@ class ImageRequest private constructor(
          */
         fun defaults(defaults: Defaults) = apply {
             this.defaults = defaults
-            resetResolvedScale()
         }
 
         /**
@@ -705,10 +684,12 @@ class ImageRequest private constructor(
                 placeholderFactory = placeholderFactory ?: defaults.placeholderFactory,
                 errorFactory = errorFactory ?: defaults.errorFactory,
                 fallbackFactory = fallbackFactory ?: defaults.fallbackFactory,
-                sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
-                scale = scale ?: resolvedScale ?: resolveScale(),
+                sizeResolver = sizeResolver ?: defaults.sizeResolver,
+                scale = scale ?: defaults.scale,
                 precision = precision ?: defaults.precision,
+                extras = lazyExtras?.build().orEmpty(),
                 defined = Defined(
+                    fileSystem = fileSystem,
                     interceptorDispatcher = interceptorDispatcher,
                     fetcherDispatcher = fetcherDispatcher,
                     decoderDispatcher = decoderDispatcher,
@@ -723,23 +704,7 @@ class ImageRequest private constructor(
                     precision = precision,
                 ),
                 defaults = defaults,
-                extras = lazyExtras?.build().orEmpty(),
             )
-        }
-
-        /** Ensure the size resolver and scale will be recomputed when [build] is called. */
-        private fun resetResolvedValues() {
-            resolvedSizeResolver = null
-            resolvedScale = null
-        }
-
-        /** Ensure the scale will be recomputed when [build] is called. */
-        private fun resetResolvedScale() {
-            resolvedScale = null
         }
     }
 }
-
-internal expect fun Builder.resolveSizeResolver(): SizeResolver
-
-internal expect fun Builder.resolveScale(): Scale

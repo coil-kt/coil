@@ -3,9 +3,9 @@ package coil3.request
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
-import coil3.util.allowInexactSize
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -21,16 +21,16 @@ internal class NonAndroidRequestService : RequestService {
         return BaseRequestDelegate(job)
     }
 
-    override fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
-        return commonErrorResult(request, throwable)
+    override fun sizeResolver(request: ImageRequest): SizeResolver {
+        return request.sizeResolver
     }
 
-    override fun options(request: ImageRequest, size: Size): Options {
+    override fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options {
         return Options(
             request.context,
             size,
             request.scale,
-            request.allowInexactSize,
+            request.precision,
             request.diskCacheKey,
             request.fileSystem,
             request.memoryCachePolicy,

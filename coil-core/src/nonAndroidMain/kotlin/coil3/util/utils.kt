@@ -2,7 +2,6 @@ package coil3.util
 
 import coil3.Uri
 import coil3.decode.DecodeUtils
-import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.size.Precision
 import org.jetbrains.skia.Bitmap
@@ -18,13 +17,6 @@ internal actual fun println(
 ) {
     println(message)
 }
-
-internal actual val ImageRequest.allowInexactSize: Boolean
-    get() = when (precision) {
-        Precision.EXACT -> false
-        Precision.INEXACT,
-        Precision.AUTOMATIC -> true
-    }
 
 /** Create a [Bitmap] from [image] for the given [options]. */
 internal fun Bitmap.Companion.makeFromImage(
@@ -42,7 +34,7 @@ internal fun Bitmap.Companion.makeFromImage(
     )
 
     // Only upscale the image if the options require an exact size.
-    if (options.allowInexactSize) {
+    if (options.precision == Precision.INEXACT) {
         multiplier = multiplier.coerceAtMost(1.0)
     }
 

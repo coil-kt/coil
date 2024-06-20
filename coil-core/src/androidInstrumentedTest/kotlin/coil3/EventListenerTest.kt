@@ -17,6 +17,7 @@ import coil3.request.target
 import coil3.request.transformations
 import coil3.request.transitionFactory
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.activity
 import coil3.test.utils.context
@@ -51,7 +52,7 @@ class EventListenerTest {
             transitionStart = MethodChecker(false),
             transitionEnd = MethodChecker(false),
             onCancel = MethodChecker(false),
-            onError = MethodChecker(false)
+            onError = MethodChecker(false),
         )
 
         val imageLoader = ImageLoader.Builder(context)
@@ -71,7 +72,7 @@ class EventListenerTest {
             transitionStart = MethodChecker(false),
             transitionEnd = MethodChecker(false),
             onCancel = MethodChecker(false),
-            onError = MethodChecker(false)
+            onError = MethodChecker(false),
         )
 
         val imageLoader = ImageLoader.Builder(context)
@@ -102,7 +103,7 @@ class EventListenerTest {
             transformStart = MethodChecker(false),
             transformEnd = MethodChecker(false),
             onCancel = MethodChecker(false),
-            onError = MethodChecker(false)
+            onError = MethodChecker(false),
         )
 
         val imageLoader = ImageLoader.Builder(context)
@@ -140,7 +141,7 @@ class EventListenerTest {
             transitionStart = MethodChecker(false),
             transitionEnd = MethodChecker(false),
             onSuccess = MethodChecker(false),
-            onCancel = MethodChecker(false)
+            onCancel = MethodChecker(false),
         )
 
         val imageLoader = ImageLoader.Builder(context)
@@ -175,7 +176,7 @@ class EventListenerTest {
             transitionStart = MethodChecker(false),
             transitionEnd = MethodChecker(false),
             onSuccess = MethodChecker(false),
-            onCancel = MethodChecker(false)
+            onCancel = MethodChecker(false),
         )
 
         val imageLoader = ImageLoader.Builder(context)
@@ -228,64 +229,28 @@ class EventListenerTest {
     }
 
     private class TestEventListener(
-        val onStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val resolveSizeStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val resolveSizeEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val mapStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val mapEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val keyStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val keyEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val fetchStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val fetchEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val decodeStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val decodeEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val transformStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val transformEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val transitionStart: MethodChecker = MethodChecker(
-            true
-        ),
-        val transitionEnd: MethodChecker = MethodChecker(
-            true
-        ),
-        val onSuccess: MethodChecker = MethodChecker(
-            true
-        ),
-        val onCancel: MethodChecker = MethodChecker(
-            true
-        ),
-        val onError: MethodChecker = MethodChecker(
-            true
-        )
+        val onStart: MethodChecker = MethodChecker(true),
+        val resolveSizeStart: MethodChecker = MethodChecker(true),
+        val resolveSizeEnd: MethodChecker = MethodChecker(true),
+        val mapStart: MethodChecker = MethodChecker(true),
+        val mapEnd: MethodChecker = MethodChecker(true),
+        val keyStart: MethodChecker = MethodChecker(true),
+        val keyEnd: MethodChecker = MethodChecker(true),
+        val fetchStart: MethodChecker = MethodChecker(true),
+        val fetchEnd: MethodChecker = MethodChecker(true),
+        val decodeStart: MethodChecker = MethodChecker(true),
+        val decodeEnd: MethodChecker = MethodChecker(true),
+        val transformStart: MethodChecker = MethodChecker(true),
+        val transformEnd: MethodChecker = MethodChecker(true),
+        val transitionStart: MethodChecker = MethodChecker(true),
+        val transitionEnd: MethodChecker = MethodChecker(true),
+        val onSuccess: MethodChecker = MethodChecker(true),
+        val onCancel: MethodChecker = MethodChecker(true),
+        val onError: MethodChecker = MethodChecker(true),
     ) : EventListener() {
 
         override fun onStart(request: ImageRequest) = onStart.call()
-        override fun resolveSizeStart(request: ImageRequest) = resolveSizeStart.call()
+        override fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) = resolveSizeStart.call()
         override fun resolveSizeEnd(request: ImageRequest, size: Size) = resolveSizeEnd.call()
         override fun mapStart(request: ImageRequest, input: Any) = mapStart.call()
         override fun mapEnd(request: ImageRequest, output: Any) = mapEnd.call()

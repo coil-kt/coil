@@ -20,6 +20,7 @@ import coil3.request.NullRequestDataException
 import coil3.request.RequestService
 import coil3.request.SuccessResult
 import coil3.target.Target
+import coil3.util.ErrorResult
 import coil3.util.FetcherServiceLoaderTarget
 import coil3.util.Logger
 import coil3.util.ServiceLoaderComponentRegistry
@@ -117,7 +118,7 @@ internal class RealImageLoader(
 
             // Enqueued requests suspend until the lifecycle is started.
             if (type == REQUEST_TYPE_ENQUEUE) {
-                awaitLifecycleStarted(request)
+                requestDelegate.awaitStarted()
             }
 
             // Set the placeholder on the target.
@@ -127,8 +128,9 @@ internal class RealImageLoader(
             request.listener?.onStart(request)
 
             // Resolve the size.
-            eventListener.resolveSizeStart(request)
-            val size = request.sizeResolver.size()
+            val sizeResolver = requestService.sizeResolver(request)
+            eventListener.resolveSizeStart(request, sizeResolver)
+            val size = sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
@@ -139,6 +141,7 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
+                    sizeResolver = sizeResolver,
                     eventListener = eventListener,
                     isPlaceholderCached = cachedPlaceholder != null,
                 ).proceed()
@@ -156,7 +159,7 @@ internal class RealImageLoader(
                 throw throwable
             } else {
                 // Create the default error result if there's an uncaught exception.
-                val result = requestService.errorResult(request, throwable)
+                val result = ErrorResult(request, throwable)
                 onError(result, request.target, eventListener)
                 return result
             }
@@ -244,10 +247,6 @@ internal expect fun getDisposable(
     request: ImageRequest,
     job: Deferred<ImageResult>,
 ): Disposable
-
-internal expect suspend fun awaitLifecycleStarted(
-    request: ImageRequest,
-)
 
 internal expect inline fun transition(
     result: ImageResult,

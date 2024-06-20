@@ -14,6 +14,7 @@ import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.premultipliedAlpha
 import coil3.size.Dimension
+import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.test.utils.assertIsSimilarTo
@@ -157,28 +158,28 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_true() = runTest {
+    fun precision_inexact() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
                 context = context,
                 size = Size(1500, 1500),
                 scale = Scale.FIT,
-                allowInexactSize = true,
+                precision = Precision.INEXACT,
             ),
         )
         assertEquals(Size(1080, 1350), result.size)
     }
 
     @Test
-    fun allowInexactSize_false() = runTest {
+    fun precision_exact() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
                 context = context,
                 size = Size(1500, 1500),
                 scale = Scale.FIT,
-                allowInexactSize = false,
+                precision = Precision.EXACT,
             ),
         )
         assertEquals(Size(1200, 1500), result.size)

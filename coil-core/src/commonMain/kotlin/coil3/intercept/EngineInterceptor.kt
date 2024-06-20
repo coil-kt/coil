@@ -17,12 +17,14 @@ import coil3.request.ImageResult
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
+import coil3.util.ErrorResult
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
 import coil3.util.isPlaceholderCached
+import coil3.util.sizeResolver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
@@ -40,8 +42,9 @@ internal class EngineInterceptor(
             val request = chain.request
             val data = request.data
             val size = chain.size
+            val sizeResolver = chain.sizeResolver
             val eventListener = chain.eventListener
-            val options = requestService.options(request, size)
+            val options = requestService.options(request, sizeResolver, size)
             val scale = options.scale
 
             // Perform any data mapping.
@@ -84,7 +87,7 @@ internal class EngineInterceptor(
             if (throwable is CancellationException) {
                 throw throwable
             } else {
-                return requestService.errorResult(chain.request, throwable)
+                return ErrorResult(chain.request, throwable)
             }
         }
     }

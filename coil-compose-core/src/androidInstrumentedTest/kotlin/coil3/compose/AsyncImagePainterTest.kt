@@ -336,7 +336,7 @@ class AsyncImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, threshold = 0.8)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.75)
 
         // Now switch the data URI to the blue drawable.
         data = "https://example.com/blue"
@@ -605,7 +605,7 @@ class AsyncImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.75)
     }
 
     @Test

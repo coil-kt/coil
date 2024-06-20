@@ -11,12 +11,12 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
+import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import coil3.util.Logger
-import coil3.util.allowInexactSize
 import coil3.util.isMinOrMax
 import coil3.util.isPlaceholderCached
 import coil3.util.log
@@ -133,7 +133,7 @@ internal class MemoryCacheService(
         // Short circuit the size check if the size is at most 1 pixel off in either dimension.
         // This accounts for the fact that downsampling can often produce images with dimensions
         // at most one pixel off due to rounding.
-        val allowInexactSize = request.allowInexactSize
+        val allowInexactSize = request.precision == Precision.INEXACT
         if (allowInexactSize) {
             val downsampleMultiplier = multiplier.coerceAtMost(1.0)
             if (abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1 ||

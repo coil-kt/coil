@@ -15,6 +15,7 @@ import coil3.request.Options
 import coil3.request.allowConversionToBitmap
 import coil3.request.bitmapConfig
 import coil3.request.transformations
+import coil3.size.Precision
 import coil3.transform.Transformation
 import coil3.util.DrawableUtils
 import coil3.util.Logger
@@ -88,7 +89,7 @@ private fun convertDrawableToBitmap(
         config = options.bitmapConfig,
         size = options.size,
         scale = options.scale,
-        allowInexactSize = options.allowInexactSize,
+        allowInexactSize = options.precision == Precision.INEXACT,
     )
 }
 

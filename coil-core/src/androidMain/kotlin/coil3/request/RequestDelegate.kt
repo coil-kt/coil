@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import coil3.ImageLoader
 import coil3.annotation.MainThread
 import coil3.target.ViewTarget
+import coil3.util.awaitStarted
 import coil3.util.removeAndAddObserver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -52,6 +53,10 @@ internal class ViewTargetRequestDelegate(
             target.view.requestManager.setRequest(this)
             throw CancellationException("'ViewTarget.view' must be attached to a window.")
         }
+    }
+
+    override suspend fun awaitStarted() {
+        lifecycle.awaitStarted()
     }
 
     override fun start() {

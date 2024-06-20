@@ -1,21 +1,27 @@
 package coil3.request
 
 import android.graphics.Bitmap
+import android.widget.ImageView
+import android.widget.ImageView.ScaleType.CENTER
+import android.widget.ImageView.ScaleType.MATRIX
 import androidx.lifecycle.Lifecycle
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
 import coil3.size.Dimension
+import coil3.size.DisplaySizeResolver
+import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.size.SizeResolver
+import coil3.size.ViewSizeResolver
 import coil3.target.Target
 import coil3.target.ViewTarget
 import coil3.util.HardwareBitmapService
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import coil3.util.VALID_TRANSFORMATION_CONFIGS
-import coil3.util.allowInexactSize
 import coil3.util.getLifecycle
 import coil3.util.isHardware
 import coil3.util.safeConfig
@@ -55,16 +61,32 @@ internal class AndroidRequestService(
         return context.getLifecycle() ?: GlobalLifecycle
     }
 
-    override fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
-        return commonErrorResult(request, throwable)
+    override fun sizeResolver(request: ImageRequest): SizeResolver {
+        if (request.defined.sizeResolver != null) {
+            return request.defined.sizeResolver
+        }
+
+        val target = request.target
+        if (target is ViewTarget<*>) {
+            // CENTER and MATRIX scale types should be decoded at the image's original size.
+            val view = target.view
+            if (view is ImageView && view.scaleType.let { it == CENTER || it == MATRIX }) {
+                return SizeResolver.ORIGINAL
+            } else {
+                return ViewSizeResolver(view)
+            }
+        } else {
+            // Fall back to the size of the display.
+            return DisplaySizeResolver(request.context)
+        }
     }
 
-    override fun options(request: ImageRequest, size: Size): Options {
+    override fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options {
         return Options(
             request.context,
             size,
             request.resolveScale(size),
-            request.allowInexactSize,
+            request.resolvePrecision(sizeResolver),
             request.diskCacheKey,
             request.fileSystem,
             request.memoryCachePolicy,
@@ -81,6 +103,29 @@ internal class AndroidRequestService(
         } else {
             return scale
         }
+    }
+
+    private fun ImageRequest.resolvePrecision(sizeResolver: SizeResolver): Precision {
+        if (defined.precision != null) {
+            return defined.precision
+        }
+
+        if (defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
+            return Precision.INEXACT
+        }
+
+        // If both our target and size resolver reference the same ImageView, allow the
+        // dimensions to be inexact as the ImageView will scale the output image
+        // automatically. Else, require the dimensions to be exact.
+        if (target is ViewTarget<*> &&
+            sizeResolver is ViewSizeResolver<*> &&
+            target.view is ImageView &&
+            target.view === sizeResolver.view
+        ) {
+            return Precision.INEXACT
+        }
+
+        return Precision.EXACT
     }
 
     private fun ImageRequest.resolveExtras(size: Size): Extras {

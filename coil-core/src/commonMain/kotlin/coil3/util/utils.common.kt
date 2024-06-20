@@ -11,10 +11,13 @@ import coil3.fetch.Fetcher
 import coil3.intercept.Interceptor
 import coil3.intercept.RealInterceptorChain
 import coil3.memory.MemoryCache
+import coil3.request.ErrorResult
 import coil3.request.ImageRequest
+import coil3.request.NullRequestDataException
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.size.SizeResolver
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import kotlin.experimental.ExperimentalNativeApi
@@ -51,12 +54,6 @@ internal fun Closeable.closeQuietly() {
     } catch (_: Exception) {}
 }
 
-/**
- * Return 'true' if the request does not require the output image's size to match the
- * requested dimensions exactly.
- */
-internal expect val ImageRequest.allowInexactSize: Boolean
-
 internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
 
 internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
@@ -80,6 +77,9 @@ internal val Interceptor.Chain.isPlaceholderCached: Boolean
 
 internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
+
+internal val Interceptor.Chain.sizeResolver: SizeResolver
+    get() = if (this is RealInterceptorChain) sizeResolver else request.sizeResolver
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
@@ -107,6 +107,21 @@ internal fun isFileUri(uri: Uri): Boolean {
     return (uri.scheme == null || uri.scheme == SCHEME_FILE) &&
         uri.path != null &&
         !isAssetUri(uri)
+}
+
+internal fun ErrorResult(
+    request: ImageRequest,
+    throwable: Throwable,
+): ErrorResult {
+    return ErrorResult(
+        image = if (throwable is NullRequestDataException) {
+            request.fallback() ?: request.error()
+        } else {
+            request.error()
+        },
+        request = request,
+        throwable = throwable,
+    )
 }
 
 internal expect fun isAssetUri(uri: Uri): Boolean
