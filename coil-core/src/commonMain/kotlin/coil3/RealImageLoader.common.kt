@@ -25,7 +25,6 @@ import coil3.util.Logger
 import coil3.util.ServiceLoaderComponentRegistry
 import coil3.util.SystemCallbacks
 import coil3.util.emoji
-import coil3.util.get
 import coil3.util.log
 import coil3.util.mapNotNullIndices
 import kotlin.coroutines.coroutineContext
@@ -120,7 +119,7 @@ internal class RealImageLoader(
             }
 
             // Set the placeholder on the target.
-            val cachedPlaceholder = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
+            val cachedPlaceholder = request.placeholderMemoryCacheKey?.let { memoryCache?.get(it)?.image }
             request.target?.onStart(placeholder = cachedPlaceholder ?: request.placeholder())
             eventListener.onStart(request)
             request.listener?.onStart(request)
