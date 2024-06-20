@@ -2,8 +2,6 @@ package coil3
 
 import android.graphics.Bitmap
 import coil3.EventListener.Factory
-import coil3.annotation.MainThread
-import coil3.annotation.WorkerThread
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.fetch.FetchResult
