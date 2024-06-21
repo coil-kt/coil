@@ -54,6 +54,14 @@ internal fun Closeable.closeQuietly() {
     } catch (_: Exception) {}
 }
 
+internal fun AutoCloseable.closeQuietly() {
+    try {
+        close()
+    } catch (e: RuntimeException) {
+        throw e
+    } catch (_: Exception) {}
+}
+
 internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
 
 internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)

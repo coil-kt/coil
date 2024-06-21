@@ -33,7 +33,7 @@ abstract interface coil3.network/NetworkClient { // coil3.network/NetworkClient|
 abstract interface coil3.network/NetworkRequestBody { // coil3.network/NetworkRequestBody|null[0]
     abstract suspend fun writeTo(okio/BufferedSink) // coil3.network/NetworkRequestBody.writeTo|writeTo(okio.BufferedSink){}[0]
 }
-abstract interface coil3.network/NetworkResponseBody : okio/Closeable { // coil3.network/NetworkResponseBody|null[0]
+abstract interface coil3.network/NetworkResponseBody : kotlin/AutoCloseable { // coil3.network/NetworkResponseBody|null[0]
     abstract suspend fun writeTo(okio/BufferedSink) // coil3.network/NetworkResponseBody.writeTo|writeTo(okio.BufferedSink){}[0]
     abstract suspend fun writeTo(okio/FileSystem, okio/Path) // coil3.network/NetworkResponseBody.writeTo|writeTo(okio.FileSystem;okio.Path){}[0]
 }

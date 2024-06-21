@@ -98,7 +98,7 @@ abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
         abstract val metadata // coil3.disk/DiskCache.Editor.metadata|{}metadata[0]
             abstract fun <get-metadata>(): okio/Path // coil3.disk/DiskCache.Editor.metadata.<get-metadata>|<get-metadata>(){}[0]
     }
-    abstract interface Snapshot : okio/Closeable { // coil3.disk/DiskCache.Snapshot|null[0]
+    abstract interface Snapshot : kotlin/AutoCloseable { // coil3.disk/DiskCache.Snapshot|null[0]
         abstract fun close() // coil3.disk/DiskCache.Snapshot.close|close(){}[0]
         abstract fun closeAndOpenEditor(): coil3.disk/DiskCache.Editor? // coil3.disk/DiskCache.Snapshot.closeAndOpenEditor|closeAndOpenEditor(){}[0]
         abstract val data // coil3.disk/DiskCache.Snapshot.data|{}data[0]
@@ -723,7 +723,7 @@ final fun <#A: kotlin/Any?> (coil3.request/ImageRequest).coil3/getExtra(coil3/Ex
 final fun <#A: kotlin/Any?> (coil3.request/Options).coil3/getExtra(coil3/Extras.Key<#A>): #A // coil3/getExtra|getExtra@coil3.request.Options(coil3.Extras.Key<0:0>){0§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?> (coil3/Extras).coil3/getOrDefault(coil3/Extras.Key<#A>): #A // coil3/getOrDefault|getOrDefault@coil3.Extras(coil3.Extras.Key<0:0>){0§<kotlin.Any?>}[0]
 final fun coil3.decode/ImageSource(okio/BufferedSource, okio/FileSystem, coil3.decode/ImageSource.Metadata? = ...): coil3.decode/ImageSource // coil3.decode/ImageSource|ImageSource(okio.BufferedSource;okio.FileSystem;coil3.decode.ImageSource.Metadata?){}[0]
-final fun coil3.decode/ImageSource(okio/Path, okio/FileSystem, kotlin/String? = ..., okio/Closeable? = ..., coil3.decode/ImageSource.Metadata? = ...): coil3.decode/ImageSource // coil3.decode/ImageSource|ImageSource(okio.Path;okio.FileSystem;kotlin.String?;okio.Closeable?;coil3.decode.ImageSource.Metadata?){}[0]
+final fun coil3.decode/ImageSource(okio/Path, okio/FileSystem, kotlin/String? = ..., kotlin/AutoCloseable? = ..., coil3.decode/ImageSource.Metadata? = ...): coil3.decode/ImageSource // coil3.decode/ImageSource|ImageSource(okio.Path;okio.FileSystem;kotlin.String?;kotlin.AutoCloseable?;coil3.decode.ImageSource.Metadata?){}[0]
 final fun coil3.size/Dimension(kotlin/Int): coil3.size/Dimension.Pixels // coil3.size/Dimension|Dimension(kotlin.Int){}[0]
 final fun coil3.size/Size(coil3.size/Dimension, kotlin/Int): coil3.size/Size // coil3.size/Size|Size(coil3.size.Dimension;kotlin.Int){}[0]
 final fun coil3.size/Size(kotlin/Int, coil3.size/Dimension): coil3.size/Size // coil3.size/Size|Size(kotlin.Int;coil3.size.Dimension){}[0]
@@ -774,7 +774,7 @@ open annotation class coil3.annotation/InternalCoilApi : kotlin/Annotation { // 
 open annotation class coil3.annotation/Poko : kotlin/Annotation { // coil3.annotation/Poko|null[0]
     constructor <init>() // coil3.annotation/Poko.<init>|<init>(){}[0]
 }
-sealed interface coil3.decode/ImageSource : okio/Closeable { // coil3.decode/ImageSource|null[0]
+sealed interface coil3.decode/ImageSource : kotlin/AutoCloseable { // coil3.decode/ImageSource|null[0]
     abstract class Metadata { // coil3.decode/ImageSource.Metadata|null[0]
         constructor <init>() // coil3.decode/ImageSource.Metadata.<init>|<init>(){}[0]
     }

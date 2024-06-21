@@ -29,7 +29,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import okio.BufferedSink
-import okio.Closeable
 import okio.EOFException
 import okio.FileSystem
 import okio.ForwardingFileSystem
@@ -90,7 +89,7 @@ internal class DiskLruCache(
     private val maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int,
-) : Closeable {
+) : AutoCloseable {
 
     /*
      * This cache uses a journal file named "journal". A typical journal file looks like this:
@@ -669,7 +668,7 @@ internal class DiskLruCache(
     }
 
     /** A snapshot of the values for an entry. */
-    inner class Snapshot(val entry: Entry) : Closeable {
+    inner class Snapshot(val entry: Entry) : AutoCloseable {
 
         private var closed = false
 

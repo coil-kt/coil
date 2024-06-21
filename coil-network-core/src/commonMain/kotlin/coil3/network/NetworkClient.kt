@@ -7,7 +7,6 @@ import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
-import okio.Closeable
 import okio.FileSystem
 import okio.Path
 
@@ -114,7 +113,7 @@ class NetworkResponse(
 }
 
 @ExperimentalCoilApi
-interface NetworkResponseBody : Closeable {
+interface NetworkResponseBody : AutoCloseable {
     suspend fun writeTo(sink: BufferedSink)
     suspend fun writeTo(fileSystem: FileSystem, path: Path)
 }

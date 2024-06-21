@@ -131,7 +131,7 @@ public final class coil3/network/NetworkResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class coil3/network/NetworkResponseBody : java/io/Closeable {
+public abstract interface class coil3/network/NetworkResponseBody : java/lang/AutoCloseable {
 	public abstract fun writeTo (Lokio/BufferedSink;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun writeTo (Lokio/FileSystem;Lokio/Path;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

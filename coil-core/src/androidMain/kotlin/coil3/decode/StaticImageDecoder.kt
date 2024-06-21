@@ -21,13 +21,12 @@ import coil3.util.widthPx
 import kotlin.math.roundToInt
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import okio.Closeable
 import okio.FileSystem
 
 @RequiresApi(29)
 internal class StaticImageDecoder(
     private val source: ImageDecoder.Source,
-    private val closeable: Closeable,
+    private val closeable: AutoCloseable,
     private val options: Options,
     private val parallelismLock: Semaphore,
 ) : Decoder {

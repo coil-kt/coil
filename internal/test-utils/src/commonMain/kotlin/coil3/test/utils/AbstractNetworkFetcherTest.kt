@@ -17,7 +17,6 @@ import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
-import okio.use
 
 abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
 

@@ -7,7 +7,6 @@ import coil3.util.createTempFile
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import okio.BufferedSource
-import okio.Closeable
 import okio.FileSystem
 import okio.Path
 import okio.buffer
@@ -25,7 +24,7 @@ fun ImageSource(
     file: Path,
     fileSystem: FileSystem,
     diskCacheKey: String? = null,
-    closeable: Closeable? = null,
+    closeable: AutoCloseable? = null,
     metadata: Metadata? = null,
 ): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, metadata)
 
@@ -45,7 +44,7 @@ fun ImageSource(
 /**
  * Provides access to the image data to be decoded.
  */
-sealed interface ImageSource : Closeable {
+sealed interface ImageSource : AutoCloseable {
 
     /**
      * The [FileSystem] which contains the [file].
@@ -102,7 +101,7 @@ internal class FileImageSource(
     internal val file: Path,
     override val fileSystem: FileSystem,
     internal val diskCacheKey: String?,
-    private val closeable: Closeable?,
+    private val closeable: AutoCloseable?,
     override val metadata: Metadata?,
 ) : ImageSource {
 
