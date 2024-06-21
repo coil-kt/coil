@@ -41,8 +41,8 @@ kotlin {
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.exifinterface)
                 implementation(libs.androidx.profileinstaller)
+                implementation(libs.coroutines.android)
                 api(libs.androidx.lifecycle.runtime)
-                api(libs.coroutines.android)
             }
         }
         androidUnitTest {
