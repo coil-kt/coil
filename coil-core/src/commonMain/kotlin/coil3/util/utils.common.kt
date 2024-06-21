@@ -10,7 +10,6 @@ import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.intercept.Interceptor
 import coil3.intercept.RealInterceptorChain
-import coil3.memory.MemoryCache
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
@@ -63,8 +62,6 @@ internal fun AutoCloseable.closeQuietly() {
 }
 
 internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
-
-internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
 internal fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?

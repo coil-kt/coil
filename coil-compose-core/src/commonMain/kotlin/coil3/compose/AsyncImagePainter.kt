@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
@@ -30,7 +29,9 @@ import androidx.compose.ui.util.trace
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.annotation.Poko
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
+import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.CrossfadePainter
@@ -51,6 +52,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
@@ -160,15 +164,14 @@ private fun rememberAsyncImagePainter(
     val request = requestOf(state.model)
     validateRequest(request)
 
-    val painter = remember { AsyncImagePainter(request, state.imageLoader) }
+    val input = Input(state.imageLoader, request)
+    val painter = remember { AsyncImagePainter(input) }
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
     painter.filterQuality = filterQuality
     painter.previewHandler = previewHandler()
-    painter.imageLoader = state.imageLoader
-    painter.request = request // Update request last so all other properties are up to date.
-    painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
+    painter._input.value = input
     return painter
 }
 
@@ -177,10 +180,8 @@ private fun rememberAsyncImagePainter(
  */
 @Stable
 class AsyncImagePainter internal constructor(
-    request: ImageRequest,
-    imageLoader: ImageLoader,
+    input: Input,
 ) : Painter(), RememberObserver {
-
     private var rememberScope: CoroutineScope? = null
     private val drawSize = MutableSharedFlow<Size>(
         replay = 1,
@@ -191,36 +192,19 @@ class AsyncImagePainter internal constructor(
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
-    // These fields allow access to the current value
-    // instead of the value in the current composition.
-    private var _state: State = State.Empty
-        set(value) {
-            field = value
-            state = value
-        }
-    private var _painter: Painter? = null
-        set(value) {
-            field = value
-            painter = value
-        }
-
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
 
-    /** The current [AsyncImagePainter.State]. */
-    var state: State by mutableStateOf(State.Empty)
-        private set
+    /** The latest [AsyncImagePainter.Input]. */
+    internal val _input: MutableStateFlow<Input> = MutableStateFlow(input)
+    val input: StateFlow<Input> get() = _input.asStateFlow()
 
-    /** The current [ImageRequest]. */
-    var request: ImageRequest by mutableStateOf(request)
-        internal set
-
-    /** The current [ImageLoader]. */
-    var imageLoader: ImageLoader by mutableStateOf(imageLoader)
-        internal set
+    /** The latest [AsyncImagePainter.State]. */
+    private val _state: MutableStateFlow<State> = MutableStateFlow(State.Empty)
+    val state: StateFlow<State> get() = _state.asStateFlow()
 
     override val intrinsicSize: Size
         get() = painter?.intrinsicSize ?: Size.Unspecified
@@ -249,35 +233,37 @@ class AsyncImagePainter internal constructor(
         if (rememberScope != null) return@trace
 
         // Create a new scope to observe state and execute requests while we're remembered.
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         rememberScope = scope
 
         // Manually notify the child painter that we're remembered.
-        (_painter as? RememberObserver)?.onRemembered()
+        (painter as? RememberObserver)?.onRemembered()
 
-        // If we're in inspection mode use the preview renderer.
-        val previewHandler = previewHandler
-        if (previewHandler != null) {
-            updateState(computePreviewState(previewHandler))
-            return@trace
-        }
-
-        // Observe the current request and execute any emissions.
+        // Observe the latest request and execute any emissions.
         scope.launch {
-            snapshotFlow { request }
-                .mapLatest { imageLoader.execute(updateRequest(it)).toState() }
-                .collect(::updateState)
+            val previewHandler = previewHandler
+            if (previewHandler != null) {
+                // If we're in inspection mode use the preview renderer.
+                _input.mapLatest {
+                    computePreviewState(it.imageLoader, it.request, previewHandler)
+                }
+            } else {
+                // Else, execute the request as normal.
+                _input.mapLatest {
+                    it.imageLoader.execute(updateRequest(it.request)).toState()
+                }
+            }.collect(::updateState)
         }
     }
 
     override fun onForgotten() {
         clear()
-        (_painter as? RememberObserver)?.onForgotten()
+        (painter as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
         clear()
-        (_painter as? RememberObserver)?.onAbandoned()
+        (painter as? RememberObserver)?.onAbandoned()
     }
 
     private fun clear() {
@@ -309,19 +295,20 @@ class AsyncImagePainter internal constructor(
                     // If the scale isn't set, use the content scale.
                     scale(contentScale.toScale())
                 }
-                if (request.defined.precision != Precision.EXACT) {
+                if (request.defined.precision == null) {
                     // AsyncImagePainter scales the image to fit the canvas size at draw time.
                     precision(Precision.INEXACT)
                 }
+                applyGlobalLifecycle()
             }
             .build()
     }
 
     private fun updateState(input: State) {
-        val previous = _state
+        val previous = _state.value
         val current = transform(input)
-        _state = current
-        _painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
+        _state.value = current
+        painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null && previous.painter !== current.painter) {
@@ -333,14 +320,16 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
-    private fun computePreviewState(previewHandler: AsyncImagePreviewHandler): State {
-        val imageLoader = imageLoader
-        val request = request.newBuilder()
-            .defaults(imageLoader.defaults)
-            .build()
+    private fun computePreviewState(
+        imageLoader: ImageLoader,
+        request: ImageRequest,
+        previewHandler: AsyncImagePreviewHandler,
+    ): State {
         return previewHandler.handle(
             imageLoader = imageLoader,
-            request = request,
+            request = request.newBuilder()
+                .defaults(imageLoader.defaults)
+                .build(),
             toPainter = { toPainter(request.context, filterQuality) },
         )
     }
@@ -355,6 +344,15 @@ class AsyncImagePainter internal constructor(
             result = this,
         )
     }
+
+    /**
+     * The latest arguments passed to [AsyncImagePainter].
+     */
+    @Poko
+    class Input(
+        val imageLoader: ImageLoader,
+        val request: ImageRequest,
+    )
 
     /**
      * The current state of the [AsyncImagePainter].
@@ -425,6 +423,9 @@ private fun unsupportedData(
 
 /** Validate platform-specific properties of an [ImageRequest]. */
 internal expect fun validateRequestProperties(request: ImageRequest)
+
+/** Set the request's lifecycle to `GlobalLifecycle` on Android to avoid dispatching. */
+internal expect fun ImageRequest.Builder.applyGlobalLifecycle()
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
 internal expect fun Image.toPainter(

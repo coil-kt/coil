@@ -6,10 +6,9 @@ public final class coil3/compose/AsyncImageKt {
 public final class coil3/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
 	public static final field $stable I
 	public static final field Companion Lcoil3/compose/AsyncImagePainter$Companion;
-	public final fun getImageLoader ()Lcoil3/ImageLoader;
+	public final fun getInput ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getIntrinsicSize-NH-jbRc ()J
-	public final fun getRequest ()Lcoil3/request/ImageRequest;
-	public final fun getState ()Lcoil3/compose/AsyncImagePainter$State;
+	public final fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun onAbandoned ()V
 	public fun onForgotten ()V
 	public fun onRemembered ()V
@@ -17,6 +16,16 @@ public final class coil3/compose/AsyncImagePainter : androidx/compose/ui/graphic
 
 public final class coil3/compose/AsyncImagePainter$Companion {
 	public final fun getDefaultTransform ()Lkotlin/jvm/functions/Function1;
+}
+
+public final class coil3/compose/AsyncImagePainter$Input {
+	public static final field $stable I
+	public fun <init> (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImageLoader ()Lcoil3/ImageLoader;
+	public final fun getRequest ()Lcoil3/request/ImageRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class coil3/compose/AsyncImagePainter$State {

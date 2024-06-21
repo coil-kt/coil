@@ -18,6 +18,7 @@ val LocalAsyncImagePreviewHandler = staticCompositionLocalOf { AsyncImagePreview
  */
 @ExperimentalCoilApi
 fun interface AsyncImagePreviewHandler {
+
     fun handle(
         imageLoader: ImageLoader,
         request: ImageRequest,

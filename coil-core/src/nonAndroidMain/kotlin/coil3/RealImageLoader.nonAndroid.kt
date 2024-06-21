@@ -8,9 +8,9 @@ import coil3.request.OneShotDisposable
 import coil3.target.Target
 import kotlinx.coroutines.Deferred
 
-internal actual fun skipCreatingDisposable(
+internal actual fun needsExecuteOnMainDispatcher(
     request: ImageRequest,
-) = true
+) = false
 
 internal actual fun getDisposable(
     request: ImageRequest,

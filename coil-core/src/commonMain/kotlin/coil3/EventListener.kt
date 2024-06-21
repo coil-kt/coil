@@ -1,7 +1,5 @@
 package coil3
 
-import coil3.annotation.MainThread
-import coil3.annotation.WorkerThread
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.fetch.FetchResult
@@ -27,7 +25,6 @@ expect abstract class EventListener : ImageRequest.Listener {
     /**
      * @see ImageRequest.Listener.onStart
      */
-    @MainThread
     override fun onStart(request: ImageRequest)
 
     /**
@@ -35,7 +32,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      *
      * @param sizeResolver The [SizeResolver] that will be used to get the [Size] for this request.
      */
-    @MainThread
     open fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver)
 
     /**
@@ -43,7 +39,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      *
      * @param size The resolved [Size] for this request.
      */
-    @MainThread
     open fun resolveSizeEnd(request: ImageRequest, size: Size)
 
     /**
@@ -51,7 +46,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      *
      * @param input The data that will be converted.
      */
-    @MainThread
     open fun mapStart(request: ImageRequest, input: Any)
 
     /**
@@ -60,7 +54,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param output The data after it has been converted. If there were no
      *  applicable mappers, [output] will be the same as [ImageRequest.data].
      */
-    @MainThread
     open fun mapEnd(request: ImageRequest, output: Any)
 
     /**
@@ -68,7 +61,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      *
      * @param input The data that will be converted.
      */
-    @MainThread
     open fun keyStart(request: ImageRequest, input: Any)
 
     /**
@@ -77,7 +69,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param output The data after it has been converted into a string key.
      *  If [output] is 'null' it will not be cached in the memory cache.
      */
-    @MainThread
     open fun keyEnd(request: ImageRequest, output: String?)
 
     /**
@@ -86,7 +77,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param fetcher The [Fetcher] that will be used to handle the request.
      * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
-    @WorkerThread
     open fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options)
 
     /**
@@ -96,7 +86,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param options The [Options] that were passed to [Fetcher.fetch].
      * @param result The result of [Fetcher.fetch].
      */
-    @WorkerThread
     open fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?)
 
     /**
@@ -107,7 +96,6 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param decoder The [Decoder] that will be used to handle the request.
      * @param options The [Options] that will be passed to [Decoder.decode].
      */
-    @WorkerThread
     open fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options)
 
     /**
@@ -119,25 +107,21 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param options The [Options] that were passed to [Decoder.decode].
      * @param result The result of [Decoder.decode].
      */
-    @WorkerThread
     open fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?)
 
     /**
      * @see ImageRequest.Listener.onCancel
      */
-    @MainThread
     override fun onCancel(request: ImageRequest)
 
     /**
      * @see ImageRequest.Listener.onError
      */
-    @MainThread
     override fun onError(request: ImageRequest, result: ErrorResult)
 
     /**
      * @see ImageRequest.Listener.onSuccess
      */
-    @MainThread
     override fun onSuccess(request: ImageRequest, result: SuccessResult)
 
     fun interface Factory {

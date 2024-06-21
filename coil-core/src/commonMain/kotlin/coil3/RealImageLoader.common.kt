@@ -1,6 +1,5 @@
 package coil3
 
-import coil3.annotation.MainThread
 import coil3.disk.DiskCache
 import coil3.fetch.ByteArrayFetcher
 import coil3.fetch.FileUriFetcher
@@ -26,7 +25,6 @@ import coil3.util.Logger
 import coil3.util.ServiceLoaderComponentRegistry
 import coil3.util.SystemCallbacks
 import coil3.util.emoji
-import coil3.util.get
 import coil3.util.log
 import coil3.util.mapNotNullIndices
 import kotlin.coroutines.coroutineContext
@@ -65,8 +63,10 @@ internal class RealImageLoader(
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.async {
-            executeMain(request, REQUEST_TYPE_ENQUEUE).also { result ->
-                if (result is ErrorResult) options.logger?.log(TAG, result.throwable)
+            execute(request, REQUEST_TYPE_ENQUEUE).also { result ->
+                if (result is ErrorResult) {
+                    options.logger?.log(TAG, result.throwable)
+                }
             }
         }
 
@@ -75,26 +75,23 @@ internal class RealImageLoader(
     }
 
     override suspend fun execute(request: ImageRequest): ImageResult {
-        if (skipCreatingDisposable(request)) {
-            // Avoid creating the disposable to optimize performance.
-            return withContext(Dispatchers.Main.immediate) {
-                executeMain(request, REQUEST_TYPE_EXECUTE)
-            }
-        } else {
+        if (needsExecuteOnMainDispatcher(request)) {
             return coroutineScope {
                 // Start executing the request on the main thread.
                 val job = async(Dispatchers.Main.immediate) {
-                    executeMain(request, REQUEST_TYPE_EXECUTE)
+                    execute(request, REQUEST_TYPE_EXECUTE)
                 }
 
                 // Update the current request attached to the view and await the result.
                 getDisposable(request, job).job.await()
             }
+        } else {
+            // Fast path: skip dispatching.
+            return execute(request, REQUEST_TYPE_EXECUTE)
         }
     }
 
-    @MainThread
-    private suspend fun executeMain(initialRequest: ImageRequest, type: Int): ImageResult {
+    private suspend fun execute(initialRequest: ImageRequest, type: Int): ImageResult {
         // Wrap the request to manage its lifecycle.
         val requestDelegate = requestService.requestDelegate(initialRequest, coroutineContext.job)
         requestDelegate.assertActive()
@@ -122,7 +119,7 @@ internal class RealImageLoader(
             }
 
             // Set the placeholder on the target.
-            val cachedPlaceholder = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
+            val cachedPlaceholder = request.placeholderMemoryCacheKey?.let { memoryCache?.get(it)?.image }
             request.target?.onStart(placeholder = cachedPlaceholder ?: request.placeholder())
             eventListener.onStart(request)
             request.listener?.onStart(request)
@@ -239,7 +236,7 @@ private fun CoroutineScope(logger: Logger?): CoroutineScope {
     return CoroutineScope(context)
 }
 
-internal expect fun skipCreatingDisposable(
+internal expect fun needsExecuteOnMainDispatcher(
     request: ImageRequest,
 ): Boolean
 

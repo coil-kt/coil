@@ -46,16 +46,18 @@ internal class AndroidRequestService(
      * based on its lifecycle.
      */
     override fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate {
-        val lifecycle = request.resolveLifecycle()
+        val lifecycle = request.lifecycle ?: request.findLifecycle()
         val target = request.target
         if (target is ViewTarget<*>) {
             return ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
+        } else if (lifecycle != GlobalLifecycle) {
+            return LifecycleRequestDelegate(lifecycle, job)
         } else {
-            return BaseRequestDelegate(lifecycle, job)
+            return BaseRequestDelegate(job)
         }
     }
 
-    private fun ImageRequest.resolveLifecycle(): Lifecycle {
+    private fun ImageRequest.findLifecycle(): Lifecycle {
         val target = target
         val context = if (target is ViewTarget<*>) target.view.context else context
         return context.getLifecycle() ?: GlobalLifecycle

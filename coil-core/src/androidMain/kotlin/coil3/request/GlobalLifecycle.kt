@@ -4,6 +4,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import coil3.annotation.InternalCoilApi
 import coil3.util.getLifecycle
 
 /**
@@ -11,7 +12,8 @@ import coil3.util.getLifecycle
  *
  * This is used as a fallback if [getLifecycle] cannot find a more tightly scoped [Lifecycle].
  */
-internal data object GlobalLifecycle : Lifecycle() {
+@InternalCoilApi
+data object GlobalLifecycle : Lifecycle() {
 
     private val owner = object : LifecycleOwner {
         override val lifecycle get() = this@GlobalLifecycle

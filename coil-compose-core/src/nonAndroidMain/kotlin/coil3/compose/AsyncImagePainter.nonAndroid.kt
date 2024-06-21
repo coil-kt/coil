@@ -19,6 +19,10 @@ internal actual fun validateRequestProperties(request: ImageRequest) {
     require(request.target == null) { "request.target must be null." }
 }
 
+internal actual fun ImageRequest.Builder.applyGlobalLifecycle() {
+    // Do nothing.
+}
+
 internal actual fun Image.toPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
