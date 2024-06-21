@@ -4,7 +4,6 @@ import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
 import coil3.util.remainingFreeSpaceBytes
 import kotlinx.coroutines.CoroutineDispatcher
-import okio.Closeable
 import okio.FileSystem
 import okio.Path
 
@@ -66,7 +65,7 @@ interface DiskCache {
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
      * disk cache. To modify the contents of those files, use [openEditor].
      */
-    interface Snapshot : Closeable {
+    interface Snapshot : AutoCloseable {
 
         /** Get the metadata file path for this entry. */
         val metadata: Path

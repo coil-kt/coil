@@ -259,7 +259,7 @@ public abstract interface class coil3/decode/Decoder$Factory {
 	public abstract fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
-public abstract interface class coil3/decode/ImageSource : java/io/Closeable {
+public abstract interface class coil3/decode/ImageSource : java/lang/AutoCloseable {
 	public abstract fun file ()Lokio/Path;
 	public abstract fun fileOrNull ()Lokio/Path;
 	public abstract fun getFileSystem ()Lokio/FileSystem;
@@ -274,9 +274,9 @@ public abstract class coil3/decode/ImageSource$Metadata {
 
 public final class coil3/decode/ImageSourceKt {
 	public static final fun ImageSource (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
-	public static final fun ImageSource (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
+	public static final fun ImageSource (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/lang/AutoCloseable;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
 	public static synthetic fun ImageSource$default (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
-	public static synthetic fun ImageSource$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
+	public static synthetic fun ImageSource$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/lang/AutoCloseable;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
 }
 
 public final class coil3/decode/SkiaImageDecoder : coil3/decode/Decoder {
@@ -321,7 +321,7 @@ public abstract interface class coil3/disk/DiskCache$Editor {
 	public abstract fun getMetadata ()Lokio/Path;
 }
 
-public abstract interface class coil3/disk/DiskCache$Snapshot : java/io/Closeable {
+public abstract interface class coil3/disk/DiskCache$Snapshot : java/lang/AutoCloseable {
 	public abstract fun close ()V
 	public abstract fun closeAndOpenEditor ()Lcoil3/disk/DiskCache$Editor;
 	public abstract fun getData ()Lokio/Path;
