@@ -1,5 +1,6 @@
 package coil3.compose
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.view.View
 import androidx.compose.foundation.Image
@@ -420,6 +421,8 @@ class AsyncImageTest {
         actual.assertIsSimilarTo(expected)
     }
 
+    // We don't want to automatically recompose when the state changes.
+    @SuppressLint("StateFlowValueCalledInComposition")
     @Test
     fun overwriteContent() {
         assumeSupportsCaptureToImage()
@@ -563,6 +566,8 @@ class AsyncImageTest {
         assertEquals(1, compositionCount.get())
     }
 
+    // We don't want to automatically recompose when the state changes.
+    @SuppressLint("StateFlowValueCalledInComposition")
     @Test
     fun painterState_notMemoryCached() {
         val outerCompositionCount = AtomicInteger()
@@ -591,6 +596,8 @@ class AsyncImageTest {
         assertEquals(1, innerCompositionCount.get())
     }
 
+    // We don't want to automatically recompose when the state changes.
+    @SuppressLint("StateFlowValueCalledInComposition")
     @Test
     fun painterState_memoryCached() {
         val url = "https://example.com/image"
