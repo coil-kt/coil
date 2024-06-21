@@ -16,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -372,7 +371,7 @@ class AsyncImagePainterTest {
             )
 
             LaunchedEffect(painter) {
-                snapshotFlow { painter.state }
+                painter.state
                     .filter { it is State.Success || it is State.Error }
                     .onCompletion { states.cancel() }
                     .collect(states::send)

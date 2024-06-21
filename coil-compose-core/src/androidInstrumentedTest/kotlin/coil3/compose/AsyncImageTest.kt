@@ -435,16 +435,14 @@ class AsyncImageTest {
                     .size(100.dp)
                     .testTag(Image)
             ) {
-                val state = painter.state
+                val state = painter.state.value
                 when (index) {
                     0 -> {
                         assertIs<State.Loading>(state)
-                        assertEquals(painter.state, state)
                         assertNull(state.painter)
                     }
                     1 -> {
                         assertIs<State.Success>(state)
-                        assertEquals(painter.state, state)
                     }
                     else -> fail("Recomposed too many times. State: $state")
                 }
@@ -582,7 +580,7 @@ class AsyncImageTest {
                 imageLoader = imageLoader
             ) {
                 innerCompositionCount.getAndIncrement()
-                assertIs<State.Success>(painter.state)
+                assertIs<State.Success>(painter.state.value)
                 SubcomposeAsyncImageContent()
             }
         }
@@ -616,7 +614,7 @@ class AsyncImageTest {
                 imageLoader = imageLoader
             ) {
                 innerCompositionCount.getAndIncrement()
-                assertIs<State.Success>(painter.state)
+                assertIs<State.Success>(painter.state.value)
                 SubcomposeAsyncImageContent()
             }
         }

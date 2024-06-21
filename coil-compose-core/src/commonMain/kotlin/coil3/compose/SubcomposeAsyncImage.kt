@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -302,7 +303,7 @@ private fun contentOf(
     return if (loading != null || success != null || error != null) {
         {
             var draw = true
-            when (val state = painter.state) {
+            when (val state = painter.state.collectAsState().value) {
                 is State.Loading -> if (loading != null) loading(state).also { draw = false }
                 is State.Success -> if (success != null) success(state).also { draw = false }
                 is State.Error -> if (error != null) error(state).also { draw = false }
