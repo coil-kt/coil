@@ -19,7 +19,7 @@ val LocalAsyncImagePreviewHandler = staticCompositionLocalOf { AsyncImagePreview
 @ExperimentalCoilApi
 fun interface AsyncImagePreviewHandler {
 
-    fun handle(
+    suspend fun handle(
         imageLoader: ImageLoader,
         request: ImageRequest,
         toPainter: Image.() -> Painter,

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
@@ -48,8 +49,7 @@ import coil3.size.SizeResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -166,6 +166,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request)
     val painter = remember { AsyncImagePainter(input) }
+    painter.scope = rememberCoroutineScope { Dispatchers.Unconfined }
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -182,7 +183,6 @@ private fun rememberAsyncImagePainter(
 class AsyncImagePainter internal constructor(
     input: Input,
 ) : Painter(), RememberObserver {
-    private var rememberScope: CoroutineScope? = null
     private val drawSize = MutableSharedFlow<Size>(
         replay = 1,
         onBufferOverflow = DROP_OLDEST,
@@ -191,6 +191,13 @@ class AsyncImagePainter internal constructor(
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
+
+    internal lateinit var scope: CoroutineScope
+    private var rememberJob: Job? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
 
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
@@ -229,18 +236,10 @@ class AsyncImagePainter internal constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
-        // Short circuit if we're already remembered.
-        if (rememberScope != null) return@trace
-
-        // Create a new scope to observe state and execute requests while we're remembered.
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
-        rememberScope = scope
-
-        // Manually notify the child painter that we're remembered.
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        scope.launch {
+        rememberJob = scope.launch {
             val previewHandler = previewHandler
             if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
@@ -257,18 +256,13 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onForgotten() {
-        clear()
+        rememberJob = null
         (painter as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
-        clear()
+        rememberJob = null
         (painter as? RememberObserver)?.onAbandoned()
-    }
-
-    private fun clear() {
-        rememberScope?.cancel()
-        rememberScope = null
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
@@ -311,7 +305,7 @@ class AsyncImagePainter internal constructor(
         painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
-        if (rememberScope != null && previous.painter !== current.painter) {
+        if (rememberJob != null && previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
@@ -320,7 +314,7 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
-    private fun computePreviewState(
+    private suspend fun computePreviewState(
         imageLoader: ImageLoader,
         request: ImageRequest,
         previewHandler: AsyncImagePreviewHandler,
