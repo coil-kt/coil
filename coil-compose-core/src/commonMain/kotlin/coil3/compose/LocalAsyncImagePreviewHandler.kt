@@ -45,7 +45,7 @@ fun interface AsyncImagePreviewHandler {
  */
 @ExperimentalCoilApi
 inline fun AsyncImagePreviewHandler(
-    crossinline image: suspend (imageLoader: ImageLoader, request: ImageRequest) -> Image,
+    crossinline image: suspend (imageLoader: ImageLoader, request: ImageRequest) -> Image?,
 ) = AsyncImagePreviewHandler { imageLoader, request, toPainter ->
-    Loading(image(imageLoader, request).toPainter())
+    Loading(image(imageLoader, request)?.toPainter())
 }

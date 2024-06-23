@@ -479,21 +479,25 @@ class AsyncImagePainterTest {
     fun previewPlaceholder() {
         assumeSupportsCaptureToImage()
 
+        val previewHandler = AsyncImagePreviewHandler { _, request -> request.placeholder() }
+
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://example.com/image")
-                            .placeholder(R.drawable.red_rectangle)
-                            .build(),
-                        imageLoader = imageLoader,
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(128.dp)
-                        .testTag(Image),
-                )
+                CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data("https://example.com/image")
+                                .placeholder(R.drawable.red_rectangle)
+                                .build(),
+                            imageLoader = imageLoader,
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(128.dp)
+                            .testTag(Image),
+                    )
+                }
             }
         }
 
