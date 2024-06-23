@@ -314,7 +314,7 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
-    private suspend fun computePreviewState(
+    private fun computePreviewState(
         imageLoader: ImageLoader,
         request: ImageRequest,
         previewHandler: AsyncImagePreviewHandler,

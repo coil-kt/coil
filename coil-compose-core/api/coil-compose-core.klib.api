@@ -7,7 +7,7 @@
 
 // Library unique name: <io.coil-kt.coil3:coil-compose-core>
 abstract fun interface coil3.compose/AsyncImagePreviewHandler { // coil3.compose/AsyncImagePreviewHandler|null[0]
-    abstract suspend fun handle(coil3/ImageLoader, coil3.request/ImageRequest, kotlin/Function1<coil3/Image, androidx.compose.ui.graphics.painter/Painter>): coil3.compose/AsyncImagePainter.State // coil3.compose/AsyncImagePreviewHandler.handle|handle(coil3.ImageLoader;coil3.request.ImageRequest;kotlin.Function1<coil3.Image,androidx.compose.ui.graphics.painter.Painter>){}[0]
+    abstract fun handle(coil3/ImageLoader, coil3.request/ImageRequest, kotlin/Function1<coil3/Image, androidx.compose.ui.graphics.painter/Painter>): coil3.compose/AsyncImagePainter.State // coil3.compose/AsyncImagePreviewHandler.handle|handle(coil3.ImageLoader;coil3.request.ImageRequest;kotlin.Function1<coil3.Image,androidx.compose.ui.graphics.painter.Painter>){}[0]
     final object Companion { // coil3.compose/AsyncImagePreviewHandler.Companion|null[0]
         final val Default // coil3.compose/AsyncImagePreviewHandler.Companion.Default|{}Default[0]
             final fun <get-Default>(): coil3.compose/AsyncImagePreviewHandler // coil3.compose/AsyncImagePreviewHandler.Companion.Default.<get-Default>|<get-Default>(){}[0]
