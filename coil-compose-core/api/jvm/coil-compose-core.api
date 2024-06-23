@@ -127,6 +127,7 @@ public final class coil3/compose/ImagePainter : androidx/compose/ui/graphics/pai
 }
 
 public final class coil3/compose/LocalAsyncImagePreviewHandlerKt {
+	public static final fun AsyncImagePreviewHandler (Lkotlin/jvm/functions/Function3;)Lcoil3/compose/AsyncImagePreviewHandler;
 	public static final fun getLocalAsyncImagePreviewHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
