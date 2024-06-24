@@ -479,7 +479,7 @@ class AsyncImagePainterTest {
     fun previewPlaceholder() {
         assumeSupportsCaptureToImage()
 
-        val previewHandler = AsyncImagePreviewHandler { _, request -> request.placeholder() }
+        val previewHandler = AsyncImagePreviewHandler(ImageRequest::placeholder)
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {

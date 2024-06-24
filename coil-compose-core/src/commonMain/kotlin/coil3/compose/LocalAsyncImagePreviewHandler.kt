@@ -1,7 +1,6 @@
 package coil3.compose
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil3.Image
 import coil3.ImageLoader
@@ -27,14 +26,13 @@ fun interface AsyncImagePreviewHandler {
     suspend fun handle(
         imageLoader: ImageLoader,
         request: ImageRequest,
-        toPainter: Image.() -> Painter,
     ): AsyncImagePainter.State
 
     companion object {
-        @JvmField val Default = AsyncImagePreviewHandler { imageLoader, request, toPainter ->
+        @JvmField val Default = AsyncImagePreviewHandler { imageLoader, request ->
             when (val result = imageLoader.execute(request)) {
-                is SuccessResult -> Success(result.image.toPainter(), result)
-                is ErrorResult -> Error(result.image?.toPainter(), result)
+                is SuccessResult -> Success(result.image.asPainter(request.context), result)
+                is ErrorResult -> Error(result.image?.asPainter(request.context), result)
             }
         }
     }
@@ -45,7 +43,7 @@ fun interface AsyncImagePreviewHandler {
  */
 @ExperimentalCoilApi
 inline fun AsyncImagePreviewHandler(
-    crossinline image: suspend (imageLoader: ImageLoader, request: ImageRequest) -> Image?,
-) = AsyncImagePreviewHandler { imageLoader, request, toPainter ->
-    Loading(image(imageLoader, request)?.toPainter())
+    crossinline image: suspend (request: ImageRequest) -> Image?,
+) = AsyncImagePreviewHandler { _, request ->
+    Loading(image(request)?.asPainter(request.context))
 }

@@ -30,20 +30,6 @@ internal actual fun ImageRequest.Builder.applyGlobalLifecycle() {
     lifecycle(GlobalLifecycle)
 }
 
-internal actual fun Image.toPainter(
-    context: PlatformContext,
-    filterQuality: FilterQuality,
-): Painter = when (this) {
-    is BitmapImage -> BitmapPainter(
-        image = bitmap.asImageBitmap(),
-        filterQuality = filterQuality,
-    )
-    is DrawableImage -> DrawablePainter(
-        drawable = asDrawable(context.resources).mutate(),
-    )
-    else -> ImagePainter(this)
-}
-
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
     current: AsyncImagePainter.State,

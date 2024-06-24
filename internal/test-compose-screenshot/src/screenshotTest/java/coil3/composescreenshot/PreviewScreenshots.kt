@@ -22,7 +22,7 @@ import coil3.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
-    private val previewHandler = AsyncImagePreviewHandler { _, _ ->
+    private val previewHandler = AsyncImagePreviewHandler {
         object : ColorDrawable(Color.RED) {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
