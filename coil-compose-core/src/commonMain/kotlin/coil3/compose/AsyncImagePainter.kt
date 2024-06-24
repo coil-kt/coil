@@ -244,7 +244,11 @@ class AsyncImagePainter internal constructor(
             if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
                 _input.mapLatest {
-                    computePreviewState(it.imageLoader, it.request, previewHandler)
+                    previewHandler.handle(
+                        imageLoader = it.imageLoader,
+                        request = it.request,
+                        toPainter = { toPainter(it.request.context, filterQuality) },
+                    )
                 }
             } else {
                 // Else, execute the request as normal.
@@ -312,20 +316,6 @@ class AsyncImagePainter internal constructor(
 
         // Notify the state listener.
         onState?.invoke(current)
-    }
-
-    private suspend fun computePreviewState(
-        imageLoader: ImageLoader,
-        request: ImageRequest,
-        previewHandler: AsyncImagePreviewHandler,
-    ): State {
-        return previewHandler.handle(
-            imageLoader = imageLoader,
-            request = request.newBuilder()
-                .defaults(imageLoader.defaults)
-                .build(),
-            toPainter = { toPainter(request.context, filterQuality) },
-        )
     }
 
     private fun ImageResult.toState() = when (this) {
