@@ -1,16 +1,7 @@
 package coil3.compose
 
 import android.graphics.drawable.Drawable
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import coil3.BitmapImage
-import coil3.DrawableImage
-import coil3.Image
-import coil3.PlatformContext
-import coil3.asDrawable
 import coil3.compose.internal.CrossfadePainter
 import coil3.request.GlobalLifecycle
 import coil3.request.ImageRequest
@@ -19,7 +10,6 @@ import coil3.request.lifecycle
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
 import coil3.transition.TransitionTarget
-import com.google.accompanist.drawablepainter.DrawablePainter
 
 internal actual fun validateRequestProperties(request: ImageRequest) {
     require(request.target == null) { "request.target must be null." }
