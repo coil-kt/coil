@@ -2,7 +2,7 @@
 
 ## [3.0.0-alpha07] - June 26, 2024
 
-- **BEHAVIOR CHANGE**: `AsyncImagePainter` no longer waits for `onDraw` by default and instead uses `Size.ORIGINAL`.
+- **BREAKING**: `AsyncImagePainter` no longer waits for `onDraw` by default and instead uses `Size.ORIGINAL`.
     - This fixes [compatibility issues with Roborazzi/Paparazzi](https://github.com/coil-kt/coil/issues/1910) and overall improves test reliability.
     - To revert back to waiting for `onDraw`, set `DrawScopeSizeResolver` as your `ImageRequest.sizeResolver`.
 - **BREAKING**: Refactor the multiplatform `Image` API. Notably, `asCoilImage` has been renamed to `asImage`.
@@ -12,7 +12,7 @@
     - If you still needs its functionality you can [manually include `ResourceUriMapper` in your component registry](https://github.com/coil-kt/coil/blob/main/coil-core/src/androidInstrumentedTest/kotlin/coil3/map/ResourceUriMapper.kt).
 - **New**: Introduce `AsyncImagePreviewHandler` to support controlling `AsyncImagePainter`'s preview rendering behavior.
     - Use `LocalAsyncImagePreviewHandler` to override the preview behavior.
-    - As part of this change and other `coil-compose` improvements, `AsyncImagePainter` now attempts to execute execute the `ImageRequest` by default instead of defaulting to displaying `ImageRequest.placeholder`. [Requests that use the network or files are expected to fail](https://developer.android.com/develop/ui/compose/tooling/previews#preview-limitations) in the preview environment and will display the `ImageRequest.error`.
+    - As part of this change and other `coil-compose` improvements, `AsyncImagePainter` now attempts to execute execute the `ImageRequest` by default instead of defaulting to displaying `ImageRequest.placeholder`. [Requests that use the network or files are expected to fail](https://developer.android.com/develop/ui/compose/tooling/previews#preview-limitations) in the preview environment, however Android resources should work.
 - **New**: Support extracting video image by frame index. ([#2183](https://github.com/coil-kt/coil/pull/2183))
 - **New**: Support passing `CoroutineContext` to any `CoroutineDispatcher` methods. ([#2241](https://github.com/coil-kt/coil/pull/2241)).
 - **New**: Support the weak reference memory cache on JS and WASM JS.
