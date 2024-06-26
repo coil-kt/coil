@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.util.trace
 import coil3.Image
 import coil3.ImageLoader
-import coil3.PlatformContext
 import coil3.annotation.Poko
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
@@ -244,7 +243,7 @@ class AsyncImagePainter internal constructor(
             if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
                 _input.mapLatest {
-                    computePreviewState(it.imageLoader, it.request, previewHandler)
+                    previewHandler.handle(it.imageLoader, it.request)
                 }
             } else {
                 // Else, execute the request as normal.
@@ -276,7 +275,7 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    val painter = placeholder?.toPainter(request.context, filterQuality)
+                    val painter = placeholder?.asPainter(request.context, filterQuality)
                     updateState(State.Loading(painter))
                 },
             )
@@ -314,27 +313,13 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
-    private suspend fun computePreviewState(
-        imageLoader: ImageLoader,
-        request: ImageRequest,
-        previewHandler: AsyncImagePreviewHandler,
-    ): State {
-        return previewHandler.handle(
-            imageLoader = imageLoader,
-            request = request.newBuilder()
-                .defaults(imageLoader.defaults)
-                .build(),
-            toPainter = { toPainter(request.context, filterQuality) },
-        )
-    }
-
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(
-            painter = image.toPainter(request.context, filterQuality),
+            painter = image.asPainter(request.context, filterQuality),
             result = this,
         )
         is ErrorResult -> State.Error(
-            painter = image?.toPainter(request.context, filterQuality),
+            painter = image?.asPainter(request.context, filterQuality),
             result = this,
         )
     }
@@ -420,12 +405,6 @@ internal expect fun validateRequestProperties(request: ImageRequest)
 
 /** Set the request's lifecycle to `GlobalLifecycle` on Android to avoid dispatching. */
 internal expect fun ImageRequest.Builder.applyGlobalLifecycle()
-
-/** Convert this [Image] into a [Painter] using Compose primitives if possible. */
-internal expect fun Image.toPainter(
-    context: PlatformContext,
-    filterQuality: FilterQuality,
-): Painter
 
 /** Create and return a [CrossfadePainter] if requested. */
 internal expect fun maybeNewCrossfadePainter(
