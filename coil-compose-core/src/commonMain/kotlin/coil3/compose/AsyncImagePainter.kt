@@ -243,12 +243,12 @@ class AsyncImagePainter internal constructor(
             if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
                 _input.mapLatest {
-                    previewHandler.handle(it.imageLoader, it.request)
+                    previewHandler.handle(it.imageLoader, updateRequest(it.request, isPreview = true))
                 }
             } else {
                 // Else, execute the request as normal.
                 _input.mapLatest {
-                    it.imageLoader.execute(updateRequest(it.request)).toState()
+                    it.imageLoader.execute(updateRequest(it.request, isPreview = false)).toState()
                 }
             }.collect(::updateState)
         }
@@ -265,7 +265,7 @@ class AsyncImagePainter internal constructor(
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
-    private fun updateRequest(request: ImageRequest): ImageRequest {
+    private fun updateRequest(request: ImageRequest, isPreview: Boolean): ImageRequest {
         // Connect the size resolver to the draw scope if necessary.
         val sizeResolver = request.sizeResolver
         if (sizeResolver is DrawScopeSizeResolver) {
@@ -291,6 +291,9 @@ class AsyncImagePainter internal constructor(
                 if (request.defined.precision == null) {
                     // AsyncImagePainter scales the image to fit the canvas size at draw time.
                     precision(Precision.INEXACT)
+                }
+                if (isPreview) {
+                    dispatcher(Dispatchers.Unconfined)
                 }
                 applyGlobalLifecycle()
             }
