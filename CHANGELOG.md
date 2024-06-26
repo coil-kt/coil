@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.0.0-alpha07] - June 26, 2024
+
+- **BEHAVIOR CHANGE**: `AsyncImagePainter` no longer waits for `onDraw` by default and instead uses `Size.ORIGINAL`.
+    - This fixes [compatibility issues with Roborazzi/Paparazzi](https://github.com/coil-kt/coil/issues/1910) and overall improves test reliability.
+    - To revert back to waiting for `onDraw`, set `DrawScopeSizeResolver` as your `ImageRequest.sizeResolver`.
+- **BREAKING**: Refactor the multiplatform `Image` API. Notably, `asCoilImage` has been renamed to `asImage`.
+- **BREAKING**: `AsyncImagePainter.state` has been changed to `StateFlow<AsyncImagePainter.State>`. Use `collectAsState` to observe its value. This improves performance.
+- **BREAKING**: `AsyncImagePainter.imageLoader` and `AsyncImagePainter.request` have been combined into `StateFlow<AsyncImagePainter.Inputs>`. Use `collectAsState` to observe its value. This improves performance.
+- **BREAKING**: Remove support for `android.resource://example.package.name/drawable/image` URIs as it prevents resource shrinking optimizations.
+    - If you still needs its functionality you can [manually include `ResourceUriMapper` in your component registry](https://github.com/coil-kt/coil/blob/main/coil-core/src/androidInstrumentedTest/kotlin/coil3/map/ResourceUriMapper.kt).
+- **New**: Introduce `AsyncImagePreviewHandler` to support controlling `AsyncImagePainter`'s preview rendering behavior.
+    - Use `LocalAsyncImagePreviewHandler` to override the preview behavior.
+    - As part of this change and other `coil-compose` improvements, `AsyncImagePainter` now attempts to execute execute the `ImageRequest` by default instead of defaulting to displaying `ImageRequest.placeholder`. [Requests that use the network or files are expected to fail](https://developer.android.com/develop/ui/compose/tooling/previews#preview-limitations) in the preview environment and will display the `ImageRequest.error`.
+- **New**: Support extracting video image by frame index. ([#2183](https://github.com/coil-kt/coil/pull/2183))
+- **New**: Support passing `CoroutineContext` to any `CoroutineDispatcher` methods. ([#2241](https://github.com/coil-kt/coil/pull/2241)).
+- **New**: Support the weak reference memory cache on JS and WASM JS.
+- Don't dispatch to `Dispatchers.Main.immediate` in Compose. As a side-effect, [`kotlinx-coroutines-swing`](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-swing/) no longer needs to be imported on JVM.
+- Don't call `async` and create a disposable in Compose to improve performance (thanks @mlykotom!). ([#2205](https://github.com/coil-kt/coil/pull/2205))
+- Fix passing global `ImageLoader` extras to `Options`. ([#2223](https://github.com/coil-kt/coil/pull/2223))
+- Fix `crossfade(false)` not working on non-Android targets.
+- Fix VP8X feature flags byte offset ([#2199](https://github.com/coil-kt/coil/pull/2199)).
+- Convert `SvgDecoder` on non-Android targets to render to a bitmap instead of render the image at draw-time. This improves performance.
+    - This behavior can be controlled using `SvgDecoder(renderToBitmap)`.
+- Move `ScaleDrawable` from `coil-gif` to `coil-core`.
+- Update Kotlin to 2.0.0.
+- Update Compose to 1.6.11.
+- Update Okio to 3.9.0.
+- Update Skiko to 0.8.4.
+- [For the full list of important changes in 3.x, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/)
+
 ## [3.0.0-alpha06] - February 29, 2024
 
 - Downgrade Skiko to 0.7.93.
