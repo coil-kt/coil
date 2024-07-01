@@ -8,10 +8,7 @@
 // Library unique name: <io.coil-kt.coil3:coil-test>
 final class coil3.test/FakeImage : coil3/Image { // coil3.test/FakeImage|null[0]
     constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Boolean = ..., kotlin/Int = ...) // coil3.test/FakeImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean;kotlin.Int){}[0]
-    final fun draw(org.jetbrains.skia/Canvas) // coil3.test/FakeImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImage.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.test/FakeImage.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.test/FakeImage.toString|toString(){}[0]
+
     final val color // coil3.test/FakeImage.color|{}color[0]
         final fun <get-color>(): kotlin/Int // coil3.test/FakeImage.color.<get-color>|<get-color>(){}[0]
     final val height // coil3.test/FakeImage.height|{}height[0]
@@ -22,17 +19,40 @@ final class coil3.test/FakeImage : coil3/Image { // coil3.test/FakeImage|null[0]
         final fun <get-size>(): kotlin/Long // coil3.test/FakeImage.size.<get-size>|<get-size>(){}[0]
     final val width // coil3.test/FakeImage.width|{}width[0]
         final fun <get-width>(): kotlin/Int // coil3.test/FakeImage.width.<get-width>|<get-width>(){}[0]
+
+    final fun draw(org.jetbrains.skia/Canvas) // coil3.test/FakeImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImage.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.test/FakeImage.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.test/FakeImage.toString|toString(){}[0]
 }
+
 final class coil3.test/FakeImageLoaderEngine : coil3.intercept/Interceptor { // coil3.test/FakeImageLoaderEngine|null[0]
+    final val defaultInterceptor // coil3.test/FakeImageLoaderEngine.defaultInterceptor|{}defaultInterceptor[0]
+        final fun <get-defaultInterceptor>(): coil3.intercept/Interceptor // coil3.test/FakeImageLoaderEngine.defaultInterceptor.<get-defaultInterceptor>|<get-defaultInterceptor>(){}[0]
+    final val interceptors // coil3.test/FakeImageLoaderEngine.interceptors|{}interceptors[0]
+        final fun <get-interceptors>(): kotlin.collections/List<coil3.test/FakeImageLoaderEngine.OptionalInterceptor> // coil3.test/FakeImageLoaderEngine.interceptors.<get-interceptors>|<get-interceptors>(){}[0]
+    final val requestTransformer // coil3.test/FakeImageLoaderEngine.requestTransformer|{}requestTransformer[0]
+        final fun <get-requestTransformer>(): coil3.test/FakeImageLoaderEngine.RequestTransformer // coil3.test/FakeImageLoaderEngine.requestTransformer.<get-requestTransformer>|<get-requestTransformer>(){}[0]
+    final val requests // coil3.test/FakeImageLoaderEngine.requests|{}requests[0]
+        final fun <get-requests>(): kotlinx.coroutines.flow/Flow<coil3.test/FakeImageLoaderEngine.RequestValue> // coil3.test/FakeImageLoaderEngine.requests.<get-requests>|<get-requests>(){}[0]
+    final val results // coil3.test/FakeImageLoaderEngine.results|{}results[0]
+        final fun <get-results>(): kotlinx.coroutines.flow/Flow<coil3.test/FakeImageLoaderEngine.ResultValue> // coil3.test/FakeImageLoaderEngine.results.<get-results>|<get-results>(){}[0]
+
+    final fun newBuilder(): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.newBuilder|newBuilder(){}[0]
+    final suspend fun intercept(coil3.intercept/Interceptor.Chain): coil3.request/ImageResult // coil3.test/FakeImageLoaderEngine.intercept|intercept(coil3.intercept.Interceptor.Chain){}[0]
+
     abstract fun interface OptionalInterceptor { // coil3.test/FakeImageLoaderEngine.OptionalInterceptor|null[0]
         abstract suspend fun intercept(coil3.intercept/Interceptor.Chain): coil3.request/ImageResult? // coil3.test/FakeImageLoaderEngine.OptionalInterceptor.intercept|intercept(coil3.intercept.Interceptor.Chain){}[0]
     }
+
     abstract fun interface RequestTransformer { // coil3.test/FakeImageLoaderEngine.RequestTransformer|null[0]
         abstract suspend fun transform(coil3.request/ImageRequest): coil3.request/ImageRequest // coil3.test/FakeImageLoaderEngine.RequestTransformer.transform|transform(coil3.request.ImageRequest){}[0]
     }
+
     final class Builder { // coil3.test/FakeImageLoaderEngine.Builder|null[0]
         constructor <init>() // coil3.test/FakeImageLoaderEngine.Builder.<init>|<init>(){}[0]
         constructor <init>(coil3.test/FakeImageLoaderEngine) // coil3.test/FakeImageLoaderEngine.Builder.<init>|<init>(coil3.test.FakeImageLoaderEngine){}[0]
+
         final fun addInterceptor(coil3.test/FakeImageLoaderEngine.OptionalInterceptor): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.Builder.addInterceptor|addInterceptor(coil3.test.FakeImageLoaderEngine.OptionalInterceptor){}[0]
         final fun build(): coil3.test/FakeImageLoaderEngine // coil3.test/FakeImageLoaderEngine.Builder.build|build(){}[0]
         final fun clearInterceptors(): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.Builder.clearInterceptors|clearInterceptors(){}[0]
@@ -44,37 +64,32 @@ final class coil3.test/FakeImageLoaderEngine : coil3.intercept/Interceptor { // 
         final fun removeInterceptor(coil3.test/FakeImageLoaderEngine.OptionalInterceptor): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.Builder.removeInterceptor|removeInterceptor(coil3.test.FakeImageLoaderEngine.OptionalInterceptor){}[0]
         final fun requestTransformer(coil3.test/FakeImageLoaderEngine.RequestTransformer): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.Builder.requestTransformer|requestTransformer(coil3.test.FakeImageLoaderEngine.RequestTransformer){}[0]
     }
+
     final class RequestValue { // coil3.test/FakeImageLoaderEngine.RequestValue|null[0]
         constructor <init>(coil3.request/ImageRequest, coil3.size/Size) // coil3.test/FakeImageLoaderEngine.RequestValue.<init>|<init>(coil3.request.ImageRequest;coil3.size.Size){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImageLoaderEngine.RequestValue.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.test/FakeImageLoaderEngine.RequestValue.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.test/FakeImageLoaderEngine.RequestValue.toString|toString(){}[0]
+
         final val request // coil3.test/FakeImageLoaderEngine.RequestValue.request|{}request[0]
             final fun <get-request>(): coil3.request/ImageRequest // coil3.test/FakeImageLoaderEngine.RequestValue.request.<get-request>|<get-request>(){}[0]
         final val size // coil3.test/FakeImageLoaderEngine.RequestValue.size|{}size[0]
             final fun <get-size>(): coil3.size/Size // coil3.test/FakeImageLoaderEngine.RequestValue.size.<get-size>|<get-size>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImageLoaderEngine.RequestValue.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.test/FakeImageLoaderEngine.RequestValue.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.test/FakeImageLoaderEngine.RequestValue.toString|toString(){}[0]
     }
+
     final class ResultValue { // coil3.test/FakeImageLoaderEngine.ResultValue|null[0]
         constructor <init>(coil3.test/FakeImageLoaderEngine.RequestValue, coil3.request/ImageResult) // coil3.test/FakeImageLoaderEngine.ResultValue.<init>|<init>(coil3.test.FakeImageLoaderEngine.RequestValue;coil3.request.ImageResult){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImageLoaderEngine.ResultValue.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.test/FakeImageLoaderEngine.ResultValue.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.test/FakeImageLoaderEngine.ResultValue.toString|toString(){}[0]
+
         final val request // coil3.test/FakeImageLoaderEngine.ResultValue.request|{}request[0]
             final fun <get-request>(): coil3.test/FakeImageLoaderEngine.RequestValue // coil3.test/FakeImageLoaderEngine.ResultValue.request.<get-request>|<get-request>(){}[0]
         final val result // coil3.test/FakeImageLoaderEngine.ResultValue.result|{}result[0]
             final fun <get-result>(): coil3.request/ImageResult // coil3.test/FakeImageLoaderEngine.ResultValue.result.<get-result>|<get-result>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/FakeImageLoaderEngine.ResultValue.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.test/FakeImageLoaderEngine.ResultValue.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.test/FakeImageLoaderEngine.ResultValue.toString|toString(){}[0]
     }
-    final fun newBuilder(): coil3.test/FakeImageLoaderEngine.Builder // coil3.test/FakeImageLoaderEngine.newBuilder|newBuilder(){}[0]
-    final suspend fun intercept(coil3.intercept/Interceptor.Chain): coil3.request/ImageResult // coil3.test/FakeImageLoaderEngine.intercept|intercept(coil3.intercept.Interceptor.Chain){}[0]
-    final val defaultInterceptor // coil3.test/FakeImageLoaderEngine.defaultInterceptor|{}defaultInterceptor[0]
-        final fun <get-defaultInterceptor>(): coil3.intercept/Interceptor // coil3.test/FakeImageLoaderEngine.defaultInterceptor.<get-defaultInterceptor>|<get-defaultInterceptor>(){}[0]
-    final val interceptors // coil3.test/FakeImageLoaderEngine.interceptors|{}interceptors[0]
-        final fun <get-interceptors>(): kotlin.collections/List<coil3.test/FakeImageLoaderEngine.OptionalInterceptor> // coil3.test/FakeImageLoaderEngine.interceptors.<get-interceptors>|<get-interceptors>(){}[0]
-    final val requestTransformer // coil3.test/FakeImageLoaderEngine.requestTransformer|{}requestTransformer[0]
-        final fun <get-requestTransformer>(): coil3.test/FakeImageLoaderEngine.RequestTransformer // coil3.test/FakeImageLoaderEngine.requestTransformer.<get-requestTransformer>|<get-requestTransformer>(){}[0]
-    final val requests // coil3.test/FakeImageLoaderEngine.requests|{}requests[0]
-        final fun <get-requests>(): kotlinx.coroutines.flow/Flow<coil3.test/FakeImageLoaderEngine.RequestValue> // coil3.test/FakeImageLoaderEngine.requests.<get-requests>|<get-requests>(){}[0]
-    final val results // coil3.test/FakeImageLoaderEngine.results|{}results[0]
-        final fun <get-results>(): kotlinx.coroutines.flow/Flow<coil3.test/FakeImageLoaderEngine.ResultValue> // coil3.test/FakeImageLoaderEngine.results.<get-results>|<get-results>(){}[0]
 }
+
 final fun coil3.test/FakeImageLoaderEngine(coil3/Image): coil3.test/FakeImageLoaderEngine // coil3.test/FakeImageLoaderEngine|FakeImageLoaderEngine(coil3.Image){}[0]
