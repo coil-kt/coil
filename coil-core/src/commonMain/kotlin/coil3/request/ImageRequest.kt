@@ -21,10 +21,10 @@ import coil3.util.EMPTY_IMAGE_FACTORY
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
-import kotlinx.coroutines.Dispatchers
 import okio.FileSystem
 
 /**
@@ -216,7 +216,7 @@ class ImageRequest private constructor(
     @Poko
     class Defaults(
         val fileSystem: FileSystem = defaultFileSystem(),
-        val interceptorDispatcher: CoroutineContext = Dispatchers.Unconfined,
+        val interceptorDispatcher: CoroutineContext = EmptyCoroutineContext,
         val fetcherDispatcher: CoroutineContext = ioCoroutineDispatcher(),
         val decoderDispatcher: CoroutineContext = ioCoroutineDispatcher(),
         val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
