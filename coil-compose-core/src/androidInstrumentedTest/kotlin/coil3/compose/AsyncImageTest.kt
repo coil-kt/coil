@@ -573,7 +573,7 @@ class AsyncImageTest {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
                     .memoryCachePolicy(CachePolicy.ENABLED)
-                    .dispatcher(Dispatchers.Main.immediate)
+                    .coroutineContext(Dispatchers.Main.immediate)
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader

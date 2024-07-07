@@ -15,7 +15,7 @@ fun ImageLoader(context: PlatformContext): ImageLoader {
  *
  * This allows subsequent requests that load the same file to miss the memory cache if the
  * file has been updated. However, if the memory cache check occurs on the main thread
- * (see [ImageLoader.Builder.interceptorDispatcher]) calling this will cause a strict mode
+ * (see [ImageLoader.Builder.interceptorCoroutineContext]) calling this will cause a strict mode
  * violation.
  */
 fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {

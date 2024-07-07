@@ -75,7 +75,7 @@ class ImageRequestTest : RobolectricTest() {
             .defaults(defaults)
             .build()
 
-        assertSame(defaults.decoderDispatcher, request.decoderDispatcher)
+        assertSame(defaults.decoderDispatcher, request.decoderCoroutineContext)
         assertSame(defaults.extras[Extras.Key.transitionFactory], request.transitionFactory)
         assertSame(defaults.precision, request.precision)
     }

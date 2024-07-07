@@ -94,7 +94,7 @@ class RealInterceptorChainTests : RobolectricTest() {
         val interceptor3 = Interceptor { chain ->
             assertSame(request, chain.request)
             request = chain.request.newBuilder()
-                .fetcherDispatcher(Dispatchers.Default)
+                .fetcherCoroutineContext(Dispatchers.Default)
                 .build()
             chain.withRequest(request).proceed()
         }

@@ -45,6 +45,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -206,11 +207,11 @@ class AsyncImagePainter internal constructor(
 
     /** The latest [AsyncImagePainter.Input]. */
     internal val _input: MutableStateFlow<Input> = MutableStateFlow(input)
-    val input: StateFlow<Input> get() = _input.asStateFlow()
+    val input: StateFlow<Input> = _input.asStateFlow()
 
     /** The latest [AsyncImagePainter.State]. */
     private val _state: MutableStateFlow<State> = MutableStateFlow(State.Empty)
-    val state: StateFlow<State> get() = _state.asStateFlow()
+    val state: StateFlow<State> = _state.asStateFlow()
 
     override val intrinsicSize: Size
         get() = painter?.intrinsicSize ?: Size.Unspecified
@@ -293,7 +294,7 @@ class AsyncImagePainter internal constructor(
                     precision(Precision.INEXACT)
                 }
                 if (isPreview) {
-                    dispatcher(Dispatchers.Unconfined)
+                    coroutineContext(EmptyCoroutineContext)
                 }
                 applyGlobalLifecycle()
             }

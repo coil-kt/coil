@@ -131,7 +131,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = withContext(request.interceptorDispatcher) {
+            val result = withContext(request.interceptorCoroutineContext) {
                 RealInterceptorChain(
                     initialRequest = request,
                     interceptors = components.interceptors,
