@@ -62,7 +62,7 @@ class ImageRequestTest : RobolectricTest() {
     @Test
     fun `defaults fill unset values`() {
         val defaults = ImageRequest.Defaults(
-            decoderDispatcher = Dispatchers.Unconfined,
+            decoderCoroutineContext = Dispatchers.Unconfined,
             precision = Precision.EXACT,
             extras = Extras.Builder()
                 .set(Extras.Key.transitionFactory, CrossfadeTransition.Factory())
@@ -75,7 +75,7 @@ class ImageRequestTest : RobolectricTest() {
             .defaults(defaults)
             .build()
 
-        assertSame(defaults.decoderDispatcher, request.decoderCoroutineContext)
+        assertSame(defaults.decoderCoroutineContext, request.decoderCoroutineContext)
         assertSame(defaults.extras[Extras.Key.transitionFactory], request.transitionFactory)
         assertSame(defaults.precision, request.precision)
     }

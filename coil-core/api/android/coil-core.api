@@ -638,14 +638,14 @@ public final class coil3/request/ImageRequest$Defaults {
 	public final fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
 	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDecoderDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getDecoderCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getExtras ()Lcoil3/Extras;
 	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
-	public final fun getFetcherDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getFetcherCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getFileSystem ()Lokio/FileSystem;
-	public final fun getInterceptorDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getInterceptorCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
@@ -664,13 +664,13 @@ public final class coil3/request/ImageRequest$Defined {
 	public final fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
 	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDecoderDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getDecoderCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
-	public final fun getFetcherDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getFetcherCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getFileSystem ()Lokio/FileSystem;
-	public final fun getInterceptorDispatcher ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getInterceptorCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
