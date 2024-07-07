@@ -45,7 +45,6 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -294,7 +293,7 @@ class AsyncImagePainter internal constructor(
                     precision(Precision.INEXACT)
                 }
                 if (isPreview) {
-                    coroutineContext(EmptyCoroutineContext)
+                    coroutineContext(Dispatchers.Unconfined)
                 }
                 applyGlobalLifecycle()
             }
