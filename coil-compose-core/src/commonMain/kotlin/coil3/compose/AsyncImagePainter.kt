@@ -45,8 +45,8 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -165,7 +165,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberCoroutineScope { Dispatchers.Unconfined }
+    painter.scope = rememberCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -293,7 +293,7 @@ class AsyncImagePainter internal constructor(
                     precision(Precision.INEXACT)
                 }
                 if (isPreview) {
-                    coroutineContext(Dispatchers.Unconfined)
+                    coroutineContext(EmptyCoroutineContext)
                 }
                 applyGlobalLifecycle()
             }
