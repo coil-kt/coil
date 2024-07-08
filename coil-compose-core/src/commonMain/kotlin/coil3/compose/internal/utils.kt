@@ -200,10 +200,11 @@ internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread.
-// The default main dispatcher provided with Compose always dispatches, which will cause one frame
-// of delay. In the cases where we don't have the main dispatcher implicitly fall back to Compose's
-// built in main dispatcher.
+// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so we
+// can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
+// The default main dispatcher provided with Compose always dispatches, which will often cause one
+// frame of delay. In the cases where we don't have the main dispatcher implicitly fall back to
+// Compose's built in main dispatcher.
 internal val safeImmediateMainDispatcher: CoroutineContext = try {
     Dispatchers.Main.immediate.also {
         // This will throw if the implementation is missing.
