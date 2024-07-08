@@ -195,29 +195,30 @@ interface ImageLoader {
          * Set the default precision for a request. [Precision] controls whether the size of the
          * loaded image must match the request's size exactly or not.
          *
-         * Default: [Precision.AUTOMATIC]
+         * Default: [Precision.EXACT]
          */
         fun precision(precision: Precision) = apply {
             this.defaults = this.defaults.copy(precision = precision)
         }
 
         /**
-         * A convenience method to set [fetcherDispatcher] and [decoderDispatcher] in one call.
+         * A convenience method to set [fetcherCoroutineContext] and [decoderCoroutineContext] in one call.
          */
-        fun dispatcher(dispatcher: CoroutineContext) = apply {
+        fun coroutineContext(context: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(
-                fetcherDispatcher = dispatcher,
-                decoderDispatcher = dispatcher,
+                interceptorCoroutineContext = context,
+                fetcherCoroutineContext = context,
+                decoderCoroutineContext = context,
             )
         }
 
         /**
          * The [CoroutineContext] that the [Interceptor] chain will be executed in.
          *
-         * Default: `Dispatchers.Main.immediate`
+         * Default: `EmptyCoroutineContext`
          */
-        fun interceptorDispatcher(dispatcher: CoroutineContext) = apply {
-            this.defaults = this.defaults.copy(interceptorDispatcher = dispatcher)
+        fun interceptorCoroutineContext(context: CoroutineContext) = apply {
+            this.defaults = this.defaults.copy(interceptorCoroutineContext = context)
         }
 
         /**
@@ -225,8 +226,8 @@ interface ImageLoader {
          *
          * Default: `Dispatchers.IO`
          */
-        fun fetcherDispatcher(dispatcher: CoroutineContext) = apply {
-            this.defaults = this.defaults.copy(fetcherDispatcher = dispatcher)
+        fun fetcherCoroutineContext(context: CoroutineContext) = apply {
+            this.defaults = this.defaults.copy(fetcherCoroutineContext = context)
         }
 
         /**
@@ -234,8 +235,8 @@ interface ImageLoader {
          *
          * Default: `Dispatchers.IO`
          */
-        fun decoderDispatcher(dispatcher: CoroutineContext) = apply {
-            this.defaults = this.defaults.copy(decoderDispatcher = dispatcher)
+        fun decoderCoroutineContext(context: CoroutineContext) = apply {
+            this.defaults = this.defaults.copy(decoderCoroutineContext = context)
         }
 
         /**

@@ -52,7 +52,7 @@ class RealImageLoaderTest : RobolectricTest() {
         scope.launch {
             val request = ImageRequest.Builder(context)
                 .data(Unit)
-                .dispatcher(dispatcher)
+                .coroutineContext(dispatcher)
                 .fetcherFactory<Unit> { _, _, _ ->
                     // Use a custom fetcher that suspends until cancellation.
                     Fetcher { awaitCancellation() }

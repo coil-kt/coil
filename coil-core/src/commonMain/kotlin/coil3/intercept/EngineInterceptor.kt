@@ -62,7 +62,7 @@ internal class EngineInterceptor(
             }
 
             // Slow path: fetch, decode, transform, and cache the image.
-            return withContext(request.fetcherDispatcher) {
+            return withContext(request.fetcherCoroutineContext) {
                 // Fetch and decode the image.
                 val result = execute(request, mappedData, options, eventListener)
 
@@ -117,7 +117,7 @@ internal class EngineInterceptor(
 
             // Decode the data.
             when (fetchResult) {
-                is SourceFetchResult -> withContext(request.decoderDispatcher) {
+                is SourceFetchResult -> withContext(request.decoderCoroutineContext) {
                     decode(fetchResult, components, request, mappedData, options, eventListener)
                 }
                 is ImageFetchResult -> {

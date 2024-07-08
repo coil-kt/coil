@@ -307,7 +307,7 @@ class RealImageLoaderAndroidTest {
                 .size(100, 100)
                 .precision(Precision.INEXACT)
                 .allowHardware(true)
-                .dispatcher(Dispatchers.Main.immediate)
+                .coroutineContext(Dispatchers.Main.immediate)
                 .target(
                     onStart = {
                         // The drawable in the memory cache should be returned here.
