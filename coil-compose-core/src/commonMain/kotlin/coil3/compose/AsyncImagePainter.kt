@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
@@ -38,6 +37,7 @@ import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.CrossfadePainter
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
+import coil3.compose.internal.safeImmediateMainDispatcher
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
 import coil3.request.ErrorResult
@@ -188,14 +188,7 @@ class AsyncImagePainter internal constructor(
         onBufferOverflow = DROP_OLDEST,
     )
 
-    private val painterFlow: MutableStateFlow<Painter?> = MutableStateFlow(null)
-    private val painterState: MutableState<Painter?> = mutableStateOf(null)
-    private val painter: Painter?
-        get() {
-            painterState.value
-            return painterFlow.value
-        }
-
+    private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
@@ -237,36 +230,33 @@ class AsyncImagePainter internal constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered(): Unit = trace("AsyncImagePainter.onRemembered") {
-        (painterFlow.value as? RememberObserver)?.onRemembered()
-
-        // Ensure the painter state is updated on the UI thread.
-        scope.launch {
-            painterFlow.collect(painterState::value::set)
-        }
+        (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        scope.launch(Dispatchers.Unconfined) {
-            val previewHandler = previewHandler
-            if (previewHandler != null) {
-                // If we're in inspection mode use the preview renderer.
+        val previewHandler = previewHandler
+        if (previewHandler != null) {
+            // If we're in inspection mode use the preview renderer.
+            scope.launch(Dispatchers.Unconfined) {
                 _input.mapLatest {
                     previewHandler.handle(it.imageLoader, updateRequest(it.request, isPreview = true))
-                }
-            } else {
-                // Else, execute the request as normal.
+                }.collect(::updateState)
+            }
+        } else {
+            // Else, execute the request as normal.
+            scope.launch(safeImmediateMainDispatcher) {
                 _input.mapLatest {
                     it.imageLoader.execute(updateRequest(it.request, isPreview = false)).toState()
-                }
-            }.collect(::updateState)
+                }.collect(::updateState)
+            }
         }
     }
 
     override fun onForgotten() {
-        (painterFlow.value as? RememberObserver)?.onForgotten()
+        (painter as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
-        (painterFlow.value as? RememberObserver)?.onAbandoned()
+        (painter as? RememberObserver)?.onAbandoned()
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
@@ -298,6 +288,7 @@ class AsyncImagePainter internal constructor(
                     precision(Precision.INEXACT)
                 }
                 if (isPreview) {
+                    // The request must be executed synchronously in the preview environment.
                     coroutineContext(EmptyCoroutineContext)
                 }
                 applyGlobalLifecycle()
@@ -309,9 +300,9 @@ class AsyncImagePainter internal constructor(
         val previous = _state.value
         val current = transform(state)
         _state.value = current
-        painterFlow.value = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
+        painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
-        // Manually forget and remember the old/new painters if we're already remembered.
+        // Manually forget and remember the old/new painters.
         if (previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()

@@ -44,6 +44,7 @@ kotlin {
         jvmMain {
             dependencies {
                 api(projects.coilNetworkOkhttp)
+                api(libs.coroutines.swing)
             }
         }
         named("wasmJsMain") {
