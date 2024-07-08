@@ -3,4 +3,4 @@ set -e
 
 # Run separately to work around https://github.com/diffplug/spotless/issues/1572.
 ./gradlew apiCheck spotlessCheck
-./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
+./gradlew allTests connectedDebugAndroidTest testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
