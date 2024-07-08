@@ -6,7 +6,7 @@ import coil3.applyKtorWasmWorkaround
 plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
-    id("kotlinx-atomicfu")
+    id("org.jetbrains.kotlinx.atomicfu")
 }
 
 addAllMultiplatformTargets()

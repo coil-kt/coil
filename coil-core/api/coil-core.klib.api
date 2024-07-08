@@ -7,105 +7,129 @@
 // - Show declarations: true
 
 // Library unique name: <io.coil-kt.coil3:coil-core>
-abstract class coil3/EventListener : coil3.request/ImageRequest.Listener { // coil3/EventListener|null[0]
-    abstract fun interface Factory { // coil3/EventListener.Factory|null[0]
-        abstract fun create(coil3.request/ImageRequest): coil3/EventListener // coil3/EventListener.Factory.create|create(coil3.request.ImageRequest){}[0]
-        final object Companion { // coil3/EventListener.Factory.Companion|null[0]
-            final val NONE // coil3/EventListener.Factory.Companion.NONE|{}NONE[0]
-                final fun <get-NONE>(): coil3/EventListener.Factory // coil3/EventListener.Factory.Companion.NONE.<get-NONE>|<get-NONE>(){}[0]
-        }
-    }
-    constructor <init>() // coil3/EventListener.<init>|<init>(){}[0]
-    final object Companion { // coil3/EventListener.Companion|null[0]
-        final val NONE // coil3/EventListener.Companion.NONE|{}NONE[0]
-            final fun <get-NONE>(): coil3/EventListener // coil3/EventListener.Companion.NONE.<get-NONE>|<get-NONE>(){}[0]
-    }
-    open fun decodeEnd(coil3.request/ImageRequest, coil3.decode/Decoder, coil3.request/Options, coil3.decode/DecodeResult?) // coil3/EventListener.decodeEnd|decodeEnd(coil3.request.ImageRequest;coil3.decode.Decoder;coil3.request.Options;coil3.decode.DecodeResult?){}[0]
-    open fun decodeStart(coil3.request/ImageRequest, coil3.decode/Decoder, coil3.request/Options) // coil3/EventListener.decodeStart|decodeStart(coil3.request.ImageRequest;coil3.decode.Decoder;coil3.request.Options){}[0]
-    open fun fetchEnd(coil3.request/ImageRequest, coil3.fetch/Fetcher, coil3.request/Options, coil3.fetch/FetchResult?) // coil3/EventListener.fetchEnd|fetchEnd(coil3.request.ImageRequest;coil3.fetch.Fetcher;coil3.request.Options;coil3.fetch.FetchResult?){}[0]
-    open fun fetchStart(coil3.request/ImageRequest, coil3.fetch/Fetcher, coil3.request/Options) // coil3/EventListener.fetchStart|fetchStart(coil3.request.ImageRequest;coil3.fetch.Fetcher;coil3.request.Options){}[0]
-    open fun keyEnd(coil3.request/ImageRequest, kotlin/String?) // coil3/EventListener.keyEnd|keyEnd(coil3.request.ImageRequest;kotlin.String?){}[0]
-    open fun keyStart(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.keyStart|keyStart(coil3.request.ImageRequest;kotlin.Any){}[0]
-    open fun mapEnd(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.mapEnd|mapEnd(coil3.request.ImageRequest;kotlin.Any){}[0]
-    open fun mapStart(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.mapStart|mapStart(coil3.request.ImageRequest;kotlin.Any){}[0]
-    open fun onCancel(coil3.request/ImageRequest) // coil3/EventListener.onCancel|onCancel(coil3.request.ImageRequest){}[0]
-    open fun onError(coil3.request/ImageRequest, coil3.request/ErrorResult) // coil3/EventListener.onError|onError(coil3.request.ImageRequest;coil3.request.ErrorResult){}[0]
-    open fun onStart(coil3.request/ImageRequest) // coil3/EventListener.onStart|onStart(coil3.request.ImageRequest){}[0]
-    open fun onSuccess(coil3.request/ImageRequest, coil3.request/SuccessResult) // coil3/EventListener.onSuccess|onSuccess(coil3.request.ImageRequest;coil3.request.SuccessResult){}[0]
-    open fun resolveSizeEnd(coil3.request/ImageRequest, coil3.size/Size) // coil3/EventListener.resolveSizeEnd|resolveSizeEnd(coil3.request.ImageRequest;coil3.size.Size){}[0]
-    open fun resolveSizeStart(coil3.request/ImageRequest, coil3.size/SizeResolver) // coil3/EventListener.resolveSizeStart|resolveSizeStart(coil3.request.ImageRequest;coil3.size.SizeResolver){}[0]
+open annotation class coil3.annotation/DelicateCoilApi : kotlin/Annotation { // coil3.annotation/DelicateCoilApi|null[0]
+    constructor <init>() // coil3.annotation/DelicateCoilApi.<init>|<init>(){}[0]
 }
-abstract class coil3/PlatformContext { // coil3/PlatformContext|null[0]
-    final object Companion { // coil3/PlatformContext.Companion|null[0]
-        final val INSTANCE // coil3/PlatformContext.Companion.INSTANCE|{}INSTANCE[0]
-            final fun <get-INSTANCE>(): coil3/PlatformContext // coil3/PlatformContext.Companion.INSTANCE.<get-INSTANCE>|<get-INSTANCE>(){}[0]
-    }
+
+open annotation class coil3.annotation/ExperimentalCoilApi : kotlin/Annotation { // coil3.annotation/ExperimentalCoilApi|null[0]
+    constructor <init>() // coil3.annotation/ExperimentalCoilApi.<init>|<init>(){}[0]
 }
+
+open annotation class coil3.annotation/InternalCoilApi : kotlin/Annotation { // coil3.annotation/InternalCoilApi|null[0]
+    constructor <init>() // coil3.annotation/InternalCoilApi.<init>|<init>(){}[0]
+}
+
+open annotation class coil3.annotation/Poko : kotlin/Annotation { // coil3.annotation/Poko|null[0]
+    constructor <init>() // coil3.annotation/Poko.<init>|<init>(){}[0]
+}
+
+final enum class coil3.decode/DataSource : kotlin/Enum<coil3.decode/DataSource> { // coil3.decode/DataSource|null[0]
+    enum entry DISK // coil3.decode/DataSource.DISK|null[0]
+    enum entry MEMORY // coil3.decode/DataSource.MEMORY|null[0]
+    enum entry MEMORY_CACHE // coil3.decode/DataSource.MEMORY_CACHE|null[0]
+    enum entry NETWORK // coil3.decode/DataSource.NETWORK|null[0]
+
+    final val entries // coil3.decode/DataSource.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.decode/DataSource> // coil3.decode/DataSource.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): coil3.decode/DataSource // coil3.decode/DataSource.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<coil3.decode/DataSource> // coil3.decode/DataSource.values|values#static(){}[0]
+}
+
+final enum class coil3.request/CachePolicy : kotlin/Enum<coil3.request/CachePolicy> { // coil3.request/CachePolicy|null[0]
+    enum entry DISABLED // coil3.request/CachePolicy.DISABLED|null[0]
+    enum entry ENABLED // coil3.request/CachePolicy.ENABLED|null[0]
+    enum entry READ_ONLY // coil3.request/CachePolicy.READ_ONLY|null[0]
+    enum entry WRITE_ONLY // coil3.request/CachePolicy.WRITE_ONLY|null[0]
+
+    final val entries // coil3.request/CachePolicy.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.request/CachePolicy> // coil3.request/CachePolicy.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val readEnabled // coil3.request/CachePolicy.readEnabled|{}readEnabled[0]
+        final fun <get-readEnabled>(): kotlin/Boolean // coil3.request/CachePolicy.readEnabled.<get-readEnabled>|<get-readEnabled>(){}[0]
+    final val writeEnabled // coil3.request/CachePolicy.writeEnabled|{}writeEnabled[0]
+        final fun <get-writeEnabled>(): kotlin/Boolean // coil3.request/CachePolicy.writeEnabled.<get-writeEnabled>|<get-writeEnabled>(){}[0]
+
+    final fun valueOf(kotlin/String): coil3.request/CachePolicy // coil3.request/CachePolicy.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<coil3.request/CachePolicy> // coil3.request/CachePolicy.values|values#static(){}[0]
+}
+
+final enum class coil3.size/Precision : kotlin/Enum<coil3.size/Precision> { // coil3.size/Precision|null[0]
+    enum entry EXACT // coil3.size/Precision.EXACT|null[0]
+    enum entry INEXACT // coil3.size/Precision.INEXACT|null[0]
+
+    final val entries // coil3.size/Precision.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.size/Precision> // coil3.size/Precision.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): coil3.size/Precision // coil3.size/Precision.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<coil3.size/Precision> // coil3.size/Precision.values|values#static(){}[0]
+}
+
+final enum class coil3.size/Scale : kotlin/Enum<coil3.size/Scale> { // coil3.size/Scale|null[0]
+    enum entry FILL // coil3.size/Scale.FILL|null[0]
+    enum entry FIT // coil3.size/Scale.FIT|null[0]
+
+    final val entries // coil3.size/Scale.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.size/Scale> // coil3.size/Scale.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): coil3.size/Scale // coil3.size/Scale.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<coil3.size/Scale> // coil3.size/Scale.values|values#static(){}[0]
+}
+
 abstract fun interface <#A: kotlin/Any, #B: kotlin/Any> coil3.map/Mapper { // coil3.map/Mapper|null[0]
     abstract fun map(#A, coil3.request/Options): #B? // coil3.map/Mapper.map|map(1:0;coil3.request.Options){}[0]
 }
+
 abstract fun interface <#A: kotlin/Any> coil3.key/Keyer { // coil3.key/Keyer|null[0]
     abstract fun key(#A, coil3.request/Options): kotlin/String? // coil3.key/Keyer.key|key(1:0;coil3.request.Options){}[0]
 }
+
 abstract fun interface coil3.decode/Decoder { // coil3.decode/Decoder|null[0]
+    abstract suspend fun decode(): coil3.decode/DecodeResult? // coil3.decode/Decoder.decode|decode(){}[0]
+
     abstract fun interface Factory { // coil3.decode/Decoder.Factory|null[0]
         abstract fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.decode/Decoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
     }
-    abstract suspend fun decode(): coil3.decode/DecodeResult? // coil3.decode/Decoder.decode|decode(){}[0]
 }
+
 abstract fun interface coil3.fetch/Fetcher { // coil3.fetch/Fetcher|null[0]
+    abstract suspend fun fetch(): coil3.fetch/FetchResult? // coil3.fetch/Fetcher.fetch|fetch(){}[0]
+
     abstract fun interface <#A1: kotlin/Any> Factory { // coil3.fetch/Fetcher.Factory|null[0]
         abstract fun create(#A1, coil3.request/Options, coil3/ImageLoader): coil3.fetch/Fetcher? // coil3.fetch/Fetcher.Factory.create|create(1:0;coil3.request.Options;coil3.ImageLoader){}[0]
     }
-    abstract suspend fun fetch(): coil3.fetch/FetchResult? // coil3.fetch/Fetcher.fetch|fetch(){}[0]
 }
+
 abstract fun interface coil3.intercept/Interceptor { // coil3.intercept/Interceptor|null[0]
+    abstract suspend fun intercept(coil3.intercept/Interceptor.Chain): coil3.request/ImageResult // coil3.intercept/Interceptor.intercept|intercept(coil3.intercept.Interceptor.Chain){}[0]
+
     abstract interface Chain { // coil3.intercept/Interceptor.Chain|null[0]
-        abstract fun withRequest(coil3.request/ImageRequest): coil3.intercept/Interceptor.Chain // coil3.intercept/Interceptor.Chain.withRequest|withRequest(coil3.request.ImageRequest){}[0]
-        abstract fun withSize(coil3.size/Size): coil3.intercept/Interceptor.Chain // coil3.intercept/Interceptor.Chain.withSize|withSize(coil3.size.Size){}[0]
-        abstract suspend fun proceed(): coil3.request/ImageResult // coil3.intercept/Interceptor.Chain.proceed|proceed(){}[0]
         abstract val request // coil3.intercept/Interceptor.Chain.request|{}request[0]
             abstract fun <get-request>(): coil3.request/ImageRequest // coil3.intercept/Interceptor.Chain.request.<get-request>|<get-request>(){}[0]
         abstract val size // coil3.intercept/Interceptor.Chain.size|{}size[0]
             abstract fun <get-size>(): coil3.size/Size // coil3.intercept/Interceptor.Chain.size.<get-size>|<get-size>(){}[0]
+
+        abstract fun withRequest(coil3.request/ImageRequest): coil3.intercept/Interceptor.Chain // coil3.intercept/Interceptor.Chain.withRequest|withRequest(coil3.request.ImageRequest){}[0]
+        abstract fun withSize(coil3.size/Size): coil3.intercept/Interceptor.Chain // coil3.intercept/Interceptor.Chain.withSize|withSize(coil3.size.Size){}[0]
+        abstract suspend fun proceed(): coil3.request/ImageResult // coil3.intercept/Interceptor.Chain.proceed|proceed(){}[0]
     }
-    abstract suspend fun intercept(coil3.intercept/Interceptor.Chain): coil3.request/ImageResult // coil3.intercept/Interceptor.intercept|intercept(coil3.intercept.Interceptor.Chain){}[0]
 }
+
 abstract fun interface coil3.size/SizeResolver { // coil3.size/SizeResolver|null[0]
     abstract suspend fun size(): coil3.size/Size // coil3.size/SizeResolver.size|size(){}[0]
+
     final object Companion { // coil3.size/SizeResolver.Companion|null[0]
         final val ORIGINAL // coil3.size/SizeResolver.Companion.ORIGINAL|{}ORIGINAL[0]
             final fun <get-ORIGINAL>(): coil3.size/SizeResolver // coil3.size/SizeResolver.Companion.ORIGINAL.<get-ORIGINAL>|<get-ORIGINAL>(){}[0]
     }
 }
+
 abstract interface <#A: kotlin/Any> coil3.util/FetcherServiceLoaderTarget { // coil3.util/FetcherServiceLoaderTarget|null[0]
     abstract fun factory(): coil3.fetch/Fetcher.Factory<#A>? // coil3.util/FetcherServiceLoaderTarget.factory|factory(){}[0]
     abstract fun type(): kotlin.reflect/KClass<#A>? // coil3.util/FetcherServiceLoaderTarget.type|type(){}[0]
     open fun priority(): kotlin/Int // coil3.util/FetcherServiceLoaderTarget.priority|priority(){}[0]
 }
+
 abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
-    abstract fun clear() // coil3.disk/DiskCache.clear|clear(){}[0]
-    abstract fun openEditor(kotlin/String): coil3.disk/DiskCache.Editor? // coil3.disk/DiskCache.openEditor|openEditor(kotlin.String){}[0]
-    abstract fun openSnapshot(kotlin/String): coil3.disk/DiskCache.Snapshot? // coil3.disk/DiskCache.openSnapshot|openSnapshot(kotlin.String){}[0]
-    abstract fun remove(kotlin/String): kotlin/Boolean // coil3.disk/DiskCache.remove|remove(kotlin.String){}[0]
-    abstract fun shutdown() // coil3.disk/DiskCache.shutdown|shutdown(){}[0]
-    abstract interface Editor { // coil3.disk/DiskCache.Editor|null[0]
-        abstract fun abort() // coil3.disk/DiskCache.Editor.abort|abort(){}[0]
-        abstract fun commit() // coil3.disk/DiskCache.Editor.commit|commit(){}[0]
-        abstract fun commitAndOpenSnapshot(): coil3.disk/DiskCache.Snapshot? // coil3.disk/DiskCache.Editor.commitAndOpenSnapshot|commitAndOpenSnapshot(){}[0]
-        abstract val data // coil3.disk/DiskCache.Editor.data|{}data[0]
-            abstract fun <get-data>(): okio/Path // coil3.disk/DiskCache.Editor.data.<get-data>|<get-data>(){}[0]
-        abstract val metadata // coil3.disk/DiskCache.Editor.metadata|{}metadata[0]
-            abstract fun <get-metadata>(): okio/Path // coil3.disk/DiskCache.Editor.metadata.<get-metadata>|<get-metadata>(){}[0]
-    }
-    abstract interface Snapshot : kotlin/AutoCloseable { // coil3.disk/DiskCache.Snapshot|null[0]
-        abstract fun close() // coil3.disk/DiskCache.Snapshot.close|close(){}[0]
-        abstract fun closeAndOpenEditor(): coil3.disk/DiskCache.Editor? // coil3.disk/DiskCache.Snapshot.closeAndOpenEditor|closeAndOpenEditor(){}[0]
-        abstract val data // coil3.disk/DiskCache.Snapshot.data|{}data[0]
-            abstract fun <get-data>(): okio/Path // coil3.disk/DiskCache.Snapshot.data.<get-data>|<get-data>(){}[0]
-        abstract val metadata // coil3.disk/DiskCache.Snapshot.metadata|{}metadata[0]
-            abstract fun <get-metadata>(): okio/Path // coil3.disk/DiskCache.Snapshot.metadata.<get-metadata>|<get-metadata>(){}[0]
-    }
     abstract val directory // coil3.disk/DiskCache.directory|{}directory[0]
         abstract fun <get-directory>(): okio/Path // coil3.disk/DiskCache.directory.<get-directory>|<get-directory>(){}[0]
     abstract val fileSystem // coil3.disk/DiskCache.fileSystem|{}fileSystem[0]
@@ -114,8 +138,37 @@ abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
         abstract fun <get-maxSize>(): kotlin/Long // coil3.disk/DiskCache.maxSize.<get-maxSize>|<get-maxSize>(){}[0]
     abstract val size // coil3.disk/DiskCache.size|{}size[0]
         abstract fun <get-size>(): kotlin/Long // coil3.disk/DiskCache.size.<get-size>|<get-size>(){}[0]
+
+    abstract fun clear() // coil3.disk/DiskCache.clear|clear(){}[0]
+    abstract fun openEditor(kotlin/String): coil3.disk/DiskCache.Editor? // coil3.disk/DiskCache.openEditor|openEditor(kotlin.String){}[0]
+    abstract fun openSnapshot(kotlin/String): coil3.disk/DiskCache.Snapshot? // coil3.disk/DiskCache.openSnapshot|openSnapshot(kotlin.String){}[0]
+    abstract fun remove(kotlin/String): kotlin/Boolean // coil3.disk/DiskCache.remove|remove(kotlin.String){}[0]
+    abstract fun shutdown() // coil3.disk/DiskCache.shutdown|shutdown(){}[0]
+
+    abstract interface Editor { // coil3.disk/DiskCache.Editor|null[0]
+        abstract val data // coil3.disk/DiskCache.Editor.data|{}data[0]
+            abstract fun <get-data>(): okio/Path // coil3.disk/DiskCache.Editor.data.<get-data>|<get-data>(){}[0]
+        abstract val metadata // coil3.disk/DiskCache.Editor.metadata|{}metadata[0]
+            abstract fun <get-metadata>(): okio/Path // coil3.disk/DiskCache.Editor.metadata.<get-metadata>|<get-metadata>(){}[0]
+
+        abstract fun abort() // coil3.disk/DiskCache.Editor.abort|abort(){}[0]
+        abstract fun commit() // coil3.disk/DiskCache.Editor.commit|commit(){}[0]
+        abstract fun commitAndOpenSnapshot(): coil3.disk/DiskCache.Snapshot? // coil3.disk/DiskCache.Editor.commitAndOpenSnapshot|commitAndOpenSnapshot(){}[0]
+    }
+
+    abstract interface Snapshot : kotlin/AutoCloseable { // coil3.disk/DiskCache.Snapshot|null[0]
+        abstract val data // coil3.disk/DiskCache.Snapshot.data|{}data[0]
+            abstract fun <get-data>(): okio/Path // coil3.disk/DiskCache.Snapshot.data.<get-data>|<get-data>(){}[0]
+        abstract val metadata // coil3.disk/DiskCache.Snapshot.metadata|{}metadata[0]
+            abstract fun <get-metadata>(): okio/Path // coil3.disk/DiskCache.Snapshot.metadata.<get-metadata>|<get-metadata>(){}[0]
+
+        abstract fun close() // coil3.disk/DiskCache.Snapshot.close|close(){}[0]
+        abstract fun closeAndOpenEditor(): coil3.disk/DiskCache.Editor? // coil3.disk/DiskCache.Snapshot.closeAndOpenEditor|closeAndOpenEditor(){}[0]
+    }
+
     final class Builder { // coil3.disk/DiskCache.Builder|null[0]
         constructor <init>() // coil3.disk/DiskCache.Builder.<init>|<init>(){}[0]
+
         final fun build(): coil3.disk/DiskCache // coil3.disk/DiskCache.Builder.build|build(){}[0]
         final fun cleanupDispatcher(kotlinx.coroutines/CoroutineDispatcher): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.cleanupDispatcher|cleanupDispatcher(kotlinx.coroutines.CoroutineDispatcher){}[0]
         final fun directory(okio/Path): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.directory|directory(okio.Path){}[0]
@@ -126,20 +179,24 @@ abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
         final fun minimumMaxSizeBytes(kotlin/Long): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.minimumMaxSizeBytes|minimumMaxSizeBytes(kotlin.Long){}[0]
     }
 }
+
 abstract interface coil3.memory/MemoryCache { // coil3.memory/MemoryCache|null[0]
-    abstract fun clear() // coil3.memory/MemoryCache.clear|clear(){}[0]
-    abstract fun get(coil3.memory/MemoryCache.Key): coil3.memory/MemoryCache.Value? // coil3.memory/MemoryCache.get|get(coil3.memory.MemoryCache.Key){}[0]
-    abstract fun remove(coil3.memory/MemoryCache.Key): kotlin/Boolean // coil3.memory/MemoryCache.remove|remove(coil3.memory.MemoryCache.Key){}[0]
-    abstract fun set(coil3.memory/MemoryCache.Key, coil3.memory/MemoryCache.Value) // coil3.memory/MemoryCache.set|set(coil3.memory.MemoryCache.Key;coil3.memory.MemoryCache.Value){}[0]
-    abstract fun trimToSize(kotlin/Long) // coil3.memory/MemoryCache.trimToSize|trimToSize(kotlin.Long){}[0]
     abstract val keys // coil3.memory/MemoryCache.keys|{}keys[0]
         abstract fun <get-keys>(): kotlin.collections/Set<coil3.memory/MemoryCache.Key> // coil3.memory/MemoryCache.keys.<get-keys>|<get-keys>(){}[0]
     abstract val maxSize // coil3.memory/MemoryCache.maxSize|{}maxSize[0]
         abstract fun <get-maxSize>(): kotlin/Long // coil3.memory/MemoryCache.maxSize.<get-maxSize>|<get-maxSize>(){}[0]
     abstract val size // coil3.memory/MemoryCache.size|{}size[0]
         abstract fun <get-size>(): kotlin/Long // coil3.memory/MemoryCache.size.<get-size>|<get-size>(){}[0]
+
+    abstract fun clear() // coil3.memory/MemoryCache.clear|clear(){}[0]
+    abstract fun get(coil3.memory/MemoryCache.Key): coil3.memory/MemoryCache.Value? // coil3.memory/MemoryCache.get|get(coil3.memory.MemoryCache.Key){}[0]
+    abstract fun remove(coil3.memory/MemoryCache.Key): kotlin/Boolean // coil3.memory/MemoryCache.remove|remove(coil3.memory.MemoryCache.Key){}[0]
+    abstract fun set(coil3.memory/MemoryCache.Key, coil3.memory/MemoryCache.Value) // coil3.memory/MemoryCache.set|set(coil3.memory.MemoryCache.Key;coil3.memory.MemoryCache.Value){}[0]
+    abstract fun trimToSize(kotlin/Long) // coil3.memory/MemoryCache.trimToSize|trimToSize(kotlin.Long){}[0]
+
     final class Builder { // coil3.memory/MemoryCache.Builder|null[0]
         constructor <init>() // coil3.memory/MemoryCache.Builder.<init>|<init>(){}[0]
+
         final fun build(): coil3.memory/MemoryCache // coil3.memory/MemoryCache.Builder.build|build(){}[0]
         final fun maxSizeBytes(kotlin/Function0<kotlin/Long>): coil3.memory/MemoryCache.Builder // coil3.memory/MemoryCache.Builder.maxSizeBytes|maxSizeBytes(kotlin.Function0<kotlin.Long>){}[0]
         final fun maxSizeBytes(kotlin/Long): coil3.memory/MemoryCache.Builder // coil3.memory/MemoryCache.Builder.maxSizeBytes|maxSizeBytes(kotlin.Long){}[0]
@@ -147,64 +204,79 @@ abstract interface coil3.memory/MemoryCache { // coil3.memory/MemoryCache|null[0
         final fun strongReferencesEnabled(kotlin/Boolean): coil3.memory/MemoryCache.Builder // coil3.memory/MemoryCache.Builder.strongReferencesEnabled|strongReferencesEnabled(kotlin.Boolean){}[0]
         final fun weakReferencesEnabled(kotlin/Boolean): coil3.memory/MemoryCache.Builder // coil3.memory/MemoryCache.Builder.weakReferencesEnabled|weakReferencesEnabled(kotlin.Boolean){}[0]
     }
+
     final class Key { // coil3.memory/MemoryCache.Key|null[0]
         constructor <init>(kotlin/String, kotlin.collections/Map<kotlin/String, kotlin/String> = ...) // coil3.memory/MemoryCache.Key.<init>|<init>(kotlin.String;kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
-        final fun copy(kotlin/String = ..., kotlin.collections/Map<kotlin/String, kotlin/String> = ...): coil3.memory/MemoryCache.Key // coil3.memory/MemoryCache.Key.copy|copy(kotlin.String;kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.memory/MemoryCache.Key.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.memory/MemoryCache.Key.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.memory/MemoryCache.Key.toString|toString(){}[0]
+
         final val extras // coil3.memory/MemoryCache.Key.extras|{}extras[0]
             final fun <get-extras>(): kotlin.collections/Map<kotlin/String, kotlin/String> // coil3.memory/MemoryCache.Key.extras.<get-extras>|<get-extras>(){}[0]
         final val key // coil3.memory/MemoryCache.Key.key|{}key[0]
             final fun <get-key>(): kotlin/String // coil3.memory/MemoryCache.Key.key.<get-key>|<get-key>(){}[0]
+
+        final fun copy(kotlin/String = ..., kotlin.collections/Map<kotlin/String, kotlin/String> = ...): coil3.memory/MemoryCache.Key // coil3.memory/MemoryCache.Key.copy|copy(kotlin.String;kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.memory/MemoryCache.Key.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.memory/MemoryCache.Key.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.memory/MemoryCache.Key.toString|toString(){}[0]
     }
+
     final class Value { // coil3.memory/MemoryCache.Value|null[0]
         constructor <init>(coil3/Image, kotlin.collections/Map<kotlin/String, kotlin/Any> = ...) // coil3.memory/MemoryCache.Value.<init>|<init>(coil3.Image;kotlin.collections.Map<kotlin.String,kotlin.Any>){}[0]
-        final fun copy(coil3/Image = ..., kotlin.collections/Map<kotlin/String, kotlin/Any> = ...): coil3.memory/MemoryCache.Value // coil3.memory/MemoryCache.Value.copy|copy(coil3.Image;kotlin.collections.Map<kotlin.String,kotlin.Any>){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.memory/MemoryCache.Value.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.memory/MemoryCache.Value.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.memory/MemoryCache.Value.toString|toString(){}[0]
+
         final val extras // coil3.memory/MemoryCache.Value.extras|{}extras[0]
             final fun <get-extras>(): kotlin.collections/Map<kotlin/String, kotlin/Any> // coil3.memory/MemoryCache.Value.extras.<get-extras>|<get-extras>(){}[0]
         final val image // coil3.memory/MemoryCache.Value.image|{}image[0]
             final fun <get-image>(): coil3/Image // coil3.memory/MemoryCache.Value.image.<get-image>|<get-image>(){}[0]
+
+        final fun copy(coil3/Image = ..., kotlin.collections/Map<kotlin/String, kotlin/Any> = ...): coil3.memory/MemoryCache.Value // coil3.memory/MemoryCache.Value.copy|copy(coil3.Image;kotlin.collections.Map<kotlin.String,kotlin.Any>){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.memory/MemoryCache.Value.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.memory/MemoryCache.Value.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.memory/MemoryCache.Value.toString|toString(){}[0]
     }
 }
+
 abstract interface coil3.request/Disposable { // coil3.request/Disposable|null[0]
-    abstract fun dispose() // coil3.request/Disposable.dispose|dispose(){}[0]
     abstract val isDisposed // coil3.request/Disposable.isDisposed|{}isDisposed[0]
         abstract fun <get-isDisposed>(): kotlin/Boolean // coil3.request/Disposable.isDisposed.<get-isDisposed>|<get-isDisposed>(){}[0]
     abstract val job // coil3.request/Disposable.job|{}job[0]
         abstract fun <get-job>(): kotlinx.coroutines/Deferred<coil3.request/ImageResult> // coil3.request/Disposable.job.<get-job>|<get-job>(){}[0]
+
+    abstract fun dispose() // coil3.request/Disposable.dispose|dispose(){}[0]
 }
+
 abstract interface coil3.target/Target { // coil3.target/Target|null[0]
     open fun onError(coil3/Image?) // coil3.target/Target.onError|onError(coil3.Image?){}[0]
     open fun onStart(coil3/Image?) // coil3.target/Target.onStart|onStart(coil3.Image?){}[0]
     open fun onSuccess(coil3/Image) // coil3.target/Target.onSuccess|onSuccess(coil3.Image){}[0]
 }
+
 abstract interface coil3.util/DecoderServiceLoaderTarget { // coil3.util/DecoderServiceLoaderTarget|null[0]
     abstract fun factory(): coil3.decode/Decoder.Factory? // coil3.util/DecoderServiceLoaderTarget.factory|factory(){}[0]
     open fun priority(): kotlin/Int // coil3.util/DecoderServiceLoaderTarget.priority|priority(){}[0]
 }
+
 abstract interface coil3.util/Logger { // coil3.util/Logger|null[0]
-    abstract fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/Logger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
     abstract var minLevel // coil3.util/Logger.minLevel|{}minLevel[0]
         abstract fun <get-minLevel>(): coil3.util/Logger.Level // coil3.util/Logger.minLevel.<get-minLevel>|<get-minLevel>(){}[0]
         abstract fun <set-minLevel>(coil3.util/Logger.Level) // coil3.util/Logger.minLevel.<set-minLevel>|<set-minLevel>(coil3.util.Logger.Level){}[0]
+
+    abstract fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/Logger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
+
     final enum class Level : kotlin/Enum<coil3.util/Logger.Level> { // coil3.util/Logger.Level|null[0]
         enum entry Debug // coil3.util/Logger.Level.Debug|null[0]
         enum entry Error // coil3.util/Logger.Level.Error|null[0]
         enum entry Info // coil3.util/Logger.Level.Info|null[0]
         enum entry Verbose // coil3.util/Logger.Level.Verbose|null[0]
         enum entry Warn // coil3.util/Logger.Level.Warn|null[0]
-        final fun valueOf(kotlin/String): coil3.util/Logger.Level // coil3.util/Logger.Level.valueOf|valueOf#static(kotlin.String){}[0]
-        final fun values(): kotlin/Array<coil3.util/Logger.Level> // coil3.util/Logger.Level.values|values#static(){}[0]
+
         final val entries // coil3.util/Logger.Level.entries|#static{}entries[0]
             final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.util/Logger.Level> // coil3.util/Logger.Level.entries.<get-entries>|<get-entries>#static(){}[0]
+
+        final fun valueOf(kotlin/String): coil3.util/Logger.Level // coil3.util/Logger.Level.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<coil3.util/Logger.Level> // coil3.util/Logger.Level.values|values#static(){}[0]
     }
 }
+
 abstract interface coil3/Image { // coil3/Image|null[0]
-    abstract fun draw(org.jetbrains.skia/Canvas) // coil3/Image.draw|draw(org.jetbrains.skia.Canvas){}[0]
     abstract val height // coil3/Image.height|{}height[0]
         abstract fun <get-height>(): kotlin/Int // coil3/Image.height.<get-height>|<get-height>(){}[0]
     abstract val shareable // coil3/Image.shareable|{}shareable[0]
@@ -213,12 +285,11 @@ abstract interface coil3/Image { // coil3/Image|null[0]
         abstract fun <get-size>(): kotlin/Long // coil3/Image.size.<get-size>|<get-size>(){}[0]
     abstract val width // coil3/Image.width|{}width[0]
         abstract fun <get-width>(): kotlin/Int // coil3/Image.width.<get-width>|<get-width>(){}[0]
+
+    abstract fun draw(org.jetbrains.skia/Canvas) // coil3/Image.draw|draw(org.jetbrains.skia.Canvas){}[0]
 }
+
 abstract interface coil3/ImageLoader { // coil3/ImageLoader|null[0]
-    abstract fun enqueue(coil3.request/ImageRequest): coil3.request/Disposable // coil3/ImageLoader.enqueue|enqueue(coil3.request.ImageRequest){}[0]
-    abstract fun newBuilder(): coil3/ImageLoader.Builder // coil3/ImageLoader.newBuilder|newBuilder(){}[0]
-    abstract fun shutdown() // coil3/ImageLoader.shutdown|shutdown(){}[0]
-    abstract suspend fun execute(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/ImageLoader.execute|execute(coil3.request.ImageRequest){}[0]
     abstract val components // coil3/ImageLoader.components|{}components[0]
         abstract fun <get-components>(): coil3/ComponentRegistry // coil3/ImageLoader.components.<get-components>|<get-components>(){}[0]
     abstract val defaults // coil3/ImageLoader.defaults|{}defaults[0]
@@ -227,8 +298,18 @@ abstract interface coil3/ImageLoader { // coil3/ImageLoader|null[0]
         abstract fun <get-diskCache>(): coil3.disk/DiskCache? // coil3/ImageLoader.diskCache.<get-diskCache>|<get-diskCache>(){}[0]
     abstract val memoryCache // coil3/ImageLoader.memoryCache|{}memoryCache[0]
         abstract fun <get-memoryCache>(): coil3.memory/MemoryCache? // coil3/ImageLoader.memoryCache.<get-memoryCache>|<get-memoryCache>(){}[0]
+
+    abstract fun enqueue(coil3.request/ImageRequest): coil3.request/Disposable // coil3/ImageLoader.enqueue|enqueue(coil3.request.ImageRequest){}[0]
+    abstract fun newBuilder(): coil3/ImageLoader.Builder // coil3/ImageLoader.newBuilder|newBuilder(){}[0]
+    abstract fun shutdown() // coil3/ImageLoader.shutdown|shutdown(){}[0]
+    abstract suspend fun execute(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/ImageLoader.execute|execute(coil3.request.ImageRequest){}[0]
+
     final class Builder { // coil3/ImageLoader.Builder|null[0]
         constructor <init>(coil3/PlatformContext) // coil3/ImageLoader.Builder.<init>|<init>(coil3.PlatformContext){}[0]
+
+        final val extras // coil3/ImageLoader.Builder.extras|{}extras[0]
+            final fun <get-extras>(): coil3/Extras.Builder // coil3/ImageLoader.Builder.extras.<get-extras>|<get-extras>(){}[0]
+
         final fun build(): coil3/ImageLoader // coil3/ImageLoader.Builder.build|build(){}[0]
         final fun components(coil3/ComponentRegistry): coil3/ImageLoader.Builder // coil3/ImageLoader.Builder.components|components(coil3.ComponentRegistry){}[0]
         final fun coroutineContext(kotlin.coroutines/CoroutineContext): coil3/ImageLoader.Builder // coil3/ImageLoader.Builder.coroutineContext|coroutineContext(kotlin.coroutines.CoroutineContext){}[0]
@@ -254,199 +335,171 @@ abstract interface coil3/ImageLoader { // coil3/ImageLoader|null[0]
         final fun placeholder(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3/ImageLoader.Builder // coil3/ImageLoader.Builder.placeholder|placeholder(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
         final fun precision(coil3.size/Precision): coil3/ImageLoader.Builder // coil3/ImageLoader.Builder.precision|precision(coil3.size.Precision){}[0]
         final inline fun components(kotlin/Function1<coil3/ComponentRegistry.Builder, kotlin/Unit>): coil3/ImageLoader.Builder // coil3/ImageLoader.Builder.components|components(kotlin.Function1<coil3.ComponentRegistry.Builder,kotlin.Unit>){}[0]
-        final val extras // coil3/ImageLoader.Builder.extras|{}extras[0]
-            final fun <get-extras>(): coil3/Extras.Builder // coil3/ImageLoader.Builder.extras.<get-extras>|<get-extras>(){}[0]
     }
 }
+
+sealed interface coil3.decode/ImageSource : kotlin/AutoCloseable { // coil3.decode/ImageSource|null[0]
+    abstract val fileSystem // coil3.decode/ImageSource.fileSystem|{}fileSystem[0]
+        abstract fun <get-fileSystem>(): okio/FileSystem // coil3.decode/ImageSource.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
+    abstract val metadata // coil3.decode/ImageSource.metadata|{}metadata[0]
+        abstract fun <get-metadata>(): coil3.decode/ImageSource.Metadata? // coil3.decode/ImageSource.metadata.<get-metadata>|<get-metadata>(){}[0]
+
+    abstract fun file(): okio/Path // coil3.decode/ImageSource.file|file(){}[0]
+    abstract fun fileOrNull(): okio/Path? // coil3.decode/ImageSource.fileOrNull|fileOrNull(){}[0]
+    abstract fun source(): okio/BufferedSource // coil3.decode/ImageSource.source|source(){}[0]
+    abstract fun sourceOrNull(): okio/BufferedSource? // coil3.decode/ImageSource.sourceOrNull|sourceOrNull(){}[0]
+
+    abstract class Metadata { // coil3.decode/ImageSource.Metadata|null[0]
+        constructor <init>() // coil3.decode/ImageSource.Metadata.<init>|<init>(){}[0]
+    }
+}
+
+sealed interface coil3.fetch/FetchResult // coil3.fetch/FetchResult|null[0]
+
+sealed interface coil3.request/ImageResult { // coil3.request/ImageResult|null[0]
+    abstract val image // coil3.request/ImageResult.image|{}image[0]
+        abstract fun <get-image>(): coil3/Image? // coil3.request/ImageResult.image.<get-image>|<get-image>(){}[0]
+    abstract val request // coil3.request/ImageResult.request|{}request[0]
+        abstract fun <get-request>(): coil3.request/ImageRequest // coil3.request/ImageResult.request.<get-request>|<get-request>(){}[0]
+}
+
+sealed interface coil3.size/Dimension { // coil3.size/Dimension|null[0]
+    final class Pixels : coil3.size/Dimension { // coil3.size/Dimension.Pixels|null[0]
+        constructor <init>(kotlin/Int) // coil3.size/Dimension.Pixels.<init>|<init>(kotlin.Int){}[0]
+
+        final val px // coil3.size/Dimension.Pixels.px|{}px[0]
+            final fun <get-px>(): kotlin/Int // coil3.size/Dimension.Pixels.px.<get-px>|<get-px>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.size/Dimension.Pixels.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.size/Dimension.Pixels.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.size/Dimension.Pixels.toString|toString(){}[0]
+    }
+
+    final object Undefined : coil3.size/Dimension { // coil3.size/Dimension.Undefined|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.size/Dimension.Undefined.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.size/Dimension.Undefined.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.size/Dimension.Undefined.toString|toString(){}[0]
+    }
+}
+
+abstract class coil3/EventListener : coil3.request/ImageRequest.Listener { // coil3/EventListener|null[0]
+    constructor <init>() // coil3/EventListener.<init>|<init>(){}[0]
+
+    open fun decodeEnd(coil3.request/ImageRequest, coil3.decode/Decoder, coil3.request/Options, coil3.decode/DecodeResult?) // coil3/EventListener.decodeEnd|decodeEnd(coil3.request.ImageRequest;coil3.decode.Decoder;coil3.request.Options;coil3.decode.DecodeResult?){}[0]
+    open fun decodeStart(coil3.request/ImageRequest, coil3.decode/Decoder, coil3.request/Options) // coil3/EventListener.decodeStart|decodeStart(coil3.request.ImageRequest;coil3.decode.Decoder;coil3.request.Options){}[0]
+    open fun fetchEnd(coil3.request/ImageRequest, coil3.fetch/Fetcher, coil3.request/Options, coil3.fetch/FetchResult?) // coil3/EventListener.fetchEnd|fetchEnd(coil3.request.ImageRequest;coil3.fetch.Fetcher;coil3.request.Options;coil3.fetch.FetchResult?){}[0]
+    open fun fetchStart(coil3.request/ImageRequest, coil3.fetch/Fetcher, coil3.request/Options) // coil3/EventListener.fetchStart|fetchStart(coil3.request.ImageRequest;coil3.fetch.Fetcher;coil3.request.Options){}[0]
+    open fun keyEnd(coil3.request/ImageRequest, kotlin/String?) // coil3/EventListener.keyEnd|keyEnd(coil3.request.ImageRequest;kotlin.String?){}[0]
+    open fun keyStart(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.keyStart|keyStart(coil3.request.ImageRequest;kotlin.Any){}[0]
+    open fun mapEnd(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.mapEnd|mapEnd(coil3.request.ImageRequest;kotlin.Any){}[0]
+    open fun mapStart(coil3.request/ImageRequest, kotlin/Any) // coil3/EventListener.mapStart|mapStart(coil3.request.ImageRequest;kotlin.Any){}[0]
+    open fun onCancel(coil3.request/ImageRequest) // coil3/EventListener.onCancel|onCancel(coil3.request.ImageRequest){}[0]
+    open fun onError(coil3.request/ImageRequest, coil3.request/ErrorResult) // coil3/EventListener.onError|onError(coil3.request.ImageRequest;coil3.request.ErrorResult){}[0]
+    open fun onStart(coil3.request/ImageRequest) // coil3/EventListener.onStart|onStart(coil3.request.ImageRequest){}[0]
+    open fun onSuccess(coil3.request/ImageRequest, coil3.request/SuccessResult) // coil3/EventListener.onSuccess|onSuccess(coil3.request.ImageRequest;coil3.request.SuccessResult){}[0]
+    open fun resolveSizeEnd(coil3.request/ImageRequest, coil3.size/Size) // coil3/EventListener.resolveSizeEnd|resolveSizeEnd(coil3.request.ImageRequest;coil3.size.Size){}[0]
+    open fun resolveSizeStart(coil3.request/ImageRequest, coil3.size/SizeResolver) // coil3/EventListener.resolveSizeStart|resolveSizeStart(coil3.request.ImageRequest;coil3.size.SizeResolver){}[0]
+
+    abstract fun interface Factory { // coil3/EventListener.Factory|null[0]
+        abstract fun create(coil3.request/ImageRequest): coil3/EventListener // coil3/EventListener.Factory.create|create(coil3.request.ImageRequest){}[0]
+
+        final object Companion { // coil3/EventListener.Factory.Companion|null[0]
+            final val NONE // coil3/EventListener.Factory.Companion.NONE|{}NONE[0]
+                final fun <get-NONE>(): coil3/EventListener.Factory // coil3/EventListener.Factory.Companion.NONE.<get-NONE>|<get-NONE>(){}[0]
+        }
+    }
+
+    final object Companion { // coil3/EventListener.Companion|null[0]
+        final val NONE // coil3/EventListener.Companion.NONE|{}NONE[0]
+            final fun <get-NONE>(): coil3/EventListener // coil3/EventListener.Companion.NONE.<get-NONE>|<get-NONE>(){}[0]
+    }
+}
+
+abstract class coil3/PlatformContext { // coil3/PlatformContext|null[0]
+    final object Companion { // coil3/PlatformContext.Companion|null[0]
+        final val INSTANCE // coil3/PlatformContext.Companion.INSTANCE|{}INSTANCE[0]
+            final fun <get-INSTANCE>(): coil3/PlatformContext // coil3/PlatformContext.Companion.INSTANCE.<get-INSTANCE>|<get-INSTANCE>(){}[0]
+    }
+}
+
 final class coil3.decode/DecodeResult { // coil3.decode/DecodeResult|null[0]
     constructor <init>(coil3/Image, kotlin/Boolean) // coil3.decode/DecodeResult.<init>|<init>(coil3.Image;kotlin.Boolean){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.decode/DecodeResult.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.decode/DecodeResult.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.decode/DecodeResult.toString|toString(){}[0]
+
     final val image // coil3.decode/DecodeResult.image|{}image[0]
         final fun <get-image>(): coil3/Image // coil3.decode/DecodeResult.image.<get-image>|<get-image>(){}[0]
     final val isSampled // coil3.decode/DecodeResult.isSampled|{}isSampled[0]
         final fun <get-isSampled>(): kotlin/Boolean // coil3.decode/DecodeResult.isSampled.<get-isSampled>|<get-isSampled>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.decode/DecodeResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.decode/DecodeResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.decode/DecodeResult.toString|toString(){}[0]
 }
+
 final class coil3.decode/SkiaImageDecoder : coil3.decode/Decoder { // coil3.decode/SkiaImageDecoder|null[0]
     constructor <init>(coil3.decode/ImageSource, coil3.request/Options) // coil3.decode/SkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options){}[0]
+
+    final suspend fun decode(): coil3.decode/DecodeResult // coil3.decode/SkiaImageDecoder.decode|decode(){}[0]
+
     final class Factory : coil3.decode/Decoder.Factory { // coil3.decode/SkiaImageDecoder.Factory|null[0]
         constructor <init>() // coil3.decode/SkiaImageDecoder.Factory.<init>|<init>(){}[0]
+
         final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder // coil3.decode/SkiaImageDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
     }
-    final suspend fun decode(): coil3.decode/DecodeResult // coil3.decode/SkiaImageDecoder.decode|decode(){}[0]
 }
+
 final class coil3.fetch/ImageFetchResult : coil3.fetch/FetchResult { // coil3.fetch/ImageFetchResult|null[0]
     constructor <init>(coil3/Image, kotlin/Boolean, coil3.decode/DataSource) // coil3.fetch/ImageFetchResult.<init>|<init>(coil3.Image;kotlin.Boolean;coil3.decode.DataSource){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.fetch/ImageFetchResult.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.fetch/ImageFetchResult.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.fetch/ImageFetchResult.toString|toString(){}[0]
+
     final val dataSource // coil3.fetch/ImageFetchResult.dataSource|{}dataSource[0]
         final fun <get-dataSource>(): coil3.decode/DataSource // coil3.fetch/ImageFetchResult.dataSource.<get-dataSource>|<get-dataSource>(){}[0]
     final val image // coil3.fetch/ImageFetchResult.image|{}image[0]
         final fun <get-image>(): coil3/Image // coil3.fetch/ImageFetchResult.image.<get-image>|<get-image>(){}[0]
     final val isSampled // coil3.fetch/ImageFetchResult.isSampled|{}isSampled[0]
         final fun <get-isSampled>(): kotlin/Boolean // coil3.fetch/ImageFetchResult.isSampled.<get-isSampled>|<get-isSampled>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.fetch/ImageFetchResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.fetch/ImageFetchResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.fetch/ImageFetchResult.toString|toString(){}[0]
 }
+
 final class coil3.fetch/SourceFetchResult : coil3.fetch/FetchResult { // coil3.fetch/SourceFetchResult|null[0]
     constructor <init>(coil3.decode/ImageSource, kotlin/String?, coil3.decode/DataSource) // coil3.fetch/SourceFetchResult.<init>|<init>(coil3.decode.ImageSource;kotlin.String?;coil3.decode.DataSource){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.fetch/SourceFetchResult.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.fetch/SourceFetchResult.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.fetch/SourceFetchResult.toString|toString(){}[0]
+
     final val dataSource // coil3.fetch/SourceFetchResult.dataSource|{}dataSource[0]
         final fun <get-dataSource>(): coil3.decode/DataSource // coil3.fetch/SourceFetchResult.dataSource.<get-dataSource>|<get-dataSource>(){}[0]
     final val mimeType // coil3.fetch/SourceFetchResult.mimeType|{}mimeType[0]
         final fun <get-mimeType>(): kotlin/String? // coil3.fetch/SourceFetchResult.mimeType.<get-mimeType>|<get-mimeType>(){}[0]
     final val source // coil3.fetch/SourceFetchResult.source|{}source[0]
         final fun <get-source>(): coil3.decode/ImageSource // coil3.fetch/SourceFetchResult.source.<get-source>|<get-source>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.fetch/SourceFetchResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.fetch/SourceFetchResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.fetch/SourceFetchResult.toString|toString(){}[0]
 }
+
 final class coil3.key/FileUriKeyer : coil3.key/Keyer<coil3/Uri> { // coil3.key/FileUriKeyer|null[0]
     constructor <init>(kotlin/Boolean) // coil3.key/FileUriKeyer.<init>|<init>(kotlin.Boolean){}[0]
+
     final fun key(coil3/Uri, coil3.request/Options): kotlin/String? // coil3.key/FileUriKeyer.key|key(coil3.Uri;coil3.request.Options){}[0]
 }
+
 final class coil3.request/ErrorResult : coil3.request/ImageResult { // coil3.request/ErrorResult|null[0]
     constructor <init>(coil3/Image?, coil3.request/ImageRequest, kotlin/Throwable) // coil3.request/ErrorResult.<init>|<init>(coil3.Image?;coil3.request.ImageRequest;kotlin.Throwable){}[0]
-    final fun copy(coil3/Image? = ..., coil3.request/ImageRequest = ..., kotlin/Throwable = ...): coil3.request/ErrorResult // coil3.request/ErrorResult.copy|copy(coil3.Image?;coil3.request.ImageRequest;kotlin.Throwable){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ErrorResult.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.request/ErrorResult.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.request/ErrorResult.toString|toString(){}[0]
+
     final val image // coil3.request/ErrorResult.image|{}image[0]
         final fun <get-image>(): coil3/Image? // coil3.request/ErrorResult.image.<get-image>|<get-image>(){}[0]
     final val request // coil3.request/ErrorResult.request|{}request[0]
         final fun <get-request>(): coil3.request/ImageRequest // coil3.request/ErrorResult.request.<get-request>|<get-request>(){}[0]
     final val throwable // coil3.request/ErrorResult.throwable|{}throwable[0]
         final fun <get-throwable>(): kotlin/Throwable // coil3.request/ErrorResult.throwable.<get-throwable>|<get-throwable>(){}[0]
+
+    final fun copy(coil3/Image? = ..., coil3.request/ImageRequest = ..., kotlin/Throwable = ...): coil3.request/ErrorResult // coil3.request/ErrorResult.copy|copy(coil3.Image?;coil3.request.ImageRequest;kotlin.Throwable){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ErrorResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.request/ErrorResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.request/ErrorResult.toString|toString(){}[0]
 }
+
 final class coil3.request/ImageRequest { // coil3.request/ImageRequest|null[0]
-    abstract interface Listener { // coil3.request/ImageRequest.Listener|null[0]
-        open fun onCancel(coil3.request/ImageRequest) // coil3.request/ImageRequest.Listener.onCancel|onCancel(coil3.request.ImageRequest){}[0]
-        open fun onError(coil3.request/ImageRequest, coil3.request/ErrorResult) // coil3.request/ImageRequest.Listener.onError|onError(coil3.request.ImageRequest;coil3.request.ErrorResult){}[0]
-        open fun onStart(coil3.request/ImageRequest) // coil3.request/ImageRequest.Listener.onStart|onStart(coil3.request.ImageRequest){}[0]
-        open fun onSuccess(coil3.request/ImageRequest, coil3.request/SuccessResult) // coil3.request/ImageRequest.Listener.onSuccess|onSuccess(coil3.request.ImageRequest;coil3.request.SuccessResult){}[0]
-    }
-    final class Builder { // coil3.request/ImageRequest.Builder|null[0]
-        constructor <init>(coil3.request/ImageRequest, coil3/PlatformContext = ...) // coil3.request/ImageRequest.Builder.<init>|<init>(coil3.request.ImageRequest;coil3.PlatformContext){}[0]
-        constructor <init>(coil3/PlatformContext) // coil3.request/ImageRequest.Builder.<init>|<init>(coil3.PlatformContext){}[0]
-        final fun <#A2: kotlin/Any> fetcherFactory(coil3.fetch/Fetcher.Factory<#A2>, kotlin.reflect/KClass<#A2>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherFactory|fetcherFactory(coil3.fetch.Fetcher.Factory<0:0>;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-        final fun build(): coil3.request/ImageRequest // coil3.request/ImageRequest.Builder.build|build(){}[0]
-        final fun coroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.coroutineContext|coroutineContext(kotlin.coroutines.CoroutineContext){}[0]
-        final fun data(kotlin/Any?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.data|data(kotlin.Any?){}[0]
-        final fun decoderCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.decoderCoroutineContext|decoderCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
-        final fun decoderFactory(coil3.decode/Decoder.Factory): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.decoderFactory|decoderFactory(coil3.decode.Decoder.Factory){}[0]
-        final fun defaults(coil3.request/ImageRequest.Defaults): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.defaults|defaults(coil3.request.ImageRequest.Defaults){}[0]
-        final fun diskCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.diskCacheKey|diskCacheKey(kotlin.String?){}[0]
-        final fun diskCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.diskCachePolicy|diskCachePolicy(coil3.request.CachePolicy){}[0]
-        final fun error(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.error|error(coil3.Image?){}[0]
-        final fun error(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.error|error(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
-        final fun fallback(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fallback|fallback(coil3.Image?){}[0]
-        final fun fallback(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fallback|fallback(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
-        final fun fetcherCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherCoroutineContext|fetcherCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
-        final fun fileSystem(okio/FileSystem): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fileSystem|fileSystem(okio.FileSystem){}[0]
-        final fun interceptorCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.interceptorCoroutineContext|interceptorCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
-        final fun listener(coil3.request/ImageRequest.Listener?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.listener|listener(coil3.request.ImageRequest.Listener?){}[0]
-        final fun memoryCacheKey(coil3.memory/MemoryCache.Key?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKey|memoryCacheKey(coil3.memory.MemoryCache.Key?){}[0]
-        final fun memoryCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKey|memoryCacheKey(kotlin.String?){}[0]
-        final fun memoryCacheKeyExtra(kotlin/String, kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKeyExtra|memoryCacheKeyExtra(kotlin.String;kotlin.String?){}[0]
-        final fun memoryCacheKeyExtras(kotlin.collections/Map<kotlin/String, kotlin/String>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKeyExtras|memoryCacheKeyExtras(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
-        final fun memoryCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCachePolicy|memoryCachePolicy(coil3.request.CachePolicy){}[0]
-        final fun networkCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.networkCachePolicy|networkCachePolicy(coil3.request.CachePolicy){}[0]
-        final fun placeholder(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholder|placeholder(coil3.Image?){}[0]
-        final fun placeholder(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholder|placeholder(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
-        final fun placeholderMemoryCacheKey(coil3.memory/MemoryCache.Key?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholderMemoryCacheKey|placeholderMemoryCacheKey(coil3.memory.MemoryCache.Key?){}[0]
-        final fun placeholderMemoryCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholderMemoryCacheKey|placeholderMemoryCacheKey(kotlin.String?){}[0]
-        final fun precision(coil3.size/Precision): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.precision|precision(coil3.size.Precision){}[0]
-        final fun scale(coil3.size/Scale): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.scale|scale(coil3.size.Scale){}[0]
-        final fun size(coil3.size/Dimension, coil3.size/Dimension): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.Dimension;coil3.size.Dimension){}[0]
-        final fun size(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.Size){}[0]
-        final fun size(coil3.size/SizeResolver): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.SizeResolver){}[0]
-        final fun size(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(kotlin.Int){}[0]
-        final fun size(kotlin/Int, kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(kotlin.Int;kotlin.Int){}[0]
-        final fun target(coil3.target/Target?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(coil3.target.Target?){}[0]
-        final inline fun <#A2: reified kotlin/Any> fetcherFactory(coil3.fetch/Fetcher.Factory<#A2>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherFactory|fetcherFactory(coil3.fetch.Fetcher.Factory<0:0>){0§<kotlin.Any>}[0]
-        final inline fun listener(crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/ErrorResult, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/SuccessResult, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.listener|listener(kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.ErrorResult,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.SuccessResult,kotlin.Unit>){}[0]
-        final inline fun target(crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image,kotlin.Unit>){}[0]
-        final val extras // coil3.request/ImageRequest.Builder.extras|{}extras[0]
-            final fun <get-extras>(): coil3/Extras.Builder // coil3.request/ImageRequest.Builder.extras.<get-extras>|<get-extras>(){}[0]
-    }
-    final class Defaults { // coil3.request/ImageRequest.Defaults|null[0]
-        constructor <init>(okio/FileSystem = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., coil3.size/SizeResolver = ..., coil3.size/Scale = ..., coil3.size/Precision = ..., coil3/Extras = ...) // coil3.request/ImageRequest.Defaults.<init>|<init>(okio.FileSystem;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;coil3.size.SizeResolver;coil3.size.Scale;coil3.size.Precision;coil3.Extras){}[0]
-        final fun copy(okio/FileSystem = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., coil3.size/Precision = ..., coil3/Extras = ...): coil3.request/ImageRequest.Defaults // coil3.request/ImageRequest.Defaults.copy|copy(okio.FileSystem;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;coil3.size.Precision;coil3.Extras){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.Defaults.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.Defaults.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.request/ImageRequest.Defaults.toString|toString(){}[0]
-        final object Companion { // coil3.request/ImageRequest.Defaults.Companion|null[0]
-            final val DEFAULT // coil3.request/ImageRequest.Defaults.Companion.DEFAULT|{}DEFAULT[0]
-                final fun <get-DEFAULT>(): coil3.request/ImageRequest.Defaults // coil3.request/ImageRequest.Defaults.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
-        }
-        final val decoderCoroutineContext // coil3.request/ImageRequest.Defaults.decoderCoroutineContext|{}decoderCoroutineContext[0]
-            final fun <get-decoderCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.decoderCoroutineContext.<get-decoderCoroutineContext>|<get-decoderCoroutineContext>(){}[0]
-        final val diskCachePolicy // coil3.request/ImageRequest.Defaults.diskCachePolicy|{}diskCachePolicy[0]
-            final fun <get-diskCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.diskCachePolicy.<get-diskCachePolicy>|<get-diskCachePolicy>(){}[0]
-        final val errorFactory // coil3.request/ImageRequest.Defaults.errorFactory|{}errorFactory[0]
-            final fun <get-errorFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.errorFactory.<get-errorFactory>|<get-errorFactory>(){}[0]
-        final val extras // coil3.request/ImageRequest.Defaults.extras|{}extras[0]
-            final fun <get-extras>(): coil3/Extras // coil3.request/ImageRequest.Defaults.extras.<get-extras>|<get-extras>(){}[0]
-        final val fallbackFactory // coil3.request/ImageRequest.Defaults.fallbackFactory|{}fallbackFactory[0]
-            final fun <get-fallbackFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.fallbackFactory.<get-fallbackFactory>|<get-fallbackFactory>(){}[0]
-        final val fetcherCoroutineContext // coil3.request/ImageRequest.Defaults.fetcherCoroutineContext|{}fetcherCoroutineContext[0]
-            final fun <get-fetcherCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.fetcherCoroutineContext.<get-fetcherCoroutineContext>|<get-fetcherCoroutineContext>(){}[0]
-        final val fileSystem // coil3.request/ImageRequest.Defaults.fileSystem|{}fileSystem[0]
-            final fun <get-fileSystem>(): okio/FileSystem // coil3.request/ImageRequest.Defaults.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
-        final val interceptorCoroutineContext // coil3.request/ImageRequest.Defaults.interceptorCoroutineContext|{}interceptorCoroutineContext[0]
-            final fun <get-interceptorCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.interceptorCoroutineContext.<get-interceptorCoroutineContext>|<get-interceptorCoroutineContext>(){}[0]
-        final val memoryCachePolicy // coil3.request/ImageRequest.Defaults.memoryCachePolicy|{}memoryCachePolicy[0]
-            final fun <get-memoryCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.memoryCachePolicy.<get-memoryCachePolicy>|<get-memoryCachePolicy>(){}[0]
-        final val networkCachePolicy // coil3.request/ImageRequest.Defaults.networkCachePolicy|{}networkCachePolicy[0]
-            final fun <get-networkCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.networkCachePolicy.<get-networkCachePolicy>|<get-networkCachePolicy>(){}[0]
-        final val placeholderFactory // coil3.request/ImageRequest.Defaults.placeholderFactory|{}placeholderFactory[0]
-            final fun <get-placeholderFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.placeholderFactory.<get-placeholderFactory>|<get-placeholderFactory>(){}[0]
-        final val precision // coil3.request/ImageRequest.Defaults.precision|{}precision[0]
-            final fun <get-precision>(): coil3.size/Precision // coil3.request/ImageRequest.Defaults.precision.<get-precision>|<get-precision>(){}[0]
-        final val scale // coil3.request/ImageRequest.Defaults.scale|{}scale[0]
-            final fun <get-scale>(): coil3.size/Scale // coil3.request/ImageRequest.Defaults.scale.<get-scale>|<get-scale>(){}[0]
-        final val sizeResolver // coil3.request/ImageRequest.Defaults.sizeResolver|{}sizeResolver[0]
-            final fun <get-sizeResolver>(): coil3.size/SizeResolver // coil3.request/ImageRequest.Defaults.sizeResolver.<get-sizeResolver>|<get-sizeResolver>(){}[0]
-    }
-    final class Defined { // coil3.request/ImageRequest.Defined|null[0]
-        constructor <init>(okio/FileSystem?, kotlin.coroutines/CoroutineContext?, kotlin.coroutines/CoroutineContext?, kotlin.coroutines/CoroutineContext?, coil3.request/CachePolicy?, coil3.request/CachePolicy?, coil3.request/CachePolicy?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, coil3.size/SizeResolver?, coil3.size/Scale?, coil3.size/Precision?) // coil3.request/ImageRequest.Defined.<init>|<init>(okio.FileSystem?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;coil3.size.SizeResolver?;coil3.size.Scale?;coil3.size.Precision?){}[0]
-        final fun copy(okio/FileSystem? = ..., kotlin.coroutines/CoroutineContext? = ..., kotlin.coroutines/CoroutineContext? = ..., kotlin.coroutines/CoroutineContext? = ..., coil3.request/CachePolicy? = ..., coil3.request/CachePolicy? = ..., coil3.request/CachePolicy? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., coil3.size/SizeResolver? = ..., coil3.size/Scale? = ..., coil3.size/Precision? = ...): coil3.request/ImageRequest.Defined // coil3.request/ImageRequest.Defined.copy|copy(okio.FileSystem?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;coil3.size.SizeResolver?;coil3.size.Scale?;coil3.size.Precision?){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.Defined.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.Defined.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.request/ImageRequest.Defined.toString|toString(){}[0]
-        final val decoderCoroutineContext // coil3.request/ImageRequest.Defined.decoderCoroutineContext|{}decoderCoroutineContext[0]
-            final fun <get-decoderCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.decoderCoroutineContext.<get-decoderCoroutineContext>|<get-decoderCoroutineContext>(){}[0]
-        final val diskCachePolicy // coil3.request/ImageRequest.Defined.diskCachePolicy|{}diskCachePolicy[0]
-            final fun <get-diskCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.diskCachePolicy.<get-diskCachePolicy>|<get-diskCachePolicy>(){}[0]
-        final val errorFactory // coil3.request/ImageRequest.Defined.errorFactory|{}errorFactory[0]
-            final fun <get-errorFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.errorFactory.<get-errorFactory>|<get-errorFactory>(){}[0]
-        final val fallbackFactory // coil3.request/ImageRequest.Defined.fallbackFactory|{}fallbackFactory[0]
-            final fun <get-fallbackFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.fallbackFactory.<get-fallbackFactory>|<get-fallbackFactory>(){}[0]
-        final val fetcherCoroutineContext // coil3.request/ImageRequest.Defined.fetcherCoroutineContext|{}fetcherCoroutineContext[0]
-            final fun <get-fetcherCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.fetcherCoroutineContext.<get-fetcherCoroutineContext>|<get-fetcherCoroutineContext>(){}[0]
-        final val fileSystem // coil3.request/ImageRequest.Defined.fileSystem|{}fileSystem[0]
-            final fun <get-fileSystem>(): okio/FileSystem? // coil3.request/ImageRequest.Defined.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
-        final val interceptorCoroutineContext // coil3.request/ImageRequest.Defined.interceptorCoroutineContext|{}interceptorCoroutineContext[0]
-            final fun <get-interceptorCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.interceptorCoroutineContext.<get-interceptorCoroutineContext>|<get-interceptorCoroutineContext>(){}[0]
-        final val memoryCachePolicy // coil3.request/ImageRequest.Defined.memoryCachePolicy|{}memoryCachePolicy[0]
-            final fun <get-memoryCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.memoryCachePolicy.<get-memoryCachePolicy>|<get-memoryCachePolicy>(){}[0]
-        final val networkCachePolicy // coil3.request/ImageRequest.Defined.networkCachePolicy|{}networkCachePolicy[0]
-            final fun <get-networkCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.networkCachePolicy.<get-networkCachePolicy>|<get-networkCachePolicy>(){}[0]
-        final val placeholderFactory // coil3.request/ImageRequest.Defined.placeholderFactory|{}placeholderFactory[0]
-            final fun <get-placeholderFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.placeholderFactory.<get-placeholderFactory>|<get-placeholderFactory>(){}[0]
-        final val precision // coil3.request/ImageRequest.Defined.precision|{}precision[0]
-            final fun <get-precision>(): coil3.size/Precision? // coil3.request/ImageRequest.Defined.precision.<get-precision>|<get-precision>(){}[0]
-        final val scale // coil3.request/ImageRequest.Defined.scale|{}scale[0]
-            final fun <get-scale>(): coil3.size/Scale? // coil3.request/ImageRequest.Defined.scale.<get-scale>|<get-scale>(){}[0]
-        final val sizeResolver // coil3.request/ImageRequest.Defined.sizeResolver|{}sizeResolver[0]
-            final fun <get-sizeResolver>(): coil3.size/SizeResolver? // coil3.request/ImageRequest.Defined.sizeResolver.<get-sizeResolver>|<get-sizeResolver>(){}[0]
-    }
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.equals|equals(kotlin.Any?){}[0]
-    final fun error(): coil3/Image? // coil3.request/ImageRequest.error|error(){}[0]
-    final fun fallback(): coil3/Image? // coil3.request/ImageRequest.fallback|fallback(){}[0]
-    final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.hashCode|hashCode(){}[0]
-    final fun newBuilder(coil3/PlatformContext = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.newBuilder|newBuilder(coil3.PlatformContext){}[0]
-    final fun placeholder(): coil3/Image? // coil3.request/ImageRequest.placeholder|placeholder(){}[0]
-    final fun toString(): kotlin/String // coil3.request/ImageRequest.toString|toString(){}[0]
     final val context // coil3.request/ImageRequest.context|{}context[0]
         final fun <get-context>(): coil3/PlatformContext // coil3.request/ImageRequest.context.<get-context>|<get-context>(){}[0]
     final val data // coil3.request/ImageRequest.data|{}data[0]
@@ -499,16 +552,156 @@ final class coil3.request/ImageRequest { // coil3.request/ImageRequest|null[0]
         final fun <get-sizeResolver>(): coil3.size/SizeResolver // coil3.request/ImageRequest.sizeResolver.<get-sizeResolver>|<get-sizeResolver>(){}[0]
     final val target // coil3.request/ImageRequest.target|{}target[0]
         final fun <get-target>(): coil3.target/Target? // coil3.request/ImageRequest.target.<get-target>|<get-target>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.equals|equals(kotlin.Any?){}[0]
+    final fun error(): coil3/Image? // coil3.request/ImageRequest.error|error(){}[0]
+    final fun fallback(): coil3/Image? // coil3.request/ImageRequest.fallback|fallback(){}[0]
+    final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.hashCode|hashCode(){}[0]
+    final fun newBuilder(coil3/PlatformContext = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.newBuilder|newBuilder(coil3.PlatformContext){}[0]
+    final fun placeholder(): coil3/Image? // coil3.request/ImageRequest.placeholder|placeholder(){}[0]
+    final fun toString(): kotlin/String // coil3.request/ImageRequest.toString|toString(){}[0]
+
+    abstract interface Listener { // coil3.request/ImageRequest.Listener|null[0]
+        open fun onCancel(coil3.request/ImageRequest) // coil3.request/ImageRequest.Listener.onCancel|onCancel(coil3.request.ImageRequest){}[0]
+        open fun onError(coil3.request/ImageRequest, coil3.request/ErrorResult) // coil3.request/ImageRequest.Listener.onError|onError(coil3.request.ImageRequest;coil3.request.ErrorResult){}[0]
+        open fun onStart(coil3.request/ImageRequest) // coil3.request/ImageRequest.Listener.onStart|onStart(coil3.request.ImageRequest){}[0]
+        open fun onSuccess(coil3.request/ImageRequest, coil3.request/SuccessResult) // coil3.request/ImageRequest.Listener.onSuccess|onSuccess(coil3.request.ImageRequest;coil3.request.SuccessResult){}[0]
+    }
+
+    final class Builder { // coil3.request/ImageRequest.Builder|null[0]
+        constructor <init>(coil3.request/ImageRequest, coil3/PlatformContext = ...) // coil3.request/ImageRequest.Builder.<init>|<init>(coil3.request.ImageRequest;coil3.PlatformContext){}[0]
+        constructor <init>(coil3/PlatformContext) // coil3.request/ImageRequest.Builder.<init>|<init>(coil3.PlatformContext){}[0]
+
+        final val extras // coil3.request/ImageRequest.Builder.extras|{}extras[0]
+            final fun <get-extras>(): coil3/Extras.Builder // coil3.request/ImageRequest.Builder.extras.<get-extras>|<get-extras>(){}[0]
+
+        final fun <#A2: kotlin/Any> fetcherFactory(coil3.fetch/Fetcher.Factory<#A2>, kotlin.reflect/KClass<#A2>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherFactory|fetcherFactory(coil3.fetch.Fetcher.Factory<0:0>;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+        final fun build(): coil3.request/ImageRequest // coil3.request/ImageRequest.Builder.build|build(){}[0]
+        final fun coroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.coroutineContext|coroutineContext(kotlin.coroutines.CoroutineContext){}[0]
+        final fun data(kotlin/Any?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.data|data(kotlin.Any?){}[0]
+        final fun decoderCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.decoderCoroutineContext|decoderCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
+        final fun decoderFactory(coil3.decode/Decoder.Factory): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.decoderFactory|decoderFactory(coil3.decode.Decoder.Factory){}[0]
+        final fun defaults(coil3.request/ImageRequest.Defaults): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.defaults|defaults(coil3.request.ImageRequest.Defaults){}[0]
+        final fun diskCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.diskCacheKey|diskCacheKey(kotlin.String?){}[0]
+        final fun diskCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.diskCachePolicy|diskCachePolicy(coil3.request.CachePolicy){}[0]
+        final fun error(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.error|error(coil3.Image?){}[0]
+        final fun error(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.error|error(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
+        final fun fallback(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fallback|fallback(coil3.Image?){}[0]
+        final fun fallback(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fallback|fallback(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
+        final fun fetcherCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherCoroutineContext|fetcherCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
+        final fun fileSystem(okio/FileSystem): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fileSystem|fileSystem(okio.FileSystem){}[0]
+        final fun interceptorCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.interceptorCoroutineContext|interceptorCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
+        final fun listener(coil3.request/ImageRequest.Listener?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.listener|listener(coil3.request.ImageRequest.Listener?){}[0]
+        final fun memoryCacheKey(coil3.memory/MemoryCache.Key?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKey|memoryCacheKey(coil3.memory.MemoryCache.Key?){}[0]
+        final fun memoryCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKey|memoryCacheKey(kotlin.String?){}[0]
+        final fun memoryCacheKeyExtra(kotlin/String, kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKeyExtra|memoryCacheKeyExtra(kotlin.String;kotlin.String?){}[0]
+        final fun memoryCacheKeyExtras(kotlin.collections/Map<kotlin/String, kotlin/String>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCacheKeyExtras|memoryCacheKeyExtras(kotlin.collections.Map<kotlin.String,kotlin.String>){}[0]
+        final fun memoryCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.memoryCachePolicy|memoryCachePolicy(coil3.request.CachePolicy){}[0]
+        final fun networkCachePolicy(coil3.request/CachePolicy): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.networkCachePolicy|networkCachePolicy(coil3.request.CachePolicy){}[0]
+        final fun placeholder(coil3/Image?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholder|placeholder(coil3.Image?){}[0]
+        final fun placeholder(kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholder|placeholder(kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>){}[0]
+        final fun placeholderMemoryCacheKey(coil3.memory/MemoryCache.Key?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholderMemoryCacheKey|placeholderMemoryCacheKey(coil3.memory.MemoryCache.Key?){}[0]
+        final fun placeholderMemoryCacheKey(kotlin/String?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.placeholderMemoryCacheKey|placeholderMemoryCacheKey(kotlin.String?){}[0]
+        final fun precision(coil3.size/Precision): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.precision|precision(coil3.size.Precision){}[0]
+        final fun scale(coil3.size/Scale): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.scale|scale(coil3.size.Scale){}[0]
+        final fun size(coil3.size/Dimension, coil3.size/Dimension): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.Dimension;coil3.size.Dimension){}[0]
+        final fun size(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.Size){}[0]
+        final fun size(coil3.size/SizeResolver): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(coil3.size.SizeResolver){}[0]
+        final fun size(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(kotlin.Int){}[0]
+        final fun size(kotlin/Int, kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.size|size(kotlin.Int;kotlin.Int){}[0]
+        final fun target(coil3.target/Target?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(coil3.target.Target?){}[0]
+        final inline fun <#A2: reified kotlin/Any> fetcherFactory(coil3.fetch/Fetcher.Factory<#A2>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherFactory|fetcherFactory(coil3.fetch.Fetcher.Factory<0:0>){0§<kotlin.Any>}[0]
+        final inline fun listener(crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/ErrorResult, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/SuccessResult, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.listener|listener(kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.ErrorResult,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.SuccessResult,kotlin.Unit>){}[0]
+        final inline fun target(crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image,kotlin.Unit>){}[0]
+    }
+
+    final class Defaults { // coil3.request/ImageRequest.Defaults|null[0]
+        constructor <init>(okio/FileSystem = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., coil3.size/SizeResolver = ..., coil3.size/Scale = ..., coil3.size/Precision = ..., coil3/Extras = ...) // coil3.request/ImageRequest.Defaults.<init>|<init>(okio.FileSystem;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;coil3.size.SizeResolver;coil3.size.Scale;coil3.size.Precision;coil3.Extras){}[0]
+
+        final val decoderCoroutineContext // coil3.request/ImageRequest.Defaults.decoderCoroutineContext|{}decoderCoroutineContext[0]
+            final fun <get-decoderCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.decoderCoroutineContext.<get-decoderCoroutineContext>|<get-decoderCoroutineContext>(){}[0]
+        final val diskCachePolicy // coil3.request/ImageRequest.Defaults.diskCachePolicy|{}diskCachePolicy[0]
+            final fun <get-diskCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.diskCachePolicy.<get-diskCachePolicy>|<get-diskCachePolicy>(){}[0]
+        final val errorFactory // coil3.request/ImageRequest.Defaults.errorFactory|{}errorFactory[0]
+            final fun <get-errorFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.errorFactory.<get-errorFactory>|<get-errorFactory>(){}[0]
+        final val extras // coil3.request/ImageRequest.Defaults.extras|{}extras[0]
+            final fun <get-extras>(): coil3/Extras // coil3.request/ImageRequest.Defaults.extras.<get-extras>|<get-extras>(){}[0]
+        final val fallbackFactory // coil3.request/ImageRequest.Defaults.fallbackFactory|{}fallbackFactory[0]
+            final fun <get-fallbackFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.fallbackFactory.<get-fallbackFactory>|<get-fallbackFactory>(){}[0]
+        final val fetcherCoroutineContext // coil3.request/ImageRequest.Defaults.fetcherCoroutineContext|{}fetcherCoroutineContext[0]
+            final fun <get-fetcherCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.fetcherCoroutineContext.<get-fetcherCoroutineContext>|<get-fetcherCoroutineContext>(){}[0]
+        final val fileSystem // coil3.request/ImageRequest.Defaults.fileSystem|{}fileSystem[0]
+            final fun <get-fileSystem>(): okio/FileSystem // coil3.request/ImageRequest.Defaults.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
+        final val interceptorCoroutineContext // coil3.request/ImageRequest.Defaults.interceptorCoroutineContext|{}interceptorCoroutineContext[0]
+            final fun <get-interceptorCoroutineContext>(): kotlin.coroutines/CoroutineContext // coil3.request/ImageRequest.Defaults.interceptorCoroutineContext.<get-interceptorCoroutineContext>|<get-interceptorCoroutineContext>(){}[0]
+        final val memoryCachePolicy // coil3.request/ImageRequest.Defaults.memoryCachePolicy|{}memoryCachePolicy[0]
+            final fun <get-memoryCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.memoryCachePolicy.<get-memoryCachePolicy>|<get-memoryCachePolicy>(){}[0]
+        final val networkCachePolicy // coil3.request/ImageRequest.Defaults.networkCachePolicy|{}networkCachePolicy[0]
+            final fun <get-networkCachePolicy>(): coil3.request/CachePolicy // coil3.request/ImageRequest.Defaults.networkCachePolicy.<get-networkCachePolicy>|<get-networkCachePolicy>(){}[0]
+        final val placeholderFactory // coil3.request/ImageRequest.Defaults.placeholderFactory|{}placeholderFactory[0]
+            final fun <get-placeholderFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> // coil3.request/ImageRequest.Defaults.placeholderFactory.<get-placeholderFactory>|<get-placeholderFactory>(){}[0]
+        final val precision // coil3.request/ImageRequest.Defaults.precision|{}precision[0]
+            final fun <get-precision>(): coil3.size/Precision // coil3.request/ImageRequest.Defaults.precision.<get-precision>|<get-precision>(){}[0]
+        final val scale // coil3.request/ImageRequest.Defaults.scale|{}scale[0]
+            final fun <get-scale>(): coil3.size/Scale // coil3.request/ImageRequest.Defaults.scale.<get-scale>|<get-scale>(){}[0]
+        final val sizeResolver // coil3.request/ImageRequest.Defaults.sizeResolver|{}sizeResolver[0]
+            final fun <get-sizeResolver>(): coil3.size/SizeResolver // coil3.request/ImageRequest.Defaults.sizeResolver.<get-sizeResolver>|<get-sizeResolver>(){}[0]
+
+        final fun copy(okio/FileSystem = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., kotlin.coroutines/CoroutineContext = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?> = ..., coil3.size/Precision = ..., coil3/Extras = ...): coil3.request/ImageRequest.Defaults // coil3.request/ImageRequest.Defaults.copy|copy(okio.FileSystem;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;kotlin.coroutines.CoroutineContext;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>;coil3.size.Precision;coil3.Extras){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.Defaults.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.Defaults.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.request/ImageRequest.Defaults.toString|toString(){}[0]
+
+        final object Companion { // coil3.request/ImageRequest.Defaults.Companion|null[0]
+            final val DEFAULT // coil3.request/ImageRequest.Defaults.Companion.DEFAULT|{}DEFAULT[0]
+                final fun <get-DEFAULT>(): coil3.request/ImageRequest.Defaults // coil3.request/ImageRequest.Defaults.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+        }
+    }
+
+    final class Defined { // coil3.request/ImageRequest.Defined|null[0]
+        constructor <init>(okio/FileSystem?, kotlin.coroutines/CoroutineContext?, kotlin.coroutines/CoroutineContext?, kotlin.coroutines/CoroutineContext?, coil3.request/CachePolicy?, coil3.request/CachePolicy?, coil3.request/CachePolicy?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>?, coil3.size/SizeResolver?, coil3.size/Scale?, coil3.size/Precision?) // coil3.request/ImageRequest.Defined.<init>|<init>(okio.FileSystem?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;coil3.size.SizeResolver?;coil3.size.Scale?;coil3.size.Precision?){}[0]
+
+        final val decoderCoroutineContext // coil3.request/ImageRequest.Defined.decoderCoroutineContext|{}decoderCoroutineContext[0]
+            final fun <get-decoderCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.decoderCoroutineContext.<get-decoderCoroutineContext>|<get-decoderCoroutineContext>(){}[0]
+        final val diskCachePolicy // coil3.request/ImageRequest.Defined.diskCachePolicy|{}diskCachePolicy[0]
+            final fun <get-diskCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.diskCachePolicy.<get-diskCachePolicy>|<get-diskCachePolicy>(){}[0]
+        final val errorFactory // coil3.request/ImageRequest.Defined.errorFactory|{}errorFactory[0]
+            final fun <get-errorFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.errorFactory.<get-errorFactory>|<get-errorFactory>(){}[0]
+        final val fallbackFactory // coil3.request/ImageRequest.Defined.fallbackFactory|{}fallbackFactory[0]
+            final fun <get-fallbackFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.fallbackFactory.<get-fallbackFactory>|<get-fallbackFactory>(){}[0]
+        final val fetcherCoroutineContext // coil3.request/ImageRequest.Defined.fetcherCoroutineContext|{}fetcherCoroutineContext[0]
+            final fun <get-fetcherCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.fetcherCoroutineContext.<get-fetcherCoroutineContext>|<get-fetcherCoroutineContext>(){}[0]
+        final val fileSystem // coil3.request/ImageRequest.Defined.fileSystem|{}fileSystem[0]
+            final fun <get-fileSystem>(): okio/FileSystem? // coil3.request/ImageRequest.Defined.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
+        final val interceptorCoroutineContext // coil3.request/ImageRequest.Defined.interceptorCoroutineContext|{}interceptorCoroutineContext[0]
+            final fun <get-interceptorCoroutineContext>(): kotlin.coroutines/CoroutineContext? // coil3.request/ImageRequest.Defined.interceptorCoroutineContext.<get-interceptorCoroutineContext>|<get-interceptorCoroutineContext>(){}[0]
+        final val memoryCachePolicy // coil3.request/ImageRequest.Defined.memoryCachePolicy|{}memoryCachePolicy[0]
+            final fun <get-memoryCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.memoryCachePolicy.<get-memoryCachePolicy>|<get-memoryCachePolicy>(){}[0]
+        final val networkCachePolicy // coil3.request/ImageRequest.Defined.networkCachePolicy|{}networkCachePolicy[0]
+            final fun <get-networkCachePolicy>(): coil3.request/CachePolicy? // coil3.request/ImageRequest.Defined.networkCachePolicy.<get-networkCachePolicy>|<get-networkCachePolicy>(){}[0]
+        final val placeholderFactory // coil3.request/ImageRequest.Defined.placeholderFactory|{}placeholderFactory[0]
+            final fun <get-placeholderFactory>(): kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? // coil3.request/ImageRequest.Defined.placeholderFactory.<get-placeholderFactory>|<get-placeholderFactory>(){}[0]
+        final val precision // coil3.request/ImageRequest.Defined.precision|{}precision[0]
+            final fun <get-precision>(): coil3.size/Precision? // coil3.request/ImageRequest.Defined.precision.<get-precision>|<get-precision>(){}[0]
+        final val scale // coil3.request/ImageRequest.Defined.scale|{}scale[0]
+            final fun <get-scale>(): coil3.size/Scale? // coil3.request/ImageRequest.Defined.scale.<get-scale>|<get-scale>(){}[0]
+        final val sizeResolver // coil3.request/ImageRequest.Defined.sizeResolver|{}sizeResolver[0]
+            final fun <get-sizeResolver>(): coil3.size/SizeResolver? // coil3.request/ImageRequest.Defined.sizeResolver.<get-sizeResolver>|<get-sizeResolver>(){}[0]
+
+        final fun copy(okio/FileSystem? = ..., kotlin.coroutines/CoroutineContext? = ..., kotlin.coroutines/CoroutineContext? = ..., kotlin.coroutines/CoroutineContext? = ..., coil3.request/CachePolicy? = ..., coil3.request/CachePolicy? = ..., coil3.request/CachePolicy? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., kotlin/Function1<coil3.request/ImageRequest, coil3/Image?>? = ..., coil3.size/SizeResolver? = ..., coil3.size/Scale? = ..., coil3.size/Precision? = ...): coil3.request/ImageRequest.Defined // coil3.request/ImageRequest.Defined.copy|copy(okio.FileSystem?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;kotlin.coroutines.CoroutineContext?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;coil3.request.CachePolicy?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;kotlin.Function1<coil3.request.ImageRequest,coil3.Image?>?;coil3.size.SizeResolver?;coil3.size.Scale?;coil3.size.Precision?){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/ImageRequest.Defined.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.request/ImageRequest.Defined.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.request/ImageRequest.Defined.toString|toString(){}[0]
+    }
 }
+
 final class coil3.request/NullRequestDataException : kotlin/RuntimeException { // coil3.request/NullRequestDataException|null[0]
     constructor <init>() // coil3.request/NullRequestDataException.<init>|<init>(){}[0]
 }
+
 final class coil3.request/Options { // coil3.request/Options|null[0]
     constructor <init>(coil3/PlatformContext, coil3.size/Size = ..., coil3.size/Scale = ..., coil3.size/Precision = ..., kotlin/String? = ..., okio/FileSystem = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3/Extras = ...) // coil3.request/Options.<init>|<init>(coil3.PlatformContext;coil3.size.Size;coil3.size.Scale;coil3.size.Precision;kotlin.String?;okio.FileSystem;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.Extras){}[0]
-    final fun copy(coil3/PlatformContext = ..., coil3.size/Size = ..., coil3.size/Scale = ..., coil3.size/Precision = ..., kotlin/String? = ..., okio/FileSystem = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3/Extras = ...): coil3.request/Options // coil3.request/Options.copy|copy(coil3.PlatformContext;coil3.size.Size;coil3.size.Scale;coil3.size.Precision;kotlin.String?;okio.FileSystem;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.Extras){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/Options.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.request/Options.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.request/Options.toString|toString(){}[0]
+
     final val context // coil3.request/Options.context|{}context[0]
         final fun <get-context>(): coil3/PlatformContext // coil3.request/Options.context.<get-context>|<get-context>(){}[0]
     final val diskCacheKey // coil3.request/Options.diskCacheKey|{}diskCacheKey[0]
@@ -529,13 +722,16 @@ final class coil3.request/Options { // coil3.request/Options|null[0]
         final fun <get-scale>(): coil3.size/Scale // coil3.request/Options.scale.<get-scale>|<get-scale>(){}[0]
     final val size // coil3.request/Options.size|{}size[0]
         final fun <get-size>(): coil3.size/Size // coil3.request/Options.size.<get-size>|<get-size>(){}[0]
+
+    final fun copy(coil3/PlatformContext = ..., coil3.size/Size = ..., coil3.size/Scale = ..., coil3.size/Precision = ..., kotlin/String? = ..., okio/FileSystem = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3.request/CachePolicy = ..., coil3/Extras = ...): coil3.request/Options // coil3.request/Options.copy|copy(coil3.PlatformContext;coil3.size.Size;coil3.size.Scale;coil3.size.Precision;kotlin.String?;okio.FileSystem;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.request.CachePolicy;coil3.Extras){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/Options.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.request/Options.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.request/Options.toString|toString(){}[0]
 }
+
 final class coil3.request/SuccessResult : coil3.request/ImageResult { // coil3.request/SuccessResult|null[0]
     constructor <init>(coil3/Image, coil3.request/ImageRequest, coil3.decode/DataSource = ..., coil3.memory/MemoryCache.Key? = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.request/SuccessResult.<init>|<init>(coil3.Image;coil3.request.ImageRequest;coil3.decode.DataSource;coil3.memory.MemoryCache.Key?;kotlin.String?;kotlin.Boolean;kotlin.Boolean){}[0]
-    final fun copy(coil3/Image = ..., coil3.request/ImageRequest = ..., coil3.decode/DataSource = ..., coil3.memory/MemoryCache.Key? = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): coil3.request/SuccessResult // coil3.request/SuccessResult.copy|copy(coil3.Image;coil3.request.ImageRequest;coil3.decode.DataSource;coil3.memory.MemoryCache.Key?;kotlin.String?;kotlin.Boolean;kotlin.Boolean){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/SuccessResult.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.request/SuccessResult.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.request/SuccessResult.toString|toString(){}[0]
+
     final val dataSource // coil3.request/SuccessResult.dataSource|{}dataSource[0]
         final fun <get-dataSource>(): coil3.decode/DataSource // coil3.request/SuccessResult.dataSource.<get-dataSource>|<get-dataSource>(){}[0]
     final val diskCacheKey // coil3.request/SuccessResult.diskCacheKey|{}diskCacheKey[0]
@@ -550,36 +746,45 @@ final class coil3.request/SuccessResult : coil3.request/ImageResult { // coil3.r
         final fun <get-memoryCacheKey>(): coil3.memory/MemoryCache.Key? // coil3.request/SuccessResult.memoryCacheKey.<get-memoryCacheKey>|<get-memoryCacheKey>(){}[0]
     final val request // coil3.request/SuccessResult.request|{}request[0]
         final fun <get-request>(): coil3.request/ImageRequest // coil3.request/SuccessResult.request.<get-request>|<get-request>(){}[0]
+
+    final fun copy(coil3/Image = ..., coil3.request/ImageRequest = ..., coil3.decode/DataSource = ..., coil3.memory/MemoryCache.Key? = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): coil3.request/SuccessResult // coil3.request/SuccessResult.copy|copy(coil3.Image;coil3.request.ImageRequest;coil3.decode.DataSource;coil3.memory.MemoryCache.Key?;kotlin.String?;kotlin.Boolean;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/SuccessResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.request/SuccessResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.request/SuccessResult.toString|toString(){}[0]
 }
+
 final class coil3.size/Size { // coil3.size/Size|null[0]
     constructor <init>(coil3.size/Dimension, coil3.size/Dimension) // coil3.size/Size.<init>|<init>(coil3.size.Dimension;coil3.size.Dimension){}[0]
+
+    final val height // coil3.size/Size.height|{}height[0]
+        final fun <get-height>(): coil3.size/Dimension // coil3.size/Size.height.<get-height>|<get-height>(){}[0]
+    final val width // coil3.size/Size.width|{}width[0]
+        final fun <get-width>(): coil3.size/Dimension // coil3.size/Size.width.<get-width>|<get-width>(){}[0]
+
     final fun component1(): coil3.size/Dimension // coil3.size/Size.component1|component1(){}[0]
     final fun component2(): coil3.size/Dimension // coil3.size/Size.component2|component2(){}[0]
     final fun copy(coil3.size/Dimension = ..., coil3.size/Dimension = ...): coil3.size/Size // coil3.size/Size.copy|copy(coil3.size.Dimension;coil3.size.Dimension){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.size/Size.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.size/Size.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.size/Size.toString|toString(){}[0]
+
     final object Companion { // coil3.size/Size.Companion|null[0]
         final val ORIGINAL // coil3.size/Size.Companion.ORIGINAL|{}ORIGINAL[0]
             final fun <get-ORIGINAL>(): coil3.size/Size // coil3.size/Size.Companion.ORIGINAL.<get-ORIGINAL>|<get-ORIGINAL>(){}[0]
     }
-    final val height // coil3.size/Size.height|{}height[0]
-        final fun <get-height>(): coil3.size/Dimension // coil3.size/Size.height.<get-height>|<get-height>(){}[0]
-    final val width // coil3.size/Size.width|{}width[0]
-        final fun <get-width>(): coil3.size/Dimension // coil3.size/Size.width.<get-width>|<get-width>(){}[0]
 }
+
 final class coil3.util/DebugLogger : coil3.util/Logger { // coil3.util/DebugLogger|null[0]
     constructor <init>(coil3.util/Logger.Level = ...) // coil3.util/DebugLogger.<init>|<init>(coil3.util.Logger.Level){}[0]
-    final fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/DebugLogger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
+
     final var minLevel // coil3.util/DebugLogger.minLevel|{}minLevel[0]
         final fun <get-minLevel>(): coil3.util/Logger.Level // coil3.util/DebugLogger.minLevel.<get-minLevel>|<get-minLevel>(){}[0]
         final fun <set-minLevel>(coil3.util/Logger.Level) // coil3.util/DebugLogger.minLevel.<set-minLevel>|<set-minLevel>(coil3.util.Logger.Level){}[0]
+
+    final fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/DebugLogger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
 }
+
 final class coil3/BitmapImage : coil3/Image { // coil3/BitmapImage|null[0]
-    final fun draw(org.jetbrains.skia/Canvas) // coil3/BitmapImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3/BitmapImage.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3/BitmapImage.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3/BitmapImage.toString|toString(){}[0]
     final val bitmap // coil3/BitmapImage.bitmap|{}bitmap[0]
         final fun <get-bitmap>(): org.jetbrains.skia/Bitmap // coil3/BitmapImage.bitmap.<get-bitmap>|<get-bitmap>(){}[0]
     final val height // coil3/BitmapImage.height|{}height[0]
@@ -590,12 +795,37 @@ final class coil3/BitmapImage : coil3/Image { // coil3/BitmapImage|null[0]
         final fun <get-size>(): kotlin/Long // coil3/BitmapImage.size.<get-size>|<get-size>(){}[0]
     final val width // coil3/BitmapImage.width|{}width[0]
         final fun <get-width>(): kotlin/Int // coil3/BitmapImage.width.<get-width>|<get-width>(){}[0]
+
+    final fun draw(org.jetbrains.skia/Canvas) // coil3/BitmapImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3/BitmapImage.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3/BitmapImage.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3/BitmapImage.toString|toString(){}[0]
 }
+
 final class coil3/ComponentRegistry { // coil3/ComponentRegistry|null[0]
     constructor <init>() // coil3/ComponentRegistry.<init>|<init>(){}[0]
+
+    final val decoderFactories // coil3/ComponentRegistry.decoderFactories|{}decoderFactories[0]
+        final fun <get-decoderFactories>(): kotlin.collections/List<coil3.decode/Decoder.Factory> // coil3/ComponentRegistry.decoderFactories.<get-decoderFactories>|<get-decoderFactories>(){}[0]
+    final val fetcherFactories // coil3/ComponentRegistry.fetcherFactories|{}fetcherFactories[0]
+        final fun <get-fetcherFactories>(): kotlin.collections/List<kotlin/Pair<coil3.fetch/Fetcher.Factory<out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.fetcherFactories.<get-fetcherFactories>|<get-fetcherFactories>(){}[0]
+    final val interceptors // coil3/ComponentRegistry.interceptors|{}interceptors[0]
+        final fun <get-interceptors>(): kotlin.collections/List<coil3.intercept/Interceptor> // coil3/ComponentRegistry.interceptors.<get-interceptors>|<get-interceptors>(){}[0]
+    final val keyers // coil3/ComponentRegistry.keyers|{}keyers[0]
+        final fun <get-keyers>(): kotlin.collections/List<kotlin/Pair<coil3.key/Keyer<out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.keyers.<get-keyers>|<get-keyers>(){}[0]
+    final val mappers // coil3/ComponentRegistry.mappers|{}mappers[0]
+        final fun <get-mappers>(): kotlin.collections/List<kotlin/Pair<coil3.map/Mapper<out kotlin/Any, out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.mappers.<get-mappers>|<get-mappers>(){}[0]
+
+    final fun key(kotlin/Any, coil3.request/Options): kotlin/String? // coil3/ComponentRegistry.key|key(kotlin.Any;coil3.request.Options){}[0]
+    final fun map(kotlin/Any, coil3.request/Options): kotlin/Any // coil3/ComponentRegistry.map|map(kotlin.Any;coil3.request.Options){}[0]
+    final fun newBuilder(): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.newBuilder|newBuilder(){}[0]
+    final fun newDecoder(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader, kotlin/Int = ...): kotlin/Pair<coil3.decode/Decoder, kotlin/Int>? // coil3/ComponentRegistry.newDecoder|newDecoder(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader;kotlin.Int){}[0]
+    final fun newFetcher(kotlin/Any, coil3.request/Options, coil3/ImageLoader, kotlin/Int = ...): kotlin/Pair<coil3.fetch/Fetcher, kotlin/Int>? // coil3/ComponentRegistry.newFetcher|newFetcher(kotlin.Any;coil3.request.Options;coil3.ImageLoader;kotlin.Int){}[0]
+
     final class Builder { // coil3/ComponentRegistry.Builder|null[0]
         constructor <init>() // coil3/ComponentRegistry.Builder.<init>|<init>(){}[0]
         constructor <init>(coil3/ComponentRegistry) // coil3/ComponentRegistry.Builder.<init>|<init>(coil3.ComponentRegistry){}[0]
+
         final fun <#A2: kotlin/Any> add(coil3.fetch/Fetcher.Factory<#A2>, kotlin.reflect/KClass<#A2>): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.Builder.add|add(coil3.fetch.Fetcher.Factory<0:0>;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
         final fun <#A2: kotlin/Any> add(coil3.key/Keyer<#A2>, kotlin.reflect/KClass<#A2>): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.Builder.add|add(coil3.key.Keyer<0:0>;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
         final fun <#A2: kotlin/Any> add(coil3.map/Mapper<#A2, *>, kotlin.reflect/KClass<#A2>): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.Builder.add|add(coil3.map.Mapper<0:0,*>;kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
@@ -608,52 +838,42 @@ final class coil3/ComponentRegistry { // coil3/ComponentRegistry|null[0]
         final inline fun <#A2: reified kotlin/Any> add(coil3.key/Keyer<#A2>): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.Builder.add|add(coil3.key.Keyer<0:0>){0§<kotlin.Any>}[0]
         final inline fun <#A2: reified kotlin/Any> add(coil3.map/Mapper<#A2, *>): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.Builder.add|add(coil3.map.Mapper<0:0,*>){0§<kotlin.Any>}[0]
     }
-    final fun key(kotlin/Any, coil3.request/Options): kotlin/String? // coil3/ComponentRegistry.key|key(kotlin.Any;coil3.request.Options){}[0]
-    final fun map(kotlin/Any, coil3.request/Options): kotlin/Any // coil3/ComponentRegistry.map|map(kotlin.Any;coil3.request.Options){}[0]
-    final fun newBuilder(): coil3/ComponentRegistry.Builder // coil3/ComponentRegistry.newBuilder|newBuilder(){}[0]
-    final fun newDecoder(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader, kotlin/Int = ...): kotlin/Pair<coil3.decode/Decoder, kotlin/Int>? // coil3/ComponentRegistry.newDecoder|newDecoder(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader;kotlin.Int){}[0]
-    final fun newFetcher(kotlin/Any, coil3.request/Options, coil3/ImageLoader, kotlin/Int = ...): kotlin/Pair<coil3.fetch/Fetcher, kotlin/Int>? // coil3/ComponentRegistry.newFetcher|newFetcher(kotlin.Any;coil3.request.Options;coil3.ImageLoader;kotlin.Int){}[0]
-    final val decoderFactories // coil3/ComponentRegistry.decoderFactories|{}decoderFactories[0]
-        final fun <get-decoderFactories>(): kotlin.collections/List<coil3.decode/Decoder.Factory> // coil3/ComponentRegistry.decoderFactories.<get-decoderFactories>|<get-decoderFactories>(){}[0]
-    final val fetcherFactories // coil3/ComponentRegistry.fetcherFactories|{}fetcherFactories[0]
-        final fun <get-fetcherFactories>(): kotlin.collections/List<kotlin/Pair<coil3.fetch/Fetcher.Factory<out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.fetcherFactories.<get-fetcherFactories>|<get-fetcherFactories>(){}[0]
-    final val interceptors // coil3/ComponentRegistry.interceptors|{}interceptors[0]
-        final fun <get-interceptors>(): kotlin.collections/List<coil3.intercept/Interceptor> // coil3/ComponentRegistry.interceptors.<get-interceptors>|<get-interceptors>(){}[0]
-    final val keyers // coil3/ComponentRegistry.keyers|{}keyers[0]
-        final fun <get-keyers>(): kotlin.collections/List<kotlin/Pair<coil3.key/Keyer<out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.keyers.<get-keyers>|<get-keyers>(){}[0]
-    final val mappers // coil3/ComponentRegistry.mappers|{}mappers[0]
-        final fun <get-mappers>(): kotlin.collections/List<kotlin/Pair<coil3.map/Mapper<out kotlin/Any, out kotlin/Any>, kotlin.reflect/KClass<out kotlin/Any>>> // coil3/ComponentRegistry.mappers.<get-mappers>|<get-mappers>(){}[0]
 }
+
 final class coil3/Extras { // coil3/Extras|null[0]
-    final class <#A1: kotlin/Any?> Key { // coil3/Extras.Key|null[0]
-        constructor <init>(#A1) // coil3/Extras.Key.<init>|<init>(1:0){}[0]
-        final object Companion // coil3/Extras.Key.Companion|null[0]
-        final val default // coil3/Extras.Key.default|{}default[0]
-            final fun <get-default>(): #A1 // coil3/Extras.Key.default.<get-default>|<get-default>(){}[0]
-    }
-    final class Builder { // coil3/Extras.Builder|null[0]
-        constructor <init>() // coil3/Extras.Builder.<init>|<init>(){}[0]
-        constructor <init>(coil3/Extras) // coil3/Extras.Builder.<init>|<init>(coil3.Extras){}[0]
-        constructor <init>(kotlin.collections/Map<coil3/Extras.Key<*>, kotlin/Any>) // coil3/Extras.Builder.<init>|<init>(kotlin.collections.Map<coil3.Extras.Key<*>,kotlin.Any>){}[0]
-        final fun <#A2: kotlin/Any?> set(coil3/Extras.Key<#A2>, #A2?): coil3/Extras.Builder // coil3/Extras.Builder.set|set(coil3.Extras.Key<0:0>;0:0?){0§<kotlin.Any?>}[0]
-        final fun build(): coil3/Extras // coil3/Extras.Builder.build|build(){}[0]
-        final fun setAll(coil3/Extras): coil3/Extras.Builder // coil3/Extras.Builder.setAll|setAll(coil3.Extras){}[0]
-    }
     final fun <#A1: kotlin/Any?> get(coil3/Extras.Key<#A1>): #A1? // coil3/Extras.get|get(coil3.Extras.Key<0:0>){0§<kotlin.Any?>}[0]
     final fun asMap(): kotlin.collections/Map<coil3/Extras.Key<*>, kotlin/Any> // coil3/Extras.asMap|asMap(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3/Extras.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3/Extras.hashCode|hashCode(){}[0]
     final fun newBuilder(): coil3/Extras.Builder // coil3/Extras.newBuilder|newBuilder(){}[0]
     final fun toString(): kotlin/String // coil3/Extras.toString|toString(){}[0]
+
+    final class <#A1: kotlin/Any?> Key { // coil3/Extras.Key|null[0]
+        constructor <init>(#A1) // coil3/Extras.Key.<init>|<init>(1:0){}[0]
+
+        final val default // coil3/Extras.Key.default|{}default[0]
+            final fun <get-default>(): #A1 // coil3/Extras.Key.default.<get-default>|<get-default>(){}[0]
+
+        final object Companion // coil3/Extras.Key.Companion|null[0]
+    }
+
+    final class Builder { // coil3/Extras.Builder|null[0]
+        constructor <init>() // coil3/Extras.Builder.<init>|<init>(){}[0]
+        constructor <init>(coil3/Extras) // coil3/Extras.Builder.<init>|<init>(coil3.Extras){}[0]
+        constructor <init>(kotlin.collections/Map<coil3/Extras.Key<*>, kotlin/Any>) // coil3/Extras.Builder.<init>|<init>(kotlin.collections.Map<coil3.Extras.Key<*>,kotlin.Any>){}[0]
+
+        final fun <#A2: kotlin/Any?> set(coil3/Extras.Key<#A2>, #A2?): coil3/Extras.Builder // coil3/Extras.Builder.set|set(coil3.Extras.Key<0:0>;0:0?){0§<kotlin.Any?>}[0]
+        final fun build(): coil3/Extras // coil3/Extras.Builder.build|build(){}[0]
+        final fun setAll(coil3/Extras): coil3/Extras.Builder // coil3/Extras.Builder.setAll|setAll(coil3.Extras){}[0]
+    }
+
     final object Companion { // coil3/Extras.Companion|null[0]
         final val EMPTY // coil3/Extras.Companion.EMPTY|{}EMPTY[0]
             final fun <get-EMPTY>(): coil3/Extras // coil3/Extras.Companion.EMPTY.<get-EMPTY>|<get-EMPTY>(){}[0]
     }
 }
+
 final class coil3/Uri { // coil3/Uri|null[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3/Uri.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3/Uri.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3/Uri.toString|toString(){}[0]
     final val authority // coil3/Uri.authority|{}authority[0]
         final fun <get-authority>(): kotlin/String? // coil3/Uri.authority.<get-authority>|<get-authority>(){}[0]
     final val fragment // coil3/Uri.fragment|{}fragment[0]
@@ -664,47 +884,47 @@ final class coil3/Uri { // coil3/Uri|null[0]
         final fun <get-query>(): kotlin/String? // coil3/Uri.query.<get-query>|<get-query>(){}[0]
     final val scheme // coil3/Uri.scheme|{}scheme[0]
         final fun <get-scheme>(): kotlin/String? // coil3/Uri.scheme.<get-scheme>|<get-scheme>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3/Uri.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3/Uri.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3/Uri.toString|toString(){}[0]
 }
-final enum class coil3.decode/DataSource : kotlin/Enum<coil3.decode/DataSource> { // coil3.decode/DataSource|null[0]
-    enum entry DISK // coil3.decode/DataSource.DISK|null[0]
-    enum entry MEMORY // coil3.decode/DataSource.MEMORY|null[0]
-    enum entry MEMORY_CACHE // coil3.decode/DataSource.MEMORY_CACHE|null[0]
-    enum entry NETWORK // coil3.decode/DataSource.NETWORK|null[0]
-    final fun valueOf(kotlin/String): coil3.decode/DataSource // coil3.decode/DataSource.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<coil3.decode/DataSource> // coil3.decode/DataSource.values|values#static(){}[0]
-    final val entries // coil3.decode/DataSource.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.decode/DataSource> // coil3.decode/DataSource.entries.<get-entries>|<get-entries>#static(){}[0]
+
+final object coil3.decode/DecodeUtils { // coil3.decode/DecodeUtils|null[0]
+    final fun calculateInSampleSize(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Int // coil3.decode/DecodeUtils.calculateInSampleSize|calculateInSampleSize(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
+    final fun computeSizeMultiplier(kotlin/Double, kotlin/Double, kotlin/Double, kotlin/Double, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Double;kotlin.Double;kotlin.Double;kotlin.Double;coil3.size.Scale){}[0]
+    final fun computeSizeMultiplier(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float, coil3.size/Scale): kotlin/Float // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float;coil3.size.Scale){}[0]
+    final fun computeSizeMultiplier(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
 }
-final enum class coil3.request/CachePolicy : kotlin/Enum<coil3.request/CachePolicy> { // coil3.request/CachePolicy|null[0]
-    enum entry DISABLED // coil3.request/CachePolicy.DISABLED|null[0]
-    enum entry ENABLED // coil3.request/CachePolicy.ENABLED|null[0]
-    enum entry READ_ONLY // coil3.request/CachePolicy.READ_ONLY|null[0]
-    enum entry WRITE_ONLY // coil3.request/CachePolicy.WRITE_ONLY|null[0]
-    final fun valueOf(kotlin/String): coil3.request/CachePolicy // coil3.request/CachePolicy.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<coil3.request/CachePolicy> // coil3.request/CachePolicy.values|values#static(){}[0]
-    final val entries // coil3.request/CachePolicy.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.request/CachePolicy> // coil3.request/CachePolicy.entries.<get-entries>|<get-entries>#static(){}[0]
-    final val readEnabled // coil3.request/CachePolicy.readEnabled|{}readEnabled[0]
-        final fun <get-readEnabled>(): kotlin/Boolean // coil3.request/CachePolicy.readEnabled.<get-readEnabled>|<get-readEnabled>(){}[0]
-    final val writeEnabled // coil3.request/CachePolicy.writeEnabled|{}writeEnabled[0]
-        final fun <get-writeEnabled>(): kotlin/Boolean // coil3.request/CachePolicy.writeEnabled.<get-writeEnabled>|<get-writeEnabled>(){}[0]
+
+final object coil3.request/NullRequestData { // coil3.request/NullRequestData|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/NullRequestData.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.request/NullRequestData.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.request/NullRequestData.toString|toString(){}[0]
 }
-final enum class coil3.size/Precision : kotlin/Enum<coil3.size/Precision> { // coil3.size/Precision|null[0]
-    enum entry EXACT // coil3.size/Precision.EXACT|null[0]
-    enum entry INEXACT // coil3.size/Precision.INEXACT|null[0]
-    final fun valueOf(kotlin/String): coil3.size/Precision // coil3.size/Precision.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<coil3.size/Precision> // coil3.size/Precision.values|values#static(){}[0]
-    final val entries // coil3.size/Precision.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.size/Precision> // coil3.size/Precision.entries.<get-entries>|<get-entries>#static(){}[0]
+
+final object coil3.util/MimeTypeMap { // coil3.util/MimeTypeMap|null[0]
+    final fun getMimeTypeFromExtension(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromExtension|getMimeTypeFromExtension(kotlin.String){}[0]
+    final fun getMimeTypeFromUrl(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromUrl|getMimeTypeFromUrl(kotlin.String){}[0]
 }
-final enum class coil3.size/Scale : kotlin/Enum<coil3.size/Scale> { // coil3.size/Scale|null[0]
-    enum entry FILL // coil3.size/Scale.FILL|null[0]
-    enum entry FIT // coil3.size/Scale.FIT|null[0]
-    final fun valueOf(kotlin/String): coil3.size/Scale // coil3.size/Scale.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<coil3.size/Scale> // coil3.size/Scale.values|values#static(){}[0]
-    final val entries // coil3.size/Scale.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.size/Scale> // coil3.size/Scale.entries.<get-entries>|<get-entries>#static(){}[0]
+
+final object coil3.util/ServiceLoaderComponentRegistry { // coil3.util/ServiceLoaderComponentRegistry|null[0]
+    final val decoders // coil3.util/ServiceLoaderComponentRegistry.decoders|{}decoders[0]
+        final fun <get-decoders>(): kotlin.collections/List<coil3.util/DecoderServiceLoaderTarget> // coil3.util/ServiceLoaderComponentRegistry.decoders.<get-decoders>|<get-decoders>(){}[0]
+    final val fetchers // coil3.util/ServiceLoaderComponentRegistry.fetchers|{}fetchers[0]
+        final fun <get-fetchers>(): kotlin.collections/List<coil3.util/FetcherServiceLoaderTarget<*>> // coil3.util/ServiceLoaderComponentRegistry.fetchers.<get-fetchers>|<get-fetchers>(){}[0]
+
+    final fun register(coil3.util/DecoderServiceLoaderTarget) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.DecoderServiceLoaderTarget){}[0]
+    final fun register(coil3.util/FetcherServiceLoaderTarget<*>) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.FetcherServiceLoaderTarget<*>){}[0]
 }
+
+final val coil3.request/crossfadeMillis // coil3.request/crossfadeMillis|@coil3.request.ImageRequest{}crossfadeMillis[0]
+    final fun (coil3.request/ImageRequest).<get-crossfadeMillis>(): kotlin/Int // coil3.request/crossfadeMillis.<get-crossfadeMillis>|<get-crossfadeMillis>@coil3.request.ImageRequest(){}[0]
+final val coil3.size/isOriginal // coil3.size/isOriginal|@coil3.size.Size{}isOriginal[0]
+    final fun (coil3.size/Size).<get-isOriginal>(): kotlin/Boolean // coil3.size/isOriginal.<get-isOriginal>|<get-isOriginal>@coil3.size.Size(){}[0]
+final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
+    final fun (coil3/Uri).<get-pathSegments>(): kotlin.collections/List<kotlin/String> // coil3/pathSegments.<get-pathSegments>|<get-pathSegments>@coil3.Uri(){}[0]
+
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
 final fun (coil3.size/Dimension).coil3.util/toPx(coil3.size/Scale): kotlin/Int // coil3.util/toPx|toPx@coil3.size.Dimension(coil3.size.Scale){}[0]
@@ -733,81 +953,6 @@ final fun coil3/ImageLoader(coil3/PlatformContext): coil3/ImageLoader // coil3/I
 final inline fun (coil3.size/Dimension).coil3.size/pxOrElse(kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.size/pxOrElse|pxOrElse@coil3.size.Dimension(kotlin.Function0<kotlin.Int>){}[0]
 final inline fun (coil3.size/Size).coil3.util/heightPx(coil3.size/Scale, kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.util/heightPx|heightPx@coil3.size.Size(coil3.size.Scale;kotlin.Function0<kotlin.Int>){}[0]
 final inline fun (coil3.size/Size).coil3.util/widthPx(coil3.size/Scale, kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.util/widthPx|widthPx@coil3.size.Size(coil3.size.Scale;kotlin.Function0<kotlin.Int>){}[0]
-final object coil3.decode/DecodeUtils { // coil3.decode/DecodeUtils|null[0]
-    final fun calculateInSampleSize(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Int // coil3.decode/DecodeUtils.calculateInSampleSize|calculateInSampleSize(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
-    final fun computeSizeMultiplier(kotlin/Double, kotlin/Double, kotlin/Double, kotlin/Double, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Double;kotlin.Double;kotlin.Double;kotlin.Double;coil3.size.Scale){}[0]
-    final fun computeSizeMultiplier(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float, coil3.size/Scale): kotlin/Float // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float;coil3.size.Scale){}[0]
-    final fun computeSizeMultiplier(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
-}
-final object coil3.request/NullRequestData { // coil3.request/NullRequestData|null[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/NullRequestData.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.request/NullRequestData.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.request/NullRequestData.toString|toString(){}[0]
-}
-final object coil3.util/MimeTypeMap { // coil3.util/MimeTypeMap|null[0]
-    final fun getMimeTypeFromExtension(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromExtension|getMimeTypeFromExtension(kotlin.String){}[0]
-    final fun getMimeTypeFromUrl(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromUrl|getMimeTypeFromUrl(kotlin.String){}[0]
-}
-final object coil3.util/ServiceLoaderComponentRegistry { // coil3.util/ServiceLoaderComponentRegistry|null[0]
-    final fun register(coil3.util/DecoderServiceLoaderTarget) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.DecoderServiceLoaderTarget){}[0]
-    final fun register(coil3.util/FetcherServiceLoaderTarget<*>) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.FetcherServiceLoaderTarget<*>){}[0]
-    final val decoders // coil3.util/ServiceLoaderComponentRegistry.decoders|{}decoders[0]
-        final fun <get-decoders>(): kotlin.collections/List<coil3.util/DecoderServiceLoaderTarget> // coil3.util/ServiceLoaderComponentRegistry.decoders.<get-decoders>|<get-decoders>(){}[0]
-    final val fetchers // coil3.util/ServiceLoaderComponentRegistry.fetchers|{}fetchers[0]
-        final fun <get-fetchers>(): kotlin.collections/List<coil3.util/FetcherServiceLoaderTarget<*>> // coil3.util/ServiceLoaderComponentRegistry.fetchers.<get-fetchers>|<get-fetchers>(){}[0]
-}
-final val coil3.request/crossfadeMillis // coil3.request/crossfadeMillis|@coil3.request.ImageRequest{}crossfadeMillis[0]
-    final fun (coil3.request/ImageRequest).<get-crossfadeMillis>(): kotlin/Int // coil3.request/crossfadeMillis.<get-crossfadeMillis>|<get-crossfadeMillis>@coil3.request.ImageRequest(){}[0]
-final val coil3.size/isOriginal // coil3.size/isOriginal|@coil3.size.Size{}isOriginal[0]
-    final fun (coil3.size/Size).<get-isOriginal>(): kotlin/Boolean // coil3.size/isOriginal.<get-isOriginal>|<get-isOriginal>@coil3.size.Size(){}[0]
-final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
-    final fun (coil3/Uri).<get-pathSegments>(): kotlin.collections/List<kotlin/String> // coil3/pathSegments.<get-pathSegments>|<get-pathSegments>@coil3.Uri(){}[0]
-open annotation class coil3.annotation/DelicateCoilApi : kotlin/Annotation { // coil3.annotation/DelicateCoilApi|null[0]
-    constructor <init>() // coil3.annotation/DelicateCoilApi.<init>|<init>(){}[0]
-}
-open annotation class coil3.annotation/ExperimentalCoilApi : kotlin/Annotation { // coil3.annotation/ExperimentalCoilApi|null[0]
-    constructor <init>() // coil3.annotation/ExperimentalCoilApi.<init>|<init>(){}[0]
-}
-open annotation class coil3.annotation/InternalCoilApi : kotlin/Annotation { // coil3.annotation/InternalCoilApi|null[0]
-    constructor <init>() // coil3.annotation/InternalCoilApi.<init>|<init>(){}[0]
-}
-open annotation class coil3.annotation/Poko : kotlin/Annotation { // coil3.annotation/Poko|null[0]
-    constructor <init>() // coil3.annotation/Poko.<init>|<init>(){}[0]
-}
-sealed interface coil3.decode/ImageSource : kotlin/AutoCloseable { // coil3.decode/ImageSource|null[0]
-    abstract class Metadata { // coil3.decode/ImageSource.Metadata|null[0]
-        constructor <init>() // coil3.decode/ImageSource.Metadata.<init>|<init>(){}[0]
-    }
-    abstract fun file(): okio/Path // coil3.decode/ImageSource.file|file(){}[0]
-    abstract fun fileOrNull(): okio/Path? // coil3.decode/ImageSource.fileOrNull|fileOrNull(){}[0]
-    abstract fun source(): okio/BufferedSource // coil3.decode/ImageSource.source|source(){}[0]
-    abstract fun sourceOrNull(): okio/BufferedSource? // coil3.decode/ImageSource.sourceOrNull|sourceOrNull(){}[0]
-    abstract val fileSystem // coil3.decode/ImageSource.fileSystem|{}fileSystem[0]
-        abstract fun <get-fileSystem>(): okio/FileSystem // coil3.decode/ImageSource.fileSystem.<get-fileSystem>|<get-fileSystem>(){}[0]
-    abstract val metadata // coil3.decode/ImageSource.metadata|{}metadata[0]
-        abstract fun <get-metadata>(): coil3.decode/ImageSource.Metadata? // coil3.decode/ImageSource.metadata.<get-metadata>|<get-metadata>(){}[0]
-}
-sealed interface coil3.fetch/FetchResult // coil3.fetch/FetchResult|null[0]
-sealed interface coil3.request/ImageResult { // coil3.request/ImageResult|null[0]
-    abstract val image // coil3.request/ImageResult.image|{}image[0]
-        abstract fun <get-image>(): coil3/Image? // coil3.request/ImageResult.image.<get-image>|<get-image>(){}[0]
-    abstract val request // coil3.request/ImageResult.request|{}request[0]
-        abstract fun <get-request>(): coil3.request/ImageRequest // coil3.request/ImageResult.request.<get-request>|<get-request>(){}[0]
-}
-sealed interface coil3.size/Dimension { // coil3.size/Dimension|null[0]
-    final class Pixels : coil3.size/Dimension { // coil3.size/Dimension.Pixels|null[0]
-        constructor <init>(kotlin/Int) // coil3.size/Dimension.Pixels.<init>|<init>(kotlin.Int){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.size/Dimension.Pixels.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.size/Dimension.Pixels.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.size/Dimension.Pixels.toString|toString(){}[0]
-        final val px // coil3.size/Dimension.Pixels.px|{}px[0]
-            final fun <get-px>(): kotlin/Int // coil3.size/Dimension.Pixels.px.<get-px>|<get-px>(){}[0]
-    }
-    final object Undefined : coil3.size/Dimension { // coil3.size/Dimension.Undefined|null[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.size/Dimension.Undefined.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.size/Dimension.Undefined.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.size/Dimension.Undefined.toString|toString(){}[0]
-    }
-}
+
 // Targets: [apple]
 final fun (coil3/ImageLoader).coil3/executeBlocking(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/executeBlocking|executeBlocking@coil3.ImageLoader(coil3.request.ImageRequest){}[0]
