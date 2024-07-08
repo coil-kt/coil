@@ -5,7 +5,7 @@ import coil3.applyCoilHierarchyTemplate
 plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
-    id("kotlinx-atomicfu")
+    id("org.jetbrains.kotlinx.atomicfu")
 }
 
 androidLibrary(name = "coil3.network.okhttp")
