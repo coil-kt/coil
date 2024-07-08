@@ -37,6 +37,7 @@ kotlin {
         named("jvmCommonTest").dependencies {
             implementation(compose.desktop.uiTestJUnit4)
             implementation(libs.bundles.test.jvm)
+            implementation(libs.coroutines.swing)
         }
         jvmTest.dependencies {
             implementation(compose.desktop.currentOs)
