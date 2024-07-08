@@ -1,15 +1,12 @@
 package coil3.compose
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Constraints
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
@@ -19,14 +16,6 @@ import coil3.request.ImageRequest
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
  * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
- *
- * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
- *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
- *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
- *   set a bounded width or height respectively using `Modifier.width` or `Modifier.height`.
- * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- *   composition phase. Use [SubcomposeAsyncImage] or set a custom [ImageRequest.Builder.size] value
- *   (e.g. `size(Size.ORIGINAL)`) if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param placeholder A [Painter] that is displayed while the image is loading.
@@ -74,14 +63,6 @@ fun rememberAsyncImagePainter(
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
  * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
- *
- * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
- *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
- *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
- *   set a bounded width or height respectively using `Modifier.width` or `Modifier.height`.
- * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- *   composition phase. Use [SubcomposeAsyncImage] or set a custom [ImageRequest.Builder.size] value
- *   (e.g. `size(Size.ORIGINAL)`) if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param transform A callback to transform a new [State] before it's applied to the
