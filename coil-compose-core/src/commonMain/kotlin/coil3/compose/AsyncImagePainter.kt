@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
@@ -47,8 +48,8 @@ import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -187,17 +188,18 @@ class AsyncImagePainter internal constructor(
         onBufferOverflow = DROP_OLDEST,
     )
 
-    private var painter: Painter? by mutableStateOf(null)
+    private val painterFlow: MutableStateFlow<Painter?> = MutableStateFlow(null)
+    private val painterState: MutableState<Painter?> = mutableStateOf(null)
+    private val painter: Painter?
+        get() {
+            painterState.value
+            return painterFlow.value
+        }
+
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal lateinit var scope: CoroutineScope
-    private var rememberJob: Job? = null
-        set(value) {
-            field?.cancel()
-            field = value
-        }
-
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
@@ -234,11 +236,16 @@ class AsyncImagePainter internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
-        (painter as? RememberObserver)?.onRemembered()
+    override fun onRemembered(): Unit = trace("AsyncImagePainter.onRemembered") {
+        (painterFlow.value as? RememberObserver)?.onRemembered()
+
+        // Ensure the painter state is updated on the UI thread.
+        scope.launch {
+            painterFlow.collect(painterState::value::set)
+        }
 
         // Observe the latest request and execute any emissions.
-        rememberJob = scope.launch {
+        scope.launch(Dispatchers.Unconfined) {
             val previewHandler = previewHandler
             if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
@@ -255,13 +262,11 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onForgotten() {
-        rememberJob = null
-        (painter as? RememberObserver)?.onForgotten()
+        (painterFlow.value as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
-        rememberJob = null
-        (painter as? RememberObserver)?.onAbandoned()
+        (painterFlow.value as? RememberObserver)?.onAbandoned()
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
@@ -300,14 +305,14 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(input: State) {
+    private fun updateState(state: State) {
         val previous = _state.value
-        val current = transform(input)
+        val current = transform(state)
         _state.value = current
-        painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
+        painterFlow.value = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
-        if (rememberJob != null && previous.painter !== current.painter) {
+        if (previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
