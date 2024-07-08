@@ -49,14 +49,14 @@ import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -235,7 +235,8 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
-    override fun onRemembered(): Unit = trace("AsyncImagePainter.onRemembered") {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
@@ -243,22 +244,18 @@ class AsyncImagePainter internal constructor(
         if (previewHandler != null) {
             // If we're in inspection mode use the preview renderer.
             rememberJob = scope.launch(Dispatchers.Unconfined) {
-                _input.collectLatest {
+                _input.mapLatest {
                     val request = updateRequest(it.request, isPreview = true)
-                    val state = previewHandler.handle(it.imageLoader, request)
-                    ensureActive()
-                    updateState(state)
-                }
+                    previewHandler.handle(it.imageLoader, request)
+                }.collect(::updateState)
             }
         } else {
             // Else, execute the request as normal.
             rememberJob = scope.launch(safeImmediateMainDispatcher) {
-                _input.collectLatest {
+                _input.mapLatest {
                     val request = updateRequest(it.request, isPreview = false)
-                    val state = it.imageLoader.execute(request).toState()
-                    ensureActive()
-                    updateState(state)
-                }
+                    it.imageLoader.execute(request).toState()
+                }.collect(::updateState)
             }
         }
     }
