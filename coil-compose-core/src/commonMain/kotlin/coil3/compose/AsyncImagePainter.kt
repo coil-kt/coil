@@ -49,13 +49,13 @@ import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -192,6 +192,12 @@ class AsyncImagePainter internal constructor(
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
+    private var rememberJob: Job? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
+
     internal lateinit var scope: CoroutineScope
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
@@ -228,7 +234,6 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered(): Unit = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
 
@@ -236,26 +241,34 @@ class AsyncImagePainter internal constructor(
         val previewHandler = previewHandler
         if (previewHandler != null) {
             // If we're in inspection mode use the preview renderer.
-            scope.launch(Dispatchers.Unconfined) {
-                _input.mapLatest {
-                    previewHandler.handle(it.imageLoader, updateRequest(it.request, isPreview = true))
-                }.collect(::updateState)
+            rememberJob = scope.launch(Dispatchers.Unconfined) {
+                _input.collect {
+                    val request = updateRequest(it.request, isPreview = true)
+                    val state = previewHandler.handle(it.imageLoader, request)
+                    ensureActive()
+                    updateState(state)
+                }
             }
         } else {
             // Else, execute the request as normal.
-            scope.launch(safeImmediateMainDispatcher) {
-                _input.mapLatest {
-                    it.imageLoader.execute(updateRequest(it.request, isPreview = false)).toState()
-                }.collect(::updateState)
+            rememberJob = scope.launch(safeImmediateMainDispatcher) {
+                _input.collect {
+                    val request = updateRequest(it.request, isPreview = false)
+                    val state = it.imageLoader.execute(request).toState()
+                    ensureActive()
+                    updateState(state)
+                }
             }
         }
     }
 
     override fun onForgotten() {
+        rememberJob = null
         (painter as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
+        rememberJob = null
         (painter as? RememberObserver)?.onAbandoned()
     }
 
