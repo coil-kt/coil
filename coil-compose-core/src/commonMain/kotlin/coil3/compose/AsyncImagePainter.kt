@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -242,7 +243,7 @@ class AsyncImagePainter internal constructor(
         if (previewHandler != null) {
             // If we're in inspection mode use the preview renderer.
             rememberJob = scope.launch(Dispatchers.Unconfined) {
-                _input.collect {
+                _input.collectLatest {
                     val request = updateRequest(it.request, isPreview = true)
                     val state = previewHandler.handle(it.imageLoader, request)
                     ensureActive()
@@ -252,7 +253,7 @@ class AsyncImagePainter internal constructor(
         } else {
             // Else, execute the request as normal.
             rememberJob = scope.launch(safeImmediateMainDispatcher) {
-                _input.collect {
+                _input.collectLatest {
                     val request = updateRequest(it.request, isPreview = false)
                     val state = it.imageLoader.execute(request).toState()
                     ensureActive()
