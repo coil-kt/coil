@@ -3,6 +3,7 @@ import coil.setupAppModule
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 setupAppModule(name = "sample.compose") {
@@ -26,9 +27,6 @@ setupAppModule(name = "sample.compose") {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 

@@ -143,5 +143,5 @@ private fun Project.kotlin(action: KotlinJvmCompile.() -> Unit) {
 }
 
 private fun BaseExtension.lint(action: Lint.() -> Unit) {
-    (this as CommonExtension<*, *, *, *, *>).lint(action)
+    (this as CommonExtension<*, *, *, *, *, *>).lint(action)
 }

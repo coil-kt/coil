@@ -3,14 +3,12 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 setupLibraryModule(name = "coil.compose.base") {
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 

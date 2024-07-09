@@ -3,15 +3,13 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("io.github.takahirom.roborazzi")
 }
 
 setupLibraryModule(name = "coil.test.roborazzi") {
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 

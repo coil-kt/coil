@@ -3,15 +3,13 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("app.cash.paparazzi")
 }
 
 setupLibraryModule(name = "coil.test.paparazzi") {
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
