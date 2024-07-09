@@ -33,6 +33,9 @@ The `coil-gif` and `coil-video` artifacts continue to be Android-only as they re
 
 The `coil-compose` artifact's APIs are mostly unchanged. You can continue using `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter` the same way as with Coil 2.x. Additionally, this methods have been updated to be [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability) which should improve their performance.
 
+!!! Note
+    If you use Coil on a JVM (non-Android) platform, you should add a dependency on a [coroutines main dispatcher](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html). On desktop you likely want to import `org.jetbrains.kotlinx:kotlinx-coroutines-swing`. If it's not imported then `ImageRequest`s won't be dispatched immediately and will have one frame of delay before setting the `ImageRequest.placeholder` or resolving from the memory cache.
+
 ## Network Images
 
 **IMPORTANT** Coil's network image support was extracted out of `coil-core`. To load images from a network URL in Coil 3.0 you'll need to import a separate artifact, either:

@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0-alpha08] - July 8, 2024
+
+- **BREAKING**: Rename `ImageRequest` and `ImageLoader` `dispatcher` methods to `coroutineContext`. For instance, `ImageRequest.Builder.dispatcher` is now `ImageRequest.Builder.coroutineContext`. This was renamed as the method now accepts any `CoroutineContext` and no longer requires a `Dispatcher`.
+- Fix: Fix `IllegalStateException: Reading a state that was created after the snapshot was taken or in a snapshot that has not yet been applied` which could occur due to a race condition.
+    - NOTE: This reintroduces a soft dependency on `Dispatchers.Main.immediate`. As a result you should re-add a dependency on [`kotlinx-coroutines-swing`](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-swing/) on JVM. If it's not imported then `ImageRequest`s won't be dispatched immediately and will have one frame of delay before setting the `ImageRequest.placeholder` or resolving from the memory cache.
+
 ## [3.0.0-alpha07] - June 26, 2024
 
 - **BREAKING**: `AsyncImagePainter` no longer waits for `onDraw` by default and instead uses `Size.ORIGINAL`.
