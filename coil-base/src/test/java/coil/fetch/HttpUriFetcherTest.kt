@@ -35,6 +35,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import okio.FileSystem
 import okio.blackholeSink
 import okio.buffer
@@ -145,6 +146,18 @@ class HttpUriFetcherTest {
         assertIs<SourceResult>(result)
         assertIs<SourceImageSource>(result.source)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+    @Test
+    fun `no disk cache and chunked response - fetcher calls network just once`() = runTestAsync {
+        val url = server.url(IMAGE).toString()
+
+        server.enqueueChunkedImage(IMAGE)
+        server.enqueueChunkedImage(IMAGE)
+
+        newFetcher(url, diskCache = null).fetch()
+
+        assertEquals(1, server.requestCount)
     }
 
     @Test
@@ -456,6 +469,14 @@ class HttpUriFetcherTest {
         assertIs<SourceResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+    fun MockWebServer.enqueueChunkedImage(image: String) {
+        val buffer = Buffer()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.assets.open(image).source().buffer().readAll(buffer)
+        val response = MockResponse().setChunkedBody(buffer, 100)
+        enqueue(response)
     }
 
     private fun newFetcher(
