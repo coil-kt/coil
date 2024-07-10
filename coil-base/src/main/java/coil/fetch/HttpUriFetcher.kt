@@ -93,7 +93,7 @@ internal class HttpUriFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                if (response.peekBody(1).bytes().isNotEmpty()) {
+                if (responseBody.source().request(1L)) {
                     return SourceResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, responseBody.contentType()),
