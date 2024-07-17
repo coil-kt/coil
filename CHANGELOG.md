@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.7.0] - July 17, 2024
+
+- Slightly optimize internal coroutines usage to improve the performance of `ImageLoader.execute`, `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter`.
+- Fix duplicate network calls for chunked responses.
+- Update Kotlin to 2.0.0.
+- Update Compose UI to 1.6.8.
+- Update Okio to 3.9.0.
+
 ## [2.6.0] - February 23, 2024
 
 - Make `rememberAsyncImagePainter`, `AsyncImage`, and `SubcomposeAsyncImage` [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability#functions). This should improve performance by avoiding recomposition unless one of the composable's arguments changes.
