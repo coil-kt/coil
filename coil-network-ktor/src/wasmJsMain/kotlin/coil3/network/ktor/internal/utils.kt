@@ -12,7 +12,6 @@ internal actual suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
     val buffer = ByteArray(OKIO_BUFFER_SIZE)
 
     while (!isClosedForRead) {
-        readRemaining()
         val packet = readRemaining(buffer.size.toLong())
         if (packet.exhausted()) break
 
