@@ -2,8 +2,8 @@
 
 ## [2.7.0] - July 17, 2024
 
-- Slightly optimize internal coroutines usage to improve the performance of `ImageLoader.execute`, `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter`.
-- Fix duplicate network calls for chunked responses.
+- Slightly optimize internal coroutines usage to improve the performance of `ImageLoader.execute`, `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter`. ([#2205](https://github.com/coil-kt/coil/pull/2205))
+- Fix duplicate network calls for chunked responses. ([#2363](https://github.com/coil-kt/coil/pull/2363))
 - Update Kotlin to 2.0.0.
 - Update Compose UI to 1.6.8.
 - Update Okio to 3.9.0.
