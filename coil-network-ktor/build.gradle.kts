@@ -11,7 +11,7 @@ plugins {
 
 addAllMultiplatformTargets()
 androidLibrary(name = "coil3.network.ktor")
-applyKtorWasmWorkaround(libs.versions.ktor.wasm.get())
+applyKtorWasmWorkaround(libs.versions.ktor.beta.get())
 
 kotlin {
     sourceSets {
