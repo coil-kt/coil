@@ -6,8 +6,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -119,9 +117,6 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
 
 // https://youtrack.jetbrains.com/issue/KTOR-5587
 fun Project.applyKtorWasmWorkaround(version: String) {
-    repositories {
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
-    }
     configurations.all {
         if (name.startsWith("wasmJs")) {
             resolutionStrategy.eachDependency {

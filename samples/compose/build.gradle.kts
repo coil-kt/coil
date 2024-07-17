@@ -33,7 +33,7 @@ androidApplication(name = "sample.compose") {
     }
 }
 
-applyKtorWasmWorkaround(libs.versions.ktor.wasm.get())
+applyKtorWasmWorkaround(libs.versions.ktor.beta.get())
 
 compose {
     desktop {

@@ -9,7 +9,7 @@ plugins {
 
 addAllMultiplatformTargets()
 androidLibrary(name = "sample.common", config = true)
-applyKtorWasmWorkaround(libs.versions.ktor.wasm.get())
+applyKtorWasmWorkaround(libs.versions.ktor.beta.get())
 
 kotlin {
     sourceSets {
