@@ -14,7 +14,7 @@ Coil - аббревиатура: **Co**routine **I**mage **L**oader (загру�
 Coil доступен в `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.6.0")
+implementation("io.coil-kt:coil:2.7.0")
 ```
 
 ## Начало работы
@@ -48,7 +48,7 @@ imageView.load("https://example.com/image.jpg") {
 Установите библиотеку-расширение для [Jetpack Compose](https://developer.android.com/jetpack/compose):
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.6.0")
+implementation("io.coil-kt:coil-compose:2.7.0")
 ```
 
 Чтобы загрузить изображение, воспользуйтесь composable-функцией `AsyncImage`:

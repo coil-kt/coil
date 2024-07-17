@@ -16,7 +16,7 @@ Coil är en förkortning för: **Co**routine **I**mage **L**oader.
 Coil finns att ladda ned från `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.6.0")
+implementation("io.coil-kt:coil:2.7.0")
 ```
 
 ## Snabbstartsguide
@@ -50,7 +50,7 @@ imageView.load("https://example.com/image.jpg") {
 Importera [Jetpack Compose](https://developer.android.com/jetpack/compose)-förlängningsbiblioteket:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.6.0")
+implementation("io.coil-kt:coil-compose:2.7.0")
 ```
 
 För att ladda in en bild, använd en `AsyncImage` composable:

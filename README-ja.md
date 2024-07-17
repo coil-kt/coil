@@ -14,7 +14,7 @@ Coil は **Co**routine **I**mage **L**oader の頭字語です。
 Coil は `mavenCentral()` で利用できます。
 
 ```kotlin
-implementation("io.coil-kt:coil:2.6.0")
+implementation("io.coil-kt:coil:2.7.0")
 ```
 
 ## クイックスタート
@@ -48,7 +48,7 @@ imageView.load("https://example.com/image.jpg") {
 [Jetpack Compose](https://developer.android.com/jetpack/compose) 拡張ライブラリをインポートします:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.6.0")
+implementation("io.coil-kt:coil-compose:2.7.0")
 ```
 
 画像を読み込むには、`AsyncImage` composable を使用します:

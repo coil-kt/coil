@@ -16,7 +16,7 @@ Coil, **Co**routine **I**mage **L**oader'ın kısaltmasıdır.
 Coil, `mavenCentral()` üzerinde mevcuttur.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.6.0")
+implementation("io.coil-kt:coil:2.7.0")
 ```
 
 ## Hızlı Başlangıç
@@ -50,7 +50,7 @@ imageView.load("https://example.com/image.jpg") {
 [Jetpack Compose](https://developer.android.com/jetpack/compose) uzantı kütüphanesini içe aktarın:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.6.0")
+implementation("io.coil-kt:coil-compose:2.7.0")
 ```
 
 Bir görüntü yüklemek için, `AsyncImage` bileşenini kullanın:
