@@ -11,6 +11,7 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
@@ -39,6 +40,17 @@ fun Project.androidLibrary(
                 AndroidSingleVariantLibrary()
             }
             configure(platform)
+        }
+    }
+    testOptions {
+        unitTests.all { test ->
+            test.testLogging {
+                exceptionFormat = TestExceptionFormat.FULL
+                showCauses = true
+                showExceptions = true
+                showStackTraces = true
+                showStandardStreams = true
+            }
         }
     }
     action()
