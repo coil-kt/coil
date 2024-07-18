@@ -68,6 +68,9 @@ fun Project.addAllMultiplatformTargets(enableWasm: Boolean = true) {
         }
 
         applyKotlinJsImplicitDependencyWorkaround(enableWasm)
+        if (enableWasm) {
+            createSkikoWasmJsRuntimeDependency()
+        }
     }
 }
 
