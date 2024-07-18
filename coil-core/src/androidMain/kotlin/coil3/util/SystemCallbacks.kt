@@ -54,7 +54,11 @@ internal class AndroidSystemCallbacks(
 
         val options = imageLoader.options
         val networkObserver = if (options.networkObserverEnabled) {
-            NetworkObserver(options.application, this, options.logger)
+            NetworkObserver(
+                options.application,
+                this,
+                options.logger,
+                imageLoader.options.observeDefaultNetwork)
         } else {
             EmptyNetworkObserver()
         }

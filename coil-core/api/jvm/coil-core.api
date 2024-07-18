@@ -159,6 +159,7 @@ public final class coil3/ImageLoader$Builder {
 	public final fun memoryCache (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
+	public final fun observeDefaultNetwork (Z)V
 	public final fun placeholder (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
 	public final fun placeholder (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
 	public final fun precision (Lcoil3/size/Precision;)Lcoil3/ImageLoader$Builder;

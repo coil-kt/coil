@@ -226,6 +226,7 @@ internal class RealImageLoader(
         val eventListenerFactory: EventListener.Factory,
         val componentRegistry: ComponentRegistry,
         val logger: Logger?,
+        val observeDefaultNetwork: Boolean
     )
 }
 

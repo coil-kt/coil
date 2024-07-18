@@ -87,6 +87,7 @@ interface ImageLoader {
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
         val extras: Extras.Builder
+        private var observeDefaultNetwork: Boolean = false
 
         constructor(context: PlatformContext) {
             application = context.application
@@ -308,6 +309,15 @@ interface ImageLoader {
         }
 
         /**
+         * Configure ConnectivityManager to call registerDefaultNetworkCallback.
+         *
+         * NOTE: by default this is false, and ConnectivityManager calls registerNetworkCallback instead.
+         */
+        fun observeDefaultNetwork(observeDefaultNetwork: Boolean) = apply {
+            this.observeDefaultNetwork = observeDefaultNetwork
+        }
+
+        /**
          * Create a new [ImageLoader] instance.
          */
         fun build(): ImageLoader {
@@ -325,6 +335,7 @@ interface ImageLoader {
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,
+                observeDefaultNetwork = observeDefaultNetwork,
             )
             return RealImageLoader(options)
         }
