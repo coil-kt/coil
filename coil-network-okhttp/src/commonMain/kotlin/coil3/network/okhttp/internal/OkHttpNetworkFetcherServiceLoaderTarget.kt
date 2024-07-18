@@ -7,5 +7,5 @@ import coil3.util.FetcherServiceLoaderTarget
 internal class OkHttpNetworkFetcherServiceLoaderTarget : FetcherServiceLoaderTarget<Uri> {
     override fun factory() = OkHttpNetworkFetcherFactory()
     override fun type() = Uri::class
-    override fun priority() = 1 // OkHttpNetworkFetcher takes precedence over KtorNetworkFetcher.
+    override fun priority() = 2 // okhttp > ktor3 > ktor2
 }

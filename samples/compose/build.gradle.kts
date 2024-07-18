@@ -1,6 +1,5 @@
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
-import coil3.applyKtorWasmWorkaround
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
@@ -32,8 +31,6 @@ androidApplication(name = "sample.compose") {
         }
     }
 }
-
-applyKtorWasmWorkaround(libs.versions.ktor.beta.get())
 
 compose {
     desktop {
