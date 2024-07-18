@@ -55,7 +55,6 @@ class NetworkHeaders private constructor(
     }
 
     companion object {
-        @JvmField
-        val EMPTY = Builder().build()
+        @JvmField val EMPTY = Builder().build()
     }
 }
