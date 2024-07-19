@@ -48,7 +48,6 @@ fun Project.androidLibrary(
                 exceptionFormat = TestExceptionFormat.FULL
                 showExceptions = true
                 showStackTraces = true
-                showStandardStreams = true
             }
         }
     }
