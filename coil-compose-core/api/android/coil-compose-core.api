@@ -12,6 +12,7 @@ public final class coil3/compose/AsyncImagePainter : androidx/compose/ui/graphic
 	public fun onAbandoned ()V
 	public fun onForgotten ()V
 	public fun onRemembered ()V
+	public final fun restart ()V
 }
 
 public final class coil3/compose/AsyncImagePainter$Companion {

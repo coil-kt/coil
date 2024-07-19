@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
@@ -159,7 +160,7 @@ private fun rememberAsyncImagePainter(
 }
 
 /**
- * A [Painter] that that executes an [ImageRequest] asynchronously and renders the result.
+ * A [Painter] that that executes an [ImageRequest] asynchronously and renders the [ImageResult].
  */
 @Stable
 class AsyncImagePainter internal constructor(
@@ -169,6 +170,10 @@ class AsyncImagePainter internal constructor(
         replay = 1,
         onBufferOverflow = DROP_OLDEST,
     )
+    private val restartSignal = MutableSharedFlow<Unit>(
+        replay = 1,
+        onBufferOverflow = DROP_OLDEST,
+    ).apply { tryEmit(Unit) }
 
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
@@ -221,11 +226,12 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
+        val inputs = restartSignal.flatMapLatest { _input }
         val previewHandler = previewHandler
         if (previewHandler != null) {
             // If we're in inspection mode use the preview renderer.
             rememberJob = scope.launch(Dispatchers.Unconfined) {
-                _input.mapLatest {
+                inputs.mapLatest {
                     val request = updateRequest(it.request, isPreview = true)
                     previewHandler.handle(it.imageLoader, request)
                 }.collect(::updateState)
@@ -233,7 +239,7 @@ class AsyncImagePainter internal constructor(
         } else {
             // Else, execute the request as normal.
             rememberJob = scope.launch(safeImmediateMainDispatcher) {
-                _input.mapLatest {
+                inputs.mapLatest {
                     val request = updateRequest(it.request, isPreview = false)
                     it.imageLoader.execute(request).toState()
                 }.collect(::updateState)
@@ -249,6 +255,13 @@ class AsyncImagePainter internal constructor(
     override fun onAbandoned() {
         rememberJob = null
         (painter as? RememberObserver)?.onAbandoned()
+    }
+
+    /**
+     * Launch a new image request with the current [Input]s.
+     */
+    fun restart() {
+        restartSignal.tryEmit(Unit)
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
