@@ -2,7 +2,6 @@ package coil3.network.ktor3.internal
 
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
-import io.ktor.utils.io.copyTo
 import io.ktor.utils.io.core.read
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
