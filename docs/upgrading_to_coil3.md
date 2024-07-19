@@ -47,11 +47,11 @@ implementation("io.coil-kt.coil3:coil:[coil-version]")
 implementation("io.coil-kt.coil3:coil-network-okhttp:[coil-version]")
 ```
 
-- Import `coil-network-ktor3` (or `coil-network-ktor2`) and a [Ktor engine](https://ktor.io/docs/http-client-engines.html) if you prefer using [Ktor](https://ktor.io/).
+- Import `coil-network-ktor2` (or `coil-network-ktor3`) and a [Ktor engine](https://ktor.io/docs/http-client-engines.html) if you prefer using [Ktor](https://ktor.io/).
 
 ```kotlin
 implementation("io.coil-kt.coil3:coil:[coil-version]")
-implementation("io.coil-kt.coil3:coil-network-ktor3:[coil-version]")
+implementation("io.coil-kt.coil3:coil-network-ktor2:[coil-version]")
 implementation("io.ktor:ktor-client-android:[ktor-version]")
 ```
 

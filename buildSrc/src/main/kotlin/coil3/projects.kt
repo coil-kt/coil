@@ -48,6 +48,7 @@ fun Project.androidLibrary(
                 exceptionFormat = TestExceptionFormat.FULL
                 showExceptions = true
                 showStackTraces = true
+                showCauses = false
             }
         }
     }
