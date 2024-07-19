@@ -264,7 +264,9 @@ class AsyncImagePainter internal constructor(
         restartSignal.tryEmit(Unit)
     }
 
-    /** Update the [request] to work with [AsyncImagePainter]. */
+    /**
+     * Update the [request] to work with [AsyncImagePainter].
+     */
     private fun updateRequest(request: ImageRequest, isPreview: Boolean): ImageRequest {
         // Connect the size resolver to the draw scope if necessary.
         val sizeResolver = request.sizeResolver
