@@ -46,7 +46,6 @@ fun Project.androidLibrary(
         unitTests.all { test ->
             test.testLogging {
                 exceptionFormat = TestExceptionFormat.FULL
-                showCauses = true
                 showExceptions = true
                 showStackTraces = true
                 showStandardStreams = true
