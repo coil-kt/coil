@@ -38,7 +38,9 @@ class NetworkHeaders private constructor(
             data = headers.data.mapValuesTo(mutableMapOf()) { it.value.toMutableList() }
         }
 
-        operator fun set(key: String, value: String) = set(key, listOf(value))
+        operator fun set(key: String, value: String) = apply {
+            data[key.lowercase()] = mutableListOf(value)
+        }
 
         operator fun set(key: String, values: List<String>) = apply {
             data[key.lowercase()] = values.toMutableList()
@@ -55,7 +57,6 @@ class NetworkHeaders private constructor(
     }
 
     companion object {
-        @JvmField
-        val EMPTY = Builder().build()
+        @JvmField val EMPTY = Builder().build()
     }
 }

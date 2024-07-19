@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
-fun Project.addAllMultiplatformTargets() {
+fun Project.addAllMultiplatformTargets(enableWasm: Boolean = true) {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
@@ -40,21 +40,23 @@ fun Project.addAllMultiplatformTargets() {
                 binaries.library()
             }
 
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs {
-                // TODO: Fix wasm tests.
-                browser {
-                    testTask {
-                        enabled = false
+            if (enableWasm) {
+                @OptIn(ExperimentalWasmDsl::class)
+                wasmJs {
+                    // TODO: Fix wasm tests.
+                    browser {
+                        testTask {
+                            enabled = false
+                        }
                     }
-                }
-                nodejs {
-                    testTask {
-                        enabled = false
+                    nodejs {
+                        testTask {
+                            enabled = false
+                        }
                     }
+                    binaries.executable()
+                    binaries.library()
                 }
-                binaries.executable()
-                binaries.library()
             }
 
             iosX64()
@@ -65,8 +67,10 @@ fun Project.addAllMultiplatformTargets() {
             macosArm64()
         }
 
-        applyKotlinJsImplicitDependencyWorkaround()
-        createSkikoWasmJsRuntimeDependency()
+        applyKotlinJsImplicitDependencyWorkaround(enableWasm)
+        if (enableWasm) {
+            createSkikoWasmJsRuntimeDependency()
+        }
     }
 }
 
@@ -77,7 +81,7 @@ val NamedDomainObjectContainer<KotlinSourceSet>.androidInstrumentedTest: NamedDo
     get() = named("androidInstrumentedTest")
 
 // https://youtrack.jetbrains.com/issue/KT-56025
-fun Project.applyKotlinJsImplicitDependencyWorkaround() {
+fun Project.applyKotlinJsImplicitDependencyWorkaround(enableWasm: Boolean = true) {
     tasks {
         val configureJs: Task.() -> Unit = {
             dependsOn(named("jsDevelopmentLibraryCompileSync"))
@@ -96,35 +100,23 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
         named("jsBrowserProductionLibraryDistribution").configure(configureJs)
         named("jsNodeProductionLibraryDistribution").configure(configureJs)
 
-        val configureWasmJs: Task.() -> Unit = {
-            dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
-            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(named("wasmJsProductionLibraryCompileSync"))
-            dependsOn(named("wasmJsProductionExecutableCompileSync"))
-            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+        if (enableWasm) {
+            val configureWasmJs: Task.() -> Unit = {
+                dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
+                dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(named("wasmJsProductionLibraryCompileSync"))
+                dependsOn(named("wasmJsProductionExecutableCompileSync"))
+                dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
 
-            dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
-        }
-        named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
-        named("wasmJsBrowserProductionLibraryDistribution").configure(configureWasmJs)
-        named("wasmJsNodeProductionLibraryDistribution").configure(configureWasmJs)
-    }
-}
-
-// https://youtrack.jetbrains.com/issue/KTOR-5587
-fun Project.applyKtorWasmWorkaround(version: String) {
-    configurations.all {
-        if (name.startsWith("wasmJs")) {
-            resolutionStrategy.eachDependency {
-                if (requested.group.startsWith("io.ktor") &&
-                    requested.name.startsWith("ktor-client-")) {
-                    useVersion(version)
-                }
+                dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
             }
+            named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
+            named("wasmJsBrowserProductionLibraryDistribution").configure(configureWasmJs)
+            named("wasmJsNodeProductionLibraryDistribution").configure(configureWasmJs)
         }
     }
 }
