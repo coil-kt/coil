@@ -15,7 +15,8 @@ internal class ImageLoaderOptions(
     val networkObserverEnabled: Boolean = true,
     val respectCacheHeaders: Boolean = true,
     val bitmapFactoryMaxParallelism: Int = DEFAULT_MAX_PARALLELISM,
-    val bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
+    val bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE,
+    val observeDefaultNetwork: Boolean = false,
 ) {
 
     fun copy(
@@ -24,11 +25,13 @@ internal class ImageLoaderOptions(
         respectCacheHeaders: Boolean = this.respectCacheHeaders,
         bitmapFactoryMaxParallelism: Int = this.bitmapFactoryMaxParallelism,
         bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy = this.bitmapFactoryExifOrientationPolicy,
+        observeDefaultNetwork: Boolean = this.observeDefaultNetwork,
     ) = ImageLoaderOptions(
         addLastModifiedToFileCacheKey,
         networkObserverEnabled,
         respectCacheHeaders,
         bitmapFactoryMaxParallelism,
-        bitmapFactoryExifOrientationPolicy
+        bitmapFactoryExifOrientationPolicy,
+        observeDefaultNetwork,
     )
 }

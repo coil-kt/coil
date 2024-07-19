@@ -49,7 +49,11 @@ internal class SystemCallbacks(
         if (networkObserver != null) return@withImageLoader
 
         val networkObserver = if (imageLoader.options.networkObserverEnabled) {
-            NetworkObserver(imageLoader.context, this, imageLoader.logger)
+            NetworkObserver(
+                imageLoader.context,
+                this,
+                imageLoader.logger,
+                imageLoader.options.observeDefaultNetwork)
         } else {
             EmptyNetworkObserver()
         }

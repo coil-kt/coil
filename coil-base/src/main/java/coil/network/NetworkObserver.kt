@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
+import android.os.Build
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.core.content.getSystemService
@@ -21,7 +22,8 @@ private const val TAG = "NetworkObserver"
 internal fun NetworkObserver(
     context: Context,
     listener: Listener,
-    logger: Logger?
+    logger: Logger?,
+    observeDefaultNetwork: Boolean,
 ): NetworkObserver {
     val connectivityManager: ConnectivityManager? = context.getSystemService()
     if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
@@ -30,7 +32,7 @@ internal fun NetworkObserver(
     }
 
     return try {
-        RealNetworkObserver(connectivityManager, listener)
+        RealNetworkObserver(connectivityManager, listener, observeDefaultNetwork)
     } catch (e: Exception) {
         logger?.log(TAG, RuntimeException("Failed to register network observer.", e))
         EmptyNetworkObserver()
@@ -70,7 +72,8 @@ internal class EmptyNetworkObserver : NetworkObserver {
 @Suppress("DEPRECATION") // TODO: Remove uses of 'allNetworks'.
 private class RealNetworkObserver(
     private val connectivityManager: ConnectivityManager,
-    private val listener: Listener
+    private val listener: Listener,
+    private val observeDefaultNetwork: Boolean,
 ) : NetworkObserver {
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -82,10 +85,15 @@ private class RealNetworkObserver(
         get() = connectivityManager.allNetworks.any { it.isOnline() }
 
     init {
-        val request = NetworkRequest.Builder()
-            .addCapability(NET_CAPABILITY_INTERNET)
-            .build()
-        connectivityManager.registerNetworkCallback(request, networkCallback)
+
+        if (observeDefaultNetwork && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        } else {
+            val request = NetworkRequest.Builder()
+                .addCapability(NET_CAPABILITY_INTERNET)
+                .build()
+            connectivityManager.registerNetworkCallback(request, networkCallback)
+        }
     }
 
     override fun shutdown() {
