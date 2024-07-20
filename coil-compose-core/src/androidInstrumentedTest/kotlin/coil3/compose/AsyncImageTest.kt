@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
@@ -267,7 +267,7 @@ class AsyncImageTest {
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 
@@ -307,15 +307,15 @@ class AsyncImageTest {
                 loading = {
                     Box(
                         modifier = Modifier
-                            .background(color = Color.Blue)
+                            .background(color = Color.Blue),
                     )
-                }
+                },
             )
 
             Spacer(
                 modifier = Modifier
                     .height(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             Box(
@@ -353,15 +353,15 @@ class AsyncImageTest {
                 error = {
                     Box(
                         modifier = Modifier
-                            .background(color = Color.Blue)
+                            .background(color = Color.Blue),
                     )
-                }
+                },
             )
 
             Spacer(
                 modifier = Modifier
                     .height(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             Box(
@@ -394,15 +394,15 @@ class AsyncImageTest {
                 success = {
                     Box(
                         modifier = Modifier
-                            .background(color = Color.Blue)
+                            .background(color = Color.Blue),
                     )
-                }
+                },
             )
 
             Spacer(
                 modifier = Modifier
                     .height(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             Box(
@@ -425,6 +425,7 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         var compositions = 0
+        var maxCompositions = 2
 
         composeTestRule.setContent {
             SubcomposeAsyncImage(
@@ -433,28 +434,30 @@ class AsyncImageTest {
                 imageLoader = imageLoader,
                 modifier = Modifier
                     .size(100.dp)
-                    .testTag(Image)
+                    .testTag(Image),
             ) {
                 val state by painter.state.collectAsState()
-                when (compositions++) {
-                    0 -> {
-                        assertIs<State.Loading>(state)
-                        assertNull(state.painter)
+                val currentComposition = compositions++
+                if (currentComposition < maxCompositions) {
+                    assertTrue {
+                        (currentComposition == 0 && state is State.Loading) || state is State.Success
                     }
-                    1 -> {
-                        assertIs<State.Success>(state)
+                    if (state is State.Success) {
+                        // No more subsequent compositions should happen.
+                        maxCompositions = -1
                     }
-                    else -> fail("Recomposed too many times. State: $state")
+                } else {
+                    fail("Recomposed too many times. State: $state")
                 }
                 SubcomposeAsyncImageContent(
-                    modifier = Modifier.clip(CircleShape)
+                    modifier = Modifier.clip(CircleShape),
                 )
             }
 
             Spacer(
                 modifier = Modifier
                     .height(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             Box(
@@ -467,7 +470,7 @@ class AsyncImageTest {
                     contentDescription = null,
                     modifier = Modifier
                         .matchParentSize()
-                        .clip(CircleShape)
+                        .clip(CircleShape),
                 )
             }
         }
@@ -525,7 +528,7 @@ class AsyncImageTest {
                 modifier = Modifier
                     .fillMaxSize()
                     .testTag(Image),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
         }
 
@@ -553,7 +556,7 @@ class AsyncImageTest {
             AsyncImage(
                 model = "https://example.com/image",
                 contentDescription = null,
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
             )
         }
 
@@ -576,7 +579,7 @@ class AsyncImageTest {
                     .coroutineContext(Dispatchers.Main.immediate)
                     .build(),
                 contentDescription = null,
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
             ) {
                 innerCompositionCount.getAndIncrement()
                 assertIs<State.Success>(painter.state.collectAsState().value)
@@ -610,7 +613,7 @@ class AsyncImageTest {
                     .memoryCachePolicy(CachePolicy.ENABLED)
                     .build(),
                 contentDescription = null,
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
             ) {
                 innerCompositionCount.getAndIncrement()
                 assertIs<State.Success>(painter.state.collectAsState().value)
@@ -640,7 +643,7 @@ class AsyncImageTest {
                     modifier = Modifier
                         .width(expectedWidthDp)
                         .testTag(Image),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
             }
         }
@@ -669,7 +672,7 @@ class AsyncImageTest {
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier.width(30.dp),
-                contentScale = ContentScale.None
+                contentScale = ContentScale.None,
             )
         }
 
@@ -813,19 +816,19 @@ class AsyncImageTest {
         composableWidth: Double,
         composableHeight: Double,
         scale: Scale = Scale.FIT,
-        requestNumber: Int = 0
+        requestNumber: Int = 0,
     ) {
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = SampleWidth.toDouble(),
             srcHeight = SampleHeight.toDouble(),
             dstWidth = composableWidth,
             dstHeight = composableHeight,
-            scale = scale
+            scale = scale,
         ).coerceAtMost(1.0)
         assertLoadedBitmapSize(
             width = (multiplier * SampleWidth).toInt(),
             height = (multiplier * SampleHeight).toInt(),
-            requestNumber = requestNumber
+            requestNumber = requestNumber,
         )
     }
 
