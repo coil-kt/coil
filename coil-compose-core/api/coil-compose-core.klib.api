@@ -52,6 +52,7 @@ final class coil3.compose/AsyncImagePainter : androidx.compose.runtime/RememberO
     final fun onAbandoned() // coil3.compose/AsyncImagePainter.onAbandoned|onAbandoned(){}[0]
     final fun onForgotten() // coil3.compose/AsyncImagePainter.onForgotten|onForgotten(){}[0]
     final fun onRemembered() // coil3.compose/AsyncImagePainter.onRemembered|onRemembered(){}[0]
+    final fun restart() // coil3.compose/AsyncImagePainter.restart|restart(){}[0]
 
     sealed interface State { // coil3.compose/AsyncImagePainter.State|null[0]
         abstract val painter // coil3.compose/AsyncImagePainter.State.painter|{}painter[0]

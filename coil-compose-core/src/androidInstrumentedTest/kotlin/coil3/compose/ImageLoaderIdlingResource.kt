@@ -11,7 +11,11 @@ import java.util.Collections
 class ImageLoaderIdlingResource : EventListener(), IdlingResource {
 
     private val ongoingRequests = Collections.synchronizedSet(mutableSetOf<ImageRequest>())
+    private val _requests = Collections.synchronizedList(mutableListOf<ImageRequest>())
     private val _results = Collections.synchronizedList(mutableListOf<ImageResult>())
+
+    val requests: List<ImageRequest>
+        get() = _requests.toList()
 
     val results: List<ImageResult>
         get() = _results.toList()
@@ -26,6 +30,7 @@ class ImageLoaderIdlingResource : EventListener(), IdlingResource {
 
     override fun onStart(request: ImageRequest) {
         ongoingRequests += request
+        _requests += request
         startedRequests++
     }
 

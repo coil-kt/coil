@@ -54,7 +54,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
@@ -766,7 +768,6 @@ class AsyncImagePainterTest {
         val compositionCount = AtomicInteger()
 
         composeTestRule.setContent {
-            compositionCount.getAndIncrement()
             Image(
                 painter = rememberAsyncImagePainter(
                     model = "https://example.com/image",
@@ -774,11 +775,44 @@ class AsyncImagePainterTest {
                 ),
                 contentDescription = null,
             )
+            compositionCount.getAndIncrement()
         }
 
         waitForRequestComplete()
 
         assertEquals(1, compositionCount.get())
+    }
+
+    @Test
+    fun restartStartsANewRequestWithSameInputsAndDoesNotRecompose() {
+        val compositionCount = AtomicInteger()
+        val requestCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val painter = rememberAsyncImagePainter(
+                model = "https://example.com/image",
+                imageLoader = imageLoader,
+            )
+            LaunchedEffect(Unit) {
+                painter.state.collectLatest { state ->
+                    // Launch 3 requests sequentially.
+                    if (state is State.Success && requestCount.incrementAndGet() < 3) {
+                        painter.restart()
+                    }
+                }
+            }
+            Image(
+                painter = painter,
+                contentDescription = null,
+            )
+            compositionCount.getAndIncrement()
+        }
+
+        waitForRequestComplete(finishedRequests = 3)
+
+        assertEquals(1, compositionCount.get())
+        assertSame(requestTracker.requests[0].data, requestTracker.requests[1].data)
+        assertSame(requestTracker.requests[1].data, requestTracker.requests[2].data)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
