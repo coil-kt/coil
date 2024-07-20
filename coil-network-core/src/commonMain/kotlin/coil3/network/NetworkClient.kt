@@ -1,6 +1,5 @@
 package coil3.network
 
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
 import kotlin.jvm.JvmInline
@@ -13,7 +12,6 @@ import okio.Path
 /**
  * An asynchronous HTTP client that executes [NetworkRequest]s and returns [NetworkResponse]s.
  */
-@ExperimentalCoilApi
 interface NetworkClient {
     suspend fun <T> executeRequest(
         request: NetworkRequest,
@@ -29,7 +27,6 @@ interface NetworkClient {
  * @param headers The HTTP headers.
  * @param body The HTTP request body.
  */
-@ExperimentalCoilApi
 @Poko
 class NetworkRequest(
     val url: String,
@@ -50,12 +47,10 @@ class NetworkRequest(
     )
 }
 
-@ExperimentalCoilApi
 interface NetworkRequestBody {
     suspend fun writeTo(sink: BufferedSink)
 }
 
-@ExperimentalCoilApi
 fun NetworkRequestBody(
     bytes: ByteString,
 ): NetworkRequestBody = ByteStringNetworkRequestBody(bytes)
@@ -82,7 +77,6 @@ private value class ByteStringNetworkRequestBody(
  * @param delegate The underlying response instance. If executed by OkHttp, this is
  *  `okhttp3.Response`. If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
  */
-@ExperimentalCoilApi
 @Poko
 class NetworkResponse(
     val request: NetworkRequest,
@@ -112,18 +106,15 @@ class NetworkResponse(
     )
 }
 
-@ExperimentalCoilApi
 interface NetworkResponseBody : AutoCloseable {
     suspend fun writeTo(sink: BufferedSink)
     suspend fun writeTo(fileSystem: FileSystem, path: Path)
 }
 
-@ExperimentalCoilApi
 fun NetworkResponseBody(
     source: BufferedSource,
 ): NetworkResponseBody = SourceResponseBody(source)
 
-@ExperimentalCoilApi
 @JvmInline
 private value class SourceResponseBody(
     private val source: BufferedSource,
