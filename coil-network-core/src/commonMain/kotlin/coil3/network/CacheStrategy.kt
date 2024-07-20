@@ -13,7 +13,7 @@ import kotlin.js.JsName
 fun CacheStrategy() = CacheStrategy { Output(it.cacheResponse) }
 
 /**
- * Determines whether to use a cached response from the disk cache or perform a new network request.
+ * Determines whether to use a cached response from the disk cache and/or perform a new network request.
  */
 @ExperimentalCoilApi
 fun interface CacheStrategy {

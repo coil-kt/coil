@@ -1,13 +1,11 @@
 package coil3.network
 
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import kotlin.jvm.JvmField
 
 /**
  * Represents a list of HTTP headers.
  */
-@ExperimentalCoilApi
 @Poko
 class NetworkHeaders private constructor(
     private val data: Map<String, List<String>>,
