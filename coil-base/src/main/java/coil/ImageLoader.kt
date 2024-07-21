@@ -526,7 +526,7 @@ interface ImageLoader {
          * Configure ConnectivityManager to call registerDefaultNetworkCallback.
          *
          * NOTE: by default this is false, and ConnectivityManager calls registerNetworkCallback instead.
-         * Additionally, this will only work on min-sdk 24 (N) and above.
+         * Additionally, this will only work on devices running sdk 24 (N) and above.
          */
         fun observeDefaultNetwork(observeDefaultNetwork: Boolean) = apply {
             this.options = this.options.copy(observeDefaultNetwork = observeDefaultNetwork)
