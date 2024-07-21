@@ -667,7 +667,7 @@ class ImageRequest private constructor(
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
                 memoryCacheKeyExtras = if (memoryCacheKeyExtrasAreMutable) {
-                    (lazyMemoryCacheKeyExtras as Map<*, *>).toImmutableMap()
+                    (lazyMemoryCacheKeyExtras as MutableMap<*, *>).toImmutableMap()
                 } else {
                     lazyMemoryCacheKeyExtras
                 } as Map<String, String>,
