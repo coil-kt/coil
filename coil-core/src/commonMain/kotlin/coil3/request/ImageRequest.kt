@@ -9,7 +9,6 @@ import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
-import coil3.orEmpty
 import coil3.request.ImageRequest.Builder
 import coil3.size.Dimension
 import coil3.size.Precision
@@ -20,6 +19,7 @@ import coil3.target.Target
 import coil3.util.EMPTY_IMAGE_FACTORY
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
+import coil3.util.toImmutableMap
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.jvm.JvmField
@@ -263,6 +263,7 @@ class ImageRequest private constructor(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     class Builder {
         private val context: PlatformContext
         private var defaults: Defaults
@@ -270,10 +271,17 @@ class ImageRequest private constructor(
         private var target: Target?
         private var listener: Listener?
         private var memoryCacheKey: String?
-        private var lazyMemoryCacheKeyExtras: MutableMap<String, String>?
+        private var memoryCacheKeyExtrasAreMutable = false
+        private var lazyMemoryCacheKeyExtras: Any
         private val memoryCacheKeyExtras: MutableMap<String, String>
-            get() = lazyMemoryCacheKeyExtras
-                ?: mutableMapOf<String, String>().also { lazyMemoryCacheKeyExtras = it }
+            get() = if (memoryCacheKeyExtrasAreMutable) {
+                lazyMemoryCacheKeyExtras
+            } else {
+                (lazyMemoryCacheKeyExtras as Map<*, *>).toMutableMap().also {
+                    lazyMemoryCacheKeyExtras = it
+                    memoryCacheKeyExtrasAreMutable = true
+                }
+            } as MutableMap<String, String>
         private var diskCacheKey: String?
         private var fileSystem: FileSystem?
         private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
@@ -291,9 +299,13 @@ class ImageRequest private constructor(
         private var sizeResolver: SizeResolver?
         private var scale: Scale?
         private var precision: Precision?
-        private var lazyExtras: Extras.Builder?
+        private var lazyExtras: Any
         val extras: Extras.Builder
-            get() = lazyExtras ?: Extras.Builder().also { lazyExtras = it }
+            get() = when (val extras = lazyExtras) {
+                is Extras.Builder -> extras
+                is Extras -> extras.newBuilder().also { lazyExtras = it }
+                else -> throw AssertionError()
+            }
 
         constructor(context: PlatformContext) {
             this.context = context
@@ -302,7 +314,7 @@ class ImageRequest private constructor(
             target = null
             listener = null
             memoryCacheKey = null
-            lazyMemoryCacheKeyExtras = null
+            lazyMemoryCacheKeyExtras = emptyMap<String, String>()
             diskCacheKey = null
             fileSystem = null
             fetcherFactory = null
@@ -320,7 +332,7 @@ class ImageRequest private constructor(
             sizeResolver = null
             scale = null
             precision = null
-            lazyExtras = null
+            lazyExtras = Extras.EMPTY
         }
 
         @JvmOverloads
@@ -331,11 +343,7 @@ class ImageRequest private constructor(
             target = request.target
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
-            lazyMemoryCacheKeyExtras = if (request.memoryCacheKeyExtras.isEmpty()) {
-                null
-            } else {
-                request.memoryCacheKeyExtras.toMutableMap()
-            }
+            lazyMemoryCacheKeyExtras = request.memoryCacheKeyExtras
             diskCacheKey = request.diskCacheKey
             fileSystem = request.defined.fileSystem
             fetcherFactory = request.fetcherFactory
@@ -353,11 +361,7 @@ class ImageRequest private constructor(
             sizeResolver = request.defined.sizeResolver
             scale = request.defined.scale
             precision = request.defined.precision
-            lazyExtras = if (request.extras.asMap().isEmpty()) {
-                null
-            } else {
-                request.extras.newBuilder()
-            }
+            lazyExtras = request.extras
         }
 
         /**
@@ -410,11 +414,8 @@ class ImageRequest private constructor(
          * Set extra values to be added to this image request's memory cache key.
          */
         fun memoryCacheKeyExtras(extras: Map<String, String>) = apply {
-            this.lazyMemoryCacheKeyExtras = if (extras.isEmpty()) {
-                null
-            } else {
-                extras.toMutableMap()
-            }
+            this.lazyMemoryCacheKeyExtras = extras.toMutableMap()
+            this.memoryCacheKeyExtrasAreMutable = true
         }
 
         /**
@@ -424,7 +425,7 @@ class ImageRequest private constructor(
             if (value != null) {
                 this.memoryCacheKeyExtras[key] = value
             } else {
-                this.lazyMemoryCacheKeyExtras?.remove(key)
+                this.memoryCacheKeyExtras.remove(key)
             }
         }
 
@@ -665,7 +666,11 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
-                memoryCacheKeyExtras = lazyMemoryCacheKeyExtras?.toMap().orEmpty(),
+                memoryCacheKeyExtras = if (memoryCacheKeyExtrasAreMutable) {
+                    (lazyMemoryCacheKeyExtras as MutableMap<*, *>).toImmutableMap()
+                } else {
+                    lazyMemoryCacheKeyExtras
+                } as Map<String, String>,
                 diskCacheKey = diskCacheKey,
                 fileSystem = fileSystem ?: defaults.fileSystem,
                 fetcherFactory = fetcherFactory,
@@ -683,7 +688,11 @@ class ImageRequest private constructor(
                 sizeResolver = sizeResolver ?: defaults.sizeResolver,
                 scale = scale ?: defaults.scale,
                 precision = precision ?: defaults.precision,
-                extras = lazyExtras?.build().orEmpty(),
+                extras = when (val extras = lazyExtras) {
+                    is Extras.Builder -> extras.build()
+                    is Extras -> extras
+                    else -> throw AssertionError()
+                },
                 defined = Defined(
                     fileSystem = fileSystem,
                     interceptorCoroutineContext = interceptorCoroutineContext,

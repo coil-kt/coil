@@ -147,4 +147,44 @@ class ImageRequestTest : RobolectricTest() {
         assertEquals(Size(100, 100), request3.sizeResolver.size())
         assertEquals(Size(100, 100), request4.sizeResolver.size())
     }
+
+    @Test
+    fun `memoryCacheKeyExtras and extras are reused`() {
+        val extraKey = Extras.Key(default = "test")
+        val extraValue = "something"
+        val memoryCacheKeyExtras = mapOf("one" to "memory_cache_key")
+        val request1 = ImageRequest.Builder(context)
+            .apply { extras[extraKey] = extraValue }
+            .memoryCacheKeyExtras(memoryCacheKeyExtras)
+            .build()
+        val request2 = request1.newBuilder().build()
+
+        assertSame(request1.memoryCacheKeyExtras, request2.memoryCacheKeyExtras)
+        assertSame(request1.extras, request2.extras)
+    }
+
+    @Test
+    fun `memoryCacheKeyExtras and extras are not reused if modified`() {
+        val extraKey = Extras.Key(default = "test")
+        val extraValue1 = "something"
+        val extraValue2 = "something_else"
+        val request1 = ImageRequest.Builder(context)
+            .apply { extras[extraKey] = extraValue1 }
+            .memoryCacheKeyExtra("one", "memory_cache_key1")
+            .build()
+        val request2 = request1.newBuilder()
+            .apply { extras[extraKey] = extraValue2 }
+            .memoryCacheKeyExtra("two", "memory_cache_key2")
+            .build()
+
+        assertEquals("memory_cache_key1", request1.memoryCacheKeyExtras["one"])
+        assertEquals(null, request1.memoryCacheKeyExtras["two"])
+        assertEquals("memory_cache_key1", request2.memoryCacheKeyExtras["one"])
+        assertEquals("memory_cache_key2", request2.memoryCacheKeyExtras["two"])
+        assertNotEquals(request1.memoryCacheKeyExtras, request2.memoryCacheKeyExtras)
+
+        assertEquals(extraValue1, request1.extras[extraKey])
+        assertEquals(extraValue2, request2.extras[extraKey])
+        assertNotEquals(request1.extras, request2.extras)
+    }
 }
