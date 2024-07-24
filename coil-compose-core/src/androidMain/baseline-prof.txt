@@ -24,7 +24,7 @@ HSPLcoil3/compose/AsyncImagePainter;->access$updateRequest(Lcoil3/compose/AsyncI
 HSPLcoil3/compose/AsyncImagePainter;->access$updateState(Lcoil3/compose/AsyncImagePainter;Lcoil3/compose/AsyncImagePainter$State;)V
 HSPLcoil3/compose/AsyncImagePainter;->getAlpha()F
 HPLcoil3/compose/AsyncImagePainter;->getColorFilter()Landroidx/compose/ui/graphics/ColorFilter;
-HSPLcoil3/compose/AsyncImagePainter;->getIntrinsicSize-NH-jbRc()J
+HPLcoil3/compose/AsyncImagePainter;->getIntrinsicSize-NH-jbRc()J
 HPLcoil3/compose/AsyncImagePainter;->getPainter()Landroidx/compose/ui/graphics/painter/Painter;
 HSPLcoil3/compose/AsyncImagePainter;->getScope$coil_compose_core_release()Lkotlinx/coroutines/CoroutineScope;
 HSPLcoil3/compose/AsyncImagePainter;->get_input$coil_compose_core_release()Lkotlinx/coroutines/flow/MutableStateFlow;
@@ -36,7 +36,7 @@ HSPLcoil3/compose/AsyncImagePainter;->setFilterQuality-vDHp3xo$coil_compose_core
 HSPLcoil3/compose/AsyncImagePainter;->setOnState$coil_compose_core_release(Lkotlin/jvm/functions/Function1;)V
 HSPLcoil3/compose/AsyncImagePainter;->setPainter(Landroidx/compose/ui/graphics/painter/Painter;)V
 HSPLcoil3/compose/AsyncImagePainter;->setPreviewHandler$coil_compose_core_release(Lcoil3/compose/AsyncImagePreviewHandler;)V
-HPLcoil3/compose/AsyncImagePainter;->setRememberJob(Lkotlinx/coroutines/Job;)V
+HSPLcoil3/compose/AsyncImagePainter;->setRememberJob(Lkotlinx/coroutines/Job;)V
 HSPLcoil3/compose/AsyncImagePainter;->setScope$coil_compose_core_release(Lkotlinx/coroutines/CoroutineScope;)V
 HSPLcoil3/compose/AsyncImagePainter;->setTransform$coil_compose_core_release(Lkotlin/jvm/functions/Function1;)V
 HPLcoil3/compose/AsyncImagePainter;->toState(Lcoil3/request/ImageResult;)Lcoil3/compose/AsyncImagePainter$State;
@@ -72,9 +72,9 @@ HSPLcoil3/compose/AsyncImagePainter$State$Success;-><init>(Landroidx/compose/ui/
 HSPLcoil3/compose/AsyncImagePainter$State$Success;->getPainter()Landroidx/compose/ui/graphics/painter/Painter;
 HSPLcoil3/compose/AsyncImagePainter$State$Success;->getResult()Lcoil3/request/SuccessResult;
 Lcoil3/compose/AsyncImagePainter$onRemembered$1$2;
-HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;-><init>(Lcoil3/compose/AsyncImagePainter;Lkotlin/coroutines/Continuation;)V
+HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;-><init>(Lkotlinx/coroutines/flow/Flow;Lcoil3/compose/AsyncImagePainter;Lkotlin/coroutines/Continuation;)V
 HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;->access$invokeSuspend$updateState(Lcoil3/compose/AsyncImagePainter;Lcoil3/compose/AsyncImagePainter$State;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;->create(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+HPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;->create(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;->invokeSuspend$updateState(Lcoil3/compose/AsyncImagePainter;Lcoil3/compose/AsyncImagePainter$State;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HPLcoil3/compose/AsyncImagePainter$onRemembered$1$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil3/compose/AsyncImagePainter$onRemembered$1$2$1;
@@ -87,6 +87,11 @@ Lcoil3/compose/AsyncImagePainter$onRemembered$1$2$2;
 HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2$2;-><init>(Lcoil3/compose/AsyncImagePainter;)V
 HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2$2;->emit(Lcoil3/compose/AsyncImagePainter$State;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil3/compose/AsyncImagePainter$onRemembered$1$2$2;->emit(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+Lcoil3/compose/AsyncImagePainter$onRemembered$lambda$3$$inlined$flatMapLatest$1;
+HSPLcoil3/compose/AsyncImagePainter$onRemembered$lambda$3$$inlined$flatMapLatest$1;-><init>(Lkotlin/coroutines/Continuation;Lcoil3/compose/AsyncImagePainter;)V
+HSPLcoil3/compose/AsyncImagePainter$onRemembered$lambda$3$$inlined$flatMapLatest$1;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+HPLcoil3/compose/AsyncImagePainter$onRemembered$lambda$3$$inlined$flatMapLatest$1;->invoke(Lkotlinx/coroutines/flow/FlowCollector;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HPLcoil3/compose/AsyncImagePainter$onRemembered$lambda$3$$inlined$flatMapLatest$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil3/compose/AsyncImagePainter$updateRequest$$inlined$target$default$1;
 HSPLcoil3/compose/AsyncImagePainter$updateRequest$$inlined$target$default$1;-><init>(Lcoil3/request/ImageRequest;Lcoil3/compose/AsyncImagePainter;)V
 HPLcoil3/compose/AsyncImagePainter$updateRequest$$inlined$target$default$1;->onStart(Lcoil3/Image;)V

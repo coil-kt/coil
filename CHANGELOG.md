@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0-alpha09] - July 23, 2024
+
+- **BREAKING**: Rename the `io.coil-kt.coil3:coil-network-ktor` artifact to `io.coil-kt.coil3:coil-network-ktor2` which depends on Ktor 2.x. Additionally, introduce `io.coil-kt.coil3:coil-network-ktor3` which depends on Ktor 3.x. `wasmJs` support is only available in Ktor 3.x.
+- **New**: Add `AsyncImagePainter.restart()` to manually restart an image request.
+- Remove `@ExperimentalCoilApi` from `NetworkClient` and related classes.
+- Optimize `ImageRequest` to avoid unnecessary `Extras` and `Map` allocations.
+
 ## [2.7.0] - July 17, 2024
 
 - Slightly optimize internal coroutines usage to improve the performance of `ImageLoader.execute`, `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter`. ([#2205](https://github.com/coil-kt/coil/pull/2205))
