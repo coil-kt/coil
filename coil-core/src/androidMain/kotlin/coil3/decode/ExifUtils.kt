@@ -23,7 +23,7 @@ internal object ExifUtils {
         source: BufferedSource,
         policy: ExifOrientationPolicy,
     ): ExifData {
-        if (policy.supports(mimeType)) {
+        if (policy.supports(mimeType, source)) {
             val exifInterface = ExifInterface(ExifInterfaceInputStream(source.peek().inputStream()))
             return ExifData(exifInterface.isFlipped, exifInterface.rotationDegrees)
         } else {
