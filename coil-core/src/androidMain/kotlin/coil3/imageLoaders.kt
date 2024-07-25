@@ -5,7 +5,7 @@ import android.graphics.ImageDecoder
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.decode.ExifOrientationPolicy
-import coil3.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
+import coil3.decode.ExifOrientationPolicy.Companion.RESPECT_PERFORMANCE
 
 // region bitmapFactoryMaxParallelism
 
