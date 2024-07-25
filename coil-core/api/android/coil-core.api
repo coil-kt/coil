@@ -322,7 +322,7 @@ public abstract interface class coil3/decode/ExifOrientationPolicy {
 	public static final field IGNORE Lcoil3/decode/ExifOrientationPolicy;
 	public static final field RESPECT_ALL Lcoil3/decode/ExifOrientationPolicy;
 	public static final field RESPECT_PERFORMANCE Lcoil3/decode/ExifOrientationPolicy;
-	public abstract fun supports (Ljava/lang/String;)Z
+	public abstract fun supports (Ljava/lang/String;Lokio/BufferedSource;)Z
 }
 
 public final class coil3/decode/ExifOrientationPolicy$Companion {
