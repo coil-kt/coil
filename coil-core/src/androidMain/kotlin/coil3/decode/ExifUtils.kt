@@ -7,10 +7,6 @@ import android.graphics.RectF
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
-import coil3.util.MIME_TYPE_HEIC
-import coil3.util.MIME_TYPE_HEIF
-import coil3.util.MIME_TYPE_JPEG
-import coil3.util.MIME_TYPE_WEBP
 import coil3.util.safeConfig
 import java.io.InputStream
 import okio.BufferedSource
@@ -25,9 +21,9 @@ internal object ExifUtils {
     fun getExifData(
         mimeType: String?,
         source: BufferedSource,
-        policy: ExifOrientationPolicy
+        policy: ExifOrientationPolicy,
     ): ExifData {
-        if (policy.supports(mimeType)) {
+        if (policy.supports(mimeType, source)) {
             val exifInterface = ExifInterface(ExifInterfaceInputStream(source.peek().inputStream()))
             return ExifData(exifInterface.isFlipped, exifInterface.rotationDegrees)
         } else {
@@ -79,7 +75,6 @@ internal class ExifData(
     val isFlipped: Boolean,
     val rotationDegrees: Int,
 ) {
-
     companion object {
         @JvmField val NONE = ExifData(false, 0)
     }
@@ -88,18 +83,6 @@ internal class ExifData(
 internal val ExifData.isSwapped get() = rotationDegrees == 90 || rotationDegrees == 270
 
 internal val ExifData.isRotated get() = rotationDegrees > 0
-
-/** The MIME types that are supported by [ExifOrientationPolicy.RESPECT_PERFORMANCE]. */
-private val RESPECT_PERFORMANCE_MIME_TYPES = setOf(
-    MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF
-)
-
-internal fun ExifOrientationPolicy.supports(mimeType: String?) = when (this) {
-    ExifOrientationPolicy.RESPECT_PERFORMANCE ->
-        mimeType != null && mimeType in RESPECT_PERFORMANCE_MIME_TYPES
-    ExifOrientationPolicy.IGNORE -> false
-    ExifOrientationPolicy.RESPECT_ALL -> true
-}
 
 /** Wrap [delegate] so that it works with [ExifInterface]. */
 private class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {

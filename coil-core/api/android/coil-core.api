@@ -317,13 +317,15 @@ public abstract interface class coil3/decode/Decoder$Factory {
 	public abstract fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
-public final class coil3/decode/ExifOrientationPolicy : java/lang/Enum {
+public abstract interface class coil3/decode/ExifOrientationPolicy {
+	public static final field Companion Lcoil3/decode/ExifOrientationPolicy$Companion;
 	public static final field IGNORE Lcoil3/decode/ExifOrientationPolicy;
 	public static final field RESPECT_ALL Lcoil3/decode/ExifOrientationPolicy;
 	public static final field RESPECT_PERFORMANCE Lcoil3/decode/ExifOrientationPolicy;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcoil3/decode/ExifOrientationPolicy;
-	public static fun values ()[Lcoil3/decode/ExifOrientationPolicy;
+	public abstract fun supports (Ljava/lang/String;Lokio/BufferedSource;)Z
+}
+
+public final class coil3/decode/ExifOrientationPolicy$Companion {
 }
 
 public abstract interface class coil3/decode/ImageSource : java/lang/AutoCloseable {
