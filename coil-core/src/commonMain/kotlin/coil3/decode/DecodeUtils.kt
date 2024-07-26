@@ -87,6 +87,11 @@ object DecodeUtils {
         }
     }
 
+    /**
+     * Parse [targetSize] and return the destination dimensions that the source image should be
+     * scaled into. The returned dimensions can be passed to [computeSizeMultiplier] to get the
+     * final size multiplier.
+     */
     @ExperimentalCoilApi
     @JvmStatic
     fun computeDstSize(
