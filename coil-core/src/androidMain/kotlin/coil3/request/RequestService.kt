@@ -77,7 +77,7 @@ internal class AndroidRequestService(
                 return ViewSizeResolver(view)
             }
         } else {
-            // Fall back to the size of the display.
+            // Fall back to the image's source dimensions.
             return SizeResolver.ORIGINAL
         }
     }
