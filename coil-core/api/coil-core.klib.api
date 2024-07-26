@@ -364,7 +364,7 @@ sealed interface coil3.request/ImageResult { // coil3.request/ImageResult|null[0
 }
 
 sealed interface coil3.size/Dimension { // coil3.size/Dimension|null[0]
-    final class Pixels : coil3.size/Dimension { // coil3.size/Dimension.Pixels|null[0]
+    final value class Pixels : coil3.size/Dimension { // coil3.size/Dimension.Pixels|null[0]
         constructor <init>(kotlin/Int) // coil3.size/Dimension.Pixels.<init>|<init>(kotlin.Int){}[0]
 
         final val px // coil3.size/Dimension.Pixels.px|{}px[0]
@@ -920,6 +920,12 @@ final object coil3.util/ServiceLoaderComponentRegistry { // coil3.util/ServiceLo
 
 final val coil3.request/crossfadeMillis // coil3.request/crossfadeMillis|@coil3.request.ImageRequest{}crossfadeMillis[0]
     final fun (coil3.request/ImageRequest).<get-crossfadeMillis>(): kotlin/Int // coil3.request/crossfadeMillis.<get-crossfadeMillis>|<get-crossfadeMillis>@coil3.request.ImageRequest(){}[0]
+final val coil3.request/maximumBitmapSize // coil3.request/maximumBitmapSize|@coil3.Extras.Key.Companion{}maximumBitmapSize[0]
+    final fun (coil3/Extras.Key.Companion).<get-maximumBitmapSize>(): coil3/Extras.Key<coil3.size/Size> // coil3.request/maximumBitmapSize.<get-maximumBitmapSize>|<get-maximumBitmapSize>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.request/maximumBitmapSize // coil3.request/maximumBitmapSize|@coil3.request.ImageRequest{}maximumBitmapSize[0]
+    final fun (coil3.request/ImageRequest).<get-maximumBitmapSize>(): coil3.size/Size // coil3.request/maximumBitmapSize.<get-maximumBitmapSize>|<get-maximumBitmapSize>@coil3.request.ImageRequest(){}[0]
+final val coil3.request/maximumBitmapSize // coil3.request/maximumBitmapSize|@coil3.request.Options{}maximumBitmapSize[0]
+    final fun (coil3.request/Options).<get-maximumBitmapSize>(): coil3.size/Size // coil3.request/maximumBitmapSize.<get-maximumBitmapSize>|<get-maximumBitmapSize>@coil3.request.Options(){}[0]
 final val coil3.size/isOriginal // coil3.size/isOriginal|@coil3.size.Size{}isOriginal[0]
     final fun (coil3.size/Size).<get-isOriginal>(): kotlin/Boolean // coil3.size/isOriginal.<get-isOriginal>|<get-isOriginal>@coil3.size.Size(){}[0]
 final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
@@ -927,6 +933,7 @@ final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
 
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
+final fun (coil3.request/ImageRequest.Builder).coil3.request/maximumBitmapSize(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/maximumBitmapSize|maximumBitmapSize@coil3.request.ImageRequest.Builder(coil3.size.Size){}[0]
 final fun (coil3.size/Dimension).coil3.util/toPx(coil3.size/Scale): kotlin/Int // coil3.util/toPx|toPx@coil3.size.Dimension(coil3.size.Scale){}[0]
 final fun (coil3/Extras).coil3/plus(coil3/Extras): coil3/Extras // coil3/plus|plus@coil3.Extras(coil3.Extras){}[0]
 final fun (coil3/Extras?).coil3/orEmpty(): coil3/Extras // coil3/orEmpty|orEmpty@coil3.Extras?(){}[0]
@@ -934,6 +941,7 @@ final fun (coil3/Image).coil3/toBitmap(kotlin/Int = ..., kotlin/Int = ...): org.
 final fun (coil3/Image).coil3/toBitmap(kotlin/Int, kotlin/Int, org.jetbrains.skia/ColorType, org.jetbrains.skia/ColorAlphaType, org.jetbrains.skia/ColorSpace?): org.jetbrains.skia/Bitmap // coil3/toBitmap|toBitmap@coil3.Image(kotlin.Int;kotlin.Int;org.jetbrains.skia.ColorType;org.jetbrains.skia.ColorAlphaType;org.jetbrains.skia.ColorSpace?){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Int): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Int){}[0]
+final fun (coil3/ImageLoader.Builder).coil3.request/maximumBitmapSize(coil3.size/Size): coil3/ImageLoader.Builder // coil3.request/maximumBitmapSize|maximumBitmapSize@coil3.ImageLoader.Builder(coil3.size.Size){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/addLastModifiedToFileCacheKey(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/addLastModifiedToFileCacheKey|addLastModifiedToFileCacheKey@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/networkObserverEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/networkObserverEnabled|networkObserverEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/serviceLoaderEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/serviceLoaderEnabled|serviceLoaderEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]

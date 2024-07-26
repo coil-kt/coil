@@ -94,7 +94,7 @@ class RequestServiceTest : RobolectricTest() {
     }
 
     @Test
-    fun `allowInexactSize - DisplaySizeResolver`() {
+    fun `allowInexactSize - unspecified SizeResolver`() {
         val request = createRequest(context)
         val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
         val actual = service.options(request, sizeResolver, Size(100, 100)).precision

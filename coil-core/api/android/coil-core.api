@@ -750,6 +750,11 @@ public final class coil3/request/ImageRequestsKt {
 public final class coil3/request/ImageRequests_commonKt {
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getMaximumBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getMaximumBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
+	public static final fun getMaximumBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
+	public static final fun maximumBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
+	public static final fun maximumBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public abstract interface class coil3/request/ImageResult {
@@ -809,11 +814,17 @@ public abstract interface class coil3/size/Dimension {
 }
 
 public final class coil3/size/Dimension$Pixels : coil3/size/Dimension {
-	public final field px I
-	public fun <init> (I)V
+	public static final synthetic fun box-impl (I)Lcoil3/size/Dimension$Pixels;
+	public static fun constructor-impl (I)I
 	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public final fun getPx ()I
 	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
 	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
 }
 
 public final class coil3/size/Dimension$Undefined : coil3/size/Dimension {
@@ -824,7 +835,7 @@ public final class coil3/size/Dimension$Undefined : coil3/size/Dimension {
 }
 
 public final class coil3/size/DimensionKt {
-	public static final fun Dimension (I)Lcoil3/size/Dimension$Pixels;
+	public static final fun Dimension (I)I
 	public static final fun pxOrElse (Lcoil3/size/Dimension;Lkotlin/jvm/functions/Function0;)I
 }
 
