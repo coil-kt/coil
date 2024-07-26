@@ -304,6 +304,7 @@ public final class coil3/decode/DecodeResult {
 public final class coil3/decode/DecodeUtils {
 	public static final field INSTANCE Lcoil3/decode/DecodeUtils;
 	public static final fun calculateInSampleSize (IIIILcoil3/size/Scale;)I
+	public static final fun computeDstSize-sEdh43o (IILcoil3/size/Size;Lcoil3/size/Scale;Lcoil3/size/Size;)J
 	public static final fun computeSizeMultiplier (DDDDLcoil3/size/Scale;)D
 	public static final fun computeSizeMultiplier (FFFFLcoil3/size/Scale;)F
 	public static final fun computeSizeMultiplier (IIIILcoil3/size/Scale;)D
@@ -750,6 +751,11 @@ public final class coil3/request/ImageRequestsKt {
 public final class coil3/request/ImageRequests_commonKt {
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
+	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
+	public static final fun maxBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
+	public static final fun maxBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public abstract interface class coil3/request/ImageResult {
@@ -809,11 +815,17 @@ public abstract interface class coil3/size/Dimension {
 }
 
 public final class coil3/size/Dimension$Pixels : coil3/size/Dimension {
-	public final field px I
-	public fun <init> (I)V
+	public static final synthetic fun box-impl (I)Lcoil3/size/Dimension$Pixels;
+	public static fun constructor-impl (I)I
 	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public final fun getPx ()I
 	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
 	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
 }
 
 public final class coil3/size/Dimension$Undefined : coil3/size/Dimension {
@@ -824,7 +836,7 @@ public final class coil3/size/Dimension$Undefined : coil3/size/Dimension {
 }
 
 public final class coil3/size/DimensionKt {
-	public static final fun Dimension (I)Lcoil3/size/Dimension$Pixels;
+	public static final fun Dimension (I)I
 	public static final fun pxOrElse (Lcoil3/size/Dimension;Lkotlin/jvm/functions/Function0;)I
 }
 
@@ -1064,6 +1076,11 @@ public final class coil3/util/CoilUtils {
 	public static final fun result (Landroid/view/View;)Lcoil3/request/ImageResult;
 }
 
+public final class coil3/util/Collections_commonKt {
+	public static final fun component1-wuMLFU8 (J)I
+	public static final fun component2-wuMLFU8 (J)I
+}
+
 public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun <init> ()V
 	public fun <init> (Lcoil3/util/Logger$Level;)V
@@ -1071,6 +1088,21 @@ public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun getMinLevel ()Lcoil3/util/Logger$Level;
 	public fun log (Ljava/lang/String;Lcoil3/util/Logger$Level;Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun setMinLevel (Lcoil3/util/Logger$Level;)V
+}
+
+public final class coil3/util/IntPair {
+	public static final synthetic fun box-impl (J)Lcoil3/util/IntPair;
+	public static fun constructor-impl (II)J
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (JLjava/lang/Object;)Z
+	public static final fun equals-impl0 (JJ)Z
+	public static final fun getFirst-impl (J)I
+	public static final fun getSecond-impl (J)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (J)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (J)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()J
 }
 
 public abstract interface class coil3/util/Logger {

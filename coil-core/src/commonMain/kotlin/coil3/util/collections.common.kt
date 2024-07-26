@@ -1,4 +1,28 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package coil3.util
+
+import coil3.annotation.ExperimentalCoilApi
+import kotlin.jvm.JvmInline
+
+/**
+ * An efficient container to store two [Int]s.
+ */
+@ExperimentalCoilApi
+@JvmInline
+value class IntPair private constructor(private val value: Long) {
+
+    constructor(first: Int, second: Int) :
+        this((first.toLong() shl 32) or (second.toLong() and 0xFFFFFFFFL))
+
+    val first: Int get() = (value shr 32).toInt()
+
+    val second: Int get() = (value and 0xFFFFFFFFL).toInt()
+}
+
+inline operator fun IntPair.component1() = first
+
+inline operator fun IntPair.component2() = second
 
 /**
  * Create a [MutableMap] that orders its entries by most recently used to least recently used.

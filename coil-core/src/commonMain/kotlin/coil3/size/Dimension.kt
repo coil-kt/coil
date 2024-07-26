@@ -1,8 +1,7 @@
 package coil3.size
 
-import coil3.annotation.Poko
 import coil3.request.Options
-import kotlin.jvm.JvmField
+import kotlin.jvm.JvmInline
 
 /**
  * Represents either the width or height of a [Size].
@@ -12,9 +11,8 @@ sealed interface Dimension {
     /**
      * Represents a fixed, positive number of pixels.
      */
-    @Poko
-    class Pixels(@JvmField val px: Int) : Dimension {
-
+    @JvmInline
+    value class Pixels(val px: Int) : Dimension {
         init {
             require(px > 0) { "px must be > 0." }
         }

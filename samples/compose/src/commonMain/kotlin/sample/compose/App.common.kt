@@ -39,6 +39,8 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import coil3.util.component1
+import coil3.util.component2
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel

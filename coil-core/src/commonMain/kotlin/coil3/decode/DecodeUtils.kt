@@ -1,6 +1,13 @@
 package coil3.decode
 
+import coil3.annotation.ExperimentalCoilApi
+import coil3.size.Dimension
 import coil3.size.Scale
+import coil3.size.Size
+import coil3.size.isOriginal
+import coil3.size.pxOrElse
+import coil3.util.IntPair
+import coil3.util.isMinOrMax
 import kotlin.jvm.JvmStatic
 
 /** A collection of useful utility methods for decoding images. */
@@ -77,6 +84,45 @@ object DecodeUtils {
         return when (scale) {
             Scale.FILL -> maxOf(widthPercent, heightPercent)
             Scale.FIT -> minOf(widthPercent, heightPercent)
+        }
+    }
+
+    /**
+     * Parse [targetSize] and return the destination dimensions that the source image should be
+     * scaled into. The returned dimensions can be passed to [computeSizeMultiplier] to get the
+     * final size multiplier.
+     */
+    @ExperimentalCoilApi
+    @JvmStatic
+    fun computeDstSize(
+        srcWidth: Int,
+        srcHeight: Int,
+        targetSize: Size,
+        scale: Scale,
+        maxSize: Size,
+    ): IntPair {
+        var dstWidth: Int
+        var dstHeight: Int
+        if (targetSize.isOriginal) {
+            dstWidth = srcWidth
+            dstHeight = srcHeight
+        } else {
+            dstWidth = targetSize.width.toPx(scale)
+            dstHeight = targetSize.height.toPx(scale)
+        }
+        if (maxSize.width is Dimension.Pixels && !dstWidth.isMinOrMax()) {
+            dstWidth = dstWidth.coerceAtMost(maxSize.width.px)
+        }
+        if (maxSize.height is Dimension.Pixels && !dstHeight.isMinOrMax()) {
+            dstHeight = dstHeight.coerceAtMost(maxSize.height.px)
+        }
+        return IntPair(dstWidth, dstHeight)
+    }
+
+    private fun Dimension.toPx(scale: Scale): Int = pxOrElse {
+        when (scale) {
+            Scale.FILL -> Int.MIN_VALUE
+            Scale.FIT -> Int.MAX_VALUE
         }
     }
 }

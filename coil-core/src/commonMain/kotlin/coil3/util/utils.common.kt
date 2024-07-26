@@ -4,7 +4,6 @@ import coil3.ComponentRegistry
 import coil3.EventListener
 import coil3.Image
 import coil3.Uri
-import coil3.annotation.InternalCoilApi
 import coil3.decode.DataSource
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
@@ -13,12 +12,7 @@ import coil3.intercept.RealInterceptorChain
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
-import coil3.size.Dimension
-import coil3.size.Scale
-import coil3.size.Size
 import coil3.size.SizeResolver
-import coil3.size.isOriginal
-import coil3.size.pxOrElse
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
 import okio.Closeable
@@ -87,24 +81,6 @@ internal val Interceptor.Chain.sizeResolver: SizeResolver
     get() = if (this is RealInterceptorChain) sizeResolver else request.sizeResolver
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
-
-@InternalCoilApi
-inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else width.toPx(scale)
-}
-
-@InternalCoilApi
-inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
-    return if (isOriginal) original() else height.toPx(scale)
-}
-
-@InternalCoilApi
-fun Dimension.toPx(scale: Scale): Int = pxOrElse {
-    when (scale) {
-        Scale.FILL -> Int.MIN_VALUE
-        Scale.FIT -> Int.MAX_VALUE
-    }
-}
 
 internal const val SCHEME_FILE = "file"
 

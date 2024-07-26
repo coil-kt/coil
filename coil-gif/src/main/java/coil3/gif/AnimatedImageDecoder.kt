@@ -26,12 +26,13 @@ import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
+import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.size.ScaleDrawable
 import coil3.toAndroidUri
-import coil3.util.heightPx
+import coil3.util.component1
+import coil3.util.component2
 import coil3.util.isHardware
-import coil3.util.widthPx
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -68,8 +69,13 @@ class AnimatedImageDecoder @JvmOverloads constructor(
 
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
-                    val dstWidth = options.size.widthPx(options.scale) { srcWidth }
-                    val dstHeight = options.size.heightPx(options.scale) { srcHeight }
+                    val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+                        srcWidth = srcWidth,
+                        srcHeight = srcHeight,
+                        targetSize = options.size,
+                        scale = options.scale,
+                        maxSize = options.maxBitmapSize,
+                    )
                     if (srcWidth > 0 && srcHeight > 0 &&
                         (srcWidth != dstWidth || srcHeight != dstHeight)) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(

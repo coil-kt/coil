@@ -9,10 +9,14 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import coil3.request.maxBitmapSize
 import coil3.svg.internal.MIME_TYPE_SVG
-import coil3.svg.internal.getDstSize
+import coil3.svg.internal.SVG_DEFAULT_SIZE
 import coil3.toBitmap
+import coil3.util.component1
+import coil3.util.component2
 import kotlin.jvm.JvmOverloads
+import kotlin.math.roundToInt
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
@@ -47,7 +51,13 @@ actual class SvgDecoder actual constructor(
 
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val (dstWidth, dstHeight) = getDstSize(options, svgWidth, svgHeight, options.scale)
+        val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+            srcWidth = if (svgWidth > 0) svgWidth.roundToInt() else SVG_DEFAULT_SIZE,
+            srcHeight = if (svgHeight > 0) svgHeight.roundToInt() else SVG_DEFAULT_SIZE,
+            targetSize = options.size,
+            scale = options.scale,
+            maxSize = options.maxBitmapSize,
+        )
         if (svgWidth > 0f && svgHeight > 0f) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,

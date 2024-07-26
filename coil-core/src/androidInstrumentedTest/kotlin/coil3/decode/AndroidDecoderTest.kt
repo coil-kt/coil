@@ -4,19 +4,23 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
+import android.util.TypedValue
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.asDrawable
+import coil3.core.test.R
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
+import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.size.pxOrElse
 import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.assumeTrue
 import coil3.test.utils.context
@@ -31,6 +35,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
+import okio.BufferedSource
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.source
@@ -367,6 +372,20 @@ class AndroidDecoderTest {
         decodeBitmap("large.heic", Size(1080, 1920))
     }
 
+    @Test
+    fun enforcesMaxBitmapSize() = runTest {
+        val result = decode(
+            resId = R.drawable.very_large,
+            options = Options(context),
+            factory = decoderFactory,
+        )
+
+        assertTrue {
+            result.isSampled &&
+                result.image.width == Extras.Key.maxBitmapSize.default.width.pxOrElse { Int.MAX_VALUE }
+        }
+    }
+
     private suspend fun decodeBitmap(
         assetName: String,
         size: Size,
@@ -391,14 +410,41 @@ class AndroidDecoderTest {
         assetName: String,
         options: Options,
         factory: Decoder.Factory,
+    ): DecodeResult = decode(
+        source = context.assets.open(assetName).source().buffer(),
+        metadata = AssetMetadata(assetName),
+        options = options,
+        factory = factory,
+    )
+
+    private suspend fun decode(
+        resId: Int,
+        options: Options,
+        factory: Decoder.Factory,
     ): DecodeResult {
-        val source = context.assets.open(assetName).source().buffer()
+        val typedValue = TypedValue()
+        return context.resources.openRawResource(resId, typedValue).use { inputStream ->
+            decode(
+                source = inputStream.source().buffer(),
+                metadata = ResourceMetadata(context.packageName, resId, typedValue.density),
+                options = options,
+                factory = factory,
+            )
+        }
+    }
+
+    private suspend fun decode(
+        source: BufferedSource,
+        metadata: ImageSource.Metadata?,
+        options: Options,
+        factory: Decoder.Factory,
+    ): DecodeResult {
         val decoder = factory.create(
             result = SourceFetchResult(
                 source = ImageSource(
                     source = source,
                     fileSystem = FakeFileSystem(),
-                    metadata = AssetMetadata(assetName),
+                    metadata = metadata,
                 ),
                 mimeType = null,
                 dataSource = DataSource.DISK,

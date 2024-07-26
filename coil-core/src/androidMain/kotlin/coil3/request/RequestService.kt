@@ -10,7 +10,6 @@ import coil3.Extras
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
 import coil3.size.Dimension
-import coil3.size.DisplaySizeResolver
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
@@ -78,8 +77,8 @@ internal class AndroidRequestService(
                 return ViewSizeResolver(view)
             }
         } else {
-            // Fall back to the size of the display.
-            return DisplaySizeResolver(request.context)
+            // Fall back to the image's source dimensions.
+            return SizeResolver.ORIGINAL
         }
     }
 
@@ -112,7 +111,7 @@ internal class AndroidRequestService(
             return defined.precision
         }
 
-        if (defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
+        if (defined.sizeResolver == null && sizeResolver == SizeResolver.ORIGINAL) {
             return Precision.INEXACT
         }
 

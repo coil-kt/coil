@@ -24,7 +24,6 @@ data class Size(
     val width: Dimension,
     val height: Dimension,
 ) {
-
     companion object {
         /**
          * A [Size] whose width and height are not scaled.

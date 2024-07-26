@@ -23,13 +23,14 @@ import coil3.decode.ResourceMetadata
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
+import coil3.request.maxBitmapSize
 import coil3.size.Dimension.Pixels
 import coil3.size.Precision
 import coil3.size.Size
 import coil3.size.pxOrElse
 import coil3.toAndroidUri
-import coil3.util.heightPx
-import coil3.util.widthPx
+import coil3.util.component1
+import coil3.util.component2
 import coil3.video.MediaDataSourceFetcher.MediaSourceMetadata
 import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.getFrameAtTime
@@ -63,8 +64,13 @@ class VideoFrameDecoder(
         }
 
         val dstSize = if (srcWidth > 0 && srcHeight > 0) {
-            val dstWidth = options.size.widthPx(options.scale) { srcWidth }
-            val dstHeight = options.size.heightPx(options.scale) { srcHeight }
+            val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+                srcWidth = srcWidth,
+                srcHeight = srcHeight,
+                targetSize = options.size,
+                scale = options.scale,
+                maxSize = options.maxBitmapSize,
+            )
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,
                 srcHeight = srcHeight,
