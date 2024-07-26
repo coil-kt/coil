@@ -48,12 +48,19 @@ internal object DrawableUtils {
         val safeDrawable = drawable.mutate()
         val srcWidth = safeDrawable.width.let { if (it > 0) it else DEFAULT_SIZE }
         val srcHeight = safeDrawable.height.let { if (it > 0) it else DEFAULT_SIZE }
+        val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+            srcWidth = srcWidth,
+            srcHeight = srcHeight,
+            targetSize = size,
+            scale = scale,
+            maxSize = Size.ORIGINAL,
+        )
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
-            dstWidth = size.widthPx(scale) { srcWidth },
-            dstHeight = size.heightPx(scale) { srcHeight },
-            scale = scale
+            dstWidth = dstWidth,
+            dstHeight = dstHeight,
+            scale = scale,
         )
         val bitmapWidth = (multiplier * srcWidth).roundToInt()
         val bitmapHeight = (multiplier * srcHeight).roundToInt()
@@ -83,11 +90,18 @@ internal object DrawableUtils {
             return true
         } else {
             // The bitmap must match the scaled dimensions of the destination exactly.
+            val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+                srcWidth = bitmap.width,
+                srcHeight = bitmap.height,
+                targetSize = size,
+                scale = scale,
+                maxSize = Size.ORIGINAL,
+            )
             return DecodeUtils.computeSizeMultiplier(
                 srcWidth = bitmap.width,
                 srcHeight = bitmap.height,
-                dstWidth = size.widthPx(scale) { bitmap.width },
-                dstHeight = size.heightPx(scale) { bitmap.height },
+                dstWidth = dstWidth,
+                dstHeight = dstHeight,
                 scale = scale
             ) == 1.0
         }

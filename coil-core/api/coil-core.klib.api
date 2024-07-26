@@ -890,8 +890,22 @@ final class coil3/Uri { // coil3/Uri|null[0]
     final fun toString(): kotlin/String // coil3/Uri.toString|toString(){}[0]
 }
 
+final value class coil3.util/IntPair { // coil3.util/IntPair|null[0]
+    constructor <init>(kotlin/Int, kotlin/Int) // coil3.util/IntPair.<init>|<init>(kotlin.Int;kotlin.Int){}[0]
+
+    final val first // coil3.util/IntPair.first|{}first[0]
+        final fun <get-first>(): kotlin/Int // coil3.util/IntPair.first.<get-first>|<get-first>(){}[0]
+    final val second // coil3.util/IntPair.second|{}second[0]
+        final fun <get-second>(): kotlin/Int // coil3.util/IntPair.second.<get-second>|<get-second>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.util/IntPair.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // coil3.util/IntPair.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // coil3.util/IntPair.toString|toString(){}[0]
+}
+
 final object coil3.decode/DecodeUtils { // coil3.decode/DecodeUtils|null[0]
     final fun calculateInSampleSize(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Int // coil3.decode/DecodeUtils.calculateInSampleSize|calculateInSampleSize(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
+    final fun computeDstSize(kotlin/Int, kotlin/Int, coil3.size/Size, coil3.size/Scale, coil3.size/Size): coil3.util/IntPair // coil3.decode/DecodeUtils.computeDstSize|computeDstSize(kotlin.Int;kotlin.Int;coil3.size.Size;coil3.size.Scale;coil3.size.Size){}[0]
     final fun computeSizeMultiplier(kotlin/Double, kotlin/Double, kotlin/Double, kotlin/Double, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Double;kotlin.Double;kotlin.Double;kotlin.Double;coil3.size.Scale){}[0]
     final fun computeSizeMultiplier(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float, coil3.size/Scale): kotlin/Float // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float;coil3.size.Scale){}[0]
     final fun computeSizeMultiplier(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
@@ -934,7 +948,6 @@ final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/maximumBitmapSize(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/maximumBitmapSize|maximumBitmapSize@coil3.request.ImageRequest.Builder(coil3.size.Size){}[0]
-final fun (coil3.size/Dimension).coil3.util/toPx(coil3.size/Scale): kotlin/Int // coil3.util/toPx|toPx@coil3.size.Dimension(coil3.size.Scale){}[0]
 final fun (coil3/Extras).coil3/plus(coil3/Extras): coil3/Extras // coil3/plus|plus@coil3.Extras(coil3.Extras){}[0]
 final fun (coil3/Extras?).coil3/orEmpty(): coil3/Extras // coil3/orEmpty|orEmpty@coil3.Extras?(){}[0]
 final fun (coil3/Image).coil3/toBitmap(kotlin/Int = ..., kotlin/Int = ...): org.jetbrains.skia/Bitmap // coil3/toBitmap|toBitmap@coil3.Image(kotlin.Int;kotlin.Int){}[0]
@@ -959,8 +972,8 @@ final fun coil3.size/Size(kotlin/Int, kotlin/Int): coil3.size/Size // coil3.size
 final fun coil3.size/SizeResolver(coil3.size/Size): coil3.size/SizeResolver // coil3.size/SizeResolver|SizeResolver(coil3.size.Size){}[0]
 final fun coil3/ImageLoader(coil3/PlatformContext): coil3/ImageLoader // coil3/ImageLoader|ImageLoader(coil3.PlatformContext){}[0]
 final inline fun (coil3.size/Dimension).coil3.size/pxOrElse(kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.size/pxOrElse|pxOrElse@coil3.size.Dimension(kotlin.Function0<kotlin.Int>){}[0]
-final inline fun (coil3.size/Size).coil3.util/heightPx(coil3.size/Scale, kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.util/heightPx|heightPx@coil3.size.Size(coil3.size.Scale;kotlin.Function0<kotlin.Int>){}[0]
-final inline fun (coil3.size/Size).coil3.util/widthPx(coil3.size/Scale, kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.util/widthPx|widthPx@coil3.size.Size(coil3.size.Scale;kotlin.Function0<kotlin.Int>){}[0]
+final inline fun (coil3.util/IntPair).coil3.util/component1(): kotlin/Int // coil3.util/component1|component1@coil3.util.IntPair(){}[0]
+final inline fun (coil3.util/IntPair).coil3.util/component2(): kotlin/Int // coil3.util/component2|component2@coil3.util.IntPair(){}[0]
 
 // Targets: [apple]
 final fun (coil3/ImageLoader).coil3/executeBlocking(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/executeBlocking|executeBlocking@coil3.ImageLoader(coil3.request.ImageRequest){}[0]

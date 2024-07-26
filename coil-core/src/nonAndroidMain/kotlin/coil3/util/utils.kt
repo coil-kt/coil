@@ -3,6 +3,7 @@ package coil3.util
 import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.request.Options
+import coil3.request.maximumBitmapSize
 import coil3.size.Precision
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
@@ -25,11 +26,18 @@ internal fun Bitmap.Companion.makeFromImage(
 ): Bitmap {
     val srcWidth = image.width
     val srcHeight = image.height
+    val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+        srcWidth = srcWidth,
+        srcHeight = srcHeight,
+        targetSize = options.size,
+        scale = options.scale,
+        maxSize = options.maximumBitmapSize,
+    )
     var multiplier = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
-        dstWidth = options.size.widthPx(options.scale) { srcWidth },
-        dstHeight = options.size.heightPx(options.scale) { srcHeight },
+        dstWidth = dstWidth,
+        dstHeight = dstHeight,
         scale = options.scale,
     )
 
@@ -38,16 +46,16 @@ internal fun Bitmap.Companion.makeFromImage(
         multiplier = multiplier.coerceAtMost(1.0)
     }
 
-    val dstWidth = (multiplier * srcWidth).toInt()
-    val dstHeight = (multiplier * srcHeight).toInt()
+    val outWidth = (multiplier * srcWidth).toInt()
+    val outHeight = (multiplier * srcHeight).toInt()
 
     val bitmap = Bitmap()
-    bitmap.allocN32Pixels(dstWidth, dstHeight)
+    bitmap.allocN32Pixels(outWidth, outHeight)
     Canvas(bitmap).use { canvas ->
         canvas.drawImageRect(
             image = image,
             src = Rect.makeWH(srcWidth.toFloat(), srcHeight.toFloat()),
-            dst = Rect.makeWH(dstWidth.toFloat(), dstHeight.toFloat()),
+            dst = Rect.makeWH(outWidth.toFloat(), outHeight.toFloat()),
         )
     }
     return bitmap

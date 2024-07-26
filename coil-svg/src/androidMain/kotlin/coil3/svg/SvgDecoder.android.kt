@@ -12,11 +12,15 @@ import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
+import coil3.request.maximumBitmapSize
 import coil3.svg.internal.MIME_TYPE_SVG
-import coil3.svg.internal.getDstSize
+import coil3.svg.internal.SVG_DEFAULT_SIZE
+import coil3.util.component1
+import coil3.util.component2
 import coil3.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
+import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
 /**
@@ -45,7 +49,13 @@ actual class SvgDecoder actual constructor(
 
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val (dstWidth, dstHeight) = getDstSize(options, svgWidth, svgHeight, options.scale)
+        val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+            srcWidth = if (svgWidth > 0) svgWidth.roundToInt() else SVG_DEFAULT_SIZE,
+            srcHeight = if (svgHeight > 0) svgHeight.roundToInt() else SVG_DEFAULT_SIZE,
+            targetSize = options.size,
+            scale = options.scale,
+            maxSize = options.maximumBitmapSize,
+        )
         if (svgWidth > 0 && svgHeight > 0) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
