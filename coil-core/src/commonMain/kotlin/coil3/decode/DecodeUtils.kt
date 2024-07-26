@@ -105,10 +105,10 @@ object DecodeUtils {
             dstWidth = targetSize.width.toPx(scale)
             dstHeight = targetSize.height.toPx(scale)
         }
-        if (maxSize.width is Dimension.Pixels && !maxSize.width.px.isMinOrMax()) {
+        if (maxSize.width is Dimension.Pixels && !dstWidth.isMinOrMax()) {
             dstWidth = dstWidth.coerceAtMost(maxSize.width.px)
         }
-        if (maxSize.height is Dimension.Pixels && !maxSize.height.px.isMinOrMax()) {
+        if (maxSize.height is Dimension.Pixels && !dstHeight.isMinOrMax()) {
             dstHeight = dstHeight.coerceAtMost(maxSize.height.px)
         }
         return IntPair(dstWidth, dstHeight)
