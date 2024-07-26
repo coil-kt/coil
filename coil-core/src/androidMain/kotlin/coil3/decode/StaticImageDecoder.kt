@@ -105,31 +105,30 @@ internal class StaticImageDecoder(
             val source = result.source.imageDecoderSourceOrNull(options) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
         }
-    }
-}
 
-@RequiresApi(29)
-private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
-    if (fileSystem == FileSystem.SYSTEM) {
-        val file = fileOrNull()
-        if (file != null && fileSystem == FileSystem.SYSTEM) {
-            return ImageDecoder.createSource(file.toFile())
+        private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
+            if (fileSystem == FileSystem.SYSTEM) {
+                val file = fileOrNull()
+                if (file != null && fileSystem == FileSystem.SYSTEM) {
+                    return ImageDecoder.createSource(file.toFile())
+                }
+            }
+
+            val metadata = metadata
+            if (metadata is AssetMetadata) {
+                return ImageDecoder.createSource(options.context.assets, metadata.filePath)
+            }
+            if (metadata is ContentMetadata) {
+                return ImageDecoder.createSource { metadata.assetFileDescriptor }
+            }
+            if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
+                return ImageDecoder.createSource(options.context.resources, metadata.resId)
+            }
+            if (metadata is ByteBufferMetadata) {
+                return ImageDecoder.createSource(metadata.byteBuffer)
+            }
+
+            return null
         }
     }
-
-    val metadata = metadata
-    if (metadata is AssetMetadata) {
-        return ImageDecoder.createSource(options.context.assets, metadata.filePath)
-    }
-    if (metadata is ContentMetadata) {
-        return ImageDecoder.createSource { metadata.assetFileDescriptor }
-    }
-    if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
-        return ImageDecoder.createSource(options.context.resources, metadata.resId)
-    }
-    if (metadata is ByteBufferMetadata) {
-        return ImageDecoder.createSource(metadata.byteBuffer)
-    }
-
-    return null
 }
