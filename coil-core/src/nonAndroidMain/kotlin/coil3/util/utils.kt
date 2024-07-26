@@ -3,7 +3,7 @@ package coil3.util
 import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.request.Options
-import coil3.request.maximumBitmapSize
+import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
@@ -31,7 +31,7 @@ internal fun Bitmap.Companion.makeFromImage(
         srcHeight = srcHeight,
         targetSize = options.size,
         scale = options.scale,
-        maxSize = options.maximumBitmapSize,
+        maxSize = options.maxBitmapSize,
     )
     var multiplier = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,

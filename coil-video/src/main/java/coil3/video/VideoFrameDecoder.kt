@@ -23,7 +23,7 @@ import coil3.decode.ResourceMetadata
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
-import coil3.request.maximumBitmapSize
+import coil3.request.maxBitmapSize
 import coil3.size.Dimension.Pixels
 import coil3.size.Precision
 import coil3.size.Size
@@ -69,7 +69,7 @@ class VideoFrameDecoder(
                 srcHeight = srcHeight,
                 targetSize = options.size,
                 scale = options.scale,
-                maxSize = options.maximumBitmapSize,
+                maxSize = options.maxBitmapSize,
             )
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,

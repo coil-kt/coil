@@ -12,7 +12,7 @@ import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.bitmapConfig
-import coil3.request.maximumBitmapSize
+import coil3.request.maxBitmapSize
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
 import coil3.util.component1
@@ -54,7 +54,7 @@ actual class SvgDecoder actual constructor(
             srcHeight = if (svgHeight > 0) svgHeight.roundToInt() else SVG_DEFAULT_SIZE,
             targetSize = options.size,
             scale = options.scale,
-            maxSize = options.maximumBitmapSize,
+            maxSize = options.maxBitmapSize,
         )
         if (svgWidth > 0 && svgHeight > 0) {
             val multiplier = DecodeUtils.computeSizeMultiplier(

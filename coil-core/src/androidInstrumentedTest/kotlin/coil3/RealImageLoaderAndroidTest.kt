@@ -23,7 +23,7 @@ import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
-import coil3.request.maximumBitmapSize
+import coil3.request.maxBitmapSize
 import coil3.request.target
 import coil3.size.Precision
 import coil3.size.Scale
@@ -512,7 +512,7 @@ class RealImageLoaderAndroidTest {
 
         assertIs<SuccessResult>(result)
         val image = assertIs<BitmapImage>(result.image)
-        val maxBitmapSize = Extras.Key.maximumBitmapSize.default
+        val maxBitmapSize = Extras.Key.maxBitmapSize.default
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,

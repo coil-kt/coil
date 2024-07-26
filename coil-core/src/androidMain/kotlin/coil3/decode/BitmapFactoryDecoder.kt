@@ -11,7 +11,7 @@ import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
 import coil3.request.colorSpace
-import coil3.request.maximumBitmapSize
+import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
 import coil3.size.isOriginal
@@ -141,7 +141,7 @@ class BitmapFactoryDecoder(
             srcHeight = srcHeight,
             targetSize = options.size,
             scale = options.scale,
-            maxSize = options.maximumBitmapSize,
+            maxSize = options.maxBitmapSize,
         )
 
         // Calculate the image's sample size.

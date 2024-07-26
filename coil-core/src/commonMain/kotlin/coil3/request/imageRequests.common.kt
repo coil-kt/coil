@@ -29,28 +29,28 @@ internal const val DEFAULT_CROSSFADE_MILLIS = 200
  * Set the maximum width and height for a bitmap.
  *
  * This value is cooperative and [Fetcher]s and [Decoder]s should respect the width and height
- * values provided by [maximumBitmapSize] and not allocate a bitmap with a width/height larger
+ * values provided by [maxBitmapSize] and not allocate a bitmap with a width/height larger
  * than those dimensions.
  *
  * To allow a bitmap's size to be unrestricted pass [Dimension.Undefined] for [size]'s width and/or
  * height.
  */
-fun ImageRequest.Builder.maximumBitmapSize(size: Size) = apply {
-    extras[maximumBitmapSizeKey] = size
+fun ImageRequest.Builder.maxBitmapSize(size: Size) = apply {
+    extras[maxBitmapSizeKey] = size
 }
 
-fun ImageLoader.Builder.maximumBitmapSize(size: Size) = apply {
-    extras[maximumBitmapSizeKey] = size
+fun ImageLoader.Builder.maxBitmapSize(size: Size) = apply {
+    extras[maxBitmapSizeKey] = size
 }
 
-val ImageRequest.maximumBitmapSize: Size
-    get() = getExtra(maximumBitmapSizeKey)
+val ImageRequest.maxBitmapSize: Size
+    get() = getExtra(maxBitmapSizeKey)
 
-val Options.maximumBitmapSize: Size
-    get() = getExtra(maximumBitmapSizeKey)
+val Options.maxBitmapSize: Size
+    get() = getExtra(maxBitmapSizeKey)
 
-val Extras.Key.Companion.maximumBitmapSize: Extras.Key<Size>
-    get() = maximumBitmapSizeKey
+val Extras.Key.Companion.maxBitmapSize: Extras.Key<Size>
+    get() = maxBitmapSizeKey
 
 // Use 2^12 as a maximum size as it's supported by all modern devices.
-private val maximumBitmapSizeKey = Extras.Key(default = Size(4_096, 4_096))
+private val maxBitmapSizeKey = Extras.Key(default = Size(4_096, 4_096))
