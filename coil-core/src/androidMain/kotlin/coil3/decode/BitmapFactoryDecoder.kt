@@ -14,7 +14,6 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
-import coil3.size.isOriginal
 import coil3.util.MIME_TYPE_JPEG
 import coil3.util.component1
 import coil3.util.component2
@@ -113,17 +112,6 @@ class BitmapFactoryDecoder(
 
     /** Compute and set the scaling properties for [BitmapFactory.Options]. */
     private fun BitmapFactory.Options.configureScale(exifData: ExifData) {
-        // Requests that request original size from a resource source need to be decoded with
-        // respect to their intrinsic density.
-        val metadata = source.metadata
-        if (metadata is ResourceMetadata && options.size.isOriginal) {
-            inSampleSize = 1
-            inScaled = true
-            inDensity = metadata.density
-            inTargetDensity = options.context.resources.displayMetrics.densityDpi
-            return
-        }
-
         // This occurs if there was an error decoding the image's size.
         if (outWidth <= 0 || outHeight <= 0) {
             inSampleSize = 1

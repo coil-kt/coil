@@ -115,7 +115,7 @@ internal class StaticImageDecoder(
         private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
             if (fileSystem == FileSystem.SYSTEM) {
                 val file = fileOrNull()
-                if (file != null && fileSystem == FileSystem.SYSTEM) {
+                if (file != null) {
                     return ImageDecoder.createSource(file.toFile())
                 }
             }
