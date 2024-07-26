@@ -14,6 +14,8 @@ import coil3.load
 import coil3.memory.MemoryCache
 import coil3.request.error
 import coil3.request.placeholder
+import coil3.util.component1
+import coil3.util.component2
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
