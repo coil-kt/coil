@@ -18,6 +18,9 @@ import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
+import coil3.util.IntPair
+import coil3.util.component1
+import coil3.util.component2
 import coil3.util.safeConfig
 import kotlin.math.roundToInt
 
@@ -90,14 +93,14 @@ class RoundedCornersTransformation(
         return output
     }
 
-    private fun calculateOutputSize(input: Bitmap, size: Size): Pair<Int, Int> {
+    private fun calculateOutputSize(input: Bitmap, size: Size): IntPair {
         if (size.isOriginal) {
-            return input.width to input.height
+            return IntPair(input.width, input.height)
         }
 
         val (dstWidth, dstHeight) = size
         if (dstWidth is Dimension.Pixels && dstHeight is Dimension.Pixels) {
-            return dstWidth.px to dstHeight.px
+            return IntPair(dstWidth.px, dstHeight.px)
         }
 
         val multiplier = DecodeUtils.computeSizeMultiplier(
@@ -109,6 +112,6 @@ class RoundedCornersTransformation(
         )
         val outputWidth = (multiplier * input.width).roundToInt()
         val outputHeight = (multiplier * input.height).roundToInt()
-        return outputWidth to outputHeight
+        return IntPair(outputWidth, outputHeight)
     }
 }

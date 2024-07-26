@@ -1,6 +1,7 @@
 package sample.common
 
 import coil3.Extras
+import coil3.util.IntPair
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -27,10 +28,10 @@ fun String.toColorInt(): Int {
     return color.toInt()
 }
 
-fun Image.calculateScaledSize(displayWidth: Int): Pair<Int, Int> {
+fun Image.calculateScaledSize(displayWidth: Int): IntPair {
     val columnWidth = (displayWidth / NUM_COLUMNS.toDouble()).roundToInt()
     val scale = columnWidth / width.toDouble()
-    return columnWidth to (scale * height).roundToInt()
+    return IntPair(columnWidth, (scale * height).roundToInt())
 }
 
 expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
