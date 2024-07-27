@@ -16,6 +16,3 @@ internal actual class WeakReference<T : Any> actual constructor(referred: T) {
 private external class WeakRef<T>(value: T) {
     fun deref(): T?
 }
-
-// TODO: This can be incorrect if the object implements a custom hashCode.
-internal actual fun Any.identityHashCode(): Int = hashCode()

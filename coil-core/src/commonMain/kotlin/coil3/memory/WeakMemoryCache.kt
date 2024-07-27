@@ -6,7 +6,6 @@ import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
 import coil3.util.WeakReference
 import coil3.util.firstNotNullOfOrNullIndices
-import coil3.util.identityHashCode
 import coil3.util.removeIfIndices
 import kotlin.experimental.ExperimentalNativeApi
 import kotlinx.atomicfu.locks.SynchronizedObject
@@ -75,21 +74,21 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         val values = cache.getOrPut(key) { arrayListOf() }
 
         // Insert the value into the list sorted descending by size.
-        run {
-            val identityHashCode = image.identityHashCode()
-            val newValue = InternalValue(identityHashCode, WeakReference(image), extras, size)
+        val newValue = InternalValue(WeakReference(image), extras, size)
+        if (values.isEmpty()) {
+            values += newValue
+        } else {
             for (index in values.indices) {
                 val value = values[index]
                 if (size >= value.size) {
-                    if (value.identityHashCode == identityHashCode && value.image.get() === image) {
+                    if (value.image.get() === image) {
                         values[index] = newValue
                     } else {
                         values.add(index, newValue)
                     }
-                    return@run
+                    break
                 }
             }
-            values += newValue
         }
 
         cleanUpIfNecessary()
@@ -138,7 +137,6 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
 
     @VisibleForTesting
     internal class InternalValue(
-        val identityHashCode: Int,
         val image: WeakReference<Image>,
         val extras: Map<String, Any>,
         val size: Long,
