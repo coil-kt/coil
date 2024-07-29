@@ -274,13 +274,13 @@ class ImageRequest private constructor(
         private var memoryCacheKeyExtrasAreMutable = false
         private var lazyMemoryCacheKeyExtras: Any
         private val memoryCacheKeyExtras: MutableMap<String, String>
-            get() = if (memoryCacheKeyExtrasAreMutable) {
-                lazyMemoryCacheKeyExtras
-            } else {
-                (lazyMemoryCacheKeyExtras as Map<*, *>).toMutableMap().also {
+            get() = when (val memoryCacheKeyExtras = lazyMemoryCacheKeyExtras) {
+                memoryCacheKeyExtrasAreMutable -> memoryCacheKeyExtras
+                is Map<*, *> -> memoryCacheKeyExtras.toMutableMap().also {
                     lazyMemoryCacheKeyExtras = it
                     memoryCacheKeyExtrasAreMutable = true
                 }
+                else -> throw AssertionError()
             } as MutableMap<String, String>
         private var diskCacheKey: String?
         private var fileSystem: FileSystem?
@@ -666,10 +666,10 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
-                memoryCacheKeyExtras = if (memoryCacheKeyExtrasAreMutable) {
-                    (lazyMemoryCacheKeyExtras as MutableMap<*, *>).toImmutableMap()
-                } else {
-                    lazyMemoryCacheKeyExtras
+                memoryCacheKeyExtras = when (val memoryCacheKeyExtras = lazyMemoryCacheKeyExtras) {
+                    memoryCacheKeyExtrasAreMutable -> (memoryCacheKeyExtras as MutableMap<*, *>).toImmutableMap()
+                    is Map<*, *> -> memoryCacheKeyExtras
+                    else -> throw AssertionError()
                 } as Map<String, String>,
                 diskCacheKey = diskCacheKey,
                 fileSystem = fileSystem ?: defaults.fileSystem,
