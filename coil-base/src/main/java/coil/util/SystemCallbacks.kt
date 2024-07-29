@@ -53,7 +53,8 @@ internal class SystemCallbacks(
                 imageLoader.context,
                 this,
                 imageLoader.logger,
-                imageLoader.options.observeDefaultNetwork)
+                imageLoader.options.observeDefaultNetwork,
+            )
         } else {
             EmptyNetworkObserver()
         }

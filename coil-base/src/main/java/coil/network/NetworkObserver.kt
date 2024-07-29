@@ -7,7 +7,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.core.content.getSystemService
@@ -73,7 +73,7 @@ internal class EmptyNetworkObserver : NetworkObserver {
 private class RealNetworkObserver(
     private val connectivityManager: ConnectivityManager,
     private val listener: Listener,
-    private val observeDefaultNetwork: Boolean,
+    observeDefaultNetwork: Boolean,
 ) : NetworkObserver {
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -85,8 +85,7 @@ private class RealNetworkObserver(
         get() = connectivityManager.allNetworks.any { it.isOnline() }
 
     init {
-
-        if (observeDefaultNetwork && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (observeDefaultNetwork && SDK_INT >= 24) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback)
         } else {
             val request = NetworkRequest.Builder()
