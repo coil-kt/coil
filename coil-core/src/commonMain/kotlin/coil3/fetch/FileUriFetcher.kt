@@ -4,6 +4,7 @@ import coil3.ImageLoader
 import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
+import coil3.filePath
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import coil3.util.extension
@@ -16,7 +17,7 @@ internal class FileUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        val path = checkNotNull(uri.path) { "path == null" }.toPath()
+        val path = checkNotNull(uri.filePath) { "filePath == null" }.toPath()
         return SourceFetchResult(
             source = ImageSource(path, options.fileSystem),
             mimeType = MimeTypeMap.getMimeTypeFromExtension(path.extension),

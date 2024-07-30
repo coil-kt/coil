@@ -12,18 +12,32 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("www.example.com", uri.authority)
         assertEquals("/image.jpg", uri.path)
+        assertEquals("/image.jpg", uri.filePath)
         assertEquals(listOf("image.jpg"), uri.pathSegments)
         assertEquals("q=jpg", uri.query)
         assertEquals("fragment", uri.fragment)
     }
 
     @Test
-    fun relative() {
-        val uri = "/test/relative/image.jpg#something".toUri()
+    fun absolute() {
+        val uri = "/test/absolute/image.jpg#something".toUri()
         assertNull(uri.scheme)
         assertNull(uri.authority)
-        assertEquals("/test/relative/image.jpg", uri.path)
-        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
+        assertEquals("/test/absolute/image.jpg", uri.path)
+        assertEquals("/test/absolute/image.jpg", uri.filePath)
+        assertEquals(listOf("test", "absolute", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertEquals("something", uri.fragment)
+    }
+
+    @Test
+    fun relative() {
+        val uri = "./test/relative/image.jpg#something".toUri()
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals("./test/relative/image.jpg", uri.path)
+        assertEquals("./test/relative/image.jpg", uri.filePath)
+        assertEquals(listOf(".", "test", "relative", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
     }
@@ -34,6 +48,7 @@ class UriTest {
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertNull(uri.path)
+        assertNull(uri.filePath)
         assertEquals(listOf(), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something:/test/relative/image.jpg", uri.fragment)
@@ -45,6 +60,7 @@ class UriTest {
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("/", uri.path)
+        assertNull(uri.filePath)
         assertEquals(listOf(), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("02dkfj;anc%%2", uri.fragment)
@@ -57,6 +73,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("images.unsplash.com", uri.authority)
         assertEquals("/photo-1550939810-cb345b2f4ad7", uri.path)
+        assertEquals("/photo-1550939810-cb345b2f4ad7", uri.filePath)
         assertEquals(listOf("photo-1550939810-cb345b2f4ad7"), uri.pathSegments)
         assertEquals("ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ", uri.query)
         assertNull(uri.fragment)
@@ -69,6 +86,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國", uri.path)
+        assertEquals("/上海+中國", uri.filePath)
         assertEquals(listOf("上海+中國"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
@@ -82,6 +100,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/something ", uri.path)
+        assertEquals("/something ", uri.filePath)
         assertEquals(listOf("something "), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
@@ -95,6 +114,7 @@ class UriTest {
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國%", uri.path)
+        assertEquals("/上海+中國%", uri.filePath)
         assertEquals(listOf("上海+中國%"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
@@ -107,6 +127,7 @@ class UriTest {
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test///image.jpg", uri.path)
+        assertEquals("/test/image.jpg", uri.filePath)
         assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
@@ -117,9 +138,34 @@ class UriTest {
         val uri = "https://example.com?a=b#c".toUri()
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
-        assertEquals(null, uri.path)
+        assertNull(uri.path)
+        assertNull(uri.filePath)
         assertEquals(listOf(), uri.pathSegments)
         assertEquals("a=b", uri.query)
         assertEquals("c", uri.fragment)
+    }
+
+    @Test
+    fun windowsPath() {
+        val uri = "D:\\test\\relative\\image.jpg".toUri(separator = "\\")
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals("D:/test/relative/image.jpg", uri.path)
+        assertEquals("D:\\test\\relative\\image.jpg", uri.filePath)
+        assertEquals(listOf("D:", "test", "relative", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun windowsPathFormattedAsUri() {
+        val uri = "file:///H:/1.png".toUri(separator = "\\")
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/H:/1.png", uri.path)
+        assertEquals("H:\\1.png", uri.filePath)
+        assertEquals(listOf("H:", "1.png"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
     }
 }

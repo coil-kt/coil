@@ -1,10 +1,14 @@
 package coil3
 
+import kotlin.jvm.JvmOverloads
+import okio.Path
+
 /**
  * A uniform resource locator.
  */
 class Uri internal constructor(
     private val data: String,
+    val separator: String,
     val scheme: String?,
     val authority: String?,
     val path: String?,
@@ -32,9 +36,9 @@ class Uri internal constructor(
 val Uri.pathSegments: List<String>
     get() {
         val path = path ?: return emptyList()
-
         val segments = mutableListOf<String>()
-        var index = 0
+
+        var index = -1
         while (index < path.length) {
             val startIndex = index + 1
             index = path.indexOf('/', startIndex)
@@ -51,13 +55,35 @@ val Uri.pathSegments: List<String>
     }
 
 /**
- * Parse this [String] into a [Uri].
- *
- * This method will not throw if the URI is malformed.
+ * Returns the URI's [Uri.path] formatted according to the URI's native [Uri.separator].
  */
-fun String.toUri(): Uri = parseUri(this)
+val Uri.filePath: String?
+    get() {
+        val pathSegments = pathSegments
+        if (pathSegments.isEmpty()) {
+            return null
+        } else {
+            val prefix = if (path!!.startsWith(separator)) separator else ""
+            return pathSegments.joinToString(prefix = prefix, separator = separator)
+        }
+    }
 
-private fun parseUri(data: String): Uri {
+/**
+ * Parse this [String] into a [Uri]. This method will not throw if the URI is malformed.
+ *
+ * @param separator The path separator used to separate URI path elements. By default, this
+ *  will be '/' on UNIX systems and '\' on Windows systems.
+ */
+@JvmOverloads
+fun String.toUri(separator: String = Path.DIRECTORY_SEPARATOR): Uri {
+    var data = this
+    if (separator != "/") {
+        data = data.replace(separator, "/")
+    }
+    return parseUri(data, separator)
+}
+
+private fun parseUri(data: String, separator: String): Uri {
     var authorityStartIndex = -1
     var pathStartIndex = -1
     var queryStartIndex = -1
@@ -84,7 +110,7 @@ private fun parseUri(data: String): Uri {
                     fragmentStartIndex == -1 &&
                     pathStartIndex == -1
                 ) {
-                    pathStartIndex = index
+                    pathStartIndex = if (authorityStartIndex == -1) 0 else index
                 }
             }
             '?' -> {
@@ -153,6 +179,7 @@ private fun parseUri(data: String): Uri {
     val bytes = ByteArray(maxLength)
     return Uri(
         data = data,
+        separator = separator,
         scheme = scheme?.percentDecode(bytes),
         authority = authority?.percentDecode(bytes),
         path = path?.percentDecode(bytes),
