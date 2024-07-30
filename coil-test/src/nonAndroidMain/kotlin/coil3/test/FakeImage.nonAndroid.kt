@@ -2,11 +2,9 @@ package coil3.test
 
 import coil3.Canvas
 import coil3.Image
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import org.jetbrains.skia.Paint
 
-@ExperimentalCoilApi
 @Poko
 actual class FakeImage actual constructor(
     actual override val width: Int,

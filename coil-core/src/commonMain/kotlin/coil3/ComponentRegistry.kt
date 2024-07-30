@@ -1,6 +1,5 @@
 package coil3
 
-import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
@@ -172,7 +171,6 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a factory of [Fetcher.Factory]s. */
-        @ExperimentalCoilApi
         fun addFetcherFactories(factory: () -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>) = apply {
             lazyFetcherFactories += factory
         }
@@ -183,7 +181,6 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a factory of [Decoder.Factory]s. */
-        @ExperimentalCoilApi
         fun addDecoderFactories(factory: () -> List<Decoder.Factory>) = apply {
             lazyDecoderFactories += factory
         }

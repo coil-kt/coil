@@ -2,9 +2,7 @@ package coil3.test
 
 import coil3.Canvas
 import coil3.Image
-import coil3.annotation.ExperimentalCoilApi
 
-@ExperimentalCoilApi
 expect class FakeImage(
     width: Int = 100,
     height: Int = 100,

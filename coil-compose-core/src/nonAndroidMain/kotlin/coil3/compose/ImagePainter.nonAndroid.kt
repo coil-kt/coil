@@ -9,10 +9,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import coil3.BitmapImage
 import coil3.Image
 import coil3.PlatformContext
-import coil3.annotation.ExperimentalCoilApi
 import coil3.toBitmap
 
-@ExperimentalCoilApi
 actual fun Image.asPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,
