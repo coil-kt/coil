@@ -1,10 +1,14 @@
 package coil3
 
+import kotlin.jvm.JvmOverloads
+import okio.Path
+
 /**
  * A uniform resource locator.
  */
 class Uri internal constructor(
     private val data: String,
+    val separator: String,
     val scheme: String?,
     val authority: String?,
     val path: String?,
@@ -31,20 +35,13 @@ class Uri internal constructor(
  */
 val Uri.pathSegments: List<String>
     get() {
-        var path = path ?: return emptyList()
+        val path = path ?: return emptyList()
         val segments = mutableListOf<String>()
-        val separator: Char
-        if (scheme == null && path.contains(":\\")) {
-            separator = '\\'
-            path = "\\$path"
-        } else {
-            separator = '/'
-        }
 
-        var index = 0
+        var index = -1
         while (index < path.length) {
             val startIndex = index + 1
-            index = path.indexOf(separator, startIndex)
+            index = path.indexOf('/', startIndex)
             if (index == -1) {
                 index = path.length
             }
@@ -58,13 +55,35 @@ val Uri.pathSegments: List<String>
     }
 
 /**
- * Parse this [String] into a [Uri].
- *
- * This method will not throw if the URI is malformed.
+ * Returns the URI's [Uri.path] formatted according to the URI's native [Uri.separator].
  */
-fun String.toUri(): Uri = parseUri(this)
+val Uri.filePath: String?
+    get() {
+        val pathSegments = pathSegments
+        if (pathSegments.isEmpty()) {
+            return null
+        } else {
+            val prefix = if (path!!.startsWith('/')) "/" else ""
+            return pathSegments.joinToString(prefix = prefix, separator = separator)
+        }
+    }
 
-private fun parseUri(data: String): Uri {
+/**
+ * Parse this [String] into a [Uri]. This method will not throw if the URI is malformed.
+ *
+ * @param separator The path separator used to separate URI path elements. By default, this
+ *  will be '/' on UNIX systems and '\' on Windows systems.
+ */
+@JvmOverloads
+fun String.toUri(separator: String = Path.DIRECTORY_SEPARATOR): Uri {
+    var data = this
+    if (separator != "/") {
+        data = data.replace(separator, "/")
+    }
+    return parseUri(data, separator)
+}
+
+private fun parseUri(data: String, separator: String): Uri {
     var authorityStartIndex = -1
     var pathStartIndex = -1
     var queryStartIndex = -1
@@ -84,13 +103,6 @@ private fun parseUri(data: String): Uri {
                 ) {
                     authorityStartIndex = index + 3
                     index += 2
-                } else if (index == 1 && data[index + 1] == '\\') { // windows path D:\test\relative\image.jpg
-                    if (queryStartIndex == -1 &&
-                        fragmentStartIndex == -1 &&
-                        pathStartIndex == -1
-                    ) {
-                        pathStartIndex = 0
-                    }
                 }
             }
             '/' -> {
@@ -98,7 +110,7 @@ private fun parseUri(data: String): Uri {
                     fragmentStartIndex == -1 &&
                     pathStartIndex == -1
                 ) {
-                    pathStartIndex = index
+                    pathStartIndex = if (authorityStartIndex == -1) 0 else index
                 }
             }
             '?' -> {
@@ -167,6 +179,7 @@ private fun parseUri(data: String): Uri {
     val bytes = ByteArray(maxLength)
     return Uri(
         data = data,
+        separator = separator,
         scheme = scheme?.percentDecode(bytes),
         authority = authority?.percentDecode(bytes),
         path = path?.percentDecode(bytes),
