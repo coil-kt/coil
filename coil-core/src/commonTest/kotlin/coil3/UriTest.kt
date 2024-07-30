@@ -20,12 +20,12 @@ class UriTest {
 
     @Test
     fun absolute() {
-        val uri = "/test/relative/image.jpg#something".toUri()
+        val uri = "/test/absolute/image.jpg#something".toUri()
         assertNull(uri.scheme)
         assertNull(uri.authority)
-        assertEquals("/test/relative/image.jpg", uri.path)
-        assertEquals("/test/relative/image.jpg", uri.filePath)
-        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
+        assertEquals("/test/absolute/image.jpg", uri.path)
+        assertEquals("/test/absolute/image.jpg", uri.filePath)
+        assertEquals(listOf("test", "absolute", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
     }
