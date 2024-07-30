@@ -13,7 +13,7 @@ public abstract interface class coil3/SingletonImageLoader$Factory {
 	public abstract fun newImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
 }
 
-public final class coil3/SingletonImageLoadersKt {
+public final class coil3/SingletonImageLoaders_androidKt {
 	public static final fun dispose (Landroid/widget/ImageView;)V
 	public static final fun getImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
 	public static final fun getResult (Landroid/widget/ImageView;)Lcoil3/request/ImageResult;
