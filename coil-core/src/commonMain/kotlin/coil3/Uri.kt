@@ -4,7 +4,7 @@ import kotlin.jvm.JvmOverloads
 import okio.Path
 
 /**
- * A uniform resource locator.
+ * A uniform resource locator (https://www.w3.org/Addressing/URL/url-spec.html).
  */
 class Uri internal constructor(
     private val data: String,

@@ -28,27 +28,6 @@ internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
 private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = true)
 
 // endregion
-// region networkObserverEnabled
-
-/**
- * Enables short circuiting network requests if the device is offline.
- *
- * If true, reading from the network will automatically be disabled if the device is
- * offline. If a cached response is unavailable the request will fail with a
- * '504 Unsatisfiable Request' response.
- *
- * If false, the image loader will attempt a network request even if the device is offline.
- */
-fun ImageLoader.Builder.networkObserverEnabled(enable: Boolean) = apply {
-    extras[networkObserverEnabledKey] = enable
-}
-
-internal val RealImageLoader.Options.networkObserverEnabled: Boolean
-    get() = defaults.extras.getOrDefault(networkObserverEnabledKey)
-
-private val networkObserverEnabledKey = Extras.Key(default = true)
-
-// endregion
 // region serviceLoaderComponentsEnabled
 
 /**

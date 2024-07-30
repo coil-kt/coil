@@ -21,7 +21,6 @@ class SystemCallbacksTest {
         imageLoader = ImageLoader(context) as RealImageLoader
         val systemCallbacks = SystemCallbacks(imageLoader) as AndroidSystemCallbacks
         systemCallbacks.registerMemoryPressureCallbacks()
-        systemCallbacks.isOnline
 
         // Clear the local reference.
         @Suppress("UNUSED_VALUE")

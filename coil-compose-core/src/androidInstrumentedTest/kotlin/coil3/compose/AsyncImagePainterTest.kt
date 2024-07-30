@@ -39,7 +39,6 @@ import coil3.EventListener
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.core.test.R
-import coil3.networkObserverEnabled
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
@@ -81,7 +80,6 @@ class AsyncImagePainterTest {
         imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
-            .networkObserverEnabled(false)
             .eventListener(requestTracker)
             .components {
                 add(FakeNetworkFetcher.Factory())

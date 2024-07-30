@@ -25,6 +25,11 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
+        androidMain {
+            dependencies {
+                implementation(libs.androidx.core)
+            }
+        }
         androidUnitTest {
             dependencies {
                 implementation(projects.internal.testUtils)

@@ -7,8 +7,6 @@ internal actual fun SystemCallbacks(
 ): SystemCallbacks = NoopSystemCallbacks()
 
 private class NoopSystemCallbacks : SystemCallbacks {
-    override val isOnline get() = true
-
     // TODO: Listen for memory-pressure events to trim the memory cache on non-Android platforms.
     override fun registerMemoryPressureCallbacks() {}
     override fun shutdown() {}

@@ -9,15 +9,13 @@ import android.content.Context
 import android.content.res.Configuration
 import coil3.RealImageLoader
 import coil3.annotation.VisibleForTesting
-import coil3.networkObserverEnabled
 
 internal actual fun SystemCallbacks(
     imageLoader: RealImageLoader,
 ): SystemCallbacks = AndroidSystemCallbacks(imageLoader)
 
 /**
- * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a weakly referenced
- * [imageLoader].
+ * Proxies [ComponentCallbacks2] calls to a weakly referenced [imageLoader].
  *
  * This prevents the system from having a strong reference to the [imageLoader], which allows
  * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
@@ -25,19 +23,10 @@ internal actual fun SystemCallbacks(
  */
 internal class AndroidSystemCallbacks(
     imageLoader: RealImageLoader,
-) : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
+) : SystemCallbacks, ComponentCallbacks2 {
     @VisibleForTesting val imageLoader = WeakReference(imageLoader)
     private var application: Context? = null
-    private var networkObserver: NetworkObserver? = null
     @VisibleForTesting var shutdown = false
-
-    private var _isOnline = true
-    override val isOnline: Boolean
-        @Synchronized get() {
-            // Register the network observer lazily.
-            registerNetworkObserver()
-            return _isOnline
-        }
 
     @Synchronized
     override fun registerMemoryPressureCallbacks() = withImageLoader { imageLoader ->
@@ -49,26 +38,11 @@ internal class AndroidSystemCallbacks(
     }
 
     @Synchronized
-    private fun registerNetworkObserver() = withImageLoader { imageLoader ->
-        if (networkObserver != null) return@withImageLoader
-
-        val options = imageLoader.options
-        val networkObserver = if (options.networkObserverEnabled) {
-            NetworkObserver(options.application, this, options.logger)
-        } else {
-            EmptyNetworkObserver()
-        }
-        this.networkObserver = networkObserver
-        this._isOnline = networkObserver.isOnline
-    }
-
-    @Synchronized
     override fun shutdown() {
         if (shutdown) return
         shutdown = true
 
         application?.unregisterComponentCallbacks(this)
-        networkObserver?.shutdown()
         imageLoader.clear()
     }
 
@@ -89,14 +63,6 @@ internal class AndroidSystemCallbacks(
 
     @Synchronized
     override fun onLowMemory() = onTrimMemory(TRIM_MEMORY_COMPLETE)
-
-    @Synchronized
-    override fun onConnectivityChange(isOnline: Boolean) = withImageLoader { imageLoader ->
-        imageLoader.options.logger?.log(TAG, Logger.Level.Info) {
-            "onConnectivityChange: The device is ${if (isOnline) "online" else "offline"}."
-        }
-        _isOnline = isOnline
-    }
 
     private inline fun withImageLoader(block: (RealImageLoader) -> Unit) {
         imageLoader.get()?.let(block) ?: shutdown()

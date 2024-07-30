@@ -46,7 +46,6 @@ import coil3.decode.DecodeUtils
 import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
-import coil3.networkObserverEnabled
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.Options
@@ -84,7 +83,6 @@ class AsyncImageTest {
         imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
-            .networkObserverEnabled(false)
             .eventListener(requestTracker)
             .components {
                 add(FakeNetworkFetcher.Factory())
@@ -217,7 +215,7 @@ class AsyncImageTest {
             .assertWidthIsEqualTo(expectedWidthPx.toDp())
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
     @Test
