@@ -63,7 +63,7 @@ val Uri.filePath: String?
         if (pathSegments.isEmpty()) {
             return null
         } else {
-            val prefix = if (path!!.startsWith('/')) "/" else ""
+            val prefix = if (path!!.startsWith(separator)) separator else ""
             return pathSegments.joinToString(prefix = prefix, separator = separator)
         }
     }
