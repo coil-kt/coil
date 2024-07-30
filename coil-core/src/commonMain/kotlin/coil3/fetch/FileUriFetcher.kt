@@ -17,7 +17,7 @@ internal class FileUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        val path = checkNotNull(uri.filePath) { "path == null" }.toPath()
+        val path = checkNotNull(uri.filePath) { "filePath == null" }.toPath()
         return SourceFetchResult(
             source = ImageSource(path, options.fileSystem),
             mimeType = MimeTypeMap.getMimeTypeFromExtension(path.extension),
