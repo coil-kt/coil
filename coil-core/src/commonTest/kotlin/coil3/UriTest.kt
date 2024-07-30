@@ -146,7 +146,7 @@ class UriTest {
     }
 
     @Test
-    fun windows() {
+    fun windowsPath() {
         val uri = "D:\\test\\relative\\image.jpg".toUri(separator = "\\")
         assertNull(uri.scheme)
         assertNull(uri.authority)
