@@ -7,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import coil3.util.allocationByteCountCompat
 import coil3.util.height
@@ -17,20 +16,17 @@ actual typealias Bitmap = android.graphics.Bitmap
 
 actual typealias Canvas = android.graphics.Canvas
 
-@ExperimentalCoilApi
 @JvmOverloads
 actual fun Bitmap.asImage(shareable: Boolean): BitmapImage {
     return BitmapImage(this, shareable)
 }
 
-@ExperimentalCoilApi
 @JvmOverloads
 actual fun Image.toBitmap(
     width: Int,
     height: Int,
 ): Bitmap = toBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
 
-@ExperimentalCoilApi
 fun Image.toBitmap(
     width: Int,
     height: Int,
@@ -50,7 +46,6 @@ fun Image.toBitmap(
 /**
  * An [Image] backed by an Android [Bitmap].
  */
-@ExperimentalCoilApi
 @Poko
 actual class BitmapImage internal constructor(
     actual val bitmap: Bitmap,
@@ -71,7 +66,6 @@ actual class BitmapImage internal constructor(
     }
 }
 
-@ExperimentalCoilApi
 fun Drawable.asImage(): Image {
     return if (this is BitmapDrawable) {
         bitmap.asImage()
@@ -80,7 +74,6 @@ fun Drawable.asImage(): Image {
     }
 }
 
-@ExperimentalCoilApi
 fun Drawable.asImage(shareable: Boolean): Image {
     return if (this is BitmapDrawable) {
         bitmap.asImage(shareable)
@@ -89,7 +82,6 @@ fun Drawable.asImage(shareable: Boolean): Image {
     }
 }
 
-@ExperimentalCoilApi
 fun Image.asDrawable(resources: Resources): Drawable {
     return when (this) {
         is DrawableImage -> drawable
@@ -101,7 +93,6 @@ fun Image.asDrawable(resources: Resources): Drawable {
 /**
  * An [Image] backed by an Android [Drawable].
  */
-@ExperimentalCoilApi
 @Poko
 class DrawableImage internal constructor(
     val drawable: Drawable,
@@ -140,7 +131,6 @@ class DrawableImage internal constructor(
 /**
  * A [Drawable] backed by a generic [Image].
  */
-@ExperimentalCoilApi
 class ImageDrawable internal constructor(
     val image: Image,
 ) : Drawable() {

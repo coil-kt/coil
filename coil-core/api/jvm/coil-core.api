@@ -164,7 +164,7 @@ public final class coil3/ImageLoader$Builder {
 	public final fun precision (Lcoil3/size/Precision;)Lcoil3/ImageLoader$Builder;
 }
 
-public final class coil3/ImageLoaders_commonKt {
+public final class coil3/ImageLoadersKt {
 	public static final fun ImageLoader (Lcoil3/PlatformContext;)Lcoil3/ImageLoader;
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun networkObserverEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;

@@ -1,12 +1,10 @@
 package coil3
 
-import coil3.annotation.ExperimentalCoilApi
 import kotlin.jvm.JvmOverloads
 
 /**
  * An image that can be drawn on a canvas.
  */
-@ExperimentalCoilApi
 interface Image {
 
     /**
@@ -42,7 +40,6 @@ interface Image {
 /**
  * A special implementation of [Image] that's backed by a [Bitmap].
  */
-@ExperimentalCoilApi
 expect class BitmapImage : Image {
     val bitmap: Bitmap
     override val size: Long
@@ -55,19 +52,16 @@ expect class BitmapImage : Image {
 /**
  * A grid of pixels.
  */
-@ExperimentalCoilApi
 expect class Bitmap
 
 /**
  * A graphics surface that can be drawn on.
  */
-@ExperimentalCoilApi
 expect class Canvas
 
 /**
  * Convert a [Bitmap] into an [Image].
  */
-@ExperimentalCoilApi
 @JvmOverloads
 expect fun Bitmap.asImage(
     shareable: Boolean = true,
@@ -76,7 +70,6 @@ expect fun Bitmap.asImage(
 /**
  * Convert an [Image] into a [Bitmap].
  */
-@ExperimentalCoilApi
 @JvmOverloads
 expect fun Image.toBitmap(
     width: Int = this.width,

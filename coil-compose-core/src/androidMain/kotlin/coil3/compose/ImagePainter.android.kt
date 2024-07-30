@@ -10,11 +10,9 @@ import coil3.BitmapImage
 import coil3.DrawableImage
 import coil3.Image
 import coil3.PlatformContext
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asDrawable
 import com.google.accompanist.drawablepainter.DrawablePainter
 
-@ExperimentalCoilApi
 actual fun Image.asPainter(
     context: PlatformContext,
     filterQuality: FilterQuality,

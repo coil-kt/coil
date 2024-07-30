@@ -11,12 +11,10 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.painter.Painter
 import coil3.Image
 import coil3.PlatformContext
-import coil3.annotation.ExperimentalCoilApi
 
 /**
  * Wraps an [Image] so it can be used as a [Painter].
  */
-@ExperimentalCoilApi
 class ImagePainter(
     val image: Image,
 ) : Painter() {
@@ -45,7 +43,6 @@ class ImagePainter(
 }
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
-@ExperimentalCoilApi
 expect fun Image.asPainter(
     context: PlatformContext,
     filterQuality: FilterQuality = DefaultFilterQuality,

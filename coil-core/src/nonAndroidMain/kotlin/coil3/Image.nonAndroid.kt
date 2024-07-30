@@ -1,6 +1,5 @@
 package coil3
 
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.ColorAlphaType
@@ -13,13 +12,11 @@ actual typealias Bitmap = org.jetbrains.skia.Bitmap
 
 actual typealias Canvas = org.jetbrains.skia.Canvas
 
-@ExperimentalCoilApi
 @JvmOverloads
 actual fun Bitmap.asImage(shareable: Boolean): BitmapImage {
     return BitmapImage(this, shareable)
 }
 
-@ExperimentalCoilApi
 @JvmOverloads
 actual fun Image.toBitmap(
     width: Int,
@@ -54,7 +51,6 @@ fun Image.toBitmap(
 /**
  * An [Image] backed by a Skia [Bitmap].
  */
-@ExperimentalCoilApi
 @Poko
 actual class BitmapImage internal constructor(
     actual val bitmap: Bitmap,
