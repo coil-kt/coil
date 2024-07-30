@@ -156,4 +156,16 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun windowsPathFormattedAsUri() {
+        val uri = "file:///H:/1.png".toUri(separator = "\\")
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/H:/1.png", uri.path)
+        assertEquals("H:\\1.png", uri.filePath)
+        assertEquals(listOf("H:", "1.png"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
 }
