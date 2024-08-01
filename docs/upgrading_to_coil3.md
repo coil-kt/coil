@@ -21,8 +21,7 @@ On Android, Coil uses the standard graphics classes to render images. On non-And
 
 As part of decoupling from the Android SDK, a number of API changes were made. Notably:
 
-- `Drawable` was replaced with a custom `Image` class. Use `Drawable.asCoilImage()` and `Image.asDrawable()` to convert between the classes on Android. On non-Android platforms use `Bitmap.asCoilImage()` and `Image.asBitmap()`.
-    - The `Image` API is experimental (especially on non-Android platforms) and is likely to change.
+- `Drawable` was replaced with a custom `Image` class. Use `Drawable.asImage()` and `Image.asDrawable()` to convert between the classes on Android. On non-Android platforms use `Bitmap.asImage()` and `Image.asBitmap()`.
 - Android's `android.net.Uri` class was replaced a multiplatform `coil3.Uri` class. Any instances of `android.net.Uri` that are used as `ImageRequest.data` will be mapped to `coil3.Uri` before being fetched/decoded.
 - Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms.
 - The `Coil` class was renamed to `SingletonImageLoader`.
