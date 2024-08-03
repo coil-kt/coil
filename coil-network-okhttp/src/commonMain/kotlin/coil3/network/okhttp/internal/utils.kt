@@ -16,12 +16,12 @@ import okio.ByteString
 
 @JvmInline
 internal value class CallFactoryNetworkClient(
-    private val httpClient: Call.Factory,
+    private val callFactory: Call.Factory,
 ) : NetworkClient {
     override suspend fun <T> executeRequest(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
-    ) = httpClient.newCall(request.toRequest()).await().use { response ->
+    ) = callFactory.newCall(request.toRequest()).await().use { response ->
         block(response.toNetworkResponse(request))
     }
 }
