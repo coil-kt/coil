@@ -2,7 +2,9 @@
 
 package coil3.network.ktor3
 
+import coil3.PlatformContext
 import coil3.network.CacheStrategy
+import coil3.network.ConnectivityChecker
 import coil3.network.NetworkClient
 import coil3.network.NetworkFetcher
 import coil3.network.ktor3.internal.KtorNetworkClient
@@ -12,41 +14,31 @@ import kotlin.jvm.JvmName
 @JvmName("factory")
 fun KtorNetworkFetcherFactory() = NetworkFetcher.Factory(
     networkClient = { HttpClient().asNetworkClient() },
-    cacheStrategy = { CacheStrategy() },
+)
+
+@JvmName("factory")
+fun KtorNetworkFetcherFactory(
+    httpClient: HttpClient,
+) = NetworkFetcher.Factory(
+    networkClient = { httpClient.asNetworkClient() },
 )
 
 @JvmName("factory")
 fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient,
-) = KtorNetworkFetcherFactory(
-    httpClient = httpClient,
-    cacheStrategy = { CacheStrategy() },
+) = NetworkFetcher.Factory(
+    networkClient = { httpClient().asNetworkClient() },
 )
 
 @JvmName("factory")
 fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient,
-    cacheStrategy: () -> CacheStrategy,
+    cacheStrategy: () -> CacheStrategy = ::CacheStrategy,
+    connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient().asNetworkClient() },
     cacheStrategy = cacheStrategy,
-)
-
-@JvmName("factory")
-fun KtorNetworkFetcherFactory(
-    httpClient: HttpClient,
-) = KtorNetworkFetcherFactory(
-    httpClient = httpClient,
-    cacheStrategy = CacheStrategy(),
-)
-
-@JvmName("factory")
-fun KtorNetworkFetcherFactory(
-    httpClient: HttpClient,
-    cacheStrategy: CacheStrategy,
-) = NetworkFetcher.Factory(
-    networkClient = { httpClient.asNetworkClient() },
-    cacheStrategy = { cacheStrategy },
+    connectivityChecker = connectivityChecker,
 )
 
 fun HttpClient.asNetworkClient(): NetworkClient {
