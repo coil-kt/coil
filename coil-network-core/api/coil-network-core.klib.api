@@ -32,6 +32,15 @@ abstract fun interface coil3.network/CacheStrategy { // coil3.network/CacheStrat
     }
 }
 
+abstract fun interface coil3.network/ConnectivityChecker { // coil3.network/ConnectivityChecker|null[0]
+    abstract fun isOnline(): kotlin/Boolean // coil3.network/ConnectivityChecker.isOnline|isOnline(){}[0]
+
+    final object Companion { // coil3.network/ConnectivityChecker.Companion|null[0]
+        final val ONLINE // coil3.network/ConnectivityChecker.Companion.ONLINE|{}ONLINE[0]
+            final fun <get-ONLINE>(): coil3.network/ConnectivityChecker // coil3.network/ConnectivityChecker.Companion.ONLINE.<get-ONLINE>|<get-ONLINE>(){}[0]
+    }
+}
+
 abstract interface coil3.network/NetworkClient { // coil3.network/NetworkClient|null[0]
     abstract suspend fun <#A1: kotlin/Any?> executeRequest(coil3.network/NetworkRequest, kotlin.coroutines/SuspendFunction1<coil3.network/NetworkResponse, #A1>): #A1 // coil3.network/NetworkClient.executeRequest|executeRequest(coil3.network.NetworkRequest;kotlin.coroutines.SuspendFunction1<coil3.network.NetworkResponse,0:0>){0§<kotlin.Any?>}[0]
 }
@@ -67,13 +76,13 @@ final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.net
 }
 
 final class coil3.network/NetworkFetcher : coil3.fetch/Fetcher { // coil3.network/NetworkFetcher|null[0]
-    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>){}[0]
+    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker){}[0]
 
     final fun getMimeType(kotlin/String, kotlin/String?): kotlin/String? // coil3.network/NetworkFetcher.getMimeType|getMimeType(kotlin.String;kotlin.String?){}[0]
     final suspend fun fetch(): coil3.fetch/FetchResult // coil3.network/NetworkFetcher.fetch|fetch(){}[0]
 
     final class Factory : coil3.fetch/Fetcher.Factory<coil3/Uri> { // coil3.network/NetworkFetcher.Factory|null[0]
-        constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy>) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>){}[0]
+        constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy> = ..., kotlin/Function1<coil3/PlatformContext, coil3.network/ConnectivityChecker> = ...) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>;kotlin.Function1<coil3.PlatformContext,coil3.network.ConnectivityChecker>){}[0]
 
         final fun create(coil3/Uri, coil3.request/Options, coil3/ImageLoader): coil3.fetch/Fetcher? // coil3.network/NetworkFetcher.Factory.create|create(coil3.Uri;coil3.request.Options;coil3.ImageLoader){}[0]
     }
@@ -169,5 +178,6 @@ final fun (coil3.request/ImageRequest.Builder).coil3.network/httpBody(coil3.netw
 final fun (coil3.request/ImageRequest.Builder).coil3.network/httpHeaders(coil3.network/NetworkHeaders): coil3.request/ImageRequest.Builder // coil3.network/httpHeaders|httpHeaders@coil3.request.ImageRequest.Builder(coil3.network.NetworkHeaders){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.network/httpMethod(kotlin/String): coil3.request/ImageRequest.Builder // coil3.network/httpMethod|httpMethod@coil3.request.ImageRequest.Builder(kotlin.String){}[0]
 final fun coil3.network/CacheStrategy(): coil3.network/CacheStrategy // coil3.network/CacheStrategy|CacheStrategy(){}[0]
+final fun coil3.network/ConnectivityChecker(coil3/PlatformContext): coil3.network/ConnectivityChecker // coil3.network/ConnectivityChecker|ConnectivityChecker(coil3.PlatformContext){}[0]
 final fun coil3.network/NetworkRequestBody(okio/ByteString): coil3.network/NetworkRequestBody // coil3.network/NetworkRequestBody|NetworkRequestBody(okio.ByteString){}[0]
 final fun coil3.network/NetworkResponseBody(okio/BufferedSource): coil3.network/NetworkResponseBody // coil3.network/NetworkResponseBody|NetworkResponseBody(okio.BufferedSource){}[0]

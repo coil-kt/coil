@@ -1,6 +1,7 @@
 package coil3.network
 
 import coil3.ImageLoader
+import coil3.PlatformContext
 import coil3.Uri
 import coil3.annotation.InternalCoilApi
 import coil3.decode.DataSource
@@ -16,6 +17,7 @@ import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
 import coil3.network.internal.closeQuietly
 import coil3.network.internal.readBuffer
+import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import okio.Buffer
@@ -28,6 +30,7 @@ class NetworkFetcher(
     private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
+    private val connectivityChecker: ConnectivityChecker,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -159,7 +162,7 @@ class NetworkFetcher(
     private fun newRequest(): NetworkRequest {
         val headers = options.httpHeaders.newBuilder()
         val diskRead = options.diskCachePolicy.readEnabled
-        val networkRead = options.networkCachePolicy.readEnabled
+        val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.isOnline()
         when {
             !networkRead && diskRead -> {
                 headers[CACHE_CONTROL] = "only-if-cached, max-stale=2147483647"
@@ -259,10 +262,12 @@ class NetworkFetcher(
 
     class Factory(
         networkClient: () -> NetworkClient,
-        cacheStrategy: () -> CacheStrategy,
+        cacheStrategy: () -> CacheStrategy = ::CacheStrategy,
+        connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
     ) : Fetcher.Factory<Uri> {
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
+        private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
 
         override fun create(
             data: Uri,
@@ -276,6 +281,7 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
+                connectivityChecker = connectivityCheckerLazy.get(options.context),
             )
         }
 

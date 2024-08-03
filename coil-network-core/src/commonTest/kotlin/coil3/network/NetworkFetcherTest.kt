@@ -45,6 +45,7 @@ class NetworkFetcherTest : RobolectricTest() {
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(null),
             cacheStrategy = lazyOf(CacheStrategy()),
+            connectivityChecker = ConnectivityChecker(context),
         ).fetch()
 
         assertIs<SourceFetchResult>(result)

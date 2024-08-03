@@ -960,7 +960,6 @@ final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Boolean): c
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Int): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Int){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/maxBitmapSize(coil3.size/Size): coil3/ImageLoader.Builder // coil3.request/maxBitmapSize|maxBitmapSize@coil3.ImageLoader.Builder(coil3.size.Size){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/addLastModifiedToFileCacheKey(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/addLastModifiedToFileCacheKey|addLastModifiedToFileCacheKey@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
-final fun (coil3/ImageLoader.Builder).coil3/networkObserverEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/networkObserverEnabled|networkObserverEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/serviceLoaderEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/serviceLoaderEnabled|serviceLoaderEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (kotlin/String).coil3/toUri(kotlin/String = ...): coil3/Uri // coil3/toUri|toUri@kotlin.String(kotlin.String){}[0]
 final fun (org.jetbrains.skia/Bitmap).coil3/asImage(kotlin/Boolean = ...): coil3/BitmapImage // coil3/asImage|asImage@org.jetbrains.skia.Bitmap(kotlin.Boolean){}[0]

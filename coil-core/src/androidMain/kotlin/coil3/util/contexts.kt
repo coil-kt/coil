@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
@@ -13,7 +12,6 @@ import android.util.Xml
 import androidx.annotation.DrawableRes
 import androidx.annotation.XmlRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
@@ -103,8 +101,4 @@ internal fun Context?.getLifecycle(): Lifecycle? {
             else -> context = context.baseContext
         }
     }
-}
-
-internal fun Context.isPermissionGranted(permission: String): Boolean {
-    return ContextCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED
 }

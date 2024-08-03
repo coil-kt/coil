@@ -36,7 +36,7 @@ internal actual fun RequestService(
 internal class AndroidRequestService(
     private val imageLoader: ImageLoader,
     private val systemCallbacks: SystemCallbacks,
-    logger: Logger?,
+    private val logger: Logger?,
 ) : RequestService {
     private val hardwareBitmapService = HardwareBitmapService(logger)
 
@@ -156,9 +156,8 @@ internal class AndroidRequestService(
     }
 
     override fun updateOptionsOnWorkerThread(options: Options): Options {
-        var changed = false
-        var networkCachePolicy = options.networkCachePolicy
         var extras = options.extras
+        var changed = false
 
         if (!isBitmapConfigValidWorkerThread(options)) {
             extras = extras.newBuilder()
@@ -167,17 +166,8 @@ internal class AndroidRequestService(
             changed = true
         }
 
-        if (options.networkCachePolicy.readEnabled && !systemCallbacks.isOnline) {
-            // Disable fetching from the network if we know we're offline.
-            networkCachePolicy = CachePolicy.DISABLED
-            changed = true
-        }
-
         if (changed) {
-            return options.copy(
-                networkCachePolicy = networkCachePolicy,
-                extras = extras,
-            )
+            return options.copy(extras = extras)
         } else {
             return options
         }

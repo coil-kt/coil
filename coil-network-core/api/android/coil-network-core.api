@@ -31,6 +31,19 @@ public final class coil3/network/CacheStrategyKt {
 	public static final fun CacheStrategy ()Lcoil3/network/CacheStrategy;
 }
 
+public abstract interface class coil3/network/ConnectivityChecker {
+	public static final field Companion Lcoil3/network/ConnectivityChecker$Companion;
+	public static final field ONLINE Lcoil3/network/ConnectivityChecker;
+	public abstract fun isOnline ()Z
+}
+
+public final class coil3/network/ConnectivityChecker$Companion {
+}
+
+public final class coil3/network/ConnectivityCheckerKt {
+	public static final fun ConnectivityChecker (Landroid/content/Context;)Lcoil3/network/ConnectivityChecker;
+}
+
 public final class coil3/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
 	public final fun getResponse ()Lcoil3/network/NetworkResponse;
@@ -61,12 +74,13 @@ public final class coil3/network/NetworkClientKt {
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
-	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)V
+	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 }

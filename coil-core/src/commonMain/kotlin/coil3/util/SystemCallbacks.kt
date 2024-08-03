@@ -7,8 +7,6 @@ internal expect fun SystemCallbacks(
 ): SystemCallbacks
 
 internal interface SystemCallbacks {
-    val isOnline: Boolean
-
     fun registerMemoryPressureCallbacks()
     fun shutdown()
 }
