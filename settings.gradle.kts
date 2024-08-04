@@ -32,6 +32,7 @@ include(
 include(
     "internal:benchmark",
     "internal:test-compose-screenshot",
+    "internal:test-compose-ui-multiplatform",
     "internal:test-paparazzi",
     "internal:test-roborazzi",
     "internal:test-utils",

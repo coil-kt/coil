@@ -80,10 +80,15 @@ fun String.toUri(separator: String = Path.DIRECTORY_SEPARATOR): Uri {
     if (separator != "/") {
         data = data.replace(separator, "/")
     }
-    return parseUri(data, separator)
+    return parseUri(data, this, separator)
 }
 
-private fun parseUri(data: String, separator: String): Uri {
+private fun parseUri(
+    data: String,
+    original: String,
+    separator: String,
+): Uri {
+    var schemeEndIndex = -1
     var authorityStartIndex = -1
     var pathStartIndex = -1
     var queryStartIndex = -1
@@ -93,29 +98,39 @@ private fun parseUri(data: String, separator: String): Uri {
     while (index < data.length) {
         when (data[index]) {
             ':' -> {
-                if (queryStartIndex == -1 &&
-                    fragmentStartIndex == -1 &&
+                if (authorityStartIndex == -1 &&
                     pathStartIndex == -1 &&
-                    authorityStartIndex == -1 &&
-                    index + 2 < data.length &&
-                    data[index + 1] == '/' &&
-                    data[index + 2] == '/'
+                    queryStartIndex == -1 &&
+                    fragmentStartIndex == -1
                 ) {
-                    authorityStartIndex = index + 3
-                    index += 2
+                    if (index + 2 < original.length &&
+                        original[index + 1] == '/' &&
+                        original[index + 2] == '/'
+                    ) {
+                        // Standard URI with an authority (e.g. "file:///path/image.jpg").
+                        schemeEndIndex = index
+                        authorityStartIndex = index + 3
+                        index += 2
+                    } else if (data == original) {
+                        // Special URI that has no authority (e.g. "file:/path/image.jpg").
+                        schemeEndIndex = index
+                        authorityStartIndex = index + 1
+                        pathStartIndex = index + 1
+                        index += 1
+                    }
                 }
             }
             '/' -> {
-                if (queryStartIndex == -1 &&
-                    fragmentStartIndex == -1 &&
-                    pathStartIndex == -1
+                if (pathStartIndex == -1 &&
+                    queryStartIndex == -1 &&
+                    fragmentStartIndex == -1
                 ) {
                     pathStartIndex = if (authorityStartIndex == -1) 0 else index
                 }
             }
             '?' -> {
-                if (fragmentStartIndex == -1 &&
-                    queryStartIndex == -1
+                if (queryStartIndex == -1 &&
+                    fragmentStartIndex == -1
                 ) {
                     queryStartIndex = index + 1
                 }
@@ -145,7 +160,7 @@ private fun parseUri(data: String, separator: String): Uri {
     )
 
     if (authorityStartIndex != -1) {
-        scheme = data.substring(0, authorityStartIndex - 3)
+        scheme = data.substring(0, schemeEndIndex)
 
         val authorityEndIndex = minOf(
             if (pathStartIndex == -1) Int.MAX_VALUE else pathStartIndex,

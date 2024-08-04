@@ -94,7 +94,6 @@ kotlin {
                 implementation(projects.samples.shared)
                 implementation(projects.coilCompose)
                 implementation(compose.material)
-                implementation(compose.components.resources)
             }
             resources.srcDir("../shared/src/commonMain/resources")
         }
