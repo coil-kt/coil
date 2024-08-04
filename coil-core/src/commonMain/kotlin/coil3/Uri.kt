@@ -107,11 +107,12 @@ private fun parseUri(
                         original[index + 1] == '/' &&
                         original[index + 2] == '/'
                     ) {
+                        // Standard URI with an authority (e.g. "file:///path/image.jpg").
                         schemeEndIndex = index
                         authorityStartIndex = index + 3
                         index += 2
                     } else if (data == original) {
-                        // Special case if the URI has no authority (e.g. "file:/path/image.jpg").
+                        // Special URI that has no authority (e.g. "file:/path/image.jpg").
                         schemeEndIndex = index
                         authorityStartIndex = index + 1
                         pathStartIndex = index + 1
