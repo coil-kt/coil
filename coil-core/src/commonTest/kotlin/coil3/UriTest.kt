@@ -168,4 +168,16 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun fileUriWithoutAuthority() {
+        val uri = "file:/test/image.jpg".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/test/image.jpg", uri.path)
+        assertEquals("/test/image.jpg", uri.filePath)
+        assertEquals(listOf("test", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
 }
