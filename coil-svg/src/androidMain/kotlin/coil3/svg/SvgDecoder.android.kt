@@ -3,6 +3,7 @@ package coil3.svg
 import android.graphics.Canvas
 import android.graphics.RectF
 import androidx.core.graphics.createBitmap
+import coil3.Image
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DecodeResult
@@ -15,6 +16,7 @@ import coil3.request.bitmapConfig
 import coil3.request.maxBitmapSize
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
+import coil3.toBitmap
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.toSoftware
@@ -39,6 +41,7 @@ actual class SvgDecoder actual constructor(
         val svgWidth: Float
         val svgHeight: Float
         val viewBox: RectF? = svg.documentViewBox
+
         if (useViewBoundsAsIntrinsicSize && viewBox != null) {
             svgWidth = viewBox.width()
             svgHeight = viewBox.height()
@@ -66,26 +69,24 @@ actual class SvgDecoder actual constructor(
             )
             bitmapWidth = (multiplier * svgWidth).toInt()
             bitmapHeight = (multiplier * svgHeight).toInt()
+
+            // Set the SVG's view box to enable scaling if it is not set.
+            if (viewBox == null) {
+                svg.setDocumentViewBox(0f, 0f, svgWidth, svgHeight)
+            }
         } else {
             bitmapWidth = dstWidth
             bitmapHeight = dstHeight
-        }
-
-        // Set the SVG's view box to enable scaling if it is not set.
-        if (viewBox == null && svgWidth > 0 && svgHeight > 0) {
-            svg.setDocumentViewBox(0f, 0f, svgWidth, svgHeight)
         }
 
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
 
         val renderOptions = options.css?.let { RenderOptions().css(it) }
-        val image = if (renderToBitmap) {
-            val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.bitmapConfig.toSoftware())
-            svg.renderToCanvas(Canvas(bitmap), renderOptions)
-            bitmap.asImage(shareable = true)
-        } else {
-            SvgImage(svg, renderOptions, bitmapWidth, bitmapHeight)
+
+        var image: Image = SvgImage(svg, renderOptions, bitmapWidth, bitmapHeight)
+        if (renderToBitmap) {
+            image = image.toBitmap().asImage()
         }
 
         DecodeResult(

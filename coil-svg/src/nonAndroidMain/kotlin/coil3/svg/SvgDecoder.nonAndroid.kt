@@ -17,6 +17,7 @@ import coil3.util.component1
 import coil3.util.component2
 import kotlin.jvm.JvmOverloads
 import kotlin.math.roundToInt
+import okio.use
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
@@ -34,7 +35,7 @@ actual class SvgDecoder actual constructor(
 ) : Decoder {
 
     actual override suspend fun decode(): DecodeResult? {
-        val bytes = source.source().readByteArray()
+        val bytes = source.source().use { it.readByteArray() }
         val svg = SVGDOM(Data.makeFromBytes(bytes))
 
         val svgWidth: Float
@@ -68,26 +69,24 @@ actual class SvgDecoder actual constructor(
             )
             bitmapWidth = (multiplier * svgWidth).toInt()
             bitmapHeight = (multiplier * svgHeight).toInt()
+
+            // Set the SVG's view box to enable scaling if it is not set.
+            if (viewBox == null) {
+                svg.root?.viewBox = Rect.makeWH(svgWidth, svgHeight)
+            }
         } else {
             bitmapWidth = dstWidth
             bitmapHeight = dstHeight
-        }
-
-        // Set the SVG's view box to enable scaling if it is not set.
-        if (viewBox == null && svgWidth > 0f && svgHeight > 0f) {
-            svg.root?.viewBox = Rect.makeWH(svgWidth, svgHeight)
         }
 
         svg.root?.width = SVGLength(
             value = 100f,
             unit = SVGLengthUnit.PERCENTAGE,
         )
-
         svg.root?.height = SVGLength(
             value = 100f,
             unit = SVGLengthUnit.PERCENTAGE,
         )
-
         svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
 
         var image: Image = SvgImage(svg, bitmapWidth, bitmapHeight)
