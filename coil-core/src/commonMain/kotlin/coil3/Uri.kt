@@ -103,18 +103,19 @@ private fun parseUri(
                     queryStartIndex == -1 &&
                     fragmentStartIndex == -1
                 ) {
-                    if (index + 2 < data.length &&
-                        data[index + 1] == '/' &&
-                        data[index + 2] == '/'
+                    if (index + 2 < original.length &&
+                        original[index + 1] == '/' &&
+                        original[index + 2] == '/'
                     ) {
                         schemeEndIndex = index
                         authorityStartIndex = index + 3
                         index += 2
-                    } else if (index + 1 < original.length &&
-                        original[index + 1] == '/'
-                    ) {
+                    } else if (data == original) {
+                        // Special case if the URI has no authority (e.g. "file:/path/image.jpg").
                         schemeEndIndex = index
                         authorityStartIndex = index + 1
+                        pathStartIndex = index + 1
+                        index += 1
                     }
                 }
             }
