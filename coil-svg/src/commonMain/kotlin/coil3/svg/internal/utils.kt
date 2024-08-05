@@ -1,5 +1,7 @@
 package coil3.svg.internal
 
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import okio.BufferedSource
 import okio.ByteString
 
@@ -22,6 +24,11 @@ internal fun BufferedSource.indexOf(
     }
     return -1
 }
+
+internal expect suspend inline fun <T> runInterruptible(
+    context: CoroutineContext = EmptyCoroutineContext,
+    noinline block: () -> T
+): T
 
 internal const val MIME_TYPE_SVG = "image/svg+xml"
 internal const val SVG_DEFAULT_SIZE = 512

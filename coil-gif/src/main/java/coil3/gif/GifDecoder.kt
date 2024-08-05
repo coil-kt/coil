@@ -27,7 +27,7 @@ import kotlinx.coroutines.runInterruptible
  * @param enforceMinimumFrameDelay If true, rewrite a GIF's frame delay to a default value if
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
-class GifDecoder @JvmOverloads constructor(
+class GifDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val enforceMinimumFrameDelay: Boolean = true,
@@ -67,7 +67,7 @@ class GifDecoder @JvmOverloads constructor(
         )
     }
 
-    class Factory @JvmOverloads constructor(
+    class Factory(
         val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {
 

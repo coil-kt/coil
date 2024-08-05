@@ -169,7 +169,7 @@ class BitmapFactoryDecoder(
         }
     }
 
-    class Factory @JvmOverloads constructor(
+    class Factory(
         private val parallelismLock: Semaphore = Semaphore(DEFAULT_MAX_PARALLELISM),
         private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
     ) : Decoder.Factory {

@@ -99,7 +99,7 @@ internal class StaticImageDecoder(
         isUnpremultipliedRequired = !options.premultipliedAlpha
     }
 
-    class Factory @JvmOverloads constructor(
+    class Factory(
         private val parallelismLock: Semaphore = Semaphore(DEFAULT_MAX_PARALLELISM),
     ) : Decoder.Factory {
 

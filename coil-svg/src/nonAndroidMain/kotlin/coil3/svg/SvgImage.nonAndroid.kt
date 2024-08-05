@@ -13,6 +13,11 @@ class SvgImage(
     override val height: Int,
 ) : Image {
 
+    init {
+        // TODO: Use `canvas.width/height` in `draw` once it's public.
+        svg.setContainerSize(width.toFloat(), height.toFloat())
+    }
+
     override val size: Long
         get() = SVG_SIZE_BYTES
 

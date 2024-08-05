@@ -50,7 +50,7 @@ import okio.FileSystem
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 @RequiresApi(28)
-class AnimatedImageDecoder @JvmOverloads constructor(
+class AnimatedImageDecoder(
     private val source: ImageSource,
     private val options: Options,
     // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
@@ -180,7 +180,7 @@ class AnimatedImageDecoder @JvmOverloads constructor(
         return ScaleDrawable(baseDrawable, options.scale)
     }
 
-    class Factory @JvmOverloads constructor(
+    class Factory(
         // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
         private val enforceMinimumFrameDelay: Boolean = SDK_INT < 34,
     ) : Decoder.Factory {
@@ -203,11 +203,11 @@ class AnimatedImageDecoder @JvmOverloads constructor(
 }
 
 internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
-    // Squash bytes to BufferedSource inner buffer then we know total byteCount
+    // Squash bytes to BufferedSource inner buffer then we know total byteCount.
     request(Long.MAX_VALUE)
-    return ByteBuffer.allocateDirect(buffer.size.toInt()).apply {
-        // Squash to DirectByteBuffer
-        while (!buffer.exhausted()) buffer.read(this)
-        flip()
-    }
+
+    val byteBuffer = ByteBuffer.allocateDirect(buffer.size.toInt())
+    while (!buffer.exhausted()) buffer.read(byteBuffer)
+    byteBuffer.flip()
+    return byteBuffer
 }
