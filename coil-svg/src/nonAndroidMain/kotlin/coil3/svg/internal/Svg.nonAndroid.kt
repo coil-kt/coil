@@ -46,7 +46,6 @@ private value class SkiaSvg(
     }
 
     override fun asImage(width: Int, height: Int): Image {
-        svg.setContainerSize(width.toFloat(), height.toFloat())
         return SvgImage(svg, width, height)
     }
 
