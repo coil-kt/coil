@@ -2,6 +2,7 @@ package coil3.fetch
 
 import coil3.ImageLoader
 import coil3.request.Options
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.toUri
 import java.util.zip.ZipEntry
@@ -19,7 +20,7 @@ import okio.fakefilesystem.FakeFileSystem
 import okio.sink
 import okio.use
 
-class JarFileFetcherTest {
+class JarFileFetcherTest : RobolectricTest() {
     private val imageLoader = ImageLoader(context)
     private val factory = JarFileFetcher.Factory()
     private val fileSystem = FakeFileSystem()
