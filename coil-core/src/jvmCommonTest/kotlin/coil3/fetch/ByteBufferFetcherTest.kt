@@ -9,7 +9,6 @@ import okio.buffer
 import org.junit.Test
 
 class ByteBufferFetcherTest {
-    private val factory = ByteBufferFetcher.Factory()
 
     @Test
     fun testDataIntegrity() = runTest {
