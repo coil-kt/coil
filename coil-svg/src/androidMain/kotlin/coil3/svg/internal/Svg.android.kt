@@ -11,7 +11,7 @@ import okio.BufferedSource
 /**
  * An SVG parser implementation backed by https://bigbadaboom.github.io/androidsvg/.
  */
-internal actual fun Svg.Companion.parse(source: BufferedSource): Svg {
+internal actual fun parseSvg(source: BufferedSource): Svg {
     return AndroidSvg(SVG.getFromInputStream(source.inputStream()))
 }
 

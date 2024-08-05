@@ -13,7 +13,7 @@ import coil3.request.maxBitmapSize
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
 import coil3.svg.internal.Svg
-import coil3.svg.internal.parse
+import coil3.svg.internal.parseSvg
 import coil3.svg.internal.runInterruptible
 import coil3.toBitmap
 import coil3.util.component1
@@ -39,7 +39,7 @@ class SvgDecoder(
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
-        val svg = source.source().use(Svg::parse)
+        val svg = source.source().use(::parseSvg)
 
         val svgWidth: Float
         val svgHeight: Float

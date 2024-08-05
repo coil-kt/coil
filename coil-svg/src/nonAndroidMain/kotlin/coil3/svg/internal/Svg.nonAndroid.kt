@@ -14,7 +14,7 @@ import org.jetbrains.skia.svg.SVGLengthUnit
 /**
  * An SVG parser implementation backed by https://api.skia.org/classSkSVGDOM.html/.
  */
-internal actual fun Svg.Companion.parse(source: BufferedSource): Svg {
+internal actual fun parseSvg(source: BufferedSource): Svg {
     return SkiaSvg(SVGDOM(Data.makeFromBytes(source.readByteArray())))
 }
 

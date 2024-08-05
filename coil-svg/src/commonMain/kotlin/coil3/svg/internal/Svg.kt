@@ -4,7 +4,7 @@ import coil3.Image
 import coil3.request.Options
 import okio.BufferedSource
 
-internal expect fun Svg.Companion.parse(source: BufferedSource): Svg
+internal expect fun parseSvg(source: BufferedSource): Svg
 
 internal interface Svg {
     val viewBox: FloatArray?
@@ -17,6 +17,4 @@ internal interface Svg {
     fun options(options: Options)
 
     fun asImage(width: Int, height: Int): Image
-
-    companion object
 }
