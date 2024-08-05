@@ -41,6 +41,8 @@ import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.util.component1
 import coil3.util.component2
+import io.coil_kt.coil3.compose.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
@@ -84,6 +86,7 @@ fun App(
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
                     backEnabled = isDetail,
+                    onScreenChange = { viewModel.screen.value = it },
                     onAssetTypeChange = { viewModel.assetType.value = it },
                     onBackPressed = { viewModel.onBackPressed() },
                 )
@@ -111,6 +114,7 @@ fun App(
 private fun Toolbar(
     assetType: AssetType,
     backEnabled: Boolean,
+    onScreenChange: (Screen) -> Unit,
     onAssetTypeChange: (AssetType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
@@ -122,9 +126,13 @@ private fun Toolbar(
             null
         },
         actions = {
-            AssetTypeButton(
-                assetType = assetType,
-                onAssetTypeChange = onAssetTypeChange,
+            IconButton(
+                onClick = { onScreenChange(resourceDetailScreen) },
+                content = { Text("Res") },
+            )
+            IconButton(
+                onClick = { onAssetTypeChange(assetType.next()) },
+                content = { Text(assetType.name) },
             )
         },
         modifier = Modifier.statusBarsPadding(),
@@ -143,17 +151,6 @@ private fun BackIconButton(
                 contentDescription = null,
             )
         },
-    )
-}
-
-@Composable
-private fun AssetTypeButton(
-    assetType: AssetType,
-    onAssetTypeChange: (AssetType) -> Unit,
-) {
-    IconButton(
-        onClick = { onAssetTypeChange(assetType.next()) },
-        content = { Text(assetType.name) },
     )
 }
 
@@ -245,6 +242,16 @@ private fun ListScreen(
 }
 
 const val Title = "Coil"
+
+@OptIn(ExperimentalResourceApi::class)
+private val resourceDetailScreen = Screen.Detail(
+    image = Image(
+        uri = Res.getUri("drawable/sample.jpg"),
+        color = 0x00000000,
+        width = 1024,
+        height = 1326,
+    ),
+)
 
 @Stable
 expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier

@@ -8,6 +8,6 @@ sealed interface Screen {
 
     data class Detail(
         val image: Image,
-        val placeholder: MemoryCache.Key?,
+        val placeholder: MemoryCache.Key? = null,
     ) : Screen
 }
