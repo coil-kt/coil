@@ -51,10 +51,8 @@ class JarFileFetcherTest {
 
         createZip(zipFile, files)
 
-        val baseUri = "jar:file:$zipFile!/four"
-
         for ((name, contents) in files) {
-            val uri = "$baseUri/$name".toUri()
+            val uri = "jar:file:$zipFile!/four/$name".toUri()
             val fetcher = factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader)!!
             val result = assertIs<SourceFetchResult>(fetcher.fetch())
 
