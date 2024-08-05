@@ -88,6 +88,7 @@ private fun parseUri(
     original: String,
     separator: String,
 ): Uri {
+    var openScheme = true
     var schemeEndIndex = -1
     var authorityStartIndex = -1
     var pathStartIndex = -1
@@ -98,8 +99,7 @@ private fun parseUri(
     while (index < data.length) {
         when (data[index]) {
             ':' -> {
-                if (authorityStartIndex == -1 &&
-                    pathStartIndex == -1 &&
+                if (openScheme &&
                     queryStartIndex == -1 &&
                     fragmentStartIndex == -1
                 ) {
@@ -108,6 +108,7 @@ private fun parseUri(
                         original[index + 2] == '/'
                     ) {
                         // Standard URI with an authority (e.g. "file:///path/image.jpg").
+                        openScheme = false
                         schemeEndIndex = index
                         authorityStartIndex = index + 3
                         index += 2
@@ -125,6 +126,7 @@ private fun parseUri(
                     queryStartIndex == -1 &&
                     fragmentStartIndex == -1
                 ) {
+                    openScheme = false
                     pathStartIndex = if (authorityStartIndex == -1) 0 else index
                 }
             }

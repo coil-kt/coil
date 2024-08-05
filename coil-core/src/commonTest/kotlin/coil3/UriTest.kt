@@ -32,12 +32,38 @@ class UriTest {
 
     @Test
     fun relative() {
-        val uri = "./test/relative/image.jpg#something".toUri()
+        val uri = "test/relative/image.jpg#something".toUri()
         assertNull(uri.scheme)
         assertNull(uri.authority)
-        assertEquals("./test/relative/image.jpg", uri.path)
-        assertEquals("./test/relative/image.jpg", uri.filePath)
-        assertEquals(listOf(".", "test", "relative", "image.jpg"), uri.pathSegments)
+        assertEquals("test/relative/image.jpg", uri.path)
+        assertEquals("test/relative/image.jpg", uri.filePath)
+        assertEquals(listOf("test", "relative", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertEquals("something", uri.fragment)
+    }
+
+    @Test
+    fun absoluteWithFileScheme() {
+        val uri = "file:///test/absolute/image.jpg#something".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/test/absolute/image.jpg", uri.path)
+        assertEquals("/test/absolute/image.jpg", uri.filePath)
+        assertEquals(listOf("test", "absolute", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertEquals("something", uri.fragment)
+    }
+
+    @Test
+    fun relativeWithFileScheme() {
+        val uri = "file://test/relative/image.jpg#something".toUri()
+        assertEquals("file", uri.scheme)
+        // This looks wrong, but is consistent with the URI specification.
+        // The authority is always the first path after the scheme and "://".
+        assertEquals("test", uri.authority)
+        assertEquals("/relative/image.jpg", uri.path)
+        assertEquals("/relative/image.jpg", uri.filePath)
+        assertEquals(listOf("relative", "image.jpg"), uri.pathSegments)
         assertNull(uri.query)
         assertEquals("something", uri.fragment)
     }
@@ -189,6 +215,19 @@ class UriTest {
         assertEquals("/H:/1.png", uri.path)
         assertEquals("H:\\1.png", uri.filePath)
         assertEquals(listOf("H:", "1.png"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun multipleSchemeSegments() {
+        // This format is used for Compose multiplatform resources on Android/JVM.
+        val uri = "jar:file:/outer/path/test.apk!/internal/path/1.png".toUri()
+        assertEquals("jar:file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/outer/path/test.apk!/internal/path/1.png", uri.path)
+        assertEquals("/outer/path/test.apk!/internal/path/1.png", uri.filePath)
+        assertEquals(listOf("outer", "path", "test.apk!", "internal", "path", "1.png"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
