@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.0.0-alpha10] - August 7, 2024
+
+- **BREAKING**: Replace `ImageLoader.Builder.networkObserverEnabled` with a `ConnectivityChecker` interface for `NetworkFetcher`.
+    - To disable the network observer, pass `ConnectivityChecker.ONLINE` to the constructor for `KtorNetworkFetcherFactory`/`OkHttpNetworkFetcherFactory`.
+- **New**: Support loading [Compose Multiplatform resources](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-images-resources.html) on all platforms. To load a resource, use `Res.getUri`:
+
+```kotlin
+AsyncImage(
+    model = Res.getUri("drawable/image.jpg"),
+    contentDescription = null,
+)
+```
+
+- Add `maxBitmapSize` property to `ImageLoader` and `ImageRequest`.
+    - This property defaults to 4096x4096 and provides a safe upper bound for the dimensions of an allocated bitmap. This helps accidentally loading very large images with `Size.ORIGINAL` and causing an out of memory exception.
+- Convert `ExifOrientationPolicy` to be an interface to support custom policies.
+- Fix `Uri` handling of Windows file paths.
+- Remove `@ExperimentalCoilApi` from the `Image` APIs.
+- Update Kotlin to 2.0.10.
+
 ## [3.0.0-alpha09] - July 23, 2024
 
 - **BREAKING**: Rename the `io.coil-kt.coil3:coil-network-ktor` artifact to `io.coil-kt.coil3:coil-network-ktor2` which depends on Ktor 2.x. Additionally, introduce `io.coil-kt.coil3:coil-network-ktor3` which depends on Ktor 3.x. `wasmJs` support is only available in Ktor 3.x.
