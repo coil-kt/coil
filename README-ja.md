@@ -109,7 +109,7 @@ Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/
 
 ## ライセンス
 
-    Copyright 2023 Coil Contributors
+    Copyright 2024 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

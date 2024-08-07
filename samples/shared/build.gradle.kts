@@ -36,7 +36,6 @@ kotlin {
         jsMain {
             dependencies {
                 api(projects.coilNetworkKtor3)
-                api(libs.ktor3.engine.js)
             }
         }
         jvmMain {

@@ -81,7 +81,6 @@ ktor2-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor2" }
 
 ktor3-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor3" }
 ktor3-engine-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor3" }
-ktor3-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor3" }
 ktor3-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor3" }
 
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
