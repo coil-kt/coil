@@ -21,9 +21,9 @@ internal object ExifUtils {
     fun getExifData(
         mimeType: String?,
         source: BufferedSource,
-        policy: ExifOrientationPolicy,
+        strategy: ExifOrientationStrategy,
     ): ExifData {
-        if (policy.supports(mimeType, source)) {
+        if (strategy.supports(mimeType, source)) {
             val exifInterface = ExifInterface(ExifInterfaceInputStream(source.peek().inputStream()))
             return ExifData(exifInterface.isFlipped, exifInterface.rotationDegrees)
         } else {

@@ -199,7 +199,7 @@ public final class coil3/ImageLoadersKt {
 }
 
 public final class coil3/ImageLoaders_androidKt {
-	public static final fun bitmapFactoryExifOrientationPolicy (Lcoil3/ImageLoader$Builder;Lcoil3/decode/ExifOrientationPolicy;)Lcoil3/ImageLoader$Builder;
+	public static final fun bitmapFactoryExifOrientationStrategy (Lcoil3/ImageLoader$Builder;Lcoil3/decode/ExifOrientationStrategy;)Lcoil3/ImageLoader$Builder;
 	public static final fun bitmapFactoryMaxParallelism (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
 }
 
@@ -261,15 +261,15 @@ public final class coil3/decode/AssetMetadata : coil3/decode/ImageSource$Metadat
 }
 
 public final class coil3/decode/BitmapFactoryDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;)V
-	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;)V
-	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;)V
+	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
@@ -320,15 +320,15 @@ public abstract interface class coil3/decode/Decoder$Factory {
 	public abstract fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
-public abstract interface class coil3/decode/ExifOrientationPolicy {
-	public static final field Companion Lcoil3/decode/ExifOrientationPolicy$Companion;
-	public static final field IGNORE Lcoil3/decode/ExifOrientationPolicy;
-	public static final field RESPECT_ALL Lcoil3/decode/ExifOrientationPolicy;
-	public static final field RESPECT_PERFORMANCE Lcoil3/decode/ExifOrientationPolicy;
+public abstract interface class coil3/decode/ExifOrientationStrategy {
+	public static final field Companion Lcoil3/decode/ExifOrientationStrategy$Companion;
+	public static final field IGNORE Lcoil3/decode/ExifOrientationStrategy;
+	public static final field RESPECT_ALL Lcoil3/decode/ExifOrientationStrategy;
+	public static final field RESPECT_PERFORMANCE Lcoil3/decode/ExifOrientationStrategy;
 	public abstract fun supports (Ljava/lang/String;Lokio/BufferedSource;)Z
 }
 
-public final class coil3/decode/ExifOrientationPolicy$Companion {
+public final class coil3/decode/ExifOrientationStrategy$Companion {
 }
 
 public abstract interface class coil3/decode/ImageSource : java/lang/AutoCloseable {

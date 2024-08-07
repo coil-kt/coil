@@ -2,7 +2,8 @@ package coil3
 
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
-import coil3.decode.ExifOrientationPolicy.Companion.IGNORE
+import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_ALL
+import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 import coil3.decode.StaticImageDecoder
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
@@ -90,14 +91,14 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         add(
             StaticImageDecoder.Factory(
                 parallelismLock = parallelismLock,
-            )
+            ),
         )
     }
     add(
         BitmapFactoryDecoder.Factory(
             parallelismLock = parallelismLock,
-            exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
-        )
+            exifOrientationStrategy = options.bitmapFactoryExifOrientationStrategy,
+        ),
     )
 }
 
@@ -106,5 +107,5 @@ private fun enableStaticImageDecoder(options: RealImageLoader.Options): Boolean 
     // https://github.com/element-hq/element-android/pull/7184
     return SDK_INT >= 29 &&
         // ImageDecoder always rotates the image according to its EXIF data.
-        options.bitmapFactoryExifOrientationPolicy != IGNORE
+        options.bitmapFactoryExifOrientationStrategy.let { it == RESPECT_PERFORMANCE || it == RESPECT_ALL }
 }
