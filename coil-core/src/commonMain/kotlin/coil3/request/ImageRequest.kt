@@ -470,10 +470,10 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.coroutineContext
          */
-        fun coroutineContext(dispatcher: CoroutineContext) = apply {
-            this.interceptorCoroutineContext = dispatcher
-            this.fetcherCoroutineContext = dispatcher
-            this.decoderCoroutineContext = dispatcher
+        fun coroutineContext(context: CoroutineContext) = apply {
+            this.interceptorCoroutineContext = context
+            this.fetcherCoroutineContext = context
+            this.decoderCoroutineContext = context
         }
 
         /**
