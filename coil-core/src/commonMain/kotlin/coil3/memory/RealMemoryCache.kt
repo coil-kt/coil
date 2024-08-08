@@ -14,7 +14,14 @@ internal class RealMemoryCache(
     override val keys get() = strongMemoryCache.keys + weakMemoryCache.keys
 
     override fun get(key: Key): MemoryCache.Value? {
-        return strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
+        val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
+
+        // Remove non-shareable images from the cache when they're returned.
+        if (value != null && !value.image.shareable) {
+            remove(key)
+        }
+
+        return value
     }
 
     override fun set(key: Key, value: MemoryCache.Value) {
@@ -27,6 +34,7 @@ internal class RealMemoryCache(
             extras = value.extras,
             size = size,
         )
+
         // weakMemoryCache.set() is called by strongMemoryCache when
         // a value is evicted from the strong reference cache.
     }

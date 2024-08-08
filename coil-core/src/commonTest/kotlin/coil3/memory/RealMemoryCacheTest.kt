@@ -94,4 +94,28 @@ class RealMemoryCacheTest {
         assertTrue(weakCache.remove(key))
         assertFalse(weakCache.remove(key))
     }
+
+    @Test
+    fun shareableImageIsNotRemovedFromCacheOnGet() {
+        val key = Key("a")
+        val image = FakeImage(shareable = true)
+        val value = Value(image)
+
+        cache[key] = value
+
+        assertEquals(value, cache[key])
+        assertEquals(value, cache[key])
+    }
+
+    @Test
+    fun unshareableImageIsRemovedFromCacheOnGet() {
+        val key = Key("a")
+        val image = FakeImage(shareable = false)
+        val value = Value(image)
+
+        cache[key] = value
+
+        assertEquals(value, cache[key])
+        assertNull(cache[key])
+    }
 }
