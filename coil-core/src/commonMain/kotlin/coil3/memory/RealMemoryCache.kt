@@ -22,7 +22,7 @@ internal class RealMemoryCache(
     override fun get(key: Key): MemoryCache.Value? = synchronized(lock) {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
 
-        // Remove non-shareable images from the cache when they're returned.
+        // Remove unshareable images from the cache when they're returned.
         if (value != null && !value.image.shareable) {
             remove(key)
         }
