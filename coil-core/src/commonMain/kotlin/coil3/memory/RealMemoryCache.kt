@@ -1,19 +1,25 @@
 package coil3.memory
 
 import coil3.memory.MemoryCache.Key
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
 ) : MemoryCache {
+    private val lock = SynchronizedObject()
 
-    override val size get() = strongMemoryCache.size
+    override val size: Long
+        get() = synchronized(lock) { strongMemoryCache.size }
 
-    override val maxSize get() = strongMemoryCache.maxSize
+    override val maxSize: Long
+        get() = synchronized(lock) { strongMemoryCache.maxSize }
 
-    override val keys get() = strongMemoryCache.keys + weakMemoryCache.keys
+    override val keys: Set<Key>
+        get() = synchronized(lock) { strongMemoryCache.keys + weakMemoryCache.keys }
 
-    override fun get(key: Key): MemoryCache.Value? {
+    override fun get(key: Key): MemoryCache.Value? = synchronized(lock) {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
 
         // Remove non-shareable images from the cache when they're returned.
@@ -24,7 +30,7 @@ internal class RealMemoryCache(
         return value
     }
 
-    override fun set(key: Key, value: MemoryCache.Value) {
+    override fun set(key: Key, value: MemoryCache.Value) = synchronized(lock) {
         val size = value.image.size
         check(size >= 0) { "Image size must be non-negative: $size" }
 
@@ -39,18 +45,18 @@ internal class RealMemoryCache(
         // a value is evicted from the strong reference cache.
     }
 
-    override fun remove(key: Key): Boolean {
+    override fun remove(key: Key): Boolean = synchronized(lock) {
         // Do not short circuit. There is a regression test for this.
         val removedStrong = strongMemoryCache.remove(key)
         val removedWeak = weakMemoryCache.remove(key)
         return removedStrong || removedWeak
     }
 
-    override fun trimToSize(size: Long) {
+    override fun trimToSize(size: Long) = synchronized(lock) {
         strongMemoryCache.trimToSize(size)
     }
 
-    override fun clear() {
+    override fun clear() = synchronized(lock) {
         strongMemoryCache.clear()
         weakMemoryCache.clear()
     }

@@ -8,8 +8,6 @@ import coil3.util.WeakReference
 import coil3.util.firstNotNullOfOrNullIndices
 import coil3.util.removeIfIndices
 import kotlin.experimental.ExperimentalNativeApi
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
 
 /**
  * An in-memory cache that holds weak references.
@@ -46,14 +44,13 @@ internal class EmptyWeakMemoryCache : WeakMemoryCache {
 @OptIn(ExperimentalNativeApi::class)
 internal class RealWeakMemoryCache : WeakMemoryCache {
 
-    private val lock = SynchronizedObject()
     internal val cache = LinkedHashMap<Key, ArrayList<InternalValue>>()
     private var operationsSinceCleanUp = 0
 
     override val keys: Set<Key>
-        get() = synchronized(lock) { cache.keys.toSet() }
+        get() = cache.keys.toSet()
 
-    override fun get(key: Key): Value? = synchronized(lock) {
+    override fun get(key: Key): Value? {
         val values = cache[key] ?: return null
 
         // Find the first image that hasn't been collected.
@@ -70,7 +67,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         image: Image,
         extras: Map<String, Any>,
         size: Long,
-    ) = synchronized(lock) {
+    ) {
         val values = cache.getOrPut(key) { arrayListOf() }
 
         // Insert the value into the list sorted descending by size.
@@ -94,11 +91,11 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    override fun remove(key: Key): Boolean = synchronized(lock) {
+    override fun remove(key: Key): Boolean {
         return cache.remove(key) != null
     }
 
-    override fun clear() = synchronized(lock) {
+    override fun clear() {
         operationsSinceCleanUp = 0
         cache.clear()
     }
