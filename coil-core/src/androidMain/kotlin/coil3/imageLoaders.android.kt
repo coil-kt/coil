@@ -4,8 +4,8 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
-import coil3.decode.ExifOrientationPolicy
-import coil3.decode.ExifOrientationPolicy.Companion.RESPECT_PERFORMANCE
+import coil3.decode.ExifOrientationStrategy
+import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 
 // region bitmapFactoryMaxParallelism
 
@@ -26,19 +26,19 @@ internal val RealImageLoader.Options.bitmapFactoryMaxParallelism: Int
 private val bitmapFactoryMaxParallelismKey = Extras.Key(default = DEFAULT_MAX_PARALLELISM)
 
 // endregion
-// region bitmapFactoryExifOrientationPolicy
+// region bitmapFactoryExifOrientationStrategy
 
 /**
- * Sets the policy for handling the EXIF orientation flag for images decoded by
+ * Sets the strategy for handling the EXIF orientation flag for images decoded by
  * [BitmapFactoryDecoder].
  */
-fun ImageLoader.Builder.bitmapFactoryExifOrientationPolicy(policy: ExifOrientationPolicy) = apply {
-    extras[bitmapFactoryExifOrientationPolicyKey] = policy
+fun ImageLoader.Builder.bitmapFactoryExifOrientationStrategy(strategy: ExifOrientationStrategy) = apply {
+    extras[bitmapFactoryExifOrientationStrategyKey] = strategy
 }
 
-internal val RealImageLoader.Options.bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy
-    get() = defaults.extras.getOrDefault(bitmapFactoryExifOrientationPolicyKey)
+internal val RealImageLoader.Options.bitmapFactoryExifOrientationStrategy: ExifOrientationStrategy
+    get() = defaults.extras.getOrDefault(bitmapFactoryExifOrientationStrategyKey)
 
-private val bitmapFactoryExifOrientationPolicyKey = Extras.Key(default = RESPECT_PERFORMANCE)
+private val bitmapFactoryExifOrientationStrategyKey = Extras.Key(default = RESPECT_PERFORMANCE)
 
 // endregion

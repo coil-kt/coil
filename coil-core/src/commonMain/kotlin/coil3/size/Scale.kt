@@ -3,7 +3,7 @@ package coil3.size
 import coil3.request.ImageRequest
 
 /**
- * Represents a scaling policy. This determines how the image is scaled to fit into the [Size]
+ * An [ImageRequest]'s scale determines how the source image is scaled to fit into the [Size]
  * returned by [ImageRequest.sizeResolver].
  *
  * Conceptually, you can think of this as `ImageView.ScaleType` without any knowledge of an image's

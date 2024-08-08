@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil3.ImageLoader
 import coil3.asImage
-import coil3.decode.ExifOrientationPolicy.Companion.RESPECT_PERFORMANCE
+import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.allowRgb565
@@ -33,7 +33,7 @@ class BitmapFactoryDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
-    private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
+    private val exifOrientationStrategy: ExifOrientationStrategy = RESPECT_PERFORMANCE,
 ) : Decoder {
 
     override suspend fun decode() = parallelismLock.withPermit {
@@ -51,7 +51,7 @@ class BitmapFactoryDecoder(
         inJustDecodeBounds = false
 
         // Get the image's EXIF data.
-        val exifData = ExifUtils.getExifData(outMimeType, safeBufferedSource, exifOrientationPolicy)
+        val exifData = ExifUtils.getExifData(outMimeType, safeBufferedSource, exifOrientationStrategy)
         safeSource.exception?.let { throw it }
 
         // Always create immutable bitmaps as they have better performance.
@@ -171,7 +171,7 @@ class BitmapFactoryDecoder(
 
     class Factory(
         private val parallelismLock: Semaphore = Semaphore(DEFAULT_MAX_PARALLELISM),
-        private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
+        private val exifOrientationStrategy: ExifOrientationStrategy = RESPECT_PERFORMANCE,
     ) : Decoder.Factory {
 
         override fun create(
@@ -183,7 +183,7 @@ class BitmapFactoryDecoder(
                 source = result.source,
                 options = options,
                 parallelismLock = parallelismLock,
-                exifOrientationPolicy = exifOrientationPolicy,
+                exifOrientationStrategy = exifOrientationStrategy,
             )
         }
     }

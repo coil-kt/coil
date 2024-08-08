@@ -264,7 +264,7 @@ class AndroidDecoderTest {
         // Test BitmapFactoryDecoder only
         assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
 
-        val new = BitmapFactoryDecoder.Factory(exifOrientationPolicy = ExifOrientationPolicy.IGNORE)
+        val new = BitmapFactoryDecoder.Factory(exifOrientationStrategy = ExifOrientationStrategy.IGNORE)
         // Test JPG
         for (index in 1..8) {
             val assetName = "exif/$index.jpg"
@@ -306,7 +306,7 @@ class AndroidDecoderTest {
         // Test BitmapFactoryDecoder only
         assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
 
-        val new = BitmapFactoryDecoder.Factory(exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL)
+        val new = BitmapFactoryDecoder.Factory(exifOrientationStrategy = ExifOrientationStrategy.RESPECT_ALL)
 
         // Test JPG
         val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = new)
