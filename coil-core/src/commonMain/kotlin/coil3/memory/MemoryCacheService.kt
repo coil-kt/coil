@@ -178,18 +178,20 @@ internal class MemoryCacheService(
         request: ImageRequest,
         result: ExecuteResult,
     ): Boolean {
-        if (!request.memoryCachePolicy.writeEnabled) return false
-        if (cacheKey == null) return false
+        if (cacheKey == null ||
+            !request.memoryCachePolicy.writeEnabled ||
+            !result.image.shareable
+        ) {
+            return false
+        }
         val memoryCache = imageLoader.memoryCache ?: return false
-
-        // TODO: Support adding shareable image to the memory cache.
-        if (!result.image.shareable) return false
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()
         extras[EXTRA_IS_SAMPLED] = result.isSampled
         result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
         memoryCache[cacheKey] = MemoryCache.Value(result.image, extras)
+
         return true
     }
 

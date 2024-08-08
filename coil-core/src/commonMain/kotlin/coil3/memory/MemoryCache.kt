@@ -113,7 +113,6 @@ interface MemoryCache {
     }
 
     class Builder {
-
         private var maxSizeBytesFactory: (() -> Long)? = null
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true

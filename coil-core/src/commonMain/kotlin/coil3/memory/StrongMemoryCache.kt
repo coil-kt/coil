@@ -4,8 +4,6 @@ import coil3.Image
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
 import coil3.util.LruCache
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
 
 /**
  * An in-memory cache that holds strong references.
@@ -59,7 +57,6 @@ internal class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
-    private val lock = SynchronizedObject()
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
         override fun sizeOf(
             key: Key,
@@ -74,15 +71,15 @@ internal class RealStrongMemoryCache(
     }
 
     override val size: Long
-        get() = synchronized(lock) { cache.size }
+        get() = cache.size
 
     override val maxSize: Long
-        get() = synchronized(lock) { cache.maxSize }
+        get() = cache.maxSize
 
     override val keys: Set<Key>
-        get() = synchronized(lock) { cache.keys }
+        get() = cache.keys
 
-    override fun get(key: Key): Value? = synchronized(lock) {
+    override fun get(key: Key): Value? {
         return cache[key]?.let { Value(it.image, it.extras) }
     }
 
@@ -91,7 +88,7 @@ internal class RealStrongMemoryCache(
         image: Image,
         extras: Map<String, Any>,
         size: Long,
-    ): Unit = synchronized(lock) {
+    ) {
         if (size <= maxSize) {
             cache.put(key, InternalValue(image, extras, size))
         } else {
@@ -103,15 +100,15 @@ internal class RealStrongMemoryCache(
         }
     }
 
-    override fun remove(key: Key): Boolean = synchronized(lock) {
+    override fun remove(key: Key): Boolean {
         return cache.remove(key) != null
     }
 
-    override fun clear() = synchronized(lock) {
+    override fun clear() {
         cache.clear()
     }
 
-    override fun trimToSize(size: Long) = synchronized(lock) {
+    override fun trimToSize(size: Long) {
         cache.trimToSize(size)
     }
 
