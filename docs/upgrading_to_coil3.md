@@ -54,7 +54,7 @@ implementation("io.coil-kt.coil3:coil-network-ktor2:[coil-version]")
 implementation("io.ktor:ktor-client-android:[ktor-version]")
 ```
 
-Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
+Check out the [`samples`](https://github.com/coil-kt/coil/tree/main/samples/compose) repository for examples.
 
 **IMPORTANT**: `Cache-Control` header support is no longer enabled by default. In subsequent alphas, it will be possible to re-enable it, but it will be opt-in. `NetworkFetcher.Factory` now also supports custom `CacheStrategy` implementations to allow custom cache resolution behaviour.
 
