@@ -18,9 +18,9 @@ import coil3.toBitmap
 import io.github.takahirom.roborazzi.captureRoboImage
 import kotlin.test.Test
 
+@OptIn(ExperimentalTestApi::class)
 class RoborazziComposeTest {
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
@@ -53,7 +53,6 @@ class RoborazziComposeTest {
         }
     }
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
