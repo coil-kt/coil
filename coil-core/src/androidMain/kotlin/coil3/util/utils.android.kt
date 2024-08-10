@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
+import android.util.Log
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
@@ -22,6 +23,18 @@ import coil3.request.ImageRequest
 import coil3.size.Scale
 import coil3.transform.Transformation
 import java.io.File
+
+internal actual fun println(level: Logger.Level, tag: String, message: String) {
+    Log.println(level.toInt(), tag, message)
+}
+
+private fun Logger.Level.toInt() = when (this) {
+    Logger.Level.Verbose -> Log.VERBOSE
+    Logger.Level.Debug -> Log.DEBUG
+    Logger.Level.Info -> Log.INFO
+    Logger.Level.Warn -> Log.WARN
+    Logger.Level.Error -> Log.ERROR
+}
 
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null

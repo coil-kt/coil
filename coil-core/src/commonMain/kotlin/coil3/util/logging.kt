@@ -52,3 +52,15 @@ class DebugLogger @JvmOverloads constructor(
         }
     }
 }
+
+fun Logger.log(tag: String, throwable: Throwable) {
+    if (minLevel <= Logger.Level.Error) {
+        log(tag, Logger.Level.Error, null, throwable)
+    }
+}
+
+inline fun Logger.log(tag: String, level: Logger.Level, message: () -> String) {
+    if (minLevel <= level) {
+        log(tag, level, message(), null)
+    }
+}
