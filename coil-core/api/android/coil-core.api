@@ -203,7 +203,7 @@ public final class coil3/ImageLoaders_androidKt {
 	public static final fun bitmapFactoryMaxParallelism (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
 }
 
-public final class coil3/ImageLoaders_nonJsKt {
+public final class coil3/ImageLoaders_nonJsCommonKt {
 	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
 }
 
