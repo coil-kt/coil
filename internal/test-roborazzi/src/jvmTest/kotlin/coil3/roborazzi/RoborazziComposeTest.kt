@@ -22,7 +22,7 @@ class RoborazziComposeTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun asyncImageJvm() {
+    fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
         val image = FakeImage(
             width = 100,
@@ -55,7 +55,7 @@ class RoborazziComposeTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun rememberAsyncImagePainterJvm() {
+    fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
         val image = FakeImage(
             width = 100,
