@@ -25,7 +25,7 @@ import kotlinx.coroutines.sync.withPermit
 import okio.FileSystem
 
 @RequiresApi(29)
-internal class StaticImageDecoder(
+class StaticImageDecoder(
     private val source: ImageDecoder.Source,
     private val closeable: AutoCloseable,
     private val options: Options,
@@ -113,7 +113,7 @@ internal class StaticImageDecoder(
         }
 
         private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
-            if (fileSystem == FileSystem.SYSTEM) {
+            if (fileSystem === FileSystem.SYSTEM) {
                 val file = fileOrNull()
                 if (file != null) {
                     return ImageDecoder.createSource(file.toFile())
@@ -121,20 +121,21 @@ internal class StaticImageDecoder(
             }
 
             val metadata = metadata
-            if (metadata is AssetMetadata) {
-                return ImageDecoder.createSource(options.context.assets, metadata.filePath)
+            return when {
+                metadata is AssetMetadata -> {
+                    ImageDecoder.createSource(options.context.assets, metadata.filePath)
+                }
+                metadata is ContentMetadata -> {
+                    ImageDecoder.createSource { metadata.assetFileDescriptor }
+                }
+                metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
+                    ImageDecoder.createSource(options.context.resources, metadata.resId)
+                }
+                metadata is ByteBufferMetadata -> {
+                    ImageDecoder.createSource(metadata.byteBuffer)
+                }
+                else -> null
             }
-            if (metadata is ContentMetadata) {
-                return ImageDecoder.createSource { metadata.assetFileDescriptor }
-            }
-            if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
-                return ImageDecoder.createSource(options.context.resources, metadata.resId)
-            }
-            if (metadata is ByteBufferMetadata) {
-                return ImageDecoder.createSource(metadata.byteBuffer)
-            }
-
-            return null
         }
     }
 }

@@ -26,7 +26,7 @@ object SingletonImageLoader {
      * This function is similar to [setUnsafe] except:
      *
      * - If an [ImageLoader] has already been created it **will not** be replaced with [factory].
-     * - If the default [ImageLoader] has already been created, an error will be thrown as it
+     * - If the singleton [ImageLoader] has already been created, an error will be thrown as it
      *   indicates [setSafe] is being called too late and after [get] has already been called.
      * - It's safe to call [setSafe] multiple times.
      *
@@ -38,7 +38,7 @@ object SingletonImageLoader {
         if (value is ImageLoader) {
             if (value.isDefault) {
                 error(
-                    """The default image loader has already been created. This indicates that
+                    """The singleton image loader has already been created. This indicates that
                     'setSafe' is being called after the first 'get' call. Ensure that 'setSafe' is
                     called before any Coil API usages (e.g. `load`, `AsyncImage`,
                     `rememberAsyncImagePainter`, etc.).
