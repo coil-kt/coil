@@ -33,9 +33,8 @@ internal class StaticImageDecoder(
 ) : Decoder {
 
     override suspend fun decode() = parallelismLock.withPermit {
-        var isSampled = false
-
-        try {
+        closeable.use {
+            var isSampled = false
             val bitmap = source.decodeBitmap { info, _ ->
                 // Configure the output image's size.
                 val (srcWidth, srcHeight) = info.size
@@ -69,12 +68,10 @@ internal class StaticImageDecoder(
                 // Configure any other attributes.
                 configureImageDecoderProperties()
             }
-            DecodeResult(
+            return@withPermit DecodeResult(
                 image = bitmap.asImage(),
                 isSampled = isSampled,
             )
-        } finally {
-            closeable.close()
         }
     }
 

@@ -60,8 +60,7 @@ class AnimatedImageDecoder(
     override suspend fun decode(): DecodeResult {
         var isSampled = false
         val drawable = runInterruptible {
-            val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
-            source.use {
+            maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
                 source.toImageDecoderSource().decodeDrawable { info, _ ->
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
@@ -117,7 +116,7 @@ class AnimatedImageDecoder(
         }
         if (metadata is ContentMetadata) {
             return if (SDK_INT >= 29) {
-                // ImageDecoder will seek inner fd to startOffset
+                // ImageDecoder will seek inner fd to startOffset.
                 ImageDecoder.createSource { metadata.assetFileDescriptor }
             } else {
                 ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
