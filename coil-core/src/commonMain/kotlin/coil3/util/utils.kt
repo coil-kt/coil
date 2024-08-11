@@ -17,18 +17,6 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
 import okio.Closeable
 
-internal inline fun Logger.log(tag: String, level: Logger.Level, message: () -> String) {
-    if (minLevel <= level) {
-        log(tag, level, message(), null)
-    }
-}
-
-internal fun Logger.log(tag: String, throwable: Throwable) {
-    if (minLevel <= Logger.Level.Error) {
-        log(tag, Logger.Level.Error, null, throwable)
-    }
-}
-
 internal expect fun println(level: Logger.Level, tag: String, message: String)
 
 internal val DataSource.emoji: String

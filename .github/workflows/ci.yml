@@ -114,7 +114,7 @@ jobs:
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
-            - name: Build samples
+            - name: Build Compose and View samples
               run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
 
             - name: Build iOS app

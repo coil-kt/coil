@@ -170,7 +170,7 @@ public final class coil3/ImageLoadersKt {
 	public static final fun serviceLoaderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 }
 
-public final class coil3/ImageLoaders_nonJsKt {
+public final class coil3/ImageLoaders_nonJsCommonKt {
 	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
 }
 
@@ -623,12 +623,6 @@ public abstract interface class coil3/request/ImageRequest$Listener {
 }
 
 public final class coil3/request/ImageRequestsKt {
-	public static final fun crossfade (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
-	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
-	public static final fun getCrossfadeMillis (Lcoil3/request/ImageRequest;)I
-}
-
-public final class coil3/request/ImageRequests_commonKt {
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
@@ -636,6 +630,12 @@ public final class coil3/request/ImageRequests_commonKt {
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
 	public static final fun maxBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
 	public static final fun maxBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/request/ImageRequests_nonAndroidKt {
+	public static final fun crossfade (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
+	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getCrossfadeMillis (Lcoil3/request/ImageRequest;)I
 }
 
 public abstract interface class coil3/request/ImageResult {
@@ -780,7 +780,7 @@ public abstract interface class coil3/target/Target {
 	public fun onSuccess (Lcoil3/Image;)V
 }
 
-public final class coil3/util/Collections_commonKt {
+public final class coil3/util/CollectionsKt {
 	public static final fun component1-wuMLFU8 (J)I
 	public static final fun component2-wuMLFU8 (J)I
 }
@@ -824,5 +824,10 @@ public final class coil3/util/Logger$Level : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil3/util/Logger$Level;
 	public static fun values ()[Lcoil3/util/Logger$Level;
+}
+
+public final class coil3/util/LoggingKt {
+	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Lcoil3/util/Logger$Level;Lkotlin/jvm/functions/Function0;)V
+	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;)V
 }
 

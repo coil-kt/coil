@@ -1,8 +1,10 @@
 package coil3.roborazzi
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
@@ -18,11 +20,11 @@ import coil3.toBitmap
 import io.github.takahirom.roborazzi.captureRoboImage
 import kotlin.test.Test
 
-class RoborazziComposeTest {
+@OptIn(ExperimentalTestApi::class)
+class RoborazziComposeTestJvm {
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
-    fun asyncImageJvm() {
+    fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
         val image = FakeImage(
             width = 100,
@@ -45,7 +47,9 @@ class RoborazziComposeTest {
                     contentDescription = null,
                     imageLoader = imageLoader,
                     contentScale = ContentScale.None,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
                 )
             }
 
@@ -53,9 +57,8 @@ class RoborazziComposeTest {
         }
     }
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
-    fun rememberAsyncImagePainterJvm() {
+    fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
         val image = FakeImage(
             width = 100,
@@ -78,7 +81,9 @@ class RoborazziComposeTest {
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.None,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
                 )
             }
 

@@ -111,9 +111,9 @@ class AnimatedImageDecoder(
     }
 
     private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
-        if (fileSystem == FileSystem.SYSTEM) {
+        if (fileSystem === FileSystem.SYSTEM) {
             val file = fileOrNull()
-            if (file != null && fileSystem == FileSystem.SYSTEM) {
+            if (file != null && fileSystem === FileSystem.SYSTEM) {
                 return ImageDecoder.createSource(file.toFile())
             }
         }
