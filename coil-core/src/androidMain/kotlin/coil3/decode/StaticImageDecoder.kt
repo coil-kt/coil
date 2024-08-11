@@ -46,7 +46,8 @@ internal class StaticImageDecoder(
                     maxSize = options.maxBitmapSize,
                 )
                 if (srcWidth > 0 && srcHeight > 0 &&
-                    (srcWidth != dstWidth || srcHeight != dstHeight)) {
+                    (srcWidth != dstWidth || srcHeight != dstHeight)
+                ) {
                     val multiplier = DecodeUtils.computeSizeMultiplier(
                         srcWidth = srcWidth,
                         srcHeight = srcHeight,
