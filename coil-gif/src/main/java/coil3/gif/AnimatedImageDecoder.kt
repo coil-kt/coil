@@ -60,13 +60,8 @@ class AnimatedImageDecoder(
     override suspend fun decode(): DecodeResult {
         var isSampled = false
         val drawable = runInterruptible {
-            var imageDecoder: ImageDecoder? = null
-            val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
-            try {
+            maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
                 source.toImageDecoderSource().decodeDrawable { info, _ ->
-                    // Capture the image decoder to manually close it later.
-                    imageDecoder = this
-
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
                     val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
@@ -77,7 +72,8 @@ class AnimatedImageDecoder(
                         maxSize = options.maxBitmapSize,
                     )
                     if (srcWidth > 0 && srcHeight > 0 &&
-                        (srcWidth != dstWidth || srcHeight != dstHeight)) {
+                        (srcWidth != dstWidth || srcHeight != dstHeight)
+                    ) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
                             srcHeight = srcHeight,
@@ -99,9 +95,6 @@ class AnimatedImageDecoder(
                     // Configure any other attributes.
                     configureImageDecoderProperties()
                 }
-            } finally {
-                imageDecoder?.close()
-                source.close()
             }
         }
         return DecodeResult(
@@ -124,7 +117,7 @@ class AnimatedImageDecoder(
         }
         if (metadata is ContentMetadata) {
             return if (SDK_INT >= 29) {
-                // ImageDecoder will seek inner fd to startOffset
+                // ImageDecoder will seek inner fd to startOffset.
                 ImageDecoder.createSource { metadata.assetFileDescriptor }
             } else {
                 ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
