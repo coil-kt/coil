@@ -1,8 +1,10 @@
 package coil3.roborazzi
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
@@ -19,7 +21,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class RoborazziComposeTest {
+class RoborazziComposeTestJvm {
 
     @Test
     fun asyncImage() {
@@ -45,7 +47,9 @@ class RoborazziComposeTest {
                     contentDescription = null,
                     imageLoader = imageLoader,
                     contentScale = ContentScale.None,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
                 )
             }
 
@@ -77,7 +81,9 @@ class RoborazziComposeTest {
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.None,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
                 )
             }
 

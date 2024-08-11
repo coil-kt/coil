@@ -23,7 +23,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class RoborazziComposeTest {
+class RoborazziComposeTestAndroid {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()
