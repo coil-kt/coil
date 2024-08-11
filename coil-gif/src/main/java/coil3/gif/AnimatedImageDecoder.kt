@@ -60,13 +60,9 @@ class AnimatedImageDecoder(
     override suspend fun decode(): DecodeResult {
         var isSampled = false
         val drawable = runInterruptible {
-            var imageDecoder: ImageDecoder? = null
             val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
-            try {
+            source.use {
                 source.toImageDecoderSource().decodeDrawable { info, _ ->
-                    // Capture the image decoder to manually close it later.
-                    imageDecoder = this
-
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
                     val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
@@ -99,9 +95,6 @@ class AnimatedImageDecoder(
                     // Configure any other attributes.
                     configureImageDecoderProperties()
                 }
-            } finally {
-                imageDecoder?.close()
-                source.close()
             }
         }
         return DecodeResult(
