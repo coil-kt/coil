@@ -111,7 +111,6 @@ class CacheControlCacheStrategyTest {
         response = NetworkResponse(
             code = 304,
             headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
         networkClient.enqueue(url, response)
         result = newFetcher(url).fetch()
@@ -122,7 +121,7 @@ class CacheControlCacheStrategyTest {
 
         // Ensure we passed the correct etag.
         assertEquals(2, networkClient.requests.size)
-        assertEquals(etag, networkClient.responses[1].headers["If-None-Match"])
+        assertEquals(etag, networkClient.requests[1].headers["If-None-Match"])
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1256 */

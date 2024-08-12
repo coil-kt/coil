@@ -170,11 +170,10 @@ class CacheControlCacheStrategy(
                 else -> return Output(networkRequest) // No condition! Make a regular request.
             }
 
-            val conditionalRequestHeaders = networkRequest.headers.newBuilder()
-            conditionalRequestHeaders.add(conditionName, conditionValue!!)
-
             val conditionalRequest = networkRequest.copy(
-                headers = conditionalRequestHeaders.build(),
+                headers = networkRequest.headers.newBuilder()
+                    .add(conditionName, conditionValue!!)
+                    .build(),
             )
             return Output(cacheResponse, conditionalRequest)
         }
