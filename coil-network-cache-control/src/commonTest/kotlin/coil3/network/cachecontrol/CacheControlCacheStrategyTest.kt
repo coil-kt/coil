@@ -22,7 +22,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlinx.datetime.Instant
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
@@ -73,8 +72,6 @@ class CacheControlCacheStrategyTest {
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-
-        diskCache.openSnapshot(url).use(::assertNull)
 
         networkClient.enqueue(url, response)
         result = newFetcher(url).fetch()
@@ -208,7 +205,6 @@ class CacheControlCacheStrategyTest {
                 headers = NetworkHeaders.Builder()
                     .set("Response-Header", "none")
                     .build(),
-                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
             )
             networkClient.enqueue(url, response)
             result = newFetcher(url).fetch()
@@ -298,6 +294,83 @@ class CacheControlCacheStrategyTest {
         assertEquals(2, networkClient.requests.size)
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+
+    @Test
+    fun expiredHeaderIsNotReturnedFromCache() = runTestAsync {
+        val url = FAKE_URL
+        val expectedSize = FAKE_DATA.size.toLong()
+        val now = 1723436400000L
+
+        val cacheStrategy = CacheControlCacheStrategy(now = { Instant.fromEpochMilliseconds(now) })
+
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "public")
+            .set("Expires", "Fri, 9 Aug 2024 12:00:00 GMT")
+            .build()
+        var response = NetworkResponse(
+            headers = headers,
+            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+        )
+        networkClient.enqueue(url, response)
+        var result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache.openSnapshot(url).use(::assertNotNull)
+
+        response = NetworkResponse(
+            headers = headers,
+            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+        )
+        networkClient.enqueue(url, response)
+        result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+
+        assertEquals(2, networkClient.requests.size)
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+    @Test
+    fun unexpiredHeaderIsReturnedFromCache() = runTestAsync {
+        val url = FAKE_URL
+        val expectedSize = FAKE_DATA.size.toLong()
+        val now = 1623436400000L
+
+        val cacheStrategy = CacheControlCacheStrategy(now = { Instant.fromEpochMilliseconds(now) })
+
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "public")
+            .set("Expires", "Fri, 9 Aug 2024 12:00:00 GMT")
+            .build()
+        var response = NetworkResponse(
+            headers = headers,
+            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+        )
+        networkClient.enqueue(url, response)
+        var result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache.openSnapshot(url).use(::assertNotNull)
+
+        // Don't set a response body as it should be read from the cache.
+        response = NetworkResponse(
+            headers = headers,
+        )
+        networkClient.enqueue(url, response)
+        result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+
+        assertEquals(1, networkClient.requests.size)
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.DISK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
