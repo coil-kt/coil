@@ -273,7 +273,7 @@ class CacheControlCacheStrategyTest {
         val headers = NetworkHeaders.Builder()
             .set("Cache-Control", "max-age=60")
             .build()
-        val response = NetworkResponse(
+        var response = NetworkResponse(
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
@@ -289,6 +289,10 @@ class CacheControlCacheStrategyTest {
         // Increase the current time.
         now += 65_000
 
+        response = NetworkResponse(
+            headers = headers,
+            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+        )
         networkClient.enqueue(url, response)
         result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
 
