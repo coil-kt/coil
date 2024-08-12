@@ -26,7 +26,7 @@ object CacheResponse {
     }
 
     fun writeTo(response: NetworkResponse, sink: BufferedSink) {
-        sink.writeInt(response.code).writeByte('\n'.code)
+        sink.writeDecimalLong(response.code.toLong()).writeByte('\n'.code)
         sink.writeDecimalLong(response.requestMillis).writeByte('\n'.code)
         sink.writeDecimalLong(response.responseMillis).writeByte('\n'.code)
         val headers = response.headers.asMap().entries
