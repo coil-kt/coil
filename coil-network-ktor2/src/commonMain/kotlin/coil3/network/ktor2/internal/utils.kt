@@ -32,7 +32,7 @@ internal value class KtorNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ) = httpClient.prepareRequest(request.toHttpRequestBuilder()).execute { response ->
-        block(response.toNetworkResponse(request))
+        block(response.toNetworkResponse())
     }
 }
 
@@ -51,9 +51,8 @@ private suspend fun NetworkRequestBody.readByteArray(): ByteArray {
     return buffer.readByteArray()
 }
 
-private suspend fun HttpResponse.toNetworkResponse(request: NetworkRequest): NetworkResponse {
+private suspend fun HttpResponse.toNetworkResponse(): NetworkResponse {
     return NetworkResponse(
-        request = request,
         code = status.value,
         requestMillis = requestTime.timestamp,
         responseMillis = responseTime.timestamp,

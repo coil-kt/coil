@@ -32,9 +32,8 @@ class NetworkFetcherTest : RobolectricTest() {
                 .build(),
         )
         val networkClient = FakeNetworkClient(
-            respond = { request ->
+            respond = {
                 NetworkResponse(
-                    request = request,
                     body = NetworkResponseBody(Buffer().apply { write(ByteArray(expectedSize)) }),
                 )
             },
@@ -53,7 +52,6 @@ class NetworkFetcherTest : RobolectricTest() {
         val expected = NetworkRequest(url, method, headers, body)
 
         assertEquals(expected, networkClient.requests.single())
-        assertEquals(expected, networkClient.responses.single().request)
     }
 
     class FakeNetworkClient(

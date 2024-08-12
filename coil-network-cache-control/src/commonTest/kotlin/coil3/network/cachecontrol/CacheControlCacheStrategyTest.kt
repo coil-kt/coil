@@ -64,7 +64,6 @@ class CacheControlCacheStrategyTest {
             .set("Cache-Control", "no-store")
             .build()
         val response = NetworkResponse(
-            request = NetworkRequest(url),
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
@@ -96,7 +95,6 @@ class CacheControlCacheStrategyTest {
             .set("ETag", etag)
             .build()
         var response = NetworkResponse(
-            request = NetworkRequest(url),
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
@@ -111,7 +109,6 @@ class CacheControlCacheStrategyTest {
 
         // Don't set a response body as it should be read from the cache.
         response = NetworkResponse(
-            request = NetworkRequest(url),
             code = 304,
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
@@ -139,7 +136,6 @@ class CacheControlCacheStrategyTest {
             .set("ETag", "fake_etag")
             .build()
         var response = NetworkResponse(
-            request = NetworkRequest(url),
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
@@ -155,7 +151,6 @@ class CacheControlCacheStrategyTest {
 
         // Don't set a response body as it should be read from the cache.
         response = NetworkResponse(
-            request = NetworkRequest(FAKE_URL),
             code = 304,
             headers = NetworkHeaders.Builder()
                 .set("Response-Header", "none")
@@ -195,7 +190,6 @@ class CacheControlCacheStrategyTest {
                 .add("Content-Disposition", "inline; filename=\"alimentación.webp\"")
                 .build()
             var response = NetworkResponse(
-                request = NetworkRequest(FAKE_URL),
                 headers = headers,
                 body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
             )
@@ -211,7 +205,6 @@ class CacheControlCacheStrategyTest {
 
             // Don't set a response body as it should be read from the cache.
             response = NetworkResponse(
-                request = NetworkRequest(FAKE_URL),
                 code = 304,
                 headers = NetworkHeaders.Builder()
                     .set("Response-Header", "none")
@@ -248,7 +241,6 @@ class CacheControlCacheStrategyTest {
             .set("Cache-Control", "max-age=60")
             .build()
         val response = NetworkResponse(
-            request = NetworkRequest(FAKE_URL),
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )
@@ -282,7 +274,6 @@ class CacheControlCacheStrategyTest {
             .set("Cache-Control", "max-age=60")
             .build()
         val response = NetworkResponse(
-            request = NetworkRequest(FAKE_URL),
             headers = headers,
             body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
         )

@@ -68,7 +68,6 @@ private value class ByteStringNetworkRequestBody(
 /**
  * Represents an HTTP response.
  *
- * @param request The [NetworkRequest] that was executed to create this response.
  * @param code The HTTP response code.
  * @param requestMillis Timestamp of when the request was launched.
  * @param responseMillis Timestamp of when the response was received.
@@ -79,7 +78,6 @@ private value class ByteStringNetworkRequestBody(
  */
 @Poko
 class NetworkResponse(
-    val request: NetworkRequest,
     val code: Int = 200,
     val requestMillis: Long = 0L,
     val responseMillis: Long = 0L,
@@ -88,7 +86,6 @@ class NetworkResponse(
     val delegate: Any? = null,
 ) {
     fun copy(
-        request: NetworkRequest = this.request,
         code: Int = this.code,
         requestMillis: Long = this.requestMillis,
         responseMillis: Long = this.responseMillis,
@@ -96,7 +93,6 @@ class NetworkResponse(
         body: NetworkResponseBody? = this.body,
         delegate: Any? = this.delegate,
     ) = NetworkResponse(
-        request = request,
         code = code,
         requestMillis = requestMillis,
         responseMillis = responseMillis,

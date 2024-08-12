@@ -132,7 +132,7 @@ final class coil3.network/NetworkRequest { // coil3.network/NetworkRequest|null[
 }
 
 final class coil3.network/NetworkResponse { // coil3.network/NetworkResponse|null[0]
-    constructor <init>(coil3.network/NetworkRequest, kotlin/Int = ..., kotlin/Long = ..., kotlin/Long = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkResponseBody? = ..., kotlin/Any? = ...) // coil3.network/NetworkResponse.<init>|<init>(coil3.network.NetworkRequest;kotlin.Int;kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders;coil3.network.NetworkResponseBody?;kotlin.Any?){}[0]
+    constructor <init>(kotlin/Int = ..., kotlin/Long = ..., kotlin/Long = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkResponseBody? = ..., kotlin/Any? = ...) // coil3.network/NetworkResponse.<init>|<init>(kotlin.Int;kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders;coil3.network.NetworkResponseBody?;kotlin.Any?){}[0]
 
     final val body // coil3.network/NetworkResponse.body|{}body[0]
         final fun <get-body>(): coil3.network/NetworkResponseBody? // coil3.network/NetworkResponse.body.<get-body>|<get-body>(){}[0]
@@ -142,14 +142,12 @@ final class coil3.network/NetworkResponse { // coil3.network/NetworkResponse|nul
         final fun <get-delegate>(): kotlin/Any? // coil3.network/NetworkResponse.delegate.<get-delegate>|<get-delegate>(){}[0]
     final val headers // coil3.network/NetworkResponse.headers|{}headers[0]
         final fun <get-headers>(): coil3.network/NetworkHeaders // coil3.network/NetworkResponse.headers.<get-headers>|<get-headers>(){}[0]
-    final val request // coil3.network/NetworkResponse.request|{}request[0]
-        final fun <get-request>(): coil3.network/NetworkRequest // coil3.network/NetworkResponse.request.<get-request>|<get-request>(){}[0]
     final val requestMillis // coil3.network/NetworkResponse.requestMillis|{}requestMillis[0]
         final fun <get-requestMillis>(): kotlin/Long // coil3.network/NetworkResponse.requestMillis.<get-requestMillis>|<get-requestMillis>(){}[0]
     final val responseMillis // coil3.network/NetworkResponse.responseMillis|{}responseMillis[0]
         final fun <get-responseMillis>(): kotlin/Long // coil3.network/NetworkResponse.responseMillis.<get-responseMillis>|<get-responseMillis>(){}[0]
 
-    final fun copy(coil3.network/NetworkRequest = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Long = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkResponseBody? = ..., kotlin/Any? = ...): coil3.network/NetworkResponse // coil3.network/NetworkResponse.copy|copy(coil3.network.NetworkRequest;kotlin.Int;kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders;coil3.network.NetworkResponseBody?;kotlin.Any?){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Long = ..., kotlin/Long = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkResponseBody? = ..., kotlin/Any? = ...): coil3.network/NetworkResponse // coil3.network/NetworkResponse.copy|copy(kotlin.Int;kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders;coil3.network.NetworkResponseBody?;kotlin.Any?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/NetworkResponse.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.network/NetworkResponse.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.network/NetworkResponse.toString|toString(){}[0]
