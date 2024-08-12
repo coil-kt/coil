@@ -39,18 +39,29 @@ class NetworkFetcher(
             // Fast path: fetch the image from the disk cache without performing a network request.
             var output: CacheStrategy.Output? = null
             if (snapshot != null) {
+                // Always return files with empty metadata as it's likely they've been written
+                // to the disk cache manually.
+                if (fileSystem.metadata(snapshot.metadata).size == 0L) {
+                    return SourceFetchResult(
+                        source = snapshot.toImageSource(),
+                        mimeType = getMimeType(url, null),
+                        dataSource = DataSource.DISK,
+                    )
+                }
+
                 var cacheResponse = snapshot.toCacheResponse()
                 if (cacheResponse != null) {
                     val input = CacheStrategy.Input(cacheResponse, newRequest(), options)
                     output = cacheStrategy.value.compute(input)
                     cacheResponse = output.cacheResponse
-                }
-                if (cacheResponse != null) {
-                    return SourceFetchResult(
-                        source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, cacheResponse.responseHeaders[CONTENT_TYPE]),
-                        dataSource = DataSource.DISK,
-                    )
+
+                    if (cacheResponse != null && output.networkRequest == null) {
+                        return SourceFetchResult(
+                            source = snapshot.toImageSource(),
+                            mimeType = getMimeType(url, cacheResponse.responseHeaders[CONTENT_TYPE]),
+                            dataSource = DataSource.DISK,
+                        )
+                    }
                 }
             }
 
@@ -58,7 +69,7 @@ class NetworkFetcher(
             val networkRequest = output?.networkRequest ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
-                val responseBody = checkNotNull(response.body) { "body == null" }
+                val responseBody = response.body
                 snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, responseBody)
                 if (snapshot != null) {
                     val cacheResponse = snapshot!!.toCacheResponse()
@@ -70,7 +81,7 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                val responseBodyBuffer = responseBody.readBuffer()
+                val responseBodyBuffer = checkNotNull(responseBody) { "body == null" }.readBuffer()
                 if (responseBodyBuffer.size > 0) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = responseBodyBuffer.toImageSource(),
@@ -113,7 +124,7 @@ class NetworkFetcher(
         snapshot: DiskCache.Snapshot?,
         cacheResponse: CacheResponse?,
         networkResponse: NetworkResponse,
-        networkResponseBody: NetworkResponseBody,
+        networkResponseBody: NetworkResponseBody?,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
         if (!options.diskCachePolicy.writeEnabled) {
@@ -149,12 +160,12 @@ class NetworkFetcher(
                 fileSystem.write(editor.metadata) {
                     CacheResponse(networkResponse).writeTo(this)
                 }
-                networkResponseBody.writeTo(fileSystem, editor.data)
+                networkResponseBody?.writeTo(fileSystem, editor.data)
             }
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
-            networkResponseBody.close()
+            networkResponseBody?.close()
             throw e
         }
     }
@@ -167,13 +178,11 @@ class NetworkFetcher(
             !networkRead && diskRead -> {
                 headers[CACHE_CONTROL] = "only-if-cached, max-stale=2147483647"
             }
-
             networkRead && !diskRead -> if (options.diskCachePolicy.writeEnabled) {
                 headers[CACHE_CONTROL] = "no-cache"
             } else {
                 headers[CACHE_CONTROL] = "no-cache, no-store"
             }
-
             !networkRead && !diskRead -> {
                 // This causes the request to fail with a 504 Unsatisfiable Request.
                 headers[CACHE_CONTROL] = "no-cache, only-if-cached"

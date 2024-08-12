@@ -32,7 +32,7 @@ fun OkHttpNetworkFetcherFactory(
 
 @JvmName("factory")
 fun OkHttpNetworkFetcherFactory(
-    callFactory: () -> Call.Factory,
+    callFactory: () -> Call.Factory = ::OkHttpClient,
     cacheStrategy: () -> CacheStrategy = ::CacheStrategy,
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
 ) = NetworkFetcher.Factory(

@@ -19,5 +19,11 @@ kotlin {
                 api(libs.kotlinx.datetime)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(libs.bundles.test.common)
+            }
+        }
     }
 }
