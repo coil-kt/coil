@@ -21,19 +21,19 @@ fun interface CacheStrategy {
     suspend fun compute(input: Input): Output
 
     class Input(
-        val cacheResponse: CacheResponse,
+        val cacheResponse: NetworkResponse,
         val networkRequest: NetworkRequest,
         val options: Options,
     )
 
     class Output {
-        val cacheResponse: CacheResponse?
+        val cacheResponse: NetworkResponse?
         val networkRequest: NetworkRequest?
 
         /**
          * Create an output that will use [cacheResponse] as the image source.
          */
-        constructor(cacheResponse: CacheResponse) {
+        constructor(cacheResponse: NetworkResponse) {
             this.cacheResponse = cacheResponse
             this.networkRequest = null
         }
@@ -53,7 +53,7 @@ fun interface CacheStrategy {
          * body will be used as the image source.
          */
         constructor(
-            cacheResponse: CacheResponse,
+            cacheResponse: NetworkResponse,
             networkRequest: NetworkRequest,
         ) {
             this.cacheResponse = cacheResponse

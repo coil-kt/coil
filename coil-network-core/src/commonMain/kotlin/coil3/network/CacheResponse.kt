@@ -6,48 +6,33 @@ import okio.BufferedSink
 import okio.BufferedSource
 
 @ExperimentalCoilApi
-fun CacheResponse(source: BufferedSource): CacheResponse {
-    val sentRequestAtMillis = source.readUtf8LineStrict().toLong()
-    val receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
-    val headers = NetworkHeaders.Builder()
-    val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
-    for (i in 0 until responseHeadersLineCount) {
-        headers.append(source.readUtf8LineStrict())
+object CacheResponse {
+
+    fun readFrom(metadata: BufferedSource): NetworkResponse {
+        val code = metadata.readUtf8LineStrict().toInt()
+        val requestMillis = metadata.readUtf8LineStrict().toLong()
+        val responseMillis = metadata.readUtf8LineStrict().toLong()
+        val headers = NetworkHeaders.Builder()
+        val headersLineCount = metadata.readUtf8LineStrict().toInt()
+        for (i in 0 until headersLineCount) {
+            headers.append(metadata.readUtf8LineStrict())
+        }
+        return NetworkResponse(
+            code = code,
+            requestMillis = requestMillis,
+            responseMillis = responseMillis,
+            headers = headers.build(),
+        )
     }
-    return CacheResponse(
-        sentRequestAtMillis = sentRequestAtMillis,
-        receivedResponseAtMillis = receivedResponseAtMillis,
-        responseHeaders = headers.build(),
-    )
-}
 
-@ExperimentalCoilApi
-fun CacheResponse(
-    response: NetworkResponse,
-    headers: NetworkHeaders = response.headers,
-) = CacheResponse(
-    sentRequestAtMillis = response.requestMillis,
-    receivedResponseAtMillis = response.responseMillis,
-    responseHeaders = headers,
-)
-
-/**
- * Holds the response metadata for an image in the disk cache.
- */
-@ExperimentalCoilApi
-class CacheResponse(
-    val sentRequestAtMillis: Long,
-    val receivedResponseAtMillis: Long,
-    val responseHeaders: NetworkHeaders,
-) {
-
-    fun writeTo(sink: BufferedSink) {
-        sink.writeDecimalLong(sentRequestAtMillis).writeByte('\n'.code)
-        sink.writeDecimalLong(receivedResponseAtMillis).writeByte('\n'.code)
-        val responseHeaders = responseHeaders.asMap().entries
-        val responseHeadersLineCount = responseHeaders.sumOf { it.value.size }.toLong()
-        sink.writeDecimalLong(responseHeadersLineCount).writeByte('\n'.code)
-        for (header in responseHeaders) {
+    fun writeTo(response: NetworkResponse, sink: BufferedSink) {
+        sink.writeInt(response.code).writeByte('\n'.code)
+        sink.writeDecimalLong(response.requestMillis).writeByte('\n'.code)
+        sink.writeDecimalLong(response.responseMillis).writeByte('\n'.code)
+        val headers = response.headers.asMap().entries
+        val headersLineCount = headers.sumOf { it.value.size }.toLong()
+        sink.writeDecimalLong(headersLineCount).writeByte('\n'.code)
+        for (header in headers) {
             for (value in header.value) {
                 sink.writeUtf8(header.key)
                     .writeUtf8(":")
@@ -56,14 +41,4 @@ class CacheResponse(
             }
         }
     }
-
-    fun copy(
-        sentRequestAtMillis: Long = this.sentRequestAtMillis,
-        receivedResponseAtMillis: Long = this.receivedResponseAtMillis,
-        responseHeaders: NetworkHeaders = this.responseHeaders,
-    ) = CacheResponse(
-        sentRequestAtMillis = sentRequestAtMillis,
-        receivedResponseAtMillis = receivedResponseAtMillis,
-        responseHeaders = responseHeaders,
-    )
 }

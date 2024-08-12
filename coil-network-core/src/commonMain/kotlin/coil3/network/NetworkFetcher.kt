@@ -58,7 +58,7 @@ class NetworkFetcher(
                     if (cacheResponse != null && output.networkRequest == null) {
                         return SourceFetchResult(
                             source = snapshot.toImageSource(),
-                            mimeType = getMimeType(url, cacheResponse.responseHeaders[CONTENT_TYPE]),
+                            mimeType = getMimeType(url, cacheResponse.headers[CONTENT_TYPE]),
                             dataSource = DataSource.DISK,
                         )
                     }
@@ -75,7 +75,7 @@ class NetworkFetcher(
                     val cacheResponse = snapshot!!.toCacheResponse()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
-                        mimeType = getMimeType(url, cacheResponse?.responseHeaders?.get(CONTENT_TYPE)),
+                        mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
                         dataSource = DataSource.NETWORK,
                     )
                 }
@@ -122,7 +122,7 @@ class NetworkFetcher(
 
     private suspend fun writeToDiskCache(
         snapshot: DiskCache.Snapshot?,
-        cacheResponse: CacheResponse?,
+        cacheResponse: NetworkResponse?,
         networkResponse: NetworkResponse,
         networkResponseBody: NetworkResponseBody?,
     ): DiskCache.Snapshot? {
@@ -148,17 +148,17 @@ class NetworkFetcher(
                 // Combine and write the updated cache headers and discard the body.
                 fileSystem.write(editor.metadata) {
                     val headers = networkResponse.headers.newBuilder()
-                    for ((key, values) in cacheResponse.responseHeaders.asMap()) {
+                    for ((key, values) in cacheResponse.headers.asMap()) {
                         if (networkResponse.headers[key] == null) {
                             headers[key] = values
                         }
                     }
-                    CacheResponse(networkResponse, headers.build()).writeTo(this)
+                    CacheResponse.writeTo(networkResponse.copy(headers = headers.build()), this)
                 }
             } else {
                 // Write the response's cache headers and body.
                 fileSystem.write(editor.metadata) {
-                    CacheResponse(networkResponse).writeTo(this)
+                    CacheResponse.writeTo(networkResponse, this)
                 }
                 networkResponseBody?.writeTo(fileSystem, editor.data)
             }
@@ -229,10 +229,10 @@ class NetworkFetcher(
         return contentType?.substringBefore(';')
     }
 
-    private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
+    private fun DiskCache.Snapshot.toCacheResponse(): NetworkResponse? {
         try {
             return fileSystem.read(metadata) {
-                CacheResponse(this)
+                CacheResponse.readFrom(this)
             }
         } catch (_: IOException) {
             // If we can't parse the metadata, ignore this entry.

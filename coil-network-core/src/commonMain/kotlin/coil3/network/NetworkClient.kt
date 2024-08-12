@@ -69,7 +69,7 @@ private value class ByteStringNetworkRequestBody(
  * Represents an HTTP response.
  *
  * @param code The HTTP response code.
- * @param requestMillis Timestamp of when the request was launched.
+ * @param requestMillis Timestamp of when the request was sent.
  * @param responseMillis Timestamp of when the response was received.
  * @param headers The HTTP headers.
  * @param body The HTTP response body.

@@ -16,11 +16,11 @@
 package coil3.network.cachecontrol
 
 import coil3.annotation.ExperimentalCoilApi
-import coil3.network.CacheResponse
 import coil3.network.CacheStrategy
 import coil3.network.CacheStrategy.Input
 import coil3.network.CacheStrategy.Output
 import coil3.network.NetworkRequest
+import coil3.network.NetworkResponse
 import coil3.network.cachecontrol.internal.BROWSER_DATE_TIME_FORMAT
 import coil3.network.cachecontrol.internal.CacheControl
 import coil3.network.cachecontrol.internal.toNonNegativeInt
@@ -45,12 +45,12 @@ class CacheControlCacheStrategy(
     }
 
     private class Computation(
-        private val cacheResponse: CacheResponse,
-        private val request: NetworkRequest,
+        private val cacheResponse: NetworkResponse,
+        private val networkRequest: NetworkRequest,
         private val now: Instant,
     ) {
-        private val responseCaching = CacheControl.parse(cacheResponse.responseHeaders)
-        private val requestCaching = CacheControl.parse(request.headers)
+        private val responseCaching = CacheControl.parse(cacheResponse.headers)
+        private val requestCaching = CacheControl.parse(networkRequest.headers)
 
         /** The server's time when the cached response was served, if known. */
         private var servedDate: Instant? = null
@@ -85,7 +85,7 @@ class CacheControlCacheStrategy(
         private var ageSeconds = -1
 
         init {
-            for ((name, values) in cacheResponse.responseHeaders.asMap()) {
+            for ((name, values) in cacheResponse.headers.asMap()) {
                 val value = values.firstOrNull() ?: continue
                 when {
                     name.equals("Date", ignoreCase = true) -> {
@@ -114,11 +114,11 @@ class CacheControlCacheStrategy(
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
             if (!isCacheable(responseCaching, requestCaching)) {
-                return Output(request)
+                return Output(networkRequest)
             }
 
-            if (requestCaching.noCache || hasConditions(request)) {
-                return Output(request)
+            if (requestCaching.noCache || hasConditions(networkRequest)) {
+                return Output(networkRequest)
             }
 
             val ageMillis = cacheResponseAge()
@@ -139,7 +139,7 @@ class CacheControlCacheStrategy(
             }
 
             if (!responseCaching.noCache && ageMillis + minFreshMillis < freshMillis + maxStaleMillis) {
-                val headersBuilder = cacheResponse.responseHeaders.newBuilder()
+                val headersBuilder = cacheResponse.headers.newBuilder()
                 if (ageMillis + minFreshMillis >= freshMillis) {
                     headersBuilder.add("Warning", "110 HttpURLConnection \"Response is stale\"")
                 }
@@ -147,7 +147,7 @@ class CacheControlCacheStrategy(
                 if (ageMillis > oneDayMillis && isFreshnessLifetimeHeuristic()) {
                     headersBuilder.add("Warning", "113 HttpURLConnection \"Heuristic expiration\"")
                 }
-                return Output(cacheResponse.copy(responseHeaders = headersBuilder.build()))
+                return Output(cacheResponse.copy(headers = headersBuilder.build()))
             }
 
             // Find a condition to add to the request. If the condition is satisfied, the response
@@ -167,13 +167,13 @@ class CacheControlCacheStrategy(
                     conditionName = "If-Modified-Since"
                     conditionValue = servedDateString
                 }
-                else -> return Output(request) // No condition! Make a regular request.
+                else -> return Output(networkRequest) // No condition! Make a regular request.
             }
 
-            val conditionalRequestHeaders = request.headers.newBuilder()
+            val conditionalRequestHeaders = networkRequest.headers.newBuilder()
             conditionalRequestHeaders.add(conditionName, conditionValue!!)
 
-            val conditionalRequest = request.copy(
+            val conditionalRequest = networkRequest.copy(
                 headers = conditionalRequestHeaders.build(),
             )
             return Output(cacheResponse, conditionalRequest)

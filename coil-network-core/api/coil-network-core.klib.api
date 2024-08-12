@@ -10,10 +10,10 @@ abstract fun interface coil3.network/CacheStrategy { // coil3.network/CacheStrat
     abstract suspend fun compute(coil3.network/CacheStrategy.Input): coil3.network/CacheStrategy.Output // coil3.network/CacheStrategy.compute|compute(coil3.network.CacheStrategy.Input){}[0]
 
     final class Input { // coil3.network/CacheStrategy.Input|null[0]
-        constructor <init>(coil3.network/CacheResponse, coil3.network/NetworkRequest, coil3.request/Options) // coil3.network/CacheStrategy.Input.<init>|<init>(coil3.network.CacheResponse;coil3.network.NetworkRequest;coil3.request.Options){}[0]
+        constructor <init>(coil3.network/NetworkResponse, coil3.network/NetworkRequest, coil3.request/Options) // coil3.network/CacheStrategy.Input.<init>|<init>(coil3.network.NetworkResponse;coil3.network.NetworkRequest;coil3.request.Options){}[0]
 
         final val cacheResponse // coil3.network/CacheStrategy.Input.cacheResponse|{}cacheResponse[0]
-            final fun <get-cacheResponse>(): coil3.network/CacheResponse // coil3.network/CacheStrategy.Input.cacheResponse.<get-cacheResponse>|<get-cacheResponse>(){}[0]
+            final fun <get-cacheResponse>(): coil3.network/NetworkResponse // coil3.network/CacheStrategy.Input.cacheResponse.<get-cacheResponse>|<get-cacheResponse>(){}[0]
         final val networkRequest // coil3.network/CacheStrategy.Input.networkRequest|{}networkRequest[0]
             final fun <get-networkRequest>(): coil3.network/NetworkRequest // coil3.network/CacheStrategy.Input.networkRequest.<get-networkRequest>|<get-networkRequest>(){}[0]
         final val options // coil3.network/CacheStrategy.Input.options|{}options[0]
@@ -21,12 +21,12 @@ abstract fun interface coil3.network/CacheStrategy { // coil3.network/CacheStrat
     }
 
     final class Output { // coil3.network/CacheStrategy.Output|null[0]
-        constructor <init>(coil3.network/CacheResponse) // coil3.network/CacheStrategy.Output.<init>|<init>(coil3.network.CacheResponse){}[0]
-        constructor <init>(coil3.network/CacheResponse, coil3.network/NetworkRequest) // coil3.network/CacheStrategy.Output.<init>|<init>(coil3.network.CacheResponse;coil3.network.NetworkRequest){}[0]
         constructor <init>(coil3.network/NetworkRequest) // coil3.network/CacheStrategy.Output.<init>|<init>(coil3.network.NetworkRequest){}[0]
+        constructor <init>(coil3.network/NetworkResponse) // coil3.network/CacheStrategy.Output.<init>|<init>(coil3.network.NetworkResponse){}[0]
+        constructor <init>(coil3.network/NetworkResponse, coil3.network/NetworkRequest) // coil3.network/CacheStrategy.Output.<init>|<init>(coil3.network.NetworkResponse;coil3.network.NetworkRequest){}[0]
 
         final val cacheResponse // coil3.network/CacheStrategy.Output.cacheResponse|{}cacheResponse[0]
-            final fun <get-cacheResponse>(): coil3.network/CacheResponse? // coil3.network/CacheStrategy.Output.cacheResponse.<get-cacheResponse>|<get-cacheResponse>(){}[0]
+            final fun <get-cacheResponse>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.Output.cacheResponse.<get-cacheResponse>|<get-cacheResponse>(){}[0]
         final val networkRequest // coil3.network/CacheStrategy.Output.networkRequest|{}networkRequest[0]
             final fun <get-networkRequest>(): coil3.network/NetworkRequest? // coil3.network/CacheStrategy.Output.networkRequest.<get-networkRequest>|<get-networkRequest>(){}[0]
     }
@@ -52,20 +52,6 @@ abstract interface coil3.network/NetworkRequestBody { // coil3.network/NetworkRe
 abstract interface coil3.network/NetworkResponseBody : kotlin/AutoCloseable { // coil3.network/NetworkResponseBody|null[0]
     abstract suspend fun writeTo(okio/BufferedSink) // coil3.network/NetworkResponseBody.writeTo|writeTo(okio.BufferedSink){}[0]
     abstract suspend fun writeTo(okio/FileSystem, okio/Path) // coil3.network/NetworkResponseBody.writeTo|writeTo(okio.FileSystem;okio.Path){}[0]
-}
-
-final class coil3.network/CacheResponse { // coil3.network/CacheResponse|null[0]
-    constructor <init>(kotlin/Long, kotlin/Long, coil3.network/NetworkHeaders) // coil3.network/CacheResponse.<init>|<init>(kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders){}[0]
-
-    final val receivedResponseAtMillis // coil3.network/CacheResponse.receivedResponseAtMillis|{}receivedResponseAtMillis[0]
-        final fun <get-receivedResponseAtMillis>(): kotlin/Long // coil3.network/CacheResponse.receivedResponseAtMillis.<get-receivedResponseAtMillis>|<get-receivedResponseAtMillis>(){}[0]
-    final val responseHeaders // coil3.network/CacheResponse.responseHeaders|{}responseHeaders[0]
-        final fun <get-responseHeaders>(): coil3.network/NetworkHeaders // coil3.network/CacheResponse.responseHeaders.<get-responseHeaders>|<get-responseHeaders>(){}[0]
-    final val sentRequestAtMillis // coil3.network/CacheResponse.sentRequestAtMillis|{}sentRequestAtMillis[0]
-        final fun <get-sentRequestAtMillis>(): kotlin/Long // coil3.network/CacheResponse.sentRequestAtMillis.<get-sentRequestAtMillis>|<get-sentRequestAtMillis>(){}[0]
-
-    final fun copy(kotlin/Long = ..., kotlin/Long = ..., coil3.network/NetworkHeaders = ...): coil3.network/CacheResponse // coil3.network/CacheResponse.copy|copy(kotlin.Long;kotlin.Long;coil3.network.NetworkHeaders){}[0]
-    final fun writeTo(okio/BufferedSink) // coil3.network/CacheResponse.writeTo|writeTo(okio.BufferedSink){}[0]
 }
 
 final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.network/HttpException|null[0]
@@ -153,6 +139,11 @@ final class coil3.network/NetworkResponse { // coil3.network/NetworkResponse|nul
     final fun toString(): kotlin/String // coil3.network/NetworkResponse.toString|toString(){}[0]
 }
 
+final object coil3.network/CacheResponse { // coil3.network/CacheResponse|null[0]
+    final fun readFrom(okio/BufferedSource): coil3.network/NetworkResponse // coil3.network/CacheResponse.readFrom|readFrom(okio.BufferedSource){}[0]
+    final fun writeTo(coil3.network/NetworkResponse, okio/BufferedSink) // coil3.network/CacheResponse.writeTo|writeTo(coil3.network.NetworkResponse;okio.BufferedSink){}[0]
+}
+
 final val coil3.network/httpBody // coil3.network/httpBody|@coil3.Extras.Key.Companion{}httpBody[0]
     final fun (coil3/Extras.Key.Companion).<get-httpBody>(): coil3/Extras.Key<coil3.network/NetworkRequestBody?> // coil3.network/httpBody.<get-httpBody>|<get-httpBody>@coil3.Extras.Key.Companion(){}[0]
 final val coil3.network/httpBody // coil3.network/httpBody|@coil3.request.ImageRequest{}httpBody[0]
@@ -175,8 +166,6 @@ final val coil3.network/httpMethod // coil3.network/httpMethod|@coil3.request.Op
 final fun (coil3.request/ImageRequest.Builder).coil3.network/httpBody(coil3.network/NetworkRequestBody): coil3.request/ImageRequest.Builder // coil3.network/httpBody|httpBody@coil3.request.ImageRequest.Builder(coil3.network.NetworkRequestBody){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.network/httpHeaders(coil3.network/NetworkHeaders): coil3.request/ImageRequest.Builder // coil3.network/httpHeaders|httpHeaders@coil3.request.ImageRequest.Builder(coil3.network.NetworkHeaders){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.network/httpMethod(kotlin/String): coil3.request/ImageRequest.Builder // coil3.network/httpMethod|httpMethod@coil3.request.ImageRequest.Builder(kotlin.String){}[0]
-final fun coil3.network/CacheResponse(coil3.network/NetworkResponse, coil3.network/NetworkHeaders = ...): coil3.network/CacheResponse // coil3.network/CacheResponse|CacheResponse(coil3.network.NetworkResponse;coil3.network.NetworkHeaders){}[0]
-final fun coil3.network/CacheResponse(okio/BufferedSource): coil3.network/CacheResponse // coil3.network/CacheResponse|CacheResponse(okio.BufferedSource){}[0]
 final fun coil3.network/CacheStrategy(): coil3.network/CacheStrategy // coil3.network/CacheStrategy|CacheStrategy(){}[0]
 final fun coil3.network/ConnectivityChecker(coil3/PlatformContext): coil3.network/ConnectivityChecker // coil3.network/ConnectivityChecker|ConnectivityChecker(coil3.PlatformContext){}[0]
 final fun coil3.network/NetworkRequestBody(okio/ByteString): coil3.network/NetworkRequestBody // coil3.network/NetworkRequestBody|NetworkRequestBody(okio.ByteString){}[0]
