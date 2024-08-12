@@ -1,11 +1,17 @@
 public final class coil3/network/CacheResponse {
-	public fun <init> (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;)V
-	public synthetic fun <init> (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun <init> (Lokio/BufferedSource;)V
+	public fun <init> (JJLcoil3/network/NetworkHeaders;)V
+	public final fun copy (JJLcoil3/network/NetworkHeaders;)Lcoil3/network/CacheResponse;
+	public static synthetic fun copy$default (Lcoil3/network/CacheResponse;JJLcoil3/network/NetworkHeaders;ILjava/lang/Object;)Lcoil3/network/CacheResponse;
 	public final fun getReceivedResponseAtMillis ()J
 	public final fun getResponseHeaders ()Lcoil3/network/NetworkHeaders;
 	public final fun getSentRequestAtMillis ()J
 	public final fun writeTo (Lokio/BufferedSink;)V
+}
+
+public final class coil3/network/CacheResponseKt {
+	public static final fun CacheResponse (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;)Lcoil3/network/CacheResponse;
+	public static final fun CacheResponse (Lokio/BufferedSource;)Lcoil3/network/CacheResponse;
+	public static synthetic fun CacheResponse$default (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;ILjava/lang/Object;)Lcoil3/network/CacheResponse;
 }
 
 public abstract interface class coil3/network/CacheStrategy {

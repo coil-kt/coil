@@ -5,29 +5,41 @@ import coil3.network.internal.append
 import okio.BufferedSink
 import okio.BufferedSource
 
-/** Holds the response metadata for an image in the disk cache. */
 @ExperimentalCoilApi
-class CacheResponse {
-    val sentRequestAtMillis: Long
-    val receivedResponseAtMillis: Long
-    val responseHeaders: NetworkHeaders
-
-    constructor(source: BufferedSource) {
-        this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
-        this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
-        val headers = NetworkHeaders.Builder()
-        val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
-        for (i in 0 until responseHeadersLineCount) {
-            headers.append(source.readUtf8LineStrict())
-        }
-        this.responseHeaders = headers.build()
+fun CacheResponse(source: BufferedSource): CacheResponse {
+    val sentRequestAtMillis = source.readUtf8LineStrict().toLong()
+    val receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
+    val headers = NetworkHeaders.Builder()
+    val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
+    for (i in 0 until responseHeadersLineCount) {
+        headers.append(source.readUtf8LineStrict())
     }
+    return CacheResponse(
+        sentRequestAtMillis = sentRequestAtMillis,
+        receivedResponseAtMillis = receivedResponseAtMillis,
+        responseHeaders = headers.build(),
+    )
+}
 
-    constructor(response: NetworkResponse, headers: NetworkHeaders = response.headers) {
-        this.sentRequestAtMillis = response.requestMillis
-        this.receivedResponseAtMillis = response.responseMillis
-        this.responseHeaders = headers
-    }
+@ExperimentalCoilApi
+fun CacheResponse(
+    response: NetworkResponse,
+    headers: NetworkHeaders = response.headers,
+) = CacheResponse(
+    sentRequestAtMillis = response.requestMillis,
+    receivedResponseAtMillis = response.responseMillis,
+    responseHeaders = headers,
+)
+
+/**
+ * Holds the response metadata for an image in the disk cache.
+ */
+@ExperimentalCoilApi
+class CacheResponse(
+    val sentRequestAtMillis: Long,
+    val receivedResponseAtMillis: Long,
+    val responseHeaders: NetworkHeaders,
+) {
 
     fun writeTo(sink: BufferedSink) {
         sink.writeDecimalLong(sentRequestAtMillis).writeByte('\n'.code)
@@ -44,4 +56,14 @@ class CacheResponse {
             }
         }
     }
+
+    fun copy(
+        sentRequestAtMillis: Long = this.sentRequestAtMillis,
+        receivedResponseAtMillis: Long = this.receivedResponseAtMillis,
+        responseHeaders: NetworkHeaders = this.responseHeaders,
+    ) = CacheResponse(
+        sentRequestAtMillis = sentRequestAtMillis,
+        receivedResponseAtMillis = receivedResponseAtMillis,
+        responseHeaders = responseHeaders,
+    )
 }
