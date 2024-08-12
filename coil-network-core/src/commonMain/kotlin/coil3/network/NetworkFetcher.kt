@@ -37,7 +37,7 @@ class NetworkFetcher(
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
-            var output: CacheStrategy.Output? = null
+            var output: CacheStrategy.CacheReadResult? = null
             if (snapshot != null) {
                 // Always return files with empty metadata as it's likely they've been written
                 // to the disk cache manually.
@@ -51,8 +51,7 @@ class NetworkFetcher(
 
                 var cacheResponse = snapshot.toCacheResponse()
                 if (cacheResponse != null) {
-                    val input = CacheStrategy.Input(cacheResponse, newRequest(), options)
-                    output = cacheStrategy.value.compute(input)
+                    output = cacheStrategy.value.read(newRequest(), cacheResponse, options)
                     cacheResponse = output.cacheResponse
 
                     if (cacheResponse != null && output.networkRequest == null) {
@@ -69,8 +68,7 @@ class NetworkFetcher(
             val networkRequest = output?.networkRequest ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
-                val responseBody = response.body
-                snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, responseBody)
+                snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, response.body)
                 if (snapshot != null) {
                     val cacheResponse = snapshot!!.toCacheResponse()
                     return@executeNetworkRequest SourceFetchResult(
@@ -81,7 +79,7 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                val responseBodyBuffer = checkNotNull(responseBody) { "body == null" }.readBuffer()
+                val responseBodyBuffer = checkNotNull(response.body) { "body == null" }.readBuffer()
                 if (responseBodyBuffer.size > 0) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = responseBodyBuffer.toImageSource(),
@@ -271,7 +269,7 @@ class NetworkFetcher(
 
     class Factory(
         networkClient: () -> NetworkClient,
-        cacheStrategy: () -> CacheStrategy = ::CacheStrategy,
+        cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
     ) : Fetcher.Factory<Uri> {
         private val networkClientLazy = lazy(networkClient)

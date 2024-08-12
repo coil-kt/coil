@@ -1,32 +1,28 @@
 package coil3.network
 
 import coil3.annotation.ExperimentalCoilApi
-import coil3.network.CacheStrategy.Output
 import coil3.request.Options
-import kotlin.js.JsName
-
-/**
- * The default [CacheStrategy], which always returns the disk cache response.
- */
-@ExperimentalCoilApi
-@JsName("newCacheStrategy")
-fun CacheStrategy() = CacheStrategy { Output(it.cacheResponse) }
+import kotlin.jvm.JvmField
 
 /**
  * Determines whether to use a cached response from the disk cache and/or perform a new network request.
  */
 @ExperimentalCoilApi
-fun interface CacheStrategy {
+interface CacheStrategy {
 
-    suspend fun compute(input: Input): Output
+    suspend fun read(
+        networkRequest: NetworkRequest,
+        cacheResponse: NetworkResponse,
+        options: Options,
+    ): CacheReadResult
 
-    class Input(
-        val cacheResponse: NetworkResponse,
-        val networkRequest: NetworkRequest,
-        val options: Options,
-    )
+    suspend fun write(
+        networkRequest: NetworkRequest,
+        networkResponse: NetworkResponse,
+        options: Options,
+    ): NetworkResponse?
 
-    class Output {
+    class CacheReadResult {
         val cacheResponse: NetworkResponse?
         val networkRequest: NetworkRequest?
 
@@ -58,6 +54,25 @@ fun interface CacheStrategy {
         ) {
             this.cacheResponse = cacheResponse
             this.networkRequest = networkRequest
+        }
+    }
+
+    companion object {
+        /**
+         * The default [CacheStrategy], which always returns the disk cache response.
+         */
+        @JvmField val DEFAULT = object : CacheStrategy {
+            override suspend fun read(
+                networkRequest: NetworkRequest,
+                cacheResponse: NetworkResponse,
+                options: Options,
+            ) = CacheReadResult(cacheResponse)
+
+            override suspend fun write(
+                networkRequest: NetworkRequest,
+                networkResponse: NetworkResponse,
+                options: Options,
+            ) = networkResponse
         }
     }
 }

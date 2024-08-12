@@ -18,7 +18,7 @@ package coil3.network.cachecontrol
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.CacheStrategy
 import coil3.network.CacheStrategy.Input
-import coil3.network.CacheStrategy.Output
+import coil3.network.CacheStrategy.CacheReadResult
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.cachecontrol.internal.BROWSER_DATE_TIME_FORMAT
@@ -40,7 +40,7 @@ class CacheControlCacheStrategy(
     private val now: () -> Instant = Clock.System::now,
 ) : CacheStrategy {
 
-    override suspend fun compute(input: Input): Output {
+    override suspend fun compute(input: Input): CacheReadResult {
         return Computation(input.cacheResponse, input.networkRequest, now()).compute()
     }
 
@@ -109,16 +109,16 @@ class CacheControlCacheStrategy(
             }
         }
 
-        fun compute(): Output {
+        fun compute(): CacheReadResult {
             // If this response shouldn't have been stored, it should never be used as a response
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
             if (!isCacheable(responseCaching, requestCaching)) {
-                return Output(networkRequest)
+                return CacheReadResult(networkRequest)
             }
 
             if (requestCaching.noCache || hasConditions(networkRequest)) {
-                return Output(networkRequest)
+                return CacheReadResult(networkRequest)
             }
 
             val ageMillis = cacheResponseAge()
@@ -147,7 +147,7 @@ class CacheControlCacheStrategy(
                 if (ageMillis > oneDayMillis && isFreshnessLifetimeHeuristic()) {
                     headersBuilder.add("Warning", "113 HttpURLConnection \"Heuristic expiration\"")
                 }
-                return Output(cacheResponse.copy(headers = headersBuilder.build()))
+                return CacheReadResult(cacheResponse.copy(headers = headersBuilder.build()))
             }
 
             // Find a condition to add to the request. If the condition is satisfied, the response
@@ -167,7 +167,7 @@ class CacheControlCacheStrategy(
                     conditionName = "If-Modified-Since"
                     conditionValue = servedDateString
                 }
-                else -> return Output(networkRequest) // No condition! Make a regular request.
+                else -> return CacheReadResult(networkRequest) // No condition! Make a regular request.
             }
 
             val conditionalRequest = networkRequest.copy(
@@ -175,7 +175,7 @@ class CacheControlCacheStrategy(
                     .add(conditionName, conditionValue!!)
                     .build(),
             )
-            return Output(cacheResponse, conditionalRequest)
+            return CacheReadResult(cacheResponse, conditionalRequest)
         }
 
         /**
