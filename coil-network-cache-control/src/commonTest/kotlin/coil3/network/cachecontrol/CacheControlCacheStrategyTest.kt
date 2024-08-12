@@ -165,7 +165,7 @@ class CacheControlCacheStrategyTest {
 
         assertEquals(2, networkClient.requests.size)
         val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
-            CacheResponse(diskCache.fileSystem.source(snapshot.metadata).buffer())
+            CacheResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
         }
         val expectedNetworkHeaders = headers.newBuilder()
             .apply {
@@ -174,7 +174,7 @@ class CacheControlCacheStrategyTest {
                 }
             }
             .build()
-        assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.responseHeaders.asMap())
+        assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.headers.asMap())
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1838 */
@@ -220,7 +220,7 @@ class CacheControlCacheStrategyTest {
 
             assertEquals(2, networkClient.requests.size)
             val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
-                CacheResponse(diskCache.fileSystem.source(snapshot.metadata).buffer())
+                CacheResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
             }
             val expectedNetworkHeaders = headers.newBuilder()
                 .apply {
@@ -229,7 +229,7 @@ class CacheControlCacheStrategyTest {
                     }
                 }
                 .build()
-            assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.responseHeaders.asMap())
+            assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.headers.asMap())
         }
 
     @Test
