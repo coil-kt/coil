@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.compose.singleton")
 
 kotlin {

@@ -1,6 +1,5 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
-import coil3.androidUnitTest
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
@@ -11,7 +10,7 @@ plugins {
     id("io.github.takahirom.roborazzi")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.test.roborazzi")
 
 kotlin {

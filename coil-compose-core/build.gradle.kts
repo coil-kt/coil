@@ -1,7 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidInstrumentedTest
 import coil3.androidLibrary
-import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
@@ -13,7 +11,7 @@ plugins {
     id("androidx.baselineprofile")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.compose.core")
 
 kotlin {

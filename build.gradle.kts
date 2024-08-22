@@ -10,6 +10,7 @@ import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -60,6 +61,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     // Necessary to publish to Maven.
@@ -142,9 +144,9 @@ allprojects {
 
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
-            enableIntrinsicRemember = true
-            enableNonSkippingGroupOptimization = true
-            enableStrongSkippingMode = true
+            featureFlags.addAll(
+                ComposeFeatureFlag.OptimizeNonSkippingGroups,
+            )
             stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
 
             if (enableComposeMetrics && name in publicModules) {

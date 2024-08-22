@@ -1,5 +1,4 @@
 import coil3.androidLibrary
-import coil3.androidUnitTest
 import coil3.applyCoilHierarchyTemplate
 
 plugins {

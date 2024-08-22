@@ -1,6 +1,5 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
-import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
@@ -8,7 +7,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-addAllMultiplatformTargets(enableWasm = false)
+addAllMultiplatformTargets(libs.versions.skiko, enableWasm = false)
 androidLibrary(name = "coil3.network.ktor2")
 
 kotlin {

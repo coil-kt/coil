@@ -22,7 +22,7 @@ class MicrosTraceSectionMetric(
     }
 
     @Suppress("RestrictedApi")
-    override fun getResult(
+    override fun getMeasurements(
         captureInfo: CaptureInfo,
         traceSession: PerfettoTraceProcessor.Session,
     ): List<Measurement> {

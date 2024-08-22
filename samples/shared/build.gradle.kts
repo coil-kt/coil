@@ -6,7 +6,7 @@ plugins {
     id("kotlin-multiplatform")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "sample.common", config = true)
 
 kotlin {
