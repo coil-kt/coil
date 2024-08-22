@@ -1,7 +1,7 @@
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("com.android.application")

@@ -10,6 +10,7 @@ import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -142,9 +143,11 @@ allprojects {
 
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
-            enableIntrinsicRemember = true
-            enableNonSkippingGroupOptimization = true
-            enableStrongSkippingMode = true
+            featureFlags.addAll(
+                ComposeFeatureFlag.IntrinsicRemember,
+                ComposeFeatureFlag.OptimizeNonSkippingGroups,
+                ComposeFeatureFlag.StrongSkipping,
+            )
             stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
 
             if (enableComposeMetrics && name in publicModules) {

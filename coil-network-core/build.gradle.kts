@@ -1,6 +1,5 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
-import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
@@ -9,7 +8,7 @@ plugins {
     id("dev.drewhamilton.poko")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.network")
 
 kotlin {

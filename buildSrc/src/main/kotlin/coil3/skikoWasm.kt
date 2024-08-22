@@ -5,9 +5,6 @@
 package coil3
 
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.artifacts.UnresolvedDependency
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
@@ -21,7 +18,7 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 // Compose runtime dependency.
 // https://github.com/JetBrains/compose-multiplatform/blob/master/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/experimental/web/internal/configureExperimentalWebApplication.kt
 
-fun Project.createSkikoWasmJsRuntimeDependency() {
+fun Project.createSkikoWasmJsRuntimeDependency(skikoVersion: Provider<String>) {
     if (plugins.hasPlugin("org.jetbrains.compose")) {
         // This process is already handled by the Compose plugin.
         return
@@ -30,14 +27,14 @@ fun Project.createSkikoWasmJsRuntimeDependency() {
     afterEvaluate {
         extensions.findByType<KotlinMultiplatformExtension>()!!
             .targets.asMap.values.filterIsInstanceTo(mutableSetOf<KotlinJsIrTarget>())
-            .configureExperimentalWebApplication(project)
+            .configureExperimentalWebApplication(project, skikoVersion)
     }
 }
 
-private fun Collection<KotlinJsIrTarget>.configureExperimentalWebApplication(project: Project) {
+private fun Collection<KotlinJsIrTarget>.configureExperimentalWebApplication(project: Project, skikoVersion: Provider<String>) {
     val skikoJsWasmRuntimeConfiguration = project.configurations.create("skikoJsWasmRuntime")
-    val skikoJsWasmRuntimeDependency = skikoVersionProvider(project).map { skikoVersion ->
-        project.dependencies.create("$SKIKO_GROUP:skiko-js-wasm-runtime:$skikoVersion")
+    val skikoJsWasmRuntimeDependency = skikoVersion.map { version ->
+        project.dependencies.create("$SKIKO_GROUP:skiko-js-wasm-runtime:$version")
     }
     skikoJsWasmRuntimeConfiguration.defaultDependencies {
         addLater(skikoJsWasmRuntimeDependency)
@@ -64,58 +61,3 @@ private fun Collection<KotlinJsIrTarget>.configureExperimentalWebApplication(pro
 }
 
 private const val SKIKO_GROUP = "org.jetbrains.skiko"
-
-private fun skikoVersionProvider(project: Project): Provider<String> {
-    return project.provider {
-        val skikoDependency = project.configurations.firstNotNullOfOrNull { configuration ->
-            configuration.allDependenciesDescriptors.find(::isSkikoDependency)
-        }
-        checkNotNull(skikoDependency?.version) { "Cannot determine the version of Skiko." }
-    }
-}
-
-private fun isSkikoDependency(dep: DependencyDescriptor): Boolean {
-    return dep.group == SKIKO_GROUP && dep.version != null
-}
-
-private val Configuration.allDependenciesDescriptors: Sequence<DependencyDescriptor>
-    get() = with(resolvedConfiguration.lenientConfiguration) {
-        allModuleDependencies.asSequence().map(::ResolvedDependencyDescriptor) +
-            unresolvedModuleDependencies.asSequence().map(::UnresolvedDependencyDescriptor)
-    }
-
-private interface DependencyDescriptor {
-    val group: String?
-    val name: String?
-    val version: String?
-}
-
-@JvmInline
-private value class ResolvedDependencyDescriptor(
-    private val dependency: ResolvedDependency,
-) : DependencyDescriptor {
-
-    override val group: String
-        get() = dependency.moduleGroup
-
-    override val name: String
-        get() = dependency.moduleName
-
-    override val version: String
-        get() = dependency.moduleVersion
-}
-
-@JvmInline
-private value class UnresolvedDependencyDescriptor(
-    private val dependency: UnresolvedDependency,
-) : DependencyDescriptor {
-
-    override val group: String
-        get() = dependency.selector.group
-
-    override val name: String
-        get() = dependency.selector.name
-
-    override val version: String?
-        get() = dependency.selector.version
-}

@@ -1,7 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidInstrumentedTest
 import coil3.androidLibrary
-import coil3.androidUnitTest
 import coil3.skikoAwtRuntimeDependency
 
 plugins {
@@ -10,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.svg")
 
 kotlin {

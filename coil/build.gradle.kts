@@ -1,7 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidInstrumentedTest
 import coil3.androidLibrary
-import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
@@ -9,7 +7,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-addAllMultiplatformTargets()
+addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.singleton")
 
 kotlin {
