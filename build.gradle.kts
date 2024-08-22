@@ -61,6 +61,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     // Necessary to publish to Maven.
@@ -144,9 +145,7 @@ allprojects {
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
             featureFlags.addAll(
-                ComposeFeatureFlag.IntrinsicRemember,
                 ComposeFeatureFlag.OptimizeNonSkippingGroups,
-                ComposeFeatureFlag.StrongSkipping,
             )
             stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
 
