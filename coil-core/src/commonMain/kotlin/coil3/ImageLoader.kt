@@ -202,7 +202,8 @@ interface ImageLoader {
         }
 
         /**
-         * A convenience method to set [fetcherCoroutineContext] and [decoderCoroutineContext] in one call.
+         * A convenience method to set [interceptorCoroutineContext], [fetcherCoroutineContext],
+         * and [decoderCoroutineContext] in one call.
          */
         fun coroutineContext(context: CoroutineContext) = apply {
             this.defaults = this.defaults.copy(
