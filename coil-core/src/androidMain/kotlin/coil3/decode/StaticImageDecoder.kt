@@ -1,6 +1,9 @@
 package coil3.decode
 
 import android.graphics.ImageDecoder
+import android.system.ErrnoException
+import android.system.Os
+import android.system.OsConstants.SEEK_SET
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
@@ -16,6 +19,7 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
+import coil3.toAndroidUri
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
@@ -119,8 +123,14 @@ class StaticImageDecoder(
                 metadata is AssetMetadata -> {
                     ImageDecoder.createSource(options.context.assets, metadata.filePath)
                 }
-                metadata is ContentMetadata -> {
-                    ImageDecoder.createSource { metadata.assetFileDescriptor }
+                metadata is ContentMetadata -> try {
+                    // Ensure the file descriptor supports lseek.
+                    // https://github.com/coil-kt/coil/issues/2434
+                    val asset = metadata.assetFileDescriptor
+                    Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
+                    ImageDecoder.createSource { asset }
+                } catch (_: ErrnoException) {
+                    ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
                 }
                 metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
                     ImageDecoder.createSource(options.context.resources, metadata.resId)
