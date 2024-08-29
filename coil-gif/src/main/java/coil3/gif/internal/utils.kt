@@ -8,6 +8,8 @@ import androidx.annotation.RequiresApi
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil3.gif.AnimatedTransformation
 import coil3.gif.PixelOpacity
+import java.nio.ByteBuffer
+import okio.BufferedSource
 
 @RequiresApi(28)
 internal fun AnimatedTransformation.asPostProcessor() =
@@ -35,4 +37,14 @@ internal fun animatable2CompatCallbackOf(
 ) = object : Animatable2Compat.AnimationCallback() {
     override fun onAnimationStart(drawable: Drawable) { onStart?.invoke() }
     override fun onAnimationEnd(drawable: Drawable) { onEnd?.invoke() }
+}
+
+internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
+    // Squash bytes to BufferedSource inner buffer then we know total byteCount.
+    request(Long.MAX_VALUE)
+
+    val byteBuffer = ByteBuffer.allocateDirect(buffer.size.toInt())
+    while (!buffer.exhausted()) buffer.read(byteBuffer)
+    byteBuffer.flip()
+    return byteBuffer
 }

@@ -10,18 +10,16 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
 import coil3.asImage
-import coil3.decode.AssetMetadata
-import coil3.decode.ByteBufferMetadata
-import coil3.decode.ContentMetadata
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
-import coil3.decode.ResourceMetadata
+import coil3.decode.toImageDecoderSource
 import coil3.fetch.SourceFetchResult
 import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
+import coil3.gif.internal.squashToDirectByteBuffer
 import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
@@ -29,17 +27,14 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.size.ScaleDrawable
-import coil3.toAndroidUri
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
-import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
-import okio.FileSystem
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
@@ -61,7 +56,9 @@ class AnimatedImageDecoder(
         var isSampled = false
         val drawable = runInterruptible {
             maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
-                source.toImageDecoderSource().decodeDrawable { info, _ ->
+                val imageSource = source.toImageDecoderSource(options)
+                    ?: ImageDecoder.createSource(source.source().use { it.squashToDirectByteBuffer() })
+                imageSource.decodeDrawable { info, _ ->
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
                     val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
@@ -101,38 +98,6 @@ class AnimatedImageDecoder(
             image = wrapDrawable(drawable).asImage(),
             isSampled = isSampled,
         )
-    }
-
-    private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
-        if (fileSystem === FileSystem.SYSTEM) {
-            val file = fileOrNull()
-            if (file != null && fileSystem === FileSystem.SYSTEM) {
-                return ImageDecoder.createSource(file.toFile())
-            }
-        }
-
-        val metadata = metadata
-        if (metadata is AssetMetadata) {
-            return ImageDecoder.createSource(options.context.assets, metadata.filePath)
-        }
-        if (metadata is ContentMetadata) {
-            return if (SDK_INT >= 29) {
-                // ImageDecoder will seek inner fd to startOffset.
-                ImageDecoder.createSource { metadata.assetFileDescriptor }
-            } else {
-                ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
-            }
-        }
-        if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
-            return ImageDecoder.createSource(options.context.resources, metadata.resId)
-        }
-        if (metadata is ByteBufferMetadata) {
-            val isDirect = metadata.byteBuffer.isDirect
-            if (isDirect || SDK_INT >= 30) return ImageDecoder.createSource(metadata.byteBuffer)
-        }
-
-        val bytebuffer = source.source().use { it.squashToDirectByteBuffer() }
-        return ImageDecoder.createSource(bytebuffer)
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
@@ -193,14 +158,4 @@ class AnimatedImageDecoder(
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
     }
-}
-
-internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
-    // Squash bytes to BufferedSource inner buffer then we know total byteCount.
-    request(Long.MAX_VALUE)
-
-    val byteBuffer = ByteBuffer.allocateDirect(buffer.size.toInt())
-    while (!buffer.exhausted()) buffer.read(byteBuffer)
-    byteBuffer.flip()
-    return byteBuffer
 }

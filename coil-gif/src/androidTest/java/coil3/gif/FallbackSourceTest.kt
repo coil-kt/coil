@@ -1,5 +1,6 @@
 package coil3.gif
 
+import coil3.gif.internal.squashToDirectByteBuffer
 import java.io.ByteArrayInputStream
 import kotlin.random.Random
 import kotlin.test.assertContentEquals
