@@ -37,7 +37,7 @@ class NetworkFetcher(
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
-            var output: CacheStrategy.CacheReadResult? = null
+            var output: CacheStrategy.ReadResult? = null
             if (snapshot != null) {
                 // Always return files with empty metadata as it's likely they've been written
                 // to the disk cache manually.
@@ -49,9 +49,9 @@ class NetworkFetcher(
                     )
                 }
 
-                var cacheResponse = snapshot.toCacheResponse()
+                var cacheResponse = snapshot.toNetworkResponse()
                 if (cacheResponse != null) {
-                    output = cacheStrategy.value.read(newRequest(), cacheResponse, options)
+                    output = cacheStrategy.value.allowRead(newRequest(), cacheResponse, options)
                     cacheResponse = output.cacheResponse
 
                     if (cacheResponse != null && output.networkRequest == null) {
@@ -70,7 +70,7 @@ class NetworkFetcher(
                 // Write the response to the disk cache then open a new snapshot.
                 snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, response.body)
                 if (snapshot != null) {
-                    val cacheResponse = snapshot!!.toCacheResponse()
+                    val cacheResponse = snapshot!!.toNetworkResponse()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
@@ -151,7 +151,8 @@ class NetworkFetcher(
                             headers[key] = values
                         }
                     }
-                    CacheResponse.writeTo(networkResponse.copy(headers = headers.build()), this)
+                    val newNetworkResponse = networkResponse.copy(headers = headers.build())
+                    CacheResponse.writeTo(newNetworkResponse, this)
                 }
             } else {
                 // Write the response's cache headers and body.
@@ -227,7 +228,7 @@ class NetworkFetcher(
         return contentType?.substringBefore(';')
     }
 
-    private fun DiskCache.Snapshot.toCacheResponse(): NetworkResponse? {
+    private fun DiskCache.Snapshot.toNetworkResponse(): NetworkResponse? {
         try {
             return fileSystem.read(metadata) {
                 CacheResponse.readFrom(this)
