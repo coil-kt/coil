@@ -106,6 +106,7 @@ jobs:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
+                  disk-size: '4G'
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     build-samples:
