@@ -21,7 +21,6 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
-import coil3.toAndroidUri
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
