@@ -108,7 +108,7 @@ class StaticImageDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val source = result.source.toImageDecoderSource(options) ?: return null
+            val source = result.source.toImageDecoderSource(options, animated = false) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
         }
     }
@@ -116,7 +116,7 @@ class StaticImageDecoder(
 
 @InternalCoilApi
 @RequiresApi(28)
-fun ImageSource.toImageDecoderSource(options: Options): ImageDecoder.Source? {
+fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): ImageDecoder.Source? {
     if (fileSystem === FileSystem.SYSTEM) {
         val file = fileOrNull()
         if (file != null) {
@@ -125,28 +125,28 @@ fun ImageSource.toImageDecoderSource(options: Options): ImageDecoder.Source? {
     }
 
     val metadata = metadata
-    return when {
+    when {
         metadata is AssetMetadata -> {
-            ImageDecoder.createSource(options.context.assets, metadata.filePath)
+            return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
-        metadata is ContentMetadata -> run {
+        metadata is ContentMetadata -> {
             if (SDK_INT >= 29) {
                 try {
                     // Ensure the file descriptor supports lseek.
                     // https://github.com/coil-kt/coil/issues/2434
                     val asset = metadata.assetFileDescriptor
                     Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
-                    return@run ImageDecoder.createSource { asset }
+                    return ImageDecoder.createSource { asset }
                 } catch (_: ErrnoException) {}
             }
-            ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
         }
         metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
-            ImageDecoder.createSource(options.context.resources, metadata.resId)
+            return ImageDecoder.createSource(options.context.resources, metadata.resId)
         }
-        metadata is ByteBufferMetadata && (SDK_INT >= 30 || metadata.byteBuffer.isDirect) -> {
-            ImageDecoder.createSource(metadata.byteBuffer)
+        metadata is ByteBufferMetadata && (SDK_INT >= 30 || !animated || metadata.byteBuffer.isDirect) -> {
+            return ImageDecoder.createSource(metadata.byteBuffer)
         }
-        else -> null
     }
+
+    return null
 }

@@ -56,7 +56,7 @@ class AnimatedImageDecoder(
         var isSampled = false
         val drawable = runInterruptible {
             maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
-                val imageSource = source.toImageDecoderSource(options)
+                val imageSource = source.toImageDecoderSource(options, animated = true)
                     ?: ImageDecoder.createSource(source.source().use { it.squashToDirectByteBuffer() })
                 imageSource.decodeDrawable { info, _ ->
                     // Configure the output image's size.
