@@ -128,16 +128,14 @@ fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): Image
         metadata is AssetMetadata -> {
             return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
-        metadata is ContentMetadata -> {
-            if (SDK_INT >= 29) {
-                try {
-                    // Ensure the file descriptor supports lseek.
-                    // https://github.com/coil-kt/coil/issues/2434
-                    val asset = metadata.assetFileDescriptor
-                    Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
-                    return ImageDecoder.createSource { asset }
-                } catch (_: ErrnoException) {}
-            }
+        metadata is ContentMetadata && SDK_INT >= 29 -> {
+            try {
+                // Ensure the file descriptor supports lseek.
+                // https://github.com/coil-kt/coil/issues/2434
+                val asset = metadata.assetFileDescriptor
+                Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
+                return ImageDecoder.createSource { asset }
+            } catch (_: ErrnoException) {}
         }
         metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)
