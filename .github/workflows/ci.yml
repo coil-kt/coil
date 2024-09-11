@@ -52,6 +52,9 @@ jobs:
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
+            - name: Check Disk Space
+              run: df -h
+
             - name: Unit tests
               run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
 
