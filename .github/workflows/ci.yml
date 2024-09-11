@@ -61,12 +61,13 @@ jobs:
             - name: Remove old Xcode versions
               run: |
                   echo "Disk spaces before cleanup"
+                  /usr/bin/xcrun xcodebuild -version
                   sudo df -h
                   sudo du -sh /*
                   echo "Searching for Xcode versions:"
                   find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Remove all but the latest Xcode..."
-                  find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1 | sort -r | xargs rm -rf
+                  find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1 | sort -r | xargs -P 3 rm -rf
                   echo "Available Xcode versions after removal:"
                   find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Disk spaces after cleanup"
