@@ -11,6 +11,8 @@ concurrency:
 env:
     CI: true
     JAVA_VERSION: 17
+    ORG_GRADLE_IDE_DOWNLOADSOURCES: false
+    ORG_GRADLE_IDE_DOWNLOADJAVADOC: false
 jobs:
     checks:
         name: Checks
