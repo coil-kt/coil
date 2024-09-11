@@ -66,7 +66,7 @@ jobs:
                   echo "Searching for Xcode versions:"
                   find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Remove all but the latest Xcode..."
-                  find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1 | sort -r | tail --lines=+2 | xargs rm -rf
+                  find /Applications -name "Xcode_15*" -maxdepth 1 -mindepth 1 | sort -r | tail --lines=+2 | xargs rm -rf
                   echo "Available Xcode versions after removal:"
                   find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Disk spaces after cleanup"
