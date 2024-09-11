@@ -62,12 +62,18 @@ jobs:
 
             - name: Remove old Xcode versions
               run: |
+                  echo "Disk spaces before cleanup"
+                  sudo df -h
+                  sudo du -sh /*
                   echo "Searching for Xcode versions:"
                   find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
-                  echo "Removing old Xcode versions..."
-                  find /Applications -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
+                  echo "Remove all but the latest Xcode..."
+                  find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
                   echo "Available Xcode versions after removal:"
                   find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
+                  echo "Disk spaces after cleanup"
+                  sudo df -h
+                  sudo du -sh /*
 
             - name: Unit tests
               run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
