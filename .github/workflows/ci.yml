@@ -55,6 +55,9 @@ jobs:
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
+            - name: Delete old Xcode versions
+              run: find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
+
             - name: Unit tests
               run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm -Dorg.gradle.workers.max=3
 
