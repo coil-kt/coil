@@ -19,7 +19,6 @@ jobs:
         runs-on: macos-latest
         timeout-minutes: 30
         env:
-            ORG_GRADLE_CACHE_SIZE: 1g
             ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
@@ -45,7 +44,6 @@ jobs:
         runs-on: macos-latest
         timeout-minutes: 120
         env:
-            ORG_GRADLE_CACHE_SIZE: 1g
             ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
@@ -66,11 +64,11 @@ jobs:
                   sudo df -h
                   sudo du -sh /*
                   echo "Searching for Xcode versions:"
-                  find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
+                  find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Remove all but the latest Xcode..."
-                  find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
+                  find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1 | sort -r | tail --lines=+2 | xargs rm -rf
                   echo "Available Xcode versions after removal:"
-                  find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
+                  find /Applications -name "Xcode*" -maxdepth 1 -mindepth 1
                   echo "Disk spaces after cleanup"
                   sudo df -h
                   sudo du -sh /*
@@ -125,7 +123,6 @@ jobs:
         runs-on: macos-latest
         timeout-minutes: 30
         env:
-            ORG_GRADLE_CACHE_SIZE: 1g
             ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
@@ -153,7 +150,6 @@ jobs:
         if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
         env:
-            ORG_GRADLE_CACHE_SIZE: 1g
             ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
