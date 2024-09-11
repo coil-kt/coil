@@ -65,7 +65,7 @@ jobs:
                   echo "Searching for Xcode versions:"
                   find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
                   echo "Removing old Xcode versions..."
-                  find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1 | grep -v ${{ matrix.xcode }} | xargs rm -rf
+                  find /Applications -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
                   echo "Available Xcode versions after removal:"
                   find /Applications -name "Xcode_*" -maxdepth 1 -mindepth 1
 
