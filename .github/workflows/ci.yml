@@ -13,18 +13,23 @@ env:
     JAVA_VERSION: 17
     ORG_GRADLE_IDE_DOWNLOADJAVADOC: false
     ORG_GRADLE_IDE_DOWNLOADSOURCES: false
-    ORG_GRADLE_CACHE_SIZE: 1g
 jobs:
     checks:
         name: Checks
         runs-on: macos-latest
         timeout-minutes: 30
+        env:
+            ORG_GRADLE_CACHE_SIZE: 1g
+            ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
+
+            - name: Delete old Xcode versions
+              run: find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
 
             - name: Check Gradle wrapper
               uses: gradle/actions/wrapper-validation@v4
@@ -42,6 +47,9 @@ jobs:
         name: Unit tests
         runs-on: macos-latest
         timeout-minutes: 120
+        env:
+            ORG_GRADLE_CACHE_SIZE: 1g
+            ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
@@ -59,7 +67,7 @@ jobs:
               run: find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
 
             - name: Unit tests
-              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm -Dorg.gradle.workers.max=3
+              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
 
     instrumentation-tests:
         name: Instrumentation tests
@@ -107,6 +115,9 @@ jobs:
         name: Build samples
         runs-on: macos-latest
         timeout-minutes: 30
+        env:
+            ORG_GRADLE_CACHE_SIZE: 1g
+            ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
@@ -120,6 +131,9 @@ jobs:
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
+            - name: Delete old Xcode versions
+              run: find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
+
             - name: Build Compose and View samples
               run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
 
@@ -132,12 +146,18 @@ jobs:
         timeout-minutes: 60
         if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
+        env:
+            ORG_GRADLE_CACHE_SIZE: 1g
+            ORG_GRADLE_WORKERS_MAX: 3
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
+
+            - name: Delete old Xcode versions
+              run: find /Applications/ -name "Xcode*" | sort -r | tail --lines=+2 | xargs rm -rf
 
             - name: Deploy snapshot
               env:
