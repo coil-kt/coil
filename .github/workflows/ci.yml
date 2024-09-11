@@ -61,6 +61,7 @@ jobs:
             - name: Remove old Xcode versions
               run: |
                   echo "Disk spaces before cleanup"
+                  /usr/bin/xcrun xcode-select --print-path
                   /usr/bin/xcrun xcodebuild -version
                   sudo df -h
                   sudo du -sh /*
