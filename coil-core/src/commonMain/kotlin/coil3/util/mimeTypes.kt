@@ -160,4 +160,6 @@ private val mimeTypeData = buildMap {
     put("wvx", "video/x-ms-wvx")
     put("avi", "video/x-msvideo")
     put("movie", "video/x-sgi-movie")
+
+    put("pdf", "application/pdf")
 }
