@@ -1,6 +1,7 @@
 package coil3.decode
 
 import android.graphics.ImageDecoder
+import android.os.Build.VERSION.SDK_INT
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants.SEEK_SET
@@ -9,6 +10,7 @@ import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
+import coil3.annotation.InternalCoilApi
 import coil3.asImage
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.fetch.SourceFetchResult
@@ -19,7 +21,6 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
-import coil3.toAndroidUri
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
@@ -106,40 +107,43 @@ class StaticImageDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val source = result.source.imageDecoderSourceOrNull(options) ?: return null
+            val source = result.source.toImageDecoderSource(options, animated = false) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
         }
+    }
+}
 
-        private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
-            if (fileSystem === FileSystem.SYSTEM) {
-                val file = fileOrNull()
-                if (file != null) {
-                    return ImageDecoder.createSource(file.toFile())
-                }
-            }
-
-            val metadata = metadata
-            return when {
-                metadata is AssetMetadata -> {
-                    ImageDecoder.createSource(options.context.assets, metadata.filePath)
-                }
-                metadata is ContentMetadata -> try {
-                    // Ensure the file descriptor supports lseek.
-                    // https://github.com/coil-kt/coil/issues/2434
-                    val asset = metadata.assetFileDescriptor
-                    Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
-                    ImageDecoder.createSource { asset }
-                } catch (_: ErrnoException) {
-                    ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
-                }
-                metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
-                    ImageDecoder.createSource(options.context.resources, metadata.resId)
-                }
-                metadata is ByteBufferMetadata -> {
-                    ImageDecoder.createSource(metadata.byteBuffer)
-                }
-                else -> null
-            }
+@InternalCoilApi
+@RequiresApi(28)
+fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): ImageDecoder.Source? {
+    if (fileSystem === FileSystem.SYSTEM) {
+        val file = fileOrNull()
+        if (file != null) {
+            return ImageDecoder.createSource(file.toFile())
         }
     }
+
+    val metadata = metadata
+    when {
+        metadata is AssetMetadata -> {
+            return ImageDecoder.createSource(options.context.assets, metadata.filePath)
+        }
+        metadata is ContentMetadata && SDK_INT >= 29 -> {
+            try {
+                // Ensure the file descriptor supports lseek.
+                // https://github.com/coil-kt/coil/issues/2434
+                val asset = metadata.assetFileDescriptor
+                Os.lseek(asset.fileDescriptor, asset.startOffset, SEEK_SET)
+                return ImageDecoder.createSource { asset }
+            } catch (_: ErrnoException) {}
+        }
+        metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
+            return ImageDecoder.createSource(options.context.resources, metadata.resId)
+        }
+        metadata is ByteBufferMetadata && (SDK_INT >= 30 || !animated || metadata.byteBuffer.isDirect) -> {
+            return ImageDecoder.createSource(metadata.byteBuffer)
+        }
+    }
+
+    return null
 }
