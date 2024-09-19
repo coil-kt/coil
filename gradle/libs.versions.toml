@@ -74,7 +74,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
-kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2"
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
 
 ktor2-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor2" }
 ktor2-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor2" }
