@@ -64,10 +64,7 @@ private fun Project.booleanProperty(
 ): Boolean = (properties[name] as String?)?.toBooleanStrict() ?: default()
 
 private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
-    var index = 0
-    var sum = 0
-    for (element in this) {
-        sum += selector(index++, element)
+    return this.foldIndexed(0) { index, acc, element ->
+        acc + selector(index, element)
     }
-    return sum
 }
