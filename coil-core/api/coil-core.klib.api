@@ -477,12 +477,6 @@ final class coil3.fetch/SourceFetchResult : coil3.fetch/FetchResult { // coil3.f
     final fun toString(): kotlin/String // coil3.fetch/SourceFetchResult.toString|toString(){}[0]
 }
 
-final class coil3.key/FileUriKeyer : coil3.key/Keyer<coil3/Uri> { // coil3.key/FileUriKeyer|null[0]
-    constructor <init>(kotlin/Boolean) // coil3.key/FileUriKeyer.<init>|<init>(kotlin.Boolean){}[0]
-
-    final fun key(coil3/Uri, coil3.request/Options): kotlin/String? // coil3.key/FileUriKeyer.key|key(coil3.Uri;coil3.request.Options){}[0]
-}
-
 final class coil3.request/ErrorResult : coil3.request/ImageResult { // coil3.request/ErrorResult|null[0]
     constructor <init>(coil3/Image?, coil3.request/ImageRequest, kotlin/Throwable) // coil3.request/ErrorResult.<init>|<init>(coil3.Image?;coil3.request.ImageRequest;kotlin.Throwable){}[0]
 
@@ -934,6 +928,12 @@ final object coil3.util/ServiceLoaderComponentRegistry { // coil3.util/ServiceLo
     final fun register(coil3.util/FetcherServiceLoaderTarget<*>) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.FetcherServiceLoaderTarget<*>){}[0]
 }
 
+final val coil3.request/addLastModifiedToFileCacheKey // coil3.request/addLastModifiedToFileCacheKey|@coil3.Extras.Key.Companion{}addLastModifiedToFileCacheKey[0]
+    final fun (coil3/Extras.Key.Companion).<get-addLastModifiedToFileCacheKey>(): coil3/Extras.Key<kotlin/Boolean> // coil3.request/addLastModifiedToFileCacheKey.<get-addLastModifiedToFileCacheKey>|<get-addLastModifiedToFileCacheKey>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.request/addLastModifiedToFileCacheKey // coil3.request/addLastModifiedToFileCacheKey|@coil3.request.ImageRequest{}addLastModifiedToFileCacheKey[0]
+    final fun (coil3.request/ImageRequest).<get-addLastModifiedToFileCacheKey>(): kotlin/Boolean // coil3.request/addLastModifiedToFileCacheKey.<get-addLastModifiedToFileCacheKey>|<get-addLastModifiedToFileCacheKey>@coil3.request.ImageRequest(){}[0]
+final val coil3.request/addLastModifiedToFileCacheKey // coil3.request/addLastModifiedToFileCacheKey|@coil3.request.Options{}addLastModifiedToFileCacheKey[0]
+    final fun (coil3.request/Options).<get-addLastModifiedToFileCacheKey>(): kotlin/Boolean // coil3.request/addLastModifiedToFileCacheKey.<get-addLastModifiedToFileCacheKey>|<get-addLastModifiedToFileCacheKey>@coil3.request.Options(){}[0]
 final val coil3.request/crossfadeMillis // coil3.request/crossfadeMillis|@coil3.request.ImageRequest{}crossfadeMillis[0]
     final fun (coil3.request/ImageRequest).<get-crossfadeMillis>(): kotlin/Int // coil3.request/crossfadeMillis.<get-crossfadeMillis>|<get-crossfadeMillis>@coil3.request.ImageRequest(){}[0]
 final val coil3.request/maxBitmapSize // coil3.request/maxBitmapSize|@coil3.Extras.Key.Companion{}maxBitmapSize[0]
@@ -949,6 +949,7 @@ final val coil3/filePath // coil3/filePath|@coil3.Uri{}filePath[0]
 final val coil3/pathSegments // coil3/pathSegments|@coil3.Uri{}pathSegments[0]
     final fun (coil3/Uri).<get-pathSegments>(): kotlin.collections/List<kotlin/String> // coil3/pathSegments.<get-pathSegments>|<get-pathSegments>@coil3.Uri(){}[0]
 
+final fun (coil3.request/ImageRequest.Builder).coil3.request/addLastModifiedToFileCacheKey(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/addLastModifiedToFileCacheKey|addLastModifiedToFileCacheKey@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/maxBitmapSize(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/maxBitmapSize|maxBitmapSize@coil3.request.ImageRequest.Builder(coil3.size.Size){}[0]
@@ -957,10 +958,10 @@ final fun (coil3/Extras).coil3/plus(coil3/Extras): coil3/Extras // coil3/plus|pl
 final fun (coil3/Extras?).coil3/orEmpty(): coil3/Extras // coil3/orEmpty|orEmpty@coil3.Extras?(){}[0]
 final fun (coil3/Image).coil3/toBitmap(kotlin/Int = ..., kotlin/Int = ...): org.jetbrains.skia/Bitmap // coil3/toBitmap|toBitmap@coil3.Image(kotlin.Int;kotlin.Int){}[0]
 final fun (coil3/Image).coil3/toBitmap(kotlin/Int, kotlin/Int, org.jetbrains.skia/ColorType, org.jetbrains.skia/ColorAlphaType, org.jetbrains.skia/ColorSpace?): org.jetbrains.skia/Bitmap // coil3/toBitmap|toBitmap@coil3.Image(kotlin.Int;kotlin.Int;org.jetbrains.skia.ColorType;org.jetbrains.skia.ColorAlphaType;org.jetbrains.skia.ColorSpace?){}[0]
+final fun (coil3/ImageLoader.Builder).coil3.request/addLastModifiedToFileCacheKey(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/addLastModifiedToFileCacheKey|addLastModifiedToFileCacheKey@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Int): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Int){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/maxBitmapSize(coil3.size/Size): coil3/ImageLoader.Builder // coil3.request/maxBitmapSize|maxBitmapSize@coil3.ImageLoader.Builder(coil3.size.Size){}[0]
-final fun (coil3/ImageLoader.Builder).coil3/addLastModifiedToFileCacheKey(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/addLastModifiedToFileCacheKey|addLastModifiedToFileCacheKey@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/serviceLoaderEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/serviceLoaderEnabled|serviceLoaderEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (kotlin/String).coil3/toUri(kotlin/String = ...): coil3/Uri // coil3/toUri|toUri@kotlin.String(kotlin.String){}[0]
 final fun (org.jetbrains.skia/Bitmap).coil3/asImage(kotlin/Boolean = ...): coil3/BitmapImage // coil3/asImage|asImage@org.jetbrains.skia.Bitmap(kotlin.Boolean){}[0]

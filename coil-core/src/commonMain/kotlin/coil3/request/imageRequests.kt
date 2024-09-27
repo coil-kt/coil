@@ -54,3 +54,31 @@ val Extras.Key.Companion.maxBitmapSize: Extras.Key<Size>
 
 // Use 2^12 as a maximum size as it's supported by all modern devices.
 private val maxBitmapSizeKey = Extras.Key(default = Size(4_096, 4_096))
+
+/**
+ * Enables adding a file's last modified timestamp to the memory cache key when loading an image
+ * from a file.
+ *
+ * This allows subsequent requests that load the same file to miss the memory cache if the
+ * file has been updated. However, if the memory cache check occurs on the main thread
+ * (see [ImageLoader.Builder.interceptorCoroutineContext]) calling this will cause a strict mode
+ * violation.
+ */
+fun ImageRequest.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
+    extras[addLastModifiedToFileCacheKeyKey] = enable
+}
+
+fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
+    extras[addLastModifiedToFileCacheKeyKey] = enable
+}
+
+val ImageRequest.addLastModifiedToFileCacheKey: Boolean
+    get() = getExtra(addLastModifiedToFileCacheKeyKey)
+
+val Options.addLastModifiedToFileCacheKey: Boolean
+    get() = getExtra(addLastModifiedToFileCacheKeyKey)
+
+val Extras.Key.Companion.addLastModifiedToFileCacheKey: Extras.Key<Boolean>
+    get() = addLastModifiedToFileCacheKeyKey
+
+private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = false)
