@@ -147,7 +147,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.image.shareable)
     }
 
-    private fun BufferedSource.asSourceResult(
+    fun BufferedSource.asSourceResult(
         mimeType: String? = null,
         dataSource: DataSource = DataSource.DISK,
     ) = SourceFetchResult(
