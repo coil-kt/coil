@@ -6,23 +6,21 @@ import android.widget.ImageView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.target
 import coil3.test.FakeImageLoaderEngine
 import coil3.test.intercept
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.activity
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.robolectric.annotation.GraphicsMode
 
-@RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class RoborazziViewTest {
+class RoborazziViewTest : RobolectricTest() {
 
     @get:Rule
     val activityRule = activityScenarioRule<ViewTestActivity>()
