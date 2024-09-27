@@ -6,16 +6,16 @@ import okio.BufferedSink
 import okio.BufferedSource
 
 @ExperimentalCoilApi
-object CacheResponse {
+object CacheNetworkResponse {
 
-    fun readFrom(metadata: BufferedSource): NetworkResponse {
-        val code = metadata.readUtf8LineStrict().toInt()
-        val requestMillis = metadata.readUtf8LineStrict().toLong()
-        val responseMillis = metadata.readUtf8LineStrict().toLong()
+    fun readFrom(source: BufferedSource): NetworkResponse {
+        val code = source.readUtf8LineStrict().toInt()
+        val requestMillis = source.readUtf8LineStrict().toLong()
+        val responseMillis = source.readUtf8LineStrict().toLong()
         val headers = NetworkHeaders.Builder()
-        val headersLineCount = metadata.readUtf8LineStrict().toInt()
+        val headersLineCount = source.readUtf8LineStrict().toInt()
         for (i in 0 until headersLineCount) {
-            headers.append(metadata.readUtf8LineStrict())
+            headers.append(source.readUtf8LineStrict())
         }
         return NetworkResponse(
             code = code,

@@ -152,12 +152,12 @@ class NetworkFetcher(
                         }
                     }
                     val newNetworkResponse = networkResponse.copy(headers = headers.build())
-                    CacheResponse.writeTo(newNetworkResponse, this)
+                    CacheNetworkResponse.writeTo(newNetworkResponse, this)
                 }
             } else {
                 // Write the response's cache headers and body.
                 fileSystem.write(editor.metadata) {
-                    CacheResponse.writeTo(networkResponse, this)
+                    CacheNetworkResponse.writeTo(networkResponse, this)
                 }
                 networkResponseBody?.writeTo(fileSystem, editor.data)
             }
@@ -231,7 +231,7 @@ class NetworkFetcher(
     private fun DiskCache.Snapshot.toNetworkResponse(): NetworkResponse? {
         try {
             return fileSystem.read(metadata) {
-                CacheResponse.readFrom(this)
+                CacheNetworkResponse.readFrom(this)
             }
         } catch (_: IOException) {
             // If we can't parse the metadata, ignore this entry.

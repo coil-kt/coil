@@ -73,8 +73,10 @@ private value class ByteStringNetworkRequestBody(
  * @param responseMillis Timestamp of when the response was received.
  * @param headers The HTTP headers.
  * @param body The HTTP response body.
- * @param delegate The underlying response instance. If executed by OkHttp, this is
- *  `okhttp3.Response`. If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
+ * @param delegate The underlying response instance.
+ *  If executed by OkHttp, this is `okhttp3.Response`.
+ *  If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
+ *  If returned from the cache (or any other method), this is `null`.
  */
 @Poko
 class NetworkResponse(

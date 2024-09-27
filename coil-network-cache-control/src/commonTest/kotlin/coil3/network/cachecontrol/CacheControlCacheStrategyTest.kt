@@ -5,7 +5,7 @@ import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
-import coil3.network.CacheResponse
+import coil3.network.CacheNetworkResponse
 import coil3.network.CacheStrategy
 import coil3.network.ConnectivityChecker
 import coil3.network.NetworkClient
@@ -161,7 +161,7 @@ class CacheControlCacheStrategyTest {
 
         assertEquals(2, networkClient.requests.size)
         val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
-            CacheResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
+            CacheNetworkResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
         }
         val expectedNetworkHeaders = headers.newBuilder()
             .apply {
@@ -215,7 +215,7 @@ class CacheControlCacheStrategyTest {
 
             assertEquals(2, networkClient.requests.size)
             val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
-                CacheResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
+                CacheNetworkResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
             }
             val expectedNetworkHeaders = headers.newBuilder()
                 .apply {
