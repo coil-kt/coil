@@ -3,8 +3,10 @@ package coil3.svg
 import coil3.ImageLoader
 import coil3.request.Options
 import coil3.size.Size
+import coil3.svg.internal.density
 import coil3.test.utils.AbstractSvgDecoderTest
 import coil3.test.utils.context
+import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -25,7 +27,8 @@ class SvgDecoderTestAndroid : AbstractSvgDecoderTest(SvgDecoder.Factory()) {
             imageLoader = ImageLoader(context),
         )?.decode()
         assertNotNull(result)
-        assertEquals(368, result.image.width)
-        assertEquals(368, result.image.height)
+        val size = (context.density * 140).roundToInt()
+        assertEquals(size, result.image.width)
+        assertEquals(size, result.image.height)
     }
 }
