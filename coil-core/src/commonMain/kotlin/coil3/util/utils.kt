@@ -74,8 +74,7 @@ internal const val SCHEME_FILE = "file"
 
 internal fun isFileUri(uri: Uri): Boolean {
     return (uri.scheme == null || uri.scheme == SCHEME_FILE) &&
-        uri.path != null &&
-        !isAssetUri(uri)
+        uri.path != null && !isAssetUri(uri)
 }
 
 internal fun ErrorResult(

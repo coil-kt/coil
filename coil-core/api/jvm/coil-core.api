@@ -166,7 +166,6 @@ public final class coil3/ImageLoader$Builder {
 
 public final class coil3/ImageLoadersKt {
 	public static final fun ImageLoader (Lcoil3/PlatformContext;)Lcoil3/ImageLoader;
-	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun serviceLoaderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 }
 
@@ -377,12 +376,6 @@ public abstract interface class coil3/intercept/Interceptor$Chain {
 	public abstract fun proceed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun withRequest (Lcoil3/request/ImageRequest;)Lcoil3/intercept/Interceptor$Chain;
 	public abstract fun withSize (Lcoil3/size/Size;)Lcoil3/intercept/Interceptor$Chain;
-}
-
-public final class coil3/key/FileUriKeyer : coil3/key/Keyer {
-	public fun <init> (Z)V
-	public fun key (Lcoil3/Uri;Lcoil3/request/Options;)Ljava/lang/String;
-	public synthetic fun key (Ljava/lang/Object;Lcoil3/request/Options;)Ljava/lang/String;
 }
 
 public abstract interface class coil3/key/Keyer {
@@ -623,8 +616,13 @@ public abstract interface class coil3/request/ImageRequest$Listener {
 }
 
 public final class coil3/request/ImageRequestsKt {
+	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun addLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest;)Z
+	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/Options;)Z
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;

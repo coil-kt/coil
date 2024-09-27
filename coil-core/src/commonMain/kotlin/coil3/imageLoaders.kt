@@ -7,27 +7,6 @@ fun ImageLoader(context: PlatformContext): ImageLoader {
     return ImageLoader.Builder(context).build()
 }
 
-// region addLastModifiedToFileCacheKey
-
-/**
- * Enables adding a file's last modified timestamp to the memory cache key when loading an image
- * from a file.
- *
- * This allows subsequent requests that load the same file to miss the memory cache if the
- * file has been updated. However, if the memory cache check occurs on the main thread
- * (see [ImageLoader.Builder.interceptorCoroutineContext]) calling this will cause a strict mode
- * violation.
- */
-fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-    extras[addLastModifiedToFileCacheKeyKey] = enable
-}
-
-internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
-    get() = defaults.extras.getOrDefault(addLastModifiedToFileCacheKeyKey)
-
-private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = true)
-
-// endregion
 // region serviceLoaderComponentsEnabled
 
 /**

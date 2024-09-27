@@ -55,7 +55,7 @@ internal class RealImageLoader(
         .addAndroidComponents(options)
         .addJvmComponents(options)
         .addAppleComponents(options)
-        .addCommonComponents(options)
+        .addCommonComponents()
         .add(EngineInterceptor(this, systemCallbacks, requestService, options.logger))
         .build()
     private val shutdown = atomic(false)
@@ -291,15 +291,13 @@ internal expect fun ComponentRegistry.Builder.addAppleComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
-internal fun ComponentRegistry.Builder.addCommonComponents(
-    options: RealImageLoader.Options,
-): ComponentRegistry.Builder {
+internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.Builder {
     return this
         // Mappers
         .add(StringMapper())
         .add(PathMapper())
         // Keyers
-        .add(FileUriKeyer(options.addLastModifiedToFileCacheKey))
+        .add(FileUriKeyer())
         .add(UriKeyer())
         // Fetchers
         .add(FileUriFetcher.Factory())

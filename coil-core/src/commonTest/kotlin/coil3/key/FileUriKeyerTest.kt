@@ -1,6 +1,8 @@
 package coil3.key
 
+import coil3.Extras
 import coil3.request.Options
+import coil3.request.addLastModifiedToFileCacheKey
 import coil3.test.utils.FakeClock
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -32,7 +34,12 @@ class FileUriKeyerTest : RobolectricTest() {
         val file = fileSystem.workingDirectory / "image.jpg"
         fileSystem.createFile(file, mustCreate = true)
 
-        val keyer = FileUriKeyer(addLastModifiedToFileCacheKey = true)
+        val keyer = FileUriKeyer()
+        val options = options.copy(
+            extras = options.extras.newBuilder()
+                .set(Extras.Key.addLastModifiedToFileCacheKey, true)
+                .build()
+        )
 
         file.setLastModified(1234L)
         val firstKey = keyer.key("file://$file".toUri(), options)
@@ -48,7 +55,12 @@ class FileUriKeyerTest : RobolectricTest() {
         val file = fileSystem.workingDirectory / "image.jpg"
         fileSystem.createFile(file, mustCreate = true)
 
-        val keyer = FileUriKeyer(addLastModifiedToFileCacheKey = false)
+        val keyer = FileUriKeyer()
+        val options = options.copy(
+            extras = options.extras.newBuilder()
+                .set(Extras.Key.addLastModifiedToFileCacheKey, false)
+                .build()
+        )
 
         file.setLastModified(1234L)
         val actual = keyer.key("file://$file".toUri(), options)
