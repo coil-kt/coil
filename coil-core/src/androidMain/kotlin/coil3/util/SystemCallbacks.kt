@@ -4,7 +4,6 @@ import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
-import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.content.Context
 import android.content.res.Configuration
 import coil3.RealImageLoader
