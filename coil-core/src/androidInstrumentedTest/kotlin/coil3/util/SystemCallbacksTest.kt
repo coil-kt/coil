@@ -64,6 +64,7 @@ class SystemCallbacksTest {
 
         assertEquals(8_000_000, memoryCache.size)
 
+        @Suppress("DEPRECATION")
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
         assertEquals(0, memoryCache.size)
