@@ -18,6 +18,9 @@ import coil3.request.ImageRequest
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
  *
+ * NOTE: This API uses subcomposition, which is slow. Avoid using this composable in places that
+ * need high performance (e.g. `LazyRow`/`LazyColumn`).
+ *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param contentDescription Text used by accessibility services to describe what this image
  *  represents. This should always be provided unless this image is used for decorative purposes,
@@ -86,6 +89,9 @@ fun SubcomposeAsyncImage(
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * NOTE: This API uses subcomposition, which is slow. Avoid using this composable in places that
+ * need high performance (e.g. `LazyRow`/`LazyColumn`).
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param contentDescription Text used by accessibility services to describe what this image
