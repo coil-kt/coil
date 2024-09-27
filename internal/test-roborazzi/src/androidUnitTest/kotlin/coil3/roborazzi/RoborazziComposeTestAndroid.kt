@@ -8,22 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.test.FakeImageLoaderEngine
 import coil3.test.intercept
 import coil3.test.utils.ComposeTestActivity
+import coil3.test.utils.RobolectricTest
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.robolectric.annotation.GraphicsMode
 
-@RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class RoborazziComposeTestAndroid {
+class RoborazziComposeTestAndroid : RobolectricTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()

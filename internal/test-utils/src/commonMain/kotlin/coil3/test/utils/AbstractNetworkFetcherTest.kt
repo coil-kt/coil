@@ -18,7 +18,7 @@ import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
 
-abstract class AbstractNetworkFetcherTest : AndroidJUnit4Test() {
+abstract class AbstractNetworkFetcherTest : RobolectricTest() {
 
     lateinit var fileSystem: FakeFileSystem
     lateinit var diskCache: DiskCache

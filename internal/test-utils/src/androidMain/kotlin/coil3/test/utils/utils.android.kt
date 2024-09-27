@@ -23,11 +23,13 @@ import okio.source
 import org.junit.Assume
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 actual abstract class AndroidJUnit4Test
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
 actual abstract class RobolectricTest
 
 actual val context: PlatformContext

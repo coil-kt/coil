@@ -4,7 +4,6 @@ import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
-import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.content.Context
 import android.content.res.Configuration
 import coil3.RealImageLoader
@@ -21,6 +20,7 @@ internal actual fun SystemCallbacks(
  * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
  * its callbacks.
  */
+@Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 internal class AndroidSystemCallbacks(
     imageLoader: RealImageLoader,
 ) : SystemCallbacks, ComponentCallbacks2 {
@@ -55,8 +55,10 @@ internal class AndroidSystemCallbacks(
             "trimMemory, level=$level"
         }
         if (level >= TRIM_MEMORY_BACKGROUND) {
+            // The app is in the background.
             imageLoader.memoryCache?.clear()
-        } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
+        } else if (level >= TRIM_MEMORY_RUNNING_LOW) {
+            // The app is in the foreground, but is running low on memory.
             imageLoader.memoryCache?.apply { trimToSize(size / 2) }
         }
     }
