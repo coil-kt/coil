@@ -1,6 +1,5 @@
 package coil3.svg
 
-import coil3.Image
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DecodeResult
@@ -10,9 +9,11 @@ import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.maxBitmapSize
+import coil3.size.Size
+import coil3.size.isOriginal
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
-import coil3.svg.internal.Svg
+import coil3.svg.internal.density
 import coil3.svg.internal.parseSvg
 import coil3.svg.internal.runInterruptible
 import coil3.toBitmap
@@ -22,27 +23,29 @@ import kotlin.math.roundToInt
 import okio.use
 
 /**
- * A [Decoder] that decodes SVGs. Relies on external dependencies to parse and decode the SVGs
- * (see [Svg]).
+ * A [Decoder] that decodes SVGs. Relies on external dependencies to parse and decode the SVGs.
  *
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  * @param renderToBitmap If true, renders the SVG to a bitmap immediately after decoding. Else, the
  *  SVG will be rendered at draw time. Rendering at draw time is more memory efficient, but
  *  depending on the complexity of the SVG, can be slow.
+ * @param scaleToDensity If true and the target size is [Size.ORIGINAL], multiplies the source
+ *  dimensions of the image by the device's display density. NOTE: This only affects Android.
  */
 class SvgDecoder(
     private val source: ImageSource,
     private val options: Options,
-    val useViewBoundsAsIntrinsicSize: Boolean,
-    val renderToBitmap: Boolean,
+    val useViewBoundsAsIntrinsicSize: Boolean = true,
+    val renderToBitmap: Boolean = true,
+    val scaleToDensity: Boolean = false,
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
         val svg = source.source().use(::parseSvg)
 
-        val svgWidth: Float
-        val svgHeight: Float
+        var svgWidth: Float
+        var svgHeight: Float
         val viewBox: FloatArray? = svg.viewBox
 
         if (useViewBoundsAsIntrinsicSize && viewBox != null) {
@@ -51,6 +54,12 @@ class SvgDecoder(
         } else {
             svgWidth = svg.width
             svgHeight = svg.height
+        }
+
+        if (scaleToDensity && options.size.isOriginal) {
+            val density = options.context.density
+            if (svgWidth > 0f) svgWidth *= density
+            if (svgHeight > 0f) svgHeight *= density
         }
 
         val bitmapWidth: Int
@@ -86,7 +95,7 @@ class SvgDecoder(
         svg.height("100%")
         svg.options(options)
 
-        var image: Image = svg.asImage(bitmapWidth, bitmapHeight)
+        var image = svg.asImage(bitmapWidth, bitmapHeight)
         if (renderToBitmap) {
             image = image.toBitmap().asImage()
         }
@@ -100,6 +109,7 @@ class SvgDecoder(
     class Factory(
         val useViewBoundsAsIntrinsicSize: Boolean = true,
         val renderToBitmap: Boolean = true,
+        val scaleToDensity: Boolean = false,
     ) : Decoder.Factory {
 
         override fun create(
@@ -113,6 +123,7 @@ class SvgDecoder(
                 options = options,
                 useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
                 renderToBitmap = renderToBitmap,
+                scaleToDensity = scaleToDensity,
             )
         }
 
