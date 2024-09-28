@@ -7,20 +7,24 @@
 
 // Library unique name: <io.coil-kt.coil3:coil-svg>
 final class coil3.svg/SvgDecoder : coil3.decode/Decoder { // coil3.svg/SvgDecoder|null[0]
-    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean, kotlin/Boolean) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean;kotlin.Boolean){}[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final val renderToBitmap // coil3.svg/SvgDecoder.renderToBitmap|{}renderToBitmap[0]
         final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
+    final val scaleToDensity // coil3.svg/SvgDecoder.scaleToDensity|{}scaleToDensity[0]
+        final fun <get-scaleToDensity>(): kotlin/Boolean // coil3.svg/SvgDecoder.scaleToDensity.<get-scaleToDensity>|<get-scaleToDensity>(){}[0]
     final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
         final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
 
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.svg/SvgDecoder.decode|decode(){}[0]
 
     final class Factory : coil3.decode/Decoder.Factory { // coil3.svg/SvgDecoder.Factory|null[0]
-        constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
         final val renderToBitmap // coil3.svg/SvgDecoder.Factory.renderToBitmap|{}renderToBitmap[0]
             final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
+        final val scaleToDensity // coil3.svg/SvgDecoder.Factory.scaleToDensity|{}scaleToDensity[0]
+            final fun <get-scaleToDensity>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.scaleToDensity.<get-scaleToDensity>|<get-scaleToDensity>(){}[0]
         final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
             final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
 
