@@ -103,6 +103,14 @@ public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public final fun getLambda-1$coil_compose_core_release ()Lkotlin/jvm/functions/Function3;
 }
 
+public final class coil3/compose/ConstraintsSizeResolver : androidx/compose/ui/layout/LayoutModifier, coil3/size/SizeResolver {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun measure-3p2s80s (Landroidx/compose/ui/layout/MeasureScope;Landroidx/compose/ui/layout/Measurable;J)Landroidx/compose/ui/layout/MeasureResult;
+	public final fun setConstraints-BRTryo0 (J)V
+	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public abstract interface class coil3/compose/DrawScopeSizeResolver : coil3/size/SizeResolver {
 	public abstract fun connect (Lkotlinx/coroutines/flow/Flow;)V
 }
