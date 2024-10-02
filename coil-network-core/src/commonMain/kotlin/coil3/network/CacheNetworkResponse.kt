@@ -1,5 +1,6 @@
 package coil3.network
 
+import coil3.annotation.InternalCoilApi
 import coil3.network.internal.append
 import okio.BufferedSink
 import okio.BufferedSource
@@ -7,7 +8,8 @@ import okio.BufferedSource
 /**
  * Utility methods used to read/write a [NetworkResponse] from/to the disk cache.
  */
-internal object CacheNetworkResponse {
+@InternalCoilApi
+object CacheNetworkResponse {
 
     fun readFrom(source: BufferedSource): NetworkResponse {
         val code = source.readUtf8LineStrict().toInt()

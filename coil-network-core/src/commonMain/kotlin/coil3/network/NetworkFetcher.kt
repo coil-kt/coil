@@ -45,6 +45,7 @@ class NetworkFetcher(
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
             var readResult: CacheStrategy.ReadResult? = null
+            var cacheResponse: NetworkResponse? = null
             if (snapshot != null) {
                 // Always return files with empty metadata as it's likely they've been written
                 // to the disk cache manually.
@@ -56,15 +57,14 @@ class NetworkFetcher(
                     )
                 }
 
-                var cacheResponse = snapshot.toNetworkResponse()
+                // Return the image from the disk cache if the cache strategy agrees.
+                cacheResponse = snapshot.toNetworkResponseOrNull()
                 if (cacheResponse != null) {
                     readResult = cacheStrategy.value.read(cacheResponse, newRequest(), options)
-                    cacheResponse = readResult.cacheResponse
-
-                    if (cacheResponse != null && readResult.networkRequest == null) {
+                    if (readResult.response != null) {
                         return SourceFetchResult(
                             source = snapshot.toImageSource(),
-                            mimeType = getMimeType(url, cacheResponse.headers[CONTENT_TYPE]),
+                            mimeType = getMimeType(url, readResult.response.headers[CONTENT_TYPE]),
                             dataSource = DataSource.DISK,
                         )
                     }
@@ -72,12 +72,12 @@ class NetworkFetcher(
             }
 
             // Slow path: fetch the image from the network.
-            val networkRequest = readResult?.networkRequest ?: newRequest()
+            val networkRequest = readResult?.request ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
-                snapshot = writeToDiskCache(snapshot, readResult?.cacheResponse, networkRequest, response)
+                snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, response)
                 if (snapshot != null) {
-                    val cacheResponse = snapshot!!.toNetworkResponse()
+                    val cacheResponse = snapshot!!.toNetworkResponseOrNull()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
@@ -138,7 +138,7 @@ class NetworkFetcher(
         }
 
         val writeResult = cacheStrategy.value.write(cacheResponse, networkRequest, networkResponse, options)
-        val modifiedNetworkResponse = writeResult.networkResponse ?: return null
+        val modifiedNetworkResponse = writeResult.response ?: return null
 
         // Open a new editor. Return null if we're unable to write to this entry.
         val editor = if (snapshot != null) {
@@ -221,7 +221,7 @@ class NetworkFetcher(
         return contentType?.substringBefore(';')
     }
 
-    private fun DiskCache.Snapshot.toNetworkResponse(): NetworkResponse? {
+    private fun DiskCache.Snapshot.toNetworkResponseOrNull(): NetworkResponse? {
         try {
             return fileSystem.read(metadata) {
                 CacheNetworkResponse.readFrom(this)

@@ -3,10 +3,11 @@ package coil3.network
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.internal.DefaultCacheStrategy
 import coil3.request.Options
+import coil3.decode.ImageSource
 import kotlin.jvm.JvmField
 
 /**
- * Determines whether to use a cached response from the disk cache and/or perform a new network request.
+ * Controls the behavior around reading/writing responses from/to the disk cache.
  */
 @ExperimentalCoilApi
 interface CacheStrategy {
@@ -25,39 +26,45 @@ interface CacheStrategy {
     ): WriteResult
 
     class ReadResult {
-        val cacheResponse: NetworkResponse?
-        val networkRequest: NetworkRequest?
+        val request: NetworkRequest?
+        val response: NetworkResponse?
 
         /**
-         * Create a result that will use [cacheResponse] as the image source.
+         * Launch a new network [request].
          */
-        constructor(cacheResponse: NetworkResponse) {
-            this.cacheResponse = cacheResponse
-            this.networkRequest = null
+        constructor(request: NetworkRequest) {
+            this.request = request
+            this.response = null
         }
 
         /**
-         * Create a result that will execute [networkRequest] and use the response body as the
-         * image source.
+         * Use the [response]'s body as the [ImageSource].
          */
-        constructor(networkRequest: NetworkRequest) {
-            this.cacheResponse = null
-            this.networkRequest = networkRequest
+        constructor(response: NetworkResponse) {
+            this.request = null
+            this.response = response
         }
     }
 
     class WriteResult {
-        val networkResponse: NetworkResponse?
+        val response: NetworkResponse?
 
-        constructor(networkResponse: NetworkResponse) {
-            this.networkResponse = networkResponse
+        /**
+         * Write [response] to the disk cache. Set [NetworkResponse.body] to `null` to skip
+         * writing the response body.
+         */
+        constructor(response: NetworkResponse) {
+            this.response = response
         }
 
         internal constructor() {
-            this.networkResponse = null
+            this.response = null
         }
 
         companion object {
+            /**
+             * Do not write anything to the disk cache.
+             */
             @JvmField val DISABLED = WriteResult()
         }
     }
