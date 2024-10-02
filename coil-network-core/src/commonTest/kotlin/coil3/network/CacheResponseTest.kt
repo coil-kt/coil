@@ -46,8 +46,4 @@ class CacheResponseTest {
         assertEquals(headerValue, actual.headers[headerName])
         assertEquals(expected.headers, actual.headers)
     }
-
-    companion object {
-        private const val IMAGE = "normal.jpg"
-    }
 }
