@@ -5,6 +5,9 @@ import coil3.network.internal.append
 import okio.BufferedSink
 import okio.BufferedSource
 
+/**
+ * The default methods used to read/write a [NetworkResponse] from/to the disk cache.
+ */
 @ExperimentalCoilApi
 object CacheNetworkResponse {
 

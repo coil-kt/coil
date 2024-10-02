@@ -4,7 +4,7 @@ import coil3.annotation.Poko
 import kotlin.jvm.JvmField
 
 /**
- * Represents a list of HTTP headers.
+ * A list of HTTP headers.
  */
 @Poko
 class NetworkHeaders private constructor(

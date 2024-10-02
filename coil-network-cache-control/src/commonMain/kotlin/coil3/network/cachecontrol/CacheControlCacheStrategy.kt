@@ -34,6 +34,8 @@ import kotlinx.datetime.Instant
  * See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
  *
  * This implementation is based on OkHttp's `CacheStrategy`.
+ *
+ * @param now A function that returns the current time.
  */
 @ExperimentalCoilApi
 class CacheControlCacheStrategy(

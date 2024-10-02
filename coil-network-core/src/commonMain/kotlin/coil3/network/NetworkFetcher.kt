@@ -24,6 +24,12 @@ import okio.Buffer
 import okio.FileSystem
 import okio.IOException
 
+/**
+ * A [Fetcher] that fetches and caches images from the network.
+ *
+ * NOTE: Prefer using `OkHttpNetworkFetcher` or `KtorNetworkFetcher` instead of this class
+ * directly - unless you want to provide a custom [NetworkClient].
+ */
 class NetworkFetcher(
     private val url: String,
     private val options: Options,
