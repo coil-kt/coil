@@ -15,6 +15,7 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
 import coil3.request.Options
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.test.utils.runTestAsync
 import coil3.toUri
@@ -29,7 +30,7 @@ import okio.blackholeSink
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 
-class CacheControlCacheStrategyTest {
+class CacheControlCacheStrategyTest : RobolectricTest() {
     private val fileSystem = FakeFileSystem()
     private val diskCache = DiskCache.Builder()
         .fileSystem(fileSystem)

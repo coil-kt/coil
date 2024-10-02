@@ -25,5 +25,10 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
+        androidUnitTest {
+            dependencies {
+                implementation(libs.bundles.test.jvm)
+            }
+        }
     }
 }
