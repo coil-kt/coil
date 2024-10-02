@@ -231,4 +231,16 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun ipv6() {
+        val uri = "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/".toUri()
+        assertEquals("http", uri.scheme)
+        assertEquals("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]", uri.authority)
+        assertEquals("/", uri.path)
+        assertNull(uri.filePath)
+        assertEquals(listOf(), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
 }
