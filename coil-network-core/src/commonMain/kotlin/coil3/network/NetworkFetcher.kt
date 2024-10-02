@@ -74,7 +74,7 @@ class NetworkFetcher(
 
             // Slow path: fetch the image from the network.
             val networkRequest = readResult?.request ?: newRequest()
-            var result = executeNetworkRequest(networkRequest) { response ->
+            var fetchResult = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
                 snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, response)
                 if (snapshot != null) {
@@ -101,8 +101,8 @@ class NetworkFetcher(
 
             // Fallback: if the response body is empty, execute a new network request without the
             // cache headers.
-            if (result == null) {
-                result = executeNetworkRequest(newRequest()) { response ->
+            if (fetchResult == null) {
+                fetchResult = executeNetworkRequest(newRequest()) { response ->
                     SourceFetchResult(
                         source = response.requireBody().toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
@@ -111,7 +111,7 @@ class NetworkFetcher(
                 }
             }
 
-            return result
+            return fetchResult
         } catch (e: Exception) {
             snapshot?.closeQuietly()
             throw e
