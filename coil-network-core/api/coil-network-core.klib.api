@@ -23,17 +23,17 @@ abstract interface coil3.network/CacheStrategy { // coil3.network/CacheStrategy|
         constructor <init>(coil3.network/NetworkRequest) // coil3.network/CacheStrategy.ReadResult.<init>|<init>(coil3.network.NetworkRequest){}[0]
         constructor <init>(coil3.network/NetworkResponse) // coil3.network/CacheStrategy.ReadResult.<init>|<init>(coil3.network.NetworkResponse){}[0]
 
-        final val cacheResponse // coil3.network/CacheStrategy.ReadResult.cacheResponse|{}cacheResponse[0]
-            final fun <get-cacheResponse>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.ReadResult.cacheResponse.<get-cacheResponse>|<get-cacheResponse>(){}[0]
-        final val networkRequest // coil3.network/CacheStrategy.ReadResult.networkRequest|{}networkRequest[0]
-            final fun <get-networkRequest>(): coil3.network/NetworkRequest? // coil3.network/CacheStrategy.ReadResult.networkRequest.<get-networkRequest>|<get-networkRequest>(){}[0]
+        final val request // coil3.network/CacheStrategy.ReadResult.request|{}request[0]
+            final fun <get-request>(): coil3.network/NetworkRequest? // coil3.network/CacheStrategy.ReadResult.request.<get-request>|<get-request>(){}[0]
+        final val response // coil3.network/CacheStrategy.ReadResult.response|{}response[0]
+            final fun <get-response>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.ReadResult.response.<get-response>|<get-response>(){}[0]
     }
 
     final class WriteResult { // coil3.network/CacheStrategy.WriteResult|null[0]
         constructor <init>(coil3.network/NetworkResponse) // coil3.network/CacheStrategy.WriteResult.<init>|<init>(coil3.network.NetworkResponse){}[0]
 
-        final val networkResponse // coil3.network/CacheStrategy.WriteResult.networkResponse|{}networkResponse[0]
-            final fun <get-networkResponse>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.WriteResult.networkResponse.<get-networkResponse>|<get-networkResponse>(){}[0]
+        final val response // coil3.network/CacheStrategy.WriteResult.response|{}response[0]
+            final fun <get-response>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.WriteResult.response.<get-response>|<get-response>(){}[0]
 
         final object Companion { // coil3.network/CacheStrategy.WriteResult.Companion|null[0]
             final val DISABLED // coil3.network/CacheStrategy.WriteResult.Companion.DISABLED|{}DISABLED[0]
@@ -143,6 +143,11 @@ final class coil3.network/NetworkResponse { // coil3.network/NetworkResponse|nul
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/NetworkResponse.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.network/NetworkResponse.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.network/NetworkResponse.toString|toString(){}[0]
+}
+
+final object coil3.network/CacheNetworkResponse { // coil3.network/CacheNetworkResponse|null[0]
+    final fun readFrom(okio/BufferedSource): coil3.network/NetworkResponse // coil3.network/CacheNetworkResponse.readFrom|readFrom(okio.BufferedSource){}[0]
+    final fun writeTo(coil3.network/NetworkResponse, okio/BufferedSink) // coil3.network/CacheNetworkResponse.writeTo|writeTo(coil3.network.NetworkResponse;okio.BufferedSink){}[0]
 }
 
 final val coil3.network/httpBody // coil3.network/httpBody|@coil3.Extras.Key.Companion{}httpBody[0]

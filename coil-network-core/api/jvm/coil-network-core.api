@@ -11,15 +11,15 @@ public final class coil3/network/CacheStrategy$Companion {
 public final class coil3/network/CacheStrategy$ReadResult {
 	public fun <init> (Lcoil3/network/NetworkRequest;)V
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
-	public final fun getCacheResponse ()Lcoil3/network/NetworkResponse;
-	public final fun getNetworkRequest ()Lcoil3/network/NetworkRequest;
+	public final fun getRequest ()Lcoil3/network/NetworkRequest;
+	public final fun getResponse ()Lcoil3/network/NetworkResponse;
 }
 
 public final class coil3/network/CacheStrategy$WriteResult {
 	public static final field Companion Lcoil3/network/CacheStrategy$WriteResult$Companion;
 	public static final field DISABLED Lcoil3/network/CacheStrategy$WriteResult;
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
-	public final fun getNetworkResponse ()Lcoil3/network/NetworkResponse;
+	public final fun getResponse ()Lcoil3/network/NetworkResponse;
 }
 
 public final class coil3/network/CacheStrategy$WriteResult$Companion {

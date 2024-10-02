@@ -1,9 +1,9 @@
 package coil3.network
 
 import coil3.annotation.ExperimentalCoilApi
+import coil3.decode.ImageSource
 import coil3.network.internal.DefaultCacheStrategy
 import coil3.request.Options
-import coil3.decode.ImageSource
 import kotlin.jvm.JvmField
 
 /**

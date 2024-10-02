@@ -18,10 +18,10 @@ import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
 import coil3.network.internal.closeQuietly
 import coil3.network.internal.readBuffer
+import coil3.network.internal.requireBody
 import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import coil3.util.MimeTypeMap
-import coil3.network.internal.requireBody
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException

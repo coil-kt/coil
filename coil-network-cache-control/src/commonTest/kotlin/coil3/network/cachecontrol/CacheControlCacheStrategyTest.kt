@@ -298,7 +298,6 @@ class CacheControlCacheStrategyTest {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
-
     @Test
     fun expiredHeaderIsNotReturnedFromCache() = runTestAsync {
         val url = FAKE_URL
