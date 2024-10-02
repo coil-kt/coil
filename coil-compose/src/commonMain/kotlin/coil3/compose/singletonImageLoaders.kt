@@ -5,12 +5,10 @@ import androidx.compose.runtime.ReadOnlyComposable
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import coil3.annotation.ExperimentalCoilApi
 
 /**
  * Alias for [SingletonImageLoader.setSafe] that's optimized for calling from Compose.
  */
-@ExperimentalCoilApi
 @Composable
 @ReadOnlyComposable
 fun setSingletonImageLoaderFactory(factory: (context: PlatformContext) -> ImageLoader) {
