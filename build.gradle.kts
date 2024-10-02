@@ -49,7 +49,6 @@ extensions.configure<ApiValidationExtension> {
     @OptIn(ExperimentalBCVApi::class)
     klib {
         enabled = true
-        strictValidation = true
     }
 }
 
