@@ -22,7 +22,7 @@ internal value class CallFactoryNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ) = callFactory.newCall(request.toRequest()).await().use { response ->
-        block(response.toNetworkResponse(request))
+        block(response.toNetworkResponse())
     }
 }
 
@@ -40,9 +40,8 @@ private suspend fun NetworkRequestBody.readByteString(): ByteString {
     return buffer.readByteString()
 }
 
-private fun Response.toNetworkResponse(request: NetworkRequest): NetworkResponse {
+private fun Response.toNetworkResponse(): NetworkResponse {
     return NetworkResponse(
-        request = request,
         code = code,
         requestMillis = sentRequestAtMillis,
         responseMillis = receivedResponseAtMillis,

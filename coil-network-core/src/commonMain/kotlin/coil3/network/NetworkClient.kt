@@ -2,6 +2,7 @@ package coil3.network
 
 import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
+import coil3.network.internal.HTTP_RESPONSE_OK
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
@@ -68,19 +69,19 @@ private value class ByteStringNetworkRequestBody(
 /**
  * Represents an HTTP response.
  *
- * @param request The [NetworkRequest] that was executed to create this response.
  * @param code The HTTP response code.
- * @param requestMillis Timestamp of when the request was launched.
+ * @param requestMillis Timestamp of when the request was sent.
  * @param responseMillis Timestamp of when the response was received.
  * @param headers The HTTP headers.
  * @param body The HTTP response body.
- * @param delegate The underlying response instance. If executed by OkHttp, this is
- *  `okhttp3.Response`. If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
+ * @param delegate The underlying response instance.
+ *  If executed by OkHttp, this is `okhttp3.Response`.
+ *  If executed by Ktor, this is `io.ktor.client.statement.HttpResponse`.
+ *  If returned from the cache (or any other method), this is `null`.
  */
 @Poko
 class NetworkResponse(
-    val request: NetworkRequest,
-    val code: Int = 200,
+    val code: Int = HTTP_RESPONSE_OK,
     val requestMillis: Long = 0L,
     val responseMillis: Long = 0L,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
@@ -88,7 +89,6 @@ class NetworkResponse(
     val delegate: Any? = null,
 ) {
     fun copy(
-        request: NetworkRequest = this.request,
         code: Int = this.code,
         requestMillis: Long = this.requestMillis,
         responseMillis: Long = this.responseMillis,
@@ -96,7 +96,6 @@ class NetworkResponse(
         body: NetworkResponseBody? = this.body,
         delegate: Any? = this.delegate,
     ) = NetworkResponse(
-        request = request,
         code = code,
         requestMillis = requestMillis,
         responseMillis = responseMillis,

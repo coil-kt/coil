@@ -23,7 +23,9 @@ fun interface ConnectivityChecker {
     fun isOnline(): Boolean
 
     companion object {
-        /** A naive [ConnectivityChecker] implementation that is always online. */
+        /**
+         * A naive [ConnectivityChecker] implementation that is always online.
+         */
         @JvmField val ONLINE = ConnectivityChecker { true }
     }
 }

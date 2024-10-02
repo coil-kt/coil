@@ -32,8 +32,8 @@ fun KtorNetworkFetcherFactory(
 
 @JvmName("factory")
 fun KtorNetworkFetcherFactory(
-    httpClient: () -> HttpClient,
-    cacheStrategy: () -> CacheStrategy = ::CacheStrategy,
+    httpClient: () -> HttpClient = { HttpClient() },
+    cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient().asNetworkClient() },

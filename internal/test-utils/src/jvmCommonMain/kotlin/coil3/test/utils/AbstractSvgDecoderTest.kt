@@ -21,6 +21,7 @@ import okio.BufferedSource
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
+import okio.fakefilesystem.FakeFileSystem
 
 abstract class AbstractSvgDecoderTest(
     private val decoderFactory: Decoder.Factory,
@@ -151,7 +152,7 @@ abstract class AbstractSvgDecoderTest(
         mimeType: String? = null,
         dataSource: DataSource = DataSource.DISK,
     ) = SourceFetchResult(
-        source = ImageSource(this, FileSystem.SYSTEM),
+        source = ImageSource(this, FakeFileSystem()),
         mimeType = mimeType,
         dataSource = dataSource,
     )

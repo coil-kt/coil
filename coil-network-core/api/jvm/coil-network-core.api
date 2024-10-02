@@ -1,34 +1,28 @@
-public final class coil3/network/CacheResponse {
-	public fun <init> (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;)V
-	public synthetic fun <init> (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkHeaders;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun <init> (Lokio/BufferedSource;)V
-	public final fun getReceivedResponseAtMillis ()J
-	public final fun getResponseHeaders ()Lcoil3/network/NetworkHeaders;
-	public final fun getSentRequestAtMillis ()J
-	public final fun writeTo (Lokio/BufferedSink;)V
-}
-
 public abstract interface class coil3/network/CacheStrategy {
-	public abstract fun compute (Lcoil3/network/CacheStrategy$Input;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final field Companion Lcoil3/network/CacheStrategy$Companion;
+	public static final field DEFAULT Lcoil3/network/CacheStrategy;
+	public abstract fun read (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkRequest;Lcoil3/request/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun write (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkRequest;Lcoil3/network/NetworkResponse;Lcoil3/request/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil3/network/CacheStrategy$Input {
-	public fun <init> (Lcoil3/network/CacheResponse;Lcoil3/network/NetworkRequest;Lcoil3/request/Options;)V
-	public final fun getCacheResponse ()Lcoil3/network/CacheResponse;
-	public final fun getNetworkRequest ()Lcoil3/network/NetworkRequest;
-	public final fun getOptions ()Lcoil3/request/Options;
+public final class coil3/network/CacheStrategy$Companion {
 }
 
-public final class coil3/network/CacheStrategy$Output {
-	public fun <init> (Lcoil3/network/CacheResponse;)V
-	public fun <init> (Lcoil3/network/CacheResponse;Lcoil3/network/NetworkRequest;)V
+public final class coil3/network/CacheStrategy$ReadResult {
 	public fun <init> (Lcoil3/network/NetworkRequest;)V
-	public final fun getCacheResponse ()Lcoil3/network/CacheResponse;
-	public final fun getNetworkRequest ()Lcoil3/network/NetworkRequest;
+	public fun <init> (Lcoil3/network/NetworkResponse;)V
+	public final fun getRequest ()Lcoil3/network/NetworkRequest;
+	public final fun getResponse ()Lcoil3/network/NetworkResponse;
 }
 
-public final class coil3/network/CacheStrategyKt {
-	public static final fun CacheStrategy ()Lcoil3/network/CacheStrategy;
+public final class coil3/network/CacheStrategy$WriteResult {
+	public static final field Companion Lcoil3/network/CacheStrategy$WriteResult$Companion;
+	public static final field DISABLED Lcoil3/network/CacheStrategy$WriteResult;
+	public fun <init> (Lcoil3/network/NetworkResponse;)V
+	public final fun getResponse ()Lcoil3/network/NetworkResponse;
+}
+
+public final class coil3/network/CacheStrategy$WriteResult$Companion {
 }
 
 public abstract interface class coil3/network/ConnectivityChecker {
@@ -129,16 +123,16 @@ public abstract interface class coil3/network/NetworkRequestBody {
 }
 
 public final class coil3/network/NetworkResponse {
-	public fun <init> (Lcoil3/network/NetworkRequest;IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;)V
-	public synthetic fun <init> (Lcoil3/network/NetworkRequest;IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Lcoil3/network/NetworkRequest;IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;)Lcoil3/network/NetworkResponse;
-	public static synthetic fun copy$default (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkRequest;IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;ILjava/lang/Object;)Lcoil3/network/NetworkResponse;
+	public fun <init> ()V
+	public fun <init> (IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;)V
+	public synthetic fun <init> (IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;)Lcoil3/network/NetworkResponse;
+	public static synthetic fun copy$default (Lcoil3/network/NetworkResponse;IJJLcoil3/network/NetworkHeaders;Lcoil3/network/NetworkResponseBody;Ljava/lang/Object;ILjava/lang/Object;)Lcoil3/network/NetworkResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBody ()Lcoil3/network/NetworkResponseBody;
 	public final fun getCode ()I
 	public final fun getDelegate ()Ljava/lang/Object;
 	public final fun getHeaders ()Lcoil3/network/NetworkHeaders;
-	public final fun getRequest ()Lcoil3/network/NetworkRequest;
 	public final fun getRequestMillis ()J
 	public final fun getResponseMillis ()J
 	public fun hashCode ()I

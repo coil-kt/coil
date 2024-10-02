@@ -1,63 +1,78 @@
 package coil3.network
 
 import coil3.annotation.ExperimentalCoilApi
-import coil3.network.CacheStrategy.Output
+import coil3.decode.ImageSource
+import coil3.network.internal.DefaultCacheStrategy
 import coil3.request.Options
-import kotlin.js.JsName
+import kotlin.jvm.JvmField
 
 /**
- * The default [CacheStrategy], which always returns the disk cache response.
+ * Controls the behavior around reading/writing responses from/to the disk cache.
  */
 @ExperimentalCoilApi
-@JsName("newCacheStrategy")
-fun CacheStrategy() = CacheStrategy { Output(it.cacheResponse) }
+interface CacheStrategy {
 
-/**
- * Determines whether to use a cached response from the disk cache and/or perform a new network request.
- */
-@ExperimentalCoilApi
-fun interface CacheStrategy {
+    suspend fun read(
+        cacheResponse: NetworkResponse,
+        networkRequest: NetworkRequest,
+        options: Options,
+    ): ReadResult
 
-    suspend fun compute(input: Input): Output
+    suspend fun write(
+        cacheResponse: NetworkResponse?,
+        networkRequest: NetworkRequest,
+        networkResponse: NetworkResponse,
+        options: Options,
+    ): WriteResult
 
-    class Input(
-        val cacheResponse: CacheResponse,
-        val networkRequest: NetworkRequest,
-        val options: Options,
-    )
-
-    class Output {
-        val cacheResponse: CacheResponse?
-        val networkRequest: NetworkRequest?
+    class ReadResult {
+        val request: NetworkRequest?
+        val response: NetworkResponse?
 
         /**
-         * Create an output that will use [cacheResponse] as the image source.
+         * Launch a new network [request].
          */
-        constructor(cacheResponse: CacheResponse) {
-            this.cacheResponse = cacheResponse
-            this.networkRequest = null
+        constructor(request: NetworkRequest) {
+            this.request = request
+            this.response = null
         }
 
         /**
-         * Create an output that will execute [networkRequest] and use the response body as the
-         * image source.
+         * Use the [response]'s body as the [ImageSource].
          */
-        constructor(networkRequest: NetworkRequest) {
-            this.cacheResponse = null
-            this.networkRequest = networkRequest
+        constructor(response: NetworkResponse) {
+            this.request = null
+            this.response = response
         }
+    }
+
+    class WriteResult {
+        val response: NetworkResponse?
 
         /**
-         * Create an output that will execute [networkRequest] and use [cacheResponse] as the image
-         * source if the response code is 304 (not modified). Else, the network request's response
-         * body will be used as the image source.
+         * Write [response] to the disk cache. Set [NetworkResponse.body] to `null` to skip
+         * writing the response body.
          */
-        constructor(
-            cacheResponse: CacheResponse,
-            networkRequest: NetworkRequest,
-        ) {
-            this.cacheResponse = cacheResponse
-            this.networkRequest = networkRequest
+        constructor(response: NetworkResponse) {
+            this.response = response
         }
+
+        internal constructor() {
+            this.response = null
+        }
+
+        companion object {
+            /**
+             * Do not write anything to the disk cache.
+             */
+            @JvmField val DISABLED = WriteResult()
+        }
+    }
+
+    companion object {
+        /**
+         * The default [CacheStrategy], which always returns the disk cache response.
+         */
+        @JvmField val DEFAULT: CacheStrategy = DefaultCacheStrategy()
     }
 }

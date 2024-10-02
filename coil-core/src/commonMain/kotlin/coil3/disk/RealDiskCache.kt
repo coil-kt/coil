@@ -20,7 +20,7 @@ internal class RealDiskCache(
         directory = directory,
         cleanupDispatcher = cleanupDispatcher,
         maxSize = maxSize,
-        appVersion = 2,
+        appVersion = 3,
         valueCount = 2,
     )
 

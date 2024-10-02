@@ -21,9 +21,6 @@ fun interface Interceptor {
         /**
          * Copy the current [Chain] and replace [request].
          *
-         * This method is similar to [proceed] except it doesn't advance the chain to the
-         * next interceptor.
-         *
          * @param request The current image request.
          */
         fun withRequest(request: ImageRequest): Chain
