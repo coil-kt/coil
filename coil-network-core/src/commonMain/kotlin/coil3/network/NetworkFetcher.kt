@@ -12,6 +12,7 @@ import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
 import coil3.network.internal.CACHE_CONTROL
 import coil3.network.internal.CONTENT_TYPE
+import coil3.network.internal.HTTP_RESPONSE_NOT_MODIFIED
 import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
@@ -20,6 +21,7 @@ import coil3.network.internal.readBuffer
 import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import coil3.util.MimeTypeMap
+import coil3.network.internal.plus
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException
@@ -43,7 +45,7 @@ class NetworkFetcher(
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
-            var output: CacheStrategy.ReadResult? = null
+            var readResult: CacheStrategy.ReadResult? = null
             if (snapshot != null) {
                 // Always return files with empty metadata as it's likely they've been written
                 // to the disk cache manually.
@@ -57,10 +59,10 @@ class NetworkFetcher(
 
                 var cacheResponse = snapshot.toNetworkResponse()
                 if (cacheResponse != null) {
-                    output = cacheStrategy.value.allowRead(newRequest(), cacheResponse, options)
-                    cacheResponse = output.cacheResponse
+                    readResult = cacheStrategy.value.read(newRequest(), cacheResponse, options)
+                    cacheResponse = readResult.cacheResponse
 
-                    if (cacheResponse != null && output.networkRequest == null) {
+                    if (cacheResponse != null && readResult.networkRequest == null) {
                         return SourceFetchResult(
                             source = snapshot.toImageSource(),
                             mimeType = getMimeType(url, cacheResponse.headers[CONTENT_TYPE]),
@@ -71,10 +73,10 @@ class NetworkFetcher(
             }
 
             // Slow path: fetch the image from the network.
-            val networkRequest = output?.networkRequest ?: newRequest()
+            val networkRequest = readResult?.networkRequest ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
-                snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, response.body)
+                snapshot = writeToDiskCache(snapshot, readResult?.cacheResponse, networkRequest, response)
                 if (snapshot != null) {
                     val cacheResponse = snapshot!!.toNetworkResponse()
                     return@executeNetworkRequest SourceFetchResult(
@@ -127,8 +129,8 @@ class NetworkFetcher(
     private suspend fun writeToDiskCache(
         snapshot: DiskCache.Snapshot?,
         cacheResponse: NetworkResponse?,
-        networkResponse: NetworkResponse,
-        networkResponseBody: NetworkResponseBody?,
+        request: NetworkRequest,
+        response: NetworkResponse,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
         if (!options.diskCachePolicy.writeEnabled) {
@@ -136,41 +138,35 @@ class NetworkFetcher(
             return null
         }
 
-        // Open a new editor.
+        val writeResult = cacheStrategy.value.write(request, response, options)
+        val networkResponse = writeResult.networkResponse ?: return null
+
+        // Open a new editor. Return null if we're unable to write to this entry.
         val editor = if (snapshot != null) {
             snapshot.closeAndOpenEditor()
         } else {
             diskCache.value?.openEditor(diskCacheKey)
-        }
-
-        // Return null if we're unable to write to this entry.
-        if (editor == null) return null
+        } ?: return null
 
         try {
             // Write the response to the disk cache.
-            if (networkResponse.code == 304 && cacheResponse != null) {
+            if (networkResponse.code == HTTP_RESPONSE_NOT_MODIFIED && cacheResponse != null) {
                 // Combine and write the updated cache headers and discard the body.
                 fileSystem.write(editor.metadata) {
-                    val headers = networkResponse.headers.newBuilder()
-                    for ((key, values) in cacheResponse.headers.asMap()) {
-                        if (networkResponse.headers[key] == null) {
-                            headers[key] = values
-                        }
-                    }
-                    val newNetworkResponse = networkResponse.copy(headers = headers.build())
-                    CacheNetworkResponse.writeTo(newNetworkResponse, this)
+                    val combinedHeaders = cacheResponse.headers + networkResponse.headers
+                    CacheNetworkResponse.writeTo(networkResponse.copy(headers = combinedHeaders), this)
                 }
             } else {
                 // Write the response's cache headers and body.
                 fileSystem.write(editor.metadata) {
                     CacheNetworkResponse.writeTo(networkResponse, this)
                 }
-                networkResponseBody?.writeTo(fileSystem, editor.data)
+                networkResponse.body?.writeTo(fileSystem, editor.data)
             }
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
-            networkResponseBody?.close()
+            networkResponse.body?.close()
             throw e
         }
     }

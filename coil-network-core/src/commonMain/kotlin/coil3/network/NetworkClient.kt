@@ -2,6 +2,7 @@ package coil3.network
 
 import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
+import coil3.network.internal.HTTP_RESPONSE_OK
 import kotlin.jvm.JvmInline
 import okio.BufferedSink
 import okio.BufferedSource
@@ -80,7 +81,7 @@ private value class ByteStringNetworkRequestBody(
  */
 @Poko
 class NetworkResponse(
-    val code: Int = 200,
+    val code: Int = HTTP_RESPONSE_OK,
     val requestMillis: Long = 0L,
     val responseMillis: Long = 0L,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,

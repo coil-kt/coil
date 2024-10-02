@@ -10,24 +10,24 @@ import kotlin.jvm.JvmField
 @ExperimentalCoilApi
 interface CacheStrategy {
 
-    suspend fun allowRead(
+    suspend fun read(
         networkRequest: NetworkRequest,
         cacheResponse: NetworkResponse,
         options: Options,
     ): ReadResult
 
-    suspend fun allowWrite(
+    suspend fun write(
         networkRequest: NetworkRequest,
         networkResponse: NetworkResponse,
         options: Options,
-    ): NetworkResponse?
+    ): WriteResult
 
     class ReadResult {
         val cacheResponse: NetworkResponse?
         val networkRequest: NetworkRequest?
 
         /**
-         * Create an output that will use [cacheResponse] as the image source.
+         * Create a result that will use [cacheResponse] as the image source.
          */
         constructor(cacheResponse: NetworkResponse) {
             this.cacheResponse = cacheResponse
@@ -35,7 +35,7 @@ interface CacheStrategy {
         }
 
         /**
-         * Create an output that will execute [networkRequest] and use the response body as the
+         * Create a result that will execute [networkRequest] and use the response body as the
          * image source.
          */
         constructor(networkRequest: NetworkRequest) {
@@ -44,7 +44,7 @@ interface CacheStrategy {
         }
 
         /**
-         * Create an output that will execute [networkRequest] and use [cacheResponse] as the image
+         * Create a result that will execute [networkRequest] and use [cacheResponse] as the image
          * source if the response code is 304 (not modified). Else, the network request's response
          * body will be used as the image source.
          */
@@ -57,8 +57,16 @@ interface CacheStrategy {
         }
     }
 
-    sealed interface WriteResult {
+    class WriteResult {
+        val networkResponse: NetworkResponse?
 
+        constructor(response: NetworkResponse) {
+            this.networkResponse = response
+        }
+
+        internal constructor() {
+            this.networkResponse = null
+        }
     }
 
     companion object {
@@ -66,17 +74,17 @@ interface CacheStrategy {
          * The default [CacheStrategy], which always returns the disk cache response.
          */
         @JvmField val DEFAULT = object : CacheStrategy {
-            override suspend fun allowRead(
+            override suspend fun read(
                 networkRequest: NetworkRequest,
                 cacheResponse: NetworkResponse,
                 options: Options,
             ) = ReadResult(cacheResponse)
 
-            override suspend fun allowWrite(
+            override suspend fun write(
                 networkRequest: NetworkRequest,
                 networkResponse: NetworkResponse,
                 options: Options,
-            ) = networkResponse
+            ) = WriteResult(networkResponse)
         }
     }
 }
