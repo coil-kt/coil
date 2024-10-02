@@ -9,5 +9,8 @@
 final class coil3.network.cachecontrol/CacheControlCacheStrategy : coil3.network/CacheStrategy { // coil3.network.cachecontrol/CacheControlCacheStrategy|null[0]
     constructor <init>(kotlin/Function0<kotlinx.datetime/Instant> = ...) // coil3.network.cachecontrol/CacheControlCacheStrategy.<init>|<init>(kotlin.Function0<kotlinx.datetime.Instant>){}[0]
 
-    final suspend fun compute(coil3.network/CacheStrategy.Input): coil3.network/CacheStrategy.Output // coil3.network.cachecontrol/CacheControlCacheStrategy.compute|compute(coil3.network.CacheStrategy.Input){}[0]
+    final suspend fun read(coil3.network/NetworkResponse, coil3.network/NetworkRequest, coil3.request/Options): coil3.network/CacheStrategy.ReadResult // coil3.network.cachecontrol/CacheControlCacheStrategy.read|read(coil3.network.NetworkResponse;coil3.network.NetworkRequest;coil3.request.Options){}[0]
+    final suspend fun write(coil3.network/NetworkResponse?, coil3.network/NetworkRequest, coil3.network/NetworkResponse, coil3.request/Options): coil3.network/CacheStrategy.WriteResult // coil3.network.cachecontrol/CacheControlCacheStrategy.write|write(coil3.network.NetworkResponse?;coil3.network.NetworkRequest;coil3.network.NetworkResponse;coil3.request.Options){}[0]
+
+    final object Companion // coil3.network.cachecontrol/CacheControlCacheStrategy.Companion|null[0]
 }

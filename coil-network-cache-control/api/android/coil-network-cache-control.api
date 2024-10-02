@@ -1,7 +1,12 @@
 public final class coil3/network/cachecontrol/CacheControlCacheStrategy : coil3/network/CacheStrategy {
+	public static final field Companion Lcoil3/network/cachecontrol/CacheControlCacheStrategy$Companion;
 	public fun <init> ()V
 	public fun <init> (Lkotlin/jvm/functions/Function0;)V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun compute (Lcoil3/network/CacheStrategy$Input;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun read (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkRequest;Lcoil3/request/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write (Lcoil3/network/NetworkResponse;Lcoil3/network/NetworkRequest;Lcoil3/network/NetworkResponse;Lcoil3/request/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/network/cachecontrol/CacheControlCacheStrategy$Companion {
 }
 

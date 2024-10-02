@@ -17,13 +17,14 @@ package coil3.network.cachecontrol
 
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.CacheStrategy
-import coil3.network.CacheStrategy.Input
 import coil3.network.CacheStrategy.ReadResult
+import coil3.network.CacheStrategy.WriteResult
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.cachecontrol.internal.BROWSER_DATE_TIME_FORMAT
 import coil3.network.cachecontrol.internal.CacheControl
 import coil3.network.cachecontrol.internal.toNonNegativeInt
+import coil3.request.Options
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -42,8 +43,28 @@ class CacheControlCacheStrategy(
     private val now: () -> Instant = Clock.System::now,
 ) : CacheStrategy {
 
-    override suspend fun compute(input: Input): ReadResult {
-        return Computation(input.cacheResponse, input.networkRequest, now()).compute()
+    override suspend fun read(
+        cacheResponse: NetworkResponse,
+        networkRequest: NetworkRequest,
+        options: Options,
+    ): ReadResult {
+        return Computation(cacheResponse, networkRequest, now()).compute()
+    }
+
+    override suspend fun write(
+        cacheResponse: NetworkResponse?,
+        networkRequest: NetworkRequest,
+        networkResponse: NetworkResponse,
+        options: Options,
+    ): WriteResult {
+        val responseCaching = CacheControl.parse(networkResponse.headers)
+        val requestCaching = CacheControl.parse(networkRequest.headers)
+        if (!isCacheable(responseCaching, requestCaching)) {
+            return WriteResult.DISABLED
+        }
+
+        // Fall back to the default cache write strategy.
+        return CacheStrategy.DEFAULT.write(cacheResponse, networkRequest, networkResponse, options)
     }
 
     private class Computation(
@@ -177,7 +198,7 @@ class CacheControlCacheStrategy(
                     .add(conditionName, conditionValue!!)
                     .build(),
             )
-            return ReadResult(cacheResponse, conditionalRequest)
+            return ReadResult(conditionalRequest)
         }
 
         /**
@@ -240,7 +261,9 @@ class CacheControlCacheStrategy(
             return request.headers["If-Modified-Since"] != null ||
                 request.headers["If-None-Match"] != null
         }
+    }
 
+    companion object {
         /** Returns true if the response can be stored to later serve another request. */
         private fun isCacheable(
             responseCaching: CacheControl,
