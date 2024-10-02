@@ -12,6 +12,7 @@ import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
 import coil3.network.internal.CACHE_CONTROL
 import coil3.network.internal.CONTENT_TYPE
+import coil3.network.internal.HTTP_RESPONSE_NOT_MODIFIED
 import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
@@ -200,7 +201,7 @@ class NetworkFetcher(
         }
 
         return networkClient.value.executeRequest(request) { response ->
-            if (response.code !in 200 until 300 && response.code != 304) {
+            if (response.code !in 200 until 300 && response.code != HTTP_RESPONSE_NOT_MODIFIED) {
                 throw HttpException(response)
             }
             block(response)

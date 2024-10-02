@@ -59,21 +59,22 @@ class CacheControlCacheStrategyTest {
     fun noStoreIsNeverCachedOrReturned() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        val headers = NetworkHeaders.Builder()
-            .set("Cache-Control", "no-store")
-            .build()
-        val response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
-        networkClient.enqueue(url, response)
+        val newResponse = {
+            NetworkResponse(
+                headers = NetworkHeaders.Builder()
+                    .set("Cache-Control", "no-store")
+                    .build(),
+                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+            )
+        }
+        networkClient.enqueue(url, newResponse())
         var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        networkClient.enqueue(url, response)
+        networkClient.enqueue(url, newResponse())
         result = newFetcher(url).fetch()
 
         assertEquals(2, networkClient.requests.size)
@@ -231,15 +232,15 @@ class CacheControlCacheStrategyTest {
     fun unexpiredMaxAgeIsReturnedFromCache() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-
-        val headers = NetworkHeaders.Builder()
-            .set("Cache-Control", "max-age=60")
-            .build()
-        val response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
-        networkClient.enqueue(url, response)
+        val newResponse = {
+            NetworkResponse(
+                headers = NetworkHeaders.Builder()
+                    .set("Cache-Control", "max-age=60")
+                    .build(),
+                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+            )
+        }
+        networkClient.enqueue(url, newResponse())
         var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
@@ -248,7 +249,7 @@ class CacheControlCacheStrategyTest {
 
         diskCache.openSnapshot(url).use(::assertNotNull)
 
-        networkClient.enqueue(url, response)
+        networkClient.enqueue(url, newResponse())
         result = newFetcher(url).fetch()
 
         assertEquals(1, networkClient.requests.size)
