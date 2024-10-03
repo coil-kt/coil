@@ -14,9 +14,11 @@ ij_kotlin_allow_trailing_comma_on_call_site=true
 ij_kotlin_imports_layout=*
 
 ktlint_standard_annotation=disabled
+ktlint_standard_backing-property-naming=disabled
 ktlint_standard_blank-line-before-declaration=disabled
 ktlint_standard_filename=disabled
 ktlint_standard_function-signature=disabled
+ktlint_standard_function-expression-body=disabled
 ktlint_standard_indent=disabled
 ktlint_standard_max-line-length=disabled
 ktlint_standard_no-blank-line-in-list=disabled
