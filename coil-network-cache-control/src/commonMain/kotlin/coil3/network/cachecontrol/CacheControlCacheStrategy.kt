@@ -25,6 +25,7 @@ import coil3.network.cachecontrol.internal.BROWSER_DATE_TIME_FORMAT
 import coil3.network.cachecontrol.internal.CacheControl
 import coil3.network.cachecontrol.internal.toNonNegativeInt
 import coil3.request.Options
+import kotlin.jvm.JvmOverloads
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -39,7 +40,7 @@ import kotlinx.datetime.Instant
  * @param now A function that returns the current time.
  */
 @ExperimentalCoilApi
-class CacheControlCacheStrategy(
+class CacheControlCacheStrategy @JvmOverloads constructor(
     private val now: () -> Instant = Clock.System::now,
 ) : CacheStrategy {
 
