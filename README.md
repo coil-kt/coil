@@ -17,11 +17,11 @@ Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русск�
 
 #### Compose
 
-Import the [Compose](https://developer.android.com/jetpack/compose) library and a networking library:
+Import the Compose library and a networking library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:3.0.0-rc01")
-implementation("io.coil-kt:coil-network-okhttp:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 ```
 
 To load an image, use the `AsyncImage` composable:
@@ -38,8 +38,8 @@ AsyncImage(
 Import the core library and a networking library:
 
 ```kotlin
-implementation("io.coil-kt:coil:3.0.0-rc01")
-implementation("io.coil-kt:coil-network-okhttp:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 ```
 
 To load an image into an `ImageView`, use the `load` extension function:

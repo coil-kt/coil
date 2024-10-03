@@ -2,23 +2,27 @@
 
 ## Artifacts
 
-Coil has 9 artifacts published to `mavenCentral()`:
+Coil has several artifacts published to `mavenCentral()`:
 
-* `io.coil-kt:coil`: The default artifact which depends on `io.coil-kt:coil-base`, creates a singleton `ImageLoader`, and includes the `ImageView` extension functions.
-* `io.coil-kt:coil-base`: A subset of `io.coil-kt:coil` which **does not** include the singleton `ImageLoader` and the `ImageView` extension functions.
-* `io.coil-kt:coil-compose`: Includes support for [Jetpack Compose](https://developer.android.com/jetpack/compose).
-* `io.coil-kt:coil-compose-base`: A subset of `io.coil-kt:coil-compose` which does not include functions that depend on the singleton `ImageLoader`.
-* `io.coil-kt:coil-gif`: Includes two [decoders](/coil/api/coil-core/coil3.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
-* `io.coil-kt:coil-svg`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
-* `io.coil-kt:coil-video`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
-* `io.coil-kt:coil-test`: Includes classes to support testing with `ImageLoader`s. See [Testing](testing.md) for more details.
-* `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
+* `io.coil-kt.coil3:coil`: The default artifact which depends on `io.coil-kt.coil3:coil-core`. It includes a singleton `ImageLoader` and related extension functions.
+* `io.coil-kt.coil3:coil-core`: A subset of `io.coil-kt.coil3:coil` which **does not** include the singleton `ImageLoader` and related extension functions.
+* `io.coil-kt.coil3:coil-compose`: The default [Compose](https://www.jetbrains.com/compose-multiplatform/) artifact which depends on `io.coil-kt.coil3:coil` and `io.coil-kt.coil3:coil-compose-core`. It includes overloads for `AsyncImage`, `rememberAsyncImagePainter`, and `SubcomposeAsyncImage` that use the singleton `ImageLoader`.
+* `io.coil-kt.coil3:coil-compose-core`: A subset of `io.coil-kt.coil3:coil-compose` which does not include functions that depend on the singleton `ImageLoader`.
+* `io.coil-kt.coil3:coil-network-okhttp`: Includes support for fetching images from the network using [OkHttp](https://github.com/square/okhttp).
+* `io.coil-kt.coil3:coil-network-ktor2`: Includes support for fetching images from the network using [Ktor 2](https://github.com/ktorio/ktor).
+* `io.coil-kt.coil3:coil-network-ktor3`: Includes support for fetching images from the network using [Ktor 3](https://github.com/ktorio/ktor).
+* `io.coil-kt.coil3:coil-network-cache-control`: Includes support for respecting [`Cache-Control` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) when fetching images from the network.
+* `io.coil-kt.coil3:coil-gif`: Includes two [decoders](/coil/api/coil-core/coil3.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
+* `io.coil-kt.coil3:coil-svg`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
+* `io.coil-kt.coil3:coil-video`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
+* `io.coil-kt.coil3:coil-test`: Includes classes to support testing. See [testing](testing.md) for more details.
+* `io.coil-kt.coil3:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
 
 ## Image Loaders
 
 [`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more.
 
-The default Coil artifact (`io.coil-kt:coil`) includes the singleton `ImageLoader`, which can be accessed using an extension function: `context.imageLoader`.
+The default Coil artifact (`io.coil-kt.coil3:coil`) includes the singleton `ImageLoader`, which can be accessed using an extension function: `context.imageLoader`.
 
 The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactory` on your `Application` class:
 
@@ -66,7 +70,7 @@ val result = imageLoader.execute(request)
 
 ## ImageView Extension Functions
 
-The `io.coil-kt:coil` artifact provides a set of `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
+The `io.coil-kt.coil3:coil` artifact provides a set of `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
 
 ```kotlin
 imageView.load("https://example.com/image.jpg")
