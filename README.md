@@ -9,6 +9,8 @@ An image loading library for Android and [Compose Multiplatform](https://www.jet
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
+Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
+
 Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
 
 ## Quick Start
@@ -45,8 +47,6 @@ To load an image into an `ImageView`, use the `load` extension function:
 ```kotlin
 imageView.load("https://example.com/image.jpg")
 ```
-
-Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
 ## License
 
