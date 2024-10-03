@@ -126,7 +126,7 @@ allprojects {
     val configureSpotless: SpotlessExtension.() -> Unit = {
         kotlin {
             target("**/*.kt", "**/*.kts")
-            ktlint(libs.versions.ktlint.get())
+            ktlint(libs.versions.ktlint.get()).editorConfigOverride(ktlintRules)
             endWithNewline()
             indentWithSpaces()
             trimTrailingWhitespace()
@@ -162,6 +162,49 @@ allprojects {
     }
 
     applyOkioJsTestWorkaround()
+}
+
+private val ktlintRules = buildMap {
+    put("ktlint_code_style", "intellij_idea")
+
+    put("ktlint_standard_annotation", "disabled")
+    put("ktlint_standard_blank-line-before-declaration", "disabled")
+    put("ktlint_standard_class-signature", "disabled")
+    put("ktlint_standard_filename", "disabled")
+    put("ktlint_standard_function-expression-body", "disabled")
+    put("ktlint_standard_function-signature", "disabled")
+    put("ktlint_standard_function-literal", "disabled")
+    put("ktlint_standard_indent", "disabled")
+    put("ktlint_standard_max-line-length", "disabled")
+    put("ktlint_standard_no-blank-line-in-list", "disabled")
+    put("ktlint_standard_no-empty-first-line-in-class-body", "disabled")
+    put("ktlint_standard_spacing-between-declarations-with-annotations", "disabled")
+    put("ktlint_standard_string-template-indent", "disabled")
+    put("ktlint_standard_trailing-comma-on-call-site", "disabled")
+    put("ktlint_standard_trailing-comma-on-declaration-site", "disabled")
+    put("ktlint_standard_try-catch-finally-spacing", "disabled")
+
+    put("ktlint_standard_backing-property-naming", "disabled")
+    put("ktlint_standard_function-naming", "disabled")
+    put("ktlint_standard_property-naming", "disabled")
+
+    put("ktlint_standard_type-argument-comment", "disabled")
+    put("ktlint_standard_type-parameter-comment", "disabled")
+    put("ktlint_standard_value-argument-comment", "disabled")
+    put("ktlint_standard_value-parameter-comment", "disabled")
+
+    put("ktlint_standard_argument-list-wrapping", "disabled")
+    put("ktlint_standard_binary-expression-wrapping", "disabled")
+    put("ktlint_standard_condition-wrapping", "disabled")
+    put("ktlint_standard_context-receiver-wrapping", "disabled")
+    put("ktlint_standard_enum-wrapping", "disabled")
+    put("ktlint_standard_if-else-wrapping", "disabled")
+    put("ktlint_standard_multiline-expression-wrapping", "disabled")
+    put("ktlint_standard_parameter-wrapping", "disabled")
+    put("ktlint_standard_parameter-list-wrapping", "disabled")
+    put("ktlint_standard_property-wrapping", "disabled")
+    put("ktlint_standard_statement-wrapping", "disabled")
+    put("ktlint_standard_wrapping", "disabled")
 }
 
 // https://github.com/square/okio/issues/1163
