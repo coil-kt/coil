@@ -18,7 +18,7 @@ AsyncImage(
 `model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself. `contentDescription` sets the text used by accessibility services to describe what this image represents.
 
 !!! Note
-    If you use Compose on JVM/desktop it's recommended to import `org.jetbrains.kotlinx:kotlinx-coroutines-swing:<coroutines-version>`. Coil relies on `Dispatchers.Main.immediate` to resolve images from the memory cache synchronously and `kotlinx-coroutines-swing` provides support for that on JVM (non-Android) platforms.
+    If you use Compose on JVM/desktop you should import `org.jetbrains.kotlinx:kotlinx-coroutines-swing:<coroutines-version>`. Coil relies on `Dispatchers.Main.immediate` to resolve images from the memory cache synchronously and `kotlinx-coroutines-swing` provides support for that on JVM (non-Android) platforms.
 
 ## AsyncImage
 
