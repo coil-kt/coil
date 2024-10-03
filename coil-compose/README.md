@@ -1,9 +1,9 @@
-# Jetpack Compose
+# Compose
 
-To add support for [Jetpack Compose](https://developer.android.com/jetpack/compose), import the extension library:
+To add support for [Compose](https://www.jetbrains.com/compose-multiplatform/), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.7.0")
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
 ```
 
 Then use the `AsyncImage` composable to load and display an image:
@@ -33,6 +33,44 @@ AsyncImage(
     modifier = Modifier.clip(CircleShape)
 )
 ```
+
+#### When to use this function
+
+Prefer using this function in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
+
+## rememberAsyncImagePainter
+
+Internally, `AsyncImage` and `SubcomposeAsyncImage` use `rememberAsyncImagePainter` to load the `model`. If you need a `Painter` and not a composable, you can load the image using `rememberAsyncImagePainter`:
+
+```kotlin
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
+```
+
+`rememberAsyncImagePainter` is more flexible than `AsyncImage` and `SubcomposeAsyncImage`, but has a couple drawbacks (see below).
+
+#### When to use this function
+
+Useful if you need a `Painter` instead of a composable - or if you need to observe the `AsyncImagePainter.state` and draw a different composable based on it - or if you need to manually restart the image request using `AsyncImagePainter.restart`.
+
+The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `ConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
+
+```kotlin
+val sizeResolver by remember { ConstraintsSizeResolver() }
+val painter = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalPlatformContext.current)
+        .data("https://www.example.com/image.jpg")
+        .size(sizeResolver)
+        .build()
+)
+
+Image(
+    painter = painter,
+    contentDescription = null,
+    modifier = Modifier.then(sizeResolver),
+)
+```
+
+Another drawback is `AsyncImagePainter.state` will always be `Loading` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
 
 ## SubcomposeAsyncImage
 
@@ -64,46 +102,39 @@ SubcomposeAsyncImage(
 }
 ```
 
-Subcomposition is less performant than regular composition so this composable may not be suitable for parts of your UI where high performance is critical (e.g. lists).
-
 !!! Note
-    If you set a custom size for the `ImageRequest` using `ImageRequest.Builder.size` (e.g. `size(Size.ORIGINAL)`), `SubcomposeAsyncImage` will not use subcomposition since it doesn't need to resolve the composable's constraints.
+    Subcomposition is slower than regular composition so this composable may not be suitable for performance-critical parts of your UI (e.g. `LazyList`).
 
-## AsyncImagePainter
+#### When to use this function
 
-Internally, `AsyncImage` and `SubcomposeAsyncImage` use `AsyncImagePainter` to load the `model`. If you need a `Painter` and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
+Generally prefer using `rememberAsyncImagePainter` instead of this function if you need to observe `AsyncImagePainter.state` as it does not use subcomposition.
 
-```kotlin
-val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
-```
-
-`rememberAsyncImagePainter` is a lower-level API that may not behave as expected in all cases. Read the method's documentation for more information.
-
-!!! Note
-    If you set a custom `ContentScale` on the `Image` that's rendering the `AsyncImagePainter`, you should also set it in `rememberAsyncImagePainter`. It's necessary to determine the correct dimensions to load the image at.
+Specifically, this function is only useful if you need to observe `AsyncImagePainter.state` and you can't have it be `Loading` for the first composition and first frame like with `rememberAsyncImagePainter`. `SubcomposeAsyncImage` uses subcomposition to get the image's constraints so it's `AsyncImagePainter.state` is up to date immediately.
 
 ## Observing AsyncImagePainter.state
 
-An image request needs a size to determine the output image's dimensions. By default, both `AsyncImage` and `AsyncImagePainter` resolve the request's size [**after** composition occurs](https://developer.android.com/jetpack/compose/layouts/basics), but before the first frame is drawn. It's resolved this way to maximize performance. This means that `AsyncImagePainter.state` will be `Loading` for the first composition - even if the image is present in the memory cache and it will be drawn in the first frame.
-
-If you need `AsyncImagePainter.state` to be up-to-date during the first composition, use `SubcomposeAsyncImage` **or** set a custom size for the image request using `ImageRequest.Builder.size`. For example, `AsyncImagePainter.state` will always be up-to-date during the first composition in this example:
+Example:
 
 ```kotlin
-val painter = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current)
-        .data("https://example.com/image.jpg")
-        .size(Size.ORIGINAL) // Set the target size to load the image at.
-        .build()
-)
+val painter = rememberAsyncImagePainter("https://www.example.com/image.jpg")
 
-if (painter.state is AsyncImagePainter.State.Success) {
-    // This will be executed during the first composition if the image is in the memory cache.
+when (painter.state) {
+    is AsyncImagePainter.State.Loading -> {
+        CircularProgressIndicator()
+    }
+    is AsyncImagePainter.State.Success -> {
+        Image(
+            painter = painter,
+            contentDescription = stringResource(R.string.description)
+        )
+    }
+    is AsyncImagePainter.State.Error -> {
+        // Show some error UI.
+    }
+    is AsyncImagePainter.State.Empty -> {
+        // Render nothing. If the request is launched from the main thread this state will never be reached.
+    }
 }
-
-Image(
-    painter = painter,
-    contentDescription = stringResource(R.string.description)
-)
 ```
 
 ## Transitions
@@ -122,7 +153,7 @@ AsyncImage(
 
 Custom [`Transition`](transitions.md)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
 
-That said, it's possible to create custom transitions in Compose by observing the `AsyncImagePainter`'s state:
+That said, it's possible to create custom transitions in Compose by observing `AsyncImagePainter.state`:
 
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
@@ -137,3 +168,27 @@ Image(
     contentDescription = stringResource(R.string.description)
 )
 ```
+
+## Previews
+
+The Android Studio preview behaviour for `AsyncImage`/`rememberAsyncImagePainter`/`SubcomposeAsyncImage` is controlled by the `LocalAsyncImagePreviewHandler`. By default, it will attempt to perform the request as normal inside the preview environment. Network access is disabled in the preview environment so network URLs will always fail.
+
+You can override the preview behaviour like so:
+
+```kotlin
+val previewHandler = AsyncImagePreviewHandler {
+    object : ColorDrawable(Color.RED) {
+        override fun getIntrinsicWidth() = 100
+        override fun getIntrinsicHeight() = 100
+    }.asImage()
+}
+
+CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+    AsyncImage(
+        model = "https://www.example.com/image.jpg",
+        contentDescription = null,
+    )
+}
+```
+
+This is also useful for [AndroidX's Compose Preview Screenshot Testing library](https://developer.android.com/studio/preview/compose-screenshot-testing), which executes in the same preview environment.
