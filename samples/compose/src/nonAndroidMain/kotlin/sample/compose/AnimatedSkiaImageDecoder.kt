@@ -121,7 +121,7 @@ private class AnimatedSkiaImage(
             alphaType = ColorAlphaType.UNPREMUL,
             colorSpace = ColorSpace.sRGB,
         )
-        val imageInfo = ImageInfo(colorInfo, width, height)
+        val imageInfo = ImageInfo(colorInfo, bitmap.width, bitmap.height)
         val rowBytes = 4 * bitmap.width
         val bytes = bitmap.readPixels(imageInfo, rowBytes)!!
         drawImage(SkiaImage.makeRaster(imageInfo, bytes, rowBytes), 0f, 0f)
