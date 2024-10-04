@@ -3,8 +3,8 @@ package sample.compose
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
-import coil3.AnimatedImage
 import coil3.Canvas
+import coil3.Image
 import coil3.ImageLoader
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
@@ -16,7 +16,13 @@ import okio.use
 import org.jetbrains.skia.AnimationFrameInfo
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorInfo
+import org.jetbrains.skia.ColorSpace
+import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Data
+import org.jetbrains.skia.ImageInfo
+import org.jetbrains.skia.Image as SkiaImage
 
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
@@ -43,14 +49,12 @@ class AnimatedSkiaImageDecoder(
 
 private class AnimatedSkiaImage(
     private val codec: Codec,
-) : AnimatedImage {
+) : Image {
     private var invalidateTick by mutableIntStateOf(0)
     private var bitmap: Bitmap? = null
     private var startTime: TimeSource.Monotonic.ValueTimeMark? = null
     private var lastFrameIndex = 0
     private var isDone = false
-
-    override var currentBitmap: Bitmap? = null
 
     override val size: Long
         get() {
@@ -112,18 +116,15 @@ private class AnimatedSkiaImage(
     private fun Canvas.drawFrame(frameIndex: Int) {
         val bitmap = bitmap ?: Bitmap().apply { allocPixels(codec.imageInfo) }.also { bitmap = it }
         codec.readPixels(bitmap, frameIndex)
-        currentBitmap = bitmap
-//        check(writePixels(bitmap, 0, 0))
-    }
-
-    override fun start() {
-        startTime = null
-        isDone = false
-        invalidateTick++
-    }
-
-    override fun stop() {
-        isDone = true
+        val colorInfo = ColorInfo(
+            colorType = ColorType.BGRA_8888,
+            alphaType = ColorAlphaType.UNPREMUL,
+            colorSpace = ColorSpace.sRGB,
+        )
+        val imageInfo = ImageInfo(colorInfo, width, height)
+        val rowBytes = 4 * bitmap.width
+        val bytes = bitmap.readPixels(imageInfo, rowBytes)!!
+        drawImage(SkiaImage.makeRaster(imageInfo, bytes, rowBytes), 0f, 0f)
     }
 }
 
