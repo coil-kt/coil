@@ -37,6 +37,13 @@ interface Image {
     fun draw(canvas: Canvas)
 }
 
+interface AnimatedImage : Image {
+    val currentBitmap: Bitmap?
+
+    fun start()
+    fun stop()
+}
+
 /**
  * A special implementation of [Image] that's backed by a [Bitmap].
  */

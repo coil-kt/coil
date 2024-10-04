@@ -11,6 +11,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil3.decode.Decoder
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Stable
@@ -39,3 +40,5 @@ actual fun BackHandler(
 ) {
     BackHandler(enabled, onBack)
 }
+
+actual val gifDecoderFactory: Decoder.Factory? = null

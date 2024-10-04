@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.IntSize
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
+import coil3.decode.Decoder
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.util.component1
@@ -226,7 +227,12 @@ private fun ListScreen(
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(image.uri)
-                    .apply { extras.setAll(image.extras) }
+                    .apply {
+                        extras.setAll(image.extras)
+                        if (image.uri.toString().endsWith(".gif")) {
+                            gifDecoderFactory?.let(::decoderFactory)
+                        }
+                    }
                     .build(),
                 contentDescription = null,
                 placeholder = ColorPainter(Color(image.color)),
@@ -264,3 +270,5 @@ expect fun BackHandler(
     enabled: Boolean = true,
     onBack: () -> Unit,
 )
+
+expect val gifDecoderFactory: Decoder.Factory?
