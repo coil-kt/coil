@@ -27,31 +27,48 @@ import org.jetbrains.skia.Image as SkiaImage
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
     private val options: Options,
+    private val prerenderFrames: Boolean = true,
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult? {
         val bytes = source.source().use { it.readByteArray() }
         val codec = Codec.makeFromData(Data.makeFromBytes(bytes))
         return DecodeResult(
-            image = AnimatedSkiaImage(codec),
+            image = AnimatedSkiaImage(codec, prerenderFrames),
             isSampled = false,
         )
     }
 
-    class Factory : Decoder.Factory {
+    class Factory(
+        private val prerenderFrames: Boolean = false,
+    ) : Decoder.Factory {
         override fun create(
             result: SourceFetchResult,
             options: Options,
             imageLoader: ImageLoader,
-        ): Decoder? = AnimatedSkiaImageDecoder(result.source, options)
+        ): Decoder? = AnimatedSkiaImageDecoder(result.source, options, prerenderFrames)
     }
 }
 
 private class AnimatedSkiaImage(
     private val codec: Codec,
+    prerenderFrames: Boolean,
 ) : Image {
+    private val imageInfo = ImageInfo(
+        colorInfo = ColorInfo(
+            colorType = ColorType.BGRA_8888,
+            alphaType = ColorAlphaType.UNPREMUL,
+            colorSpace = ColorSpace.sRGB,
+        ),
+        width = codec.width,
+        height = codec.height,
+    )
+    private val bitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
+    private val frames = Array(codec.frameCount) { index ->
+        if (prerenderFrames) decodeFrame(index) else null
+    }
+
     private var invalidateTick by mutableIntStateOf(0)
-    private var bitmap: Bitmap? = null
     private var startTime: TimeSource.Monotonic.ValueTimeMark? = null
     private var lastFrameIndex = 0
     private var isDone = false
@@ -113,18 +130,14 @@ private class AnimatedSkiaImage(
         }
     }
 
-    private fun Canvas.drawFrame(frameIndex: Int) {
-        val bitmap = bitmap ?: Bitmap().apply { allocPixels(codec.imageInfo) }.also { bitmap = it }
+    private fun decodeFrame(frameIndex: Int): ByteArray {
         codec.readPixels(bitmap, frameIndex)
-        val colorInfo = ColorInfo(
-            colorType = ColorType.BGRA_8888,
-            alphaType = ColorAlphaType.UNPREMUL,
-            colorSpace = ColorSpace.sRGB,
-        )
-        val imageInfo = ImageInfo(colorInfo, bitmap.width, bitmap.height)
-        val rowBytes = 4 * bitmap.width
-        val bytes = bitmap.readPixels(imageInfo, rowBytes)!!
-        drawImage(SkiaImage.makeRaster(imageInfo, bytes, rowBytes), 0f, 0f)
+        return bitmap.readPixels(imageInfo, imageInfo.minRowBytes)!!
+    }
+
+    private fun Canvas.drawFrame(frameIndex: Int) {
+        val frame = frames[frameIndex] ?: decodeFrame(frameIndex).also { frames[frameIndex] = it }
+        drawImage(SkiaImage.makeRaster(imageInfo, frame, imageInfo.minRowBytes), 0f, 0f)
     }
 }
 
