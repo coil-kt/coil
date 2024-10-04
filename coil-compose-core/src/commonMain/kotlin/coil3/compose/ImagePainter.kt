@@ -22,23 +22,19 @@ class ImagePainter(
         get() = Size(intrinsicWidth, intrinsicHeight)
 
     private val intrinsicWidth: Float
-        get() = image.width.toDimension()
+        get() = image.width.let { if (it > 0) it.toFloat() else Float.NaN }
 
     private val intrinsicHeight: Float
-        get() = image.height.toDimension()
+        get() = image.height.let { if (it > 0) it.toFloat() else Float.NaN }
 
     override fun DrawScope.onDraw() {
         scale(
-            scaleX = size.width / intrinsicWidth,
-            scaleY = size.height / intrinsicHeight,
+            scaleX = image.width.let { if (it > 0) size.width / it else 1f },
+            scaleY = image.height.let { if (it > 0) size.height / it else 1f },
             pivot = Offset.Zero,
         ) {
             image.draw(drawContext.canvas.nativeCanvas)
         }
-    }
-
-    private fun Int.toDimension(): Float {
-        return if (this >= 0) toFloat() else Float.NaN
     }
 }
 
