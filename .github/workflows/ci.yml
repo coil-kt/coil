@@ -75,7 +75,7 @@ jobs:
                   gradle-home-cache-cleanup: true
 
             - name: Unit tests
-              run: ./gradlew iosArm64Test macosArm64Test
+              run: ./gradlew iosArm64TestBinaries macosArm64Test
 
     instrumentation-tests:
         name: Instrumentation tests
