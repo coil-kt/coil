@@ -24,17 +24,9 @@ public final class coil3/gif/DecodeUtilsKt {
 }
 
 public final class coil3/gif/GifDecoder : coil3/decode/Decoder {
-	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
-	public static final field ANIMATION_END_CALLBACK_KEY Ljava/lang/String;
-	public static final field ANIMATION_START_CALLBACK_KEY Ljava/lang/String;
-	public static final field Companion Lcoil3/gif/GifDecoder$Companion;
-	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/gif/GifDecoder$Companion {
 }
 
 public final class coil3/gif/GifDecoder$Factory : coil3/decode/Decoder$Factory {
