@@ -80,11 +80,4 @@ class GifDecoder(
             return GifDecoder(result.source, options, enforceMinimumFrameDelay)
         }
     }
-
-    companion object {
-        const val REPEAT_COUNT_KEY = "coil#repeat_count"
-        const val ANIMATED_TRANSFORMATION_KEY = "coil#animated_transformation"
-        const val ANIMATION_START_CALLBACK_KEY = "coil#animation_start_callback"
-        const val ANIMATION_END_CALLBACK_KEY = "coil#animation_end_callback"
-    }
 }
