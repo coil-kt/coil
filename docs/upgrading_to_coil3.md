@@ -26,6 +26,7 @@ Coil 3.0 has several import default changes:
 
 - Cache headers are no longer respected by default. See [here](network.md) for more info.
 - A file's last write timestamp is no longer added to its cache key by default. This is to avoid reading the disk on the main thread (even for a very short amount of time). This can be renabled with `ImageRequest.Builder.addLastModifiedToFileCacheKey` or `ImageLoader.Builder.addLastModifiedToFileCacheKey`.
+- Output image dimensions are now forced to be less than 4096x4096 to guard against accidental OOMs. This can be configured with `ImageLoader/ImageRequest.Builder.maxBitmapSize`.
 
 ## Network Images
 

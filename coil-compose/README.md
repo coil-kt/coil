@@ -1,6 +1,6 @@
 # Compose
 
-To add support for [Compose](https://www.jetbrains.com/compose-multiplatform/), import the extension library:
+To add support for [Compose UI](https://www.jetbrains.com/compose-multiplatform/), import the extension library:
 
 ```kotlin
 implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
