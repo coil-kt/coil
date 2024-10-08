@@ -19,7 +19,7 @@ SingletonImageLoader.setSafe {
 
 // An alias of SingletonImageLoader.setSafe that's useful for
 // Compose Multiplatform apps.
-setSingletonImageLoader {
+setSingletonImageLoaderFactory { context ->
     ImageLoader.Builder(context)
         .crossfade(true)
         .build()
