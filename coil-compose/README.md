@@ -39,7 +39,7 @@ AsyncImage(
 
 #### When to use this function
 
-Prefer using this function in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
+Prefer using `AsyncImage` in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
 
 ## rememberAsyncImagePainter
 

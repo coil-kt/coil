@@ -35,6 +35,7 @@ python3 -m mkdocs gh-deploy --force
 rm docs/index.md \
    docs/contributing.md \
    docs/changelog.md \
+   docs/network.md \
    docs/compose.md \
    docs/logo.svg \
    docs/gifs.md \

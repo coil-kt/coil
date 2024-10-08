@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.0.0-rc01] - October 8, 2024
+
+[For the full list of important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:
+
+- **BREAKING** Disable `addLastModifiedToFileCacheKey` by default and allow it to be set per request. The behaviour can be reenabled with the same flag.
+- **New**: Add a new `coil-network-cache-control` module, which implements [`Cache-Control` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) support.
+- **New**: Add `scaleToDensity` property to `SvgDecoder.Factory`. This property ensure SVGs with intrinsic dimensions are multiplied by the devices density (only supported on Android).
+- Rename `ExifOrientationPolicy` to `ExifOrientationStrategy`.
+- Remove unshareable images from the `MemoryCache` on get.
+- Make `ConstraintsSizeResolver` public.
+- Stabilize `setSingletonImageLoaderFactory`.
+- Restore optimized JVM I/O functions in `coil-network-ktor3`
+- Add `pdf` to list of mime types.
+- Update compile sdk to 35.
+- Update Kotlin to 2.0.20.
+- Update Okio to 3.9.1.
+
 ## [3.0.0-alpha10] - August 7, 2024
 
 - **BREAKING**: Replace `ImageLoader.Builder.networkObserverEnabled` with a `ConnectivityChecker` interface for `NetworkFetcher`.

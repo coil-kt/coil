@@ -3,7 +3,14 @@
 !!! Note
     The doc is a work in progress and will be improved before the final Coil 3.0 release.
 
-Coil 3 is the next major version of Coil that supports [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) and includes performance and API improvements. This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour changes.
+Coil 3 is the next major version of Coil that has a number of major improvements:
+
+- Full support for [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Coil supports all major targets (Android, iOS, JVM, JS, and [WASM](https://coil-kt.github.io/coil/sample/)) and works with [Compose Multiplatform Resources](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources.html) without issue.
+- Support for multiple networking libraries (Ktor and OkHttp). Alternatively, Coil can be used without a network dependency if you only need to load local/static files.
+- Significant improvements to the Compose integration. Faster runtime performance (benchmarks coming). Better support for `@Preview` rendering.
+- Important fixes for bugs that required breaking existing behaviour.
+
+This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour changes.
 
 Using Coil 3 in a Compose Multiplatform project? Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
 

@@ -47,5 +47,5 @@ setSingletonImageLoaderFactory { context ->
 }
 ```
 
-!!!
+!!! Note
     If you use Compose Multiplatform, you'll need to use Ktor for download network images. See [here](network.md) for how to do that.
