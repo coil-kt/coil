@@ -2,7 +2,7 @@
 
 ## [3.0.0-rc01] - October 8, 2024
 
-[For the full list of important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:
+[For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:
 
 - **BREAKING** Disable `addLastModifiedToFileCacheKey` by default and allow it to be set per request. The behaviour can be reenabled with the same flag.
 - **New**: Add a new `coil-network-cache-control` module, which implements [`Cache-Control` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) support.
