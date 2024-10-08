@@ -1,5 +1,7 @@
 # Transitions
 
+**This feature is only avilable on Android.**
+
 Transitions allow you to animate setting the result of an image request on a `Target`.
 
 Both `ImageLoader` and `ImageRequest` builders accept a `Transition.Factory`. Transitions allow you to control how the success/error drawable is set on the `Target`. This allows you to animate the target's view or wrap the input drawable.

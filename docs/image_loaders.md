@@ -1,14 +1,56 @@
 # Image Loaders
 
-`ImageLoader`s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`ImageRequest`](image_requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
-
-```kotlin
-val imageLoader = ImageLoader.Builder(context)
-    .crossfade(true)
-    .build()
-```
+`ImageLoader`s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`ImageRequest`](image_requests.md)s. They handle caching, data fetching, image decoding, request management, memory management, and more.
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, disk cache, and `OkHttpClient`.
+
+## Singleton
+
+The default `io.coil-kt.coil3:coil` artifact comes with a singleton `ImageLoader`. Coil creates this `ImageLoader` lazily. It can be configured a number of ways:
+
+```kotlin
+// The setSafe method ensures that it won't overwrite an
+// existing image loader that's been created.
+SingletonImageLoader.setSafe {
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .build()
+}
+
+// An alias of SingletonImageLoader.setSafe that's useful for
+// Compose Multiplatform apps.
+setSingletonImageLoaderFactory { context ->
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .build()
+}
+
+// Should only be used in tests. If you call this method
+// multiple times it will create multiple image loaders.
+SingletonImageLoader.setUnsafe {
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .build()
+}
+
+// On Android you can implement SingletonImageLoader.Factory on your
+// Application class to have it create the singleton image loader.
+MyApplication : SingletonImageLoader.Factory {
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        return ImageLoader.Builder(context)
+            .crossfade(true)
+            .build()
+    }
+}
+```
+
+**In all cases ensure the above methods are invoked as soon as possible when your app starts (i.e. inside `Application.onCreate` or inside `MainActivity.onCreate` if your app is only a single `Activity`.)**
+
+## Dependency injection
+
+If you have a larger app or want to manage your own `ImageLoaders` you can depend on `io.coil-kt.coil3:coil-core` instead of `io.coil-kt.coil3:coil`.
+
+This route makes scoping the lifecycle of a fake `ImageLoader` much easier and will overall make testing much easier.
 
 ## Caching
 
@@ -31,16 +73,3 @@ val imageLoader = ImageLoader.Builder(context)
 ```
 
 You can access items in the memory and disk caches using their keys, which are returned in an `ImageResult` after an image is loaded. The `ImageResult` is returned by `ImageLoader.execute` or in `ImageRequest.Listener.onSuccess` and `ImageRequest.Listener.onError`.
-
-!!! Note
-    Coil 1.x relied on OkHttp's disk cache. Coil 2.x has its own disk cache and **should not** use OkHttp's `Cache`.
-
-## Singleton vs. Dependency Injection
-
-The default Coil artifact (`io.coil-kt:coil`) includes the singleton `ImageLoader`, which can be accessed using an extension function: `context.imageLoader`.
-
-Coil performs best when you have a single `ImageLoader` that's shared throughout your app. This is because each `ImageLoader` has its own set of resources.
-
-The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactory` on your `Application` class.
-
-Optionally, you can create your own `ImageLoader` instance(s) and inject them using a dependency injector like [Dagger](https://github.com/google/dagger). If you do that, depend on `io.coil-kt:coil-base` as that artifact doesn't create the singleton `ImageLoader`.

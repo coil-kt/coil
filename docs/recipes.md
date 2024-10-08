@@ -27,15 +27,21 @@ imageView.load("https://example.com/image.jpg") {
 
 ## Using a custom OkHttpClient
 
-Coil uses [OkHttp](https://github.com/square/okhttp/) for all its networking operations. You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
+If you use `io.coil-kt.coil3:coil-network-okhttp` You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     // Create the OkHttpClient inside a lambda so it will be initialized lazily on a background thread.
-    .okHttpClient {
-        OkHttpClient.Builder()
-            .addInterceptor(CustomInterceptor())
-            .build()
+    .components {
+        add(
+            OkHttpNetworkFetcherFactory(
+                callFactory = { 
+                    OkHttpClient.Builder()
+                        .addInterceptor(CustomInterceptor())
+                        .build()
+                }
+            )
+        )
     }
     .build()
 ```
@@ -133,14 +139,14 @@ class RemoteViewsTarget(
     @IdRes private val imageViewResId: Int
 ) : Target {
 
-    override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
+    override fun onStart(placeholder: Image?) = setDrawable(placeholder)
 
-    override fun onError(error: Drawable?) = setDrawable(error)
+    override fun onError(error: Image?) = setDrawable(error)
 
-    override fun onSuccess(result: Drawable) = setDrawable(result)
+    override fun onSuccess(result: Image) = setDrawable(result)
 
-    private fun setDrawable(drawable: Drawable?) {
-        remoteViews.setImageViewBitmap(imageViewResId, drawable?.toBitmap())
+    private fun setDrawable(drawable: Image?) {
+        remoteViews.setImageViewBitmap(imageViewResId, image?.toBitmap())
         AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews)
     }
 }

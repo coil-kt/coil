@@ -57,6 +57,8 @@ extra:
 nav:
   - 'Overview': index.md
   - 'Getting Started': getting_started.md
+  - 'Network URLs': network.md
+  - 'Compose UI': compose.md
   - 'Image Loaders': image_loaders.md
   - 'Image Requests': image_requests.md
   - 'Targets': targets.md
@@ -64,7 +66,6 @@ nav:
   - 'Transitions': transitions.md
   - 'Extending the Image Pipeline': image_pipeline.md
   - 'Java Compatibility': java_compatibility.md
-  - 'Jetpack Compose': compose.md
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
   - 'Video Frames': videos.md
@@ -76,7 +77,7 @@ nav:
   - 'Upgrading to Coil 3.x': upgrading_to_coil3.md
   - 'Works with Coil': works_with_coil.md
   - 'API ⏏': api/index.html
-  - 'Sample ⏏': sample/index.html
+  - 'WASM Sample ⏏': sample/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

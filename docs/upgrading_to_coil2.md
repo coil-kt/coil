@@ -4,7 +4,7 @@ This is a short guide to highlight the main changes when upgrading from Coil 1.x
 
 ## Minimum API 21
 
-Coil 2.x requires minimum API 21. This is also the minimum API required for Jetpack Compose and OkHttp 4.x.
+Coil 2.x requires minimum API 21. This is also the minimum API required for Compose and OkHttp 4.x.
 
 ## ImageRequest default scale
 
@@ -23,9 +23,9 @@ if (width > 0) {
 
 This change was made to improve support for cases where a target has one unbounded dimension (e.g. if one dimension is `ViewGroup.LayoutParams.WRAP_CONTENT` for a `View` or `Constraints.Infinity` in Compose).
 
-## Jetpack Compose
+## Compose
 
-Coil 2.x significantly reworks the Jetpack Compose integration to add features, improve stability, and improve performance.
+Coil 2.x significantly reworks the Compose integration to add features, improve stability, and improve performance.
 
 In Coil 1.x you would use `rememberImagePainter` to load an image:
 
@@ -62,7 +62,7 @@ Image(
 )
 ```
 
-Additionally, Coil now has `AsyncImage` and `SubcomposeAsyncImage` composable functions, which add new features and work-around some design limitations of `rememberAsyncImagePainter`. Check out the full Jetpack Compose docs [here](compose.md).
+Additionally, Coil now has `AsyncImage` and `SubcomposeAsyncImage` composable functions, which add new features and work-around some design limitations of `rememberAsyncImagePainter`. Check out the full Compose docs [here](compose.md).
 
 ## Disk Cache
 
