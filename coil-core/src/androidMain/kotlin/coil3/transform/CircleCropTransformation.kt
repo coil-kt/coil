@@ -12,7 +12,7 @@ import coil3.util.safeConfig
 /**
  * A [Transformation] that crops an image using a centered circle as the mask.
  *
- * If you're using Jetpack Compose, use `Modifier.clip(CircleShape)` instead of this transformation
+ * If you're using Compose, use `Modifier.clip(CircleShape)` instead of this transformation
  * as it's more efficient.
  */
 class CircleCropTransformation : Transformation() {
