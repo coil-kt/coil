@@ -5,7 +5,7 @@
 [For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:
 
 - **BREAKING** Disable `addLastModifiedToFileCacheKey` by default and allow it to be set per request. The behaviour can be reenabled with the same flag.
-- **New**: Add a new `coil-network-cache-control` module, which implements [`Cache-Control` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) support.
+- **New**: Introduce a new `coil-network-cache-control` artifact, which implements [`Cache-Control` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) support.
 - **New**: Add `scaleToDensity` property to `SvgDecoder.Factory`. This property ensure SVGs with intrinsic dimensions are multiplied by the devices density (only supported on Android).
 - Rename `ExifOrientationPolicy` to `ExifOrientationStrategy`.
 - Remove unshareable images from the `MemoryCache` on get.
