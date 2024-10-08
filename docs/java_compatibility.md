@@ -7,7 +7,7 @@ Importantly, suspend functions cannot be implemented in Java. This means custom 
 Despite these limitations, most of Coil's API is Java compatible. The `Context.imageLoader` extension function should not be used from Java. Instead, you can get the singleton `ImageLoader` using:
 
 ```java
-ImageLoader imageLoader = Coil.imageLoader(context)
+ImageLoader imageLoader = SingletonImageLoader.get(context)
 ```
 
 The syntax to enqueue an `ImageRequest` is almost the same in Java and Kotlin:
@@ -31,7 +31,7 @@ ImageRequest request = new ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
     .size(1080, 1920)
     .build();
-Drawable drawable = ImageLoaders.executeBlocking(imageLoader, request).getDrawable();
+Drawable drawable = ImageLoaders.executeBlocking(imageLoader, request).getImage().asDrawable(context.resources);
 ```
 
 !!! Note

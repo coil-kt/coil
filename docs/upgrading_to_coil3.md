@@ -1,17 +1,28 @@
 # Upgrading to Coil 3.x
 
 !!! Note
-    Coil 3 is currently in alpha and its API and behaviour may change between releases. Coil 3 alphas are not guaranteed to be binary or source compatible with each other.
+    The doc is a work in progress and will be improved before the final Coil 3.0 release.
 
-Coil 3 is the next major version of Coil that supports [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) and includes performance and API improvements. This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour change.
+Coil 3 is the next major version of Coil that supports [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) and includes performance and API improvements. This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour changes.
 
 Using Coil 3 in a Compose Multiplatform project? Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
 
 ## Maven Coordinates and Package Name
 
-Coil's Maven coordinates were updated to `io.coil-kt.coil3` and its package name was updated to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.7.0` is now `io.coil-kt.coil3:coil:3.0.0-alpha01`.
+Coil's Maven coordinates were updated from `io.coil-kt` to `io.coil-kt.coil3` and its package name was updated from `coil` to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.7.0` is now `io.coil-kt.coil3:coil:3.0.0`.
 
 The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` and `coil-compose-core` respectively to align with the naming conventions used by Coroutines, Ktor, and AndroidX.
+
+## Default Changes
+
+Coil 3.0 has several import default changes:
+
+- Cache headers are no longer respected by default. See [here](network.md) for more info.
+- A file's last write timestamp is no longer added to its cache key by default. This is to avoid reading the disk on the main thread (even for a very short amount of time). This can be renabled with `ImageRequest.Builder.addLastModifiedToFileCacheKey` or `ImageLoader.Builder.addLastModifiedToFileCacheKey`.
+
+## Network Images
+
+`coil-core` no longer supports loading images from the network by default. [**You must** add a dependency on one of Coil's network artifacts. See here for more info.](network.md). This was changed so consumers could use different networking libraries or avoid a network dependency if their app doesn't need it. 
 
 ## Multiplatform
 
@@ -21,12 +32,12 @@ On Android, Coil uses the standard graphics classes to render images. On non-And
 
 As part of decoupling from the Android SDK, a number of API changes were made. Notably:
 
-- `Drawable` was replaced with a custom `Image` class. Use `Drawable.asImage()` and `Image.asDrawable()` to convert between the classes on Android. On non-Android platforms use `Bitmap.asImage()` and `Image.asBitmap()`.
+- `Drawable` was replaced with a custom `Image` interface. Use `Drawable.asImage()` and `Image.asDrawable()` to convert between the classes on Android. On non-Android platforms use `Bitmap.asImage()` and `Image.toBitmap()`. You can also write your own subclasses, though that's more advanced.
 - Android's `android.net.Uri` class was replaced a multiplatform `coil3.Uri` class. Any instances of `android.net.Uri` that are used as `ImageRequest.data` will be mapped to `coil3.Uri` before being fetched/decoded.
-- Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms.
+- Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms. Use `LocalPlatformContext.current` to get a reference in Compose Multiplatform.
 - The `Coil` class was renamed to `SingletonImageLoader`.
 
-The `coil-gif` and `coil-video` artifacts continue to be Android-only as they rely on specific Android decoders and libraries.
+The `coil-svg` is supported in multiplatform, but the `coil-gif` and `coil-video` artifacts continue to be Android-only (for now) as they rely on specific Android decoders and libraries.
 
 ## Compose
 
@@ -34,29 +45,6 @@ The `coil-compose` artifact's APIs are mostly unchanged. You can continue using 
 
 !!! Note
     If you use Coil on a JVM (non-Android) platform, you should add a dependency on a [coroutines main dispatcher](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html). On desktop you likely want to import `org.jetbrains.kotlinx:kotlinx-coroutines-swing`. If it's not imported then `ImageRequest`s won't be dispatched immediately and will have one frame of delay before setting the `ImageRequest.placeholder` or resolving from the memory cache.
-
-## Network Images
-
-**IMPORTANT** Coil's network image support was extracted out of `coil-core`. To load images from a network URL in Coil 3.0 you'll need to import a separate artifact, either:
-
-- Import `coil-network-okhttp` if you prefer using [OkHttp](https://square.github.io/okhttp/). OkHttp is Android/JVM-only.
-
-```kotlin
-implementation("io.coil-kt.coil3:coil:[coil-version]")
-implementation("io.coil-kt.coil3:coil-network-okhttp:[coil-version]")
-```
-
-- Import `coil-network-ktor2` (or `coil-network-ktor3`) and a [Ktor engine](https://ktor.io/docs/http-client-engines.html) if you prefer using [Ktor](https://ktor.io/).
-
-```kotlin
-implementation("io.coil-kt.coil3:coil:[coil-version]")
-implementation("io.coil-kt.coil3:coil-network-ktor2:[coil-version]")
-implementation("io.ktor:ktor-client-android:[ktor-version]")
-```
-
-Check out the [`samples`](https://github.com/coil-kt/coil/tree/main/samples/compose) repository for examples.
-
-**IMPORTANT**: `Cache-Control` header support is no longer enabled by default. In subsequent alphas, it will be possible to re-enable it, but it will be opt-in. `NetworkFetcher.Factory` now also supports custom `CacheStrategy` implementations to allow custom cache resolution behaviour.
 
 ## Extras
 

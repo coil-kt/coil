@@ -25,16 +25,16 @@ Interceptors allow you to observe, transform, short circuit, or retry requests t
 ```kotlin
 class CustomCacheInterceptor(
     private val context: Context,
-    private val cache: LruCache<String, Drawable>
+    private val cache: LruCache<String, Image>,
 ) : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val value = cache.get(chain.request.data.toString())
         if (value != null) {
             return SuccessResult(
-                drawable = value.bitmap.toDrawable(context),
+                image = value.bitmap.toImage(),
                 request = chain.request,
-                dataSource = DataSource.MEMORY_CACHE
+                dataSource = DataSource.MEMORY_CACHE,
             )
         }
         return chain.proceed(chain.request)

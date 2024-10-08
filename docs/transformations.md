@@ -1,5 +1,7 @@
 # Transformations
 
+**This feature is only avilable on Android.**
+
 Transformations allow you to modify the pixel data of an image before the `Drawable` is returned from the request.
 
 By default, Coil comes packaged with 2 transformations: [circle crop](/coil/api/coil-core/coil3.transform/-circle-crop-transformation/) and [rounded corners](/coil/api/coil-core/coil3.transform/-rounded-corners-transformation/).
