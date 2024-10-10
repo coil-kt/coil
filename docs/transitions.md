@@ -1,6 +1,6 @@
 # Transitions
 
-**This feature is only avilable on Android.**
+**This feature is only available on Android.**
 
 Transitions allow you to animate setting the result of an image request on a `Target`.
 

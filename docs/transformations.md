@@ -1,6 +1,6 @@
 # Transformations
 
-**This feature is only avilable on Android.**
+**This feature is only available on Android.**
 
 Transformations allow you to modify the pixel data of an image before the `Drawable` is returned from the request.
 
