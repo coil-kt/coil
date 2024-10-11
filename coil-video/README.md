@@ -1,6 +1,6 @@
 # Video Frames
 
-**This feature is only avilable on Android.**
+**This feature is only available on Android.**
 
 To add video frame support, import the extension library:
 
