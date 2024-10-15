@@ -46,6 +46,7 @@ import coil3.util.component1
 import coil3.util.component2
 import io.coil_kt.coil3.compose.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
@@ -57,36 +58,27 @@ import sample.common.newImageLoader
 import sample.common.next
 
 @Composable
-fun App(resources: Resources) {
-    val viewModel = remember(resources) {
-        MainViewModel(resources)
+fun App() {
+    val viewModel = remember {
+        MainViewModel(ComposeResources())
     }
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
-    App(viewModel)
+    App(viewModel, debug = false)
 }
 
 @Composable
 fun App(
     viewModel: MainViewModel,
-    debug: Boolean = false,
+    debug: Boolean,
 ) {
     setSingletonImageLoaderFactory { context ->
         newImageLoader(context, debug)
     }
 
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
-            remember {
-                darkColorScheme(
-                    background = Color(0xFF141218),
-                    surface = Color(0xFF121212),
-                )
-            }
-        } else {
-            remember { lightColorScheme() }
-        },
+        colorScheme = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
         val screen by viewModel.screen.collectAsState()
         val isDetail = screen is Screen.Detail
@@ -255,6 +247,13 @@ private fun ListScreen(
 
 const val Title = "Coil"
 
+private val darkColors = darkColorScheme(
+    background = Color(0xFF141218),
+    surface = Color(0xFF121212),
+)
+
+private val lightColors = lightColorScheme()
+
 @OptIn(ExperimentalResourceApi::class)
 private val resourceDetailScreen = Screen.Detail(
     image = Image(
@@ -264,6 +263,22 @@ private val resourceDetailScreen = Screen.Detail(
         height = 1326,
     ),
 )
+
+@OptIn(ExperimentalResourceApi::class)
+private class ComposeResources : Resources {
+
+    override fun uri(path: String): String {
+        return try {
+            Res.getUri("files/$path")
+        } catch (_: MissingResourceException) {
+            ""
+        }
+    }
+
+    override suspend fun readBytes(path: String): ByteArray {
+        return Res.readBytes("files/$path")
+    }
+}
 
 @Stable
 expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier

@@ -1,17 +1,16 @@
 package sample.common
 
 import android.content.Context
-import okio.Source
-import okio.source
 
 class AndroidResources(
     private val context: Context,
 ) : Resources {
 
-    override val root: String
-        get() = "file:///android_asset"
+    override fun uri(path: String): String {
+        return "file:///android_asset/$path"
+    }
 
-    override suspend fun open(path: String): Source {
-        return context.assets.open(path).source()
+    override suspend fun readBytes(path: String): ByteArray {
+        return context.assets.open(path).use { it.readBytes() }
     }
 }
