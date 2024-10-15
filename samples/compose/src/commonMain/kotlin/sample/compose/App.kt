@@ -277,7 +277,11 @@ private class ComposeResources : Resources {
     }
 
     override suspend fun readBytes(path: String): ByteArray {
-        return Res.readBytes("files/$path")
+        return try {
+            Res.readBytes("files/$path")
+        } catch (_: MissingResourceException) {
+            byteArrayOf()
+        }
     }
 }
 
