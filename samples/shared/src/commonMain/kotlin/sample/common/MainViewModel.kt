@@ -10,8 +10,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import okio.buffer
-import okio.use
 
 fun MainViewModel(resources: Resources): MainViewModel {
     return RealMainViewModel(resources)
@@ -66,7 +64,7 @@ private class RealMainViewModel(
                 .build()
 
             Image(
-                uri = "${resources.root}/${AssetType.MP4.fileName}",
+                uri = resources.uri(AssetType.MP4.path),
                 color = randomColor(),
                 width = 1280,
                 height = 720,
@@ -76,9 +74,9 @@ private class RealMainViewModel(
     }
 
     private suspend fun loadImages(assetType: AssetType): List<Image> {
-        val json = resources.open(assetType.fileName).buffer().use {
-            Json.parseToJsonElement(it.readUtf8()).jsonArray
-        }
+        val bytes = resources.readBytes(assetType.path)
+        val json = Json.parseToJsonElement(bytes.decodeToString()).jsonArray
+
         return List(json.size) { index ->
             val image = json[index].jsonObject
 

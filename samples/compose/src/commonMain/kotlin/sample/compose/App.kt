@@ -46,6 +46,7 @@ import coil3.util.component1
 import coil3.util.component2
 import io.coil_kt.coil3.compose.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
@@ -53,40 +54,32 @@ import sample.common.NUM_COLUMNS
 import sample.common.Resources
 import sample.common.Screen
 import sample.common.calculateScaledSize
+import sample.common.extras
 import sample.common.newImageLoader
 import sample.common.next
 
 @Composable
-fun App(resources: Resources) {
-    val viewModel = remember(resources) {
-        MainViewModel(resources)
+fun App() {
+    val viewModel = remember {
+        MainViewModel(ComposeResources())
     }
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
-    App(viewModel)
+    App(viewModel, debug = false)
 }
 
 @Composable
 fun App(
     viewModel: MainViewModel,
-    debug: Boolean = false,
+    debug: Boolean,
 ) {
     setSingletonImageLoaderFactory { context ->
         newImageLoader(context, debug)
     }
 
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
-            remember {
-                darkColorScheme(
-                    background = Color(0xFF141218),
-                    surface = Color(0xFF121212),
-                )
-            }
-        } else {
-            remember { lightColorScheme() }
-        },
+        colorScheme = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
         val screen by viewModel.screen.collectAsState()
         val isDetail = screen is Screen.Detail
@@ -200,7 +193,7 @@ private fun DetailScreen(screen: Screen.Detail) {
         model = ImageRequest.Builder(LocalPlatformContext.current)
             .data(screen.image.uri)
             .placeholderMemoryCacheKey(screen.placeholder)
-            .apply { extras.setAll(screen.image.extras) }
+            .extras(screen.image.extras)
             .build(),
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
@@ -238,7 +231,7 @@ private fun ListScreen(
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(image.uri)
-                    .apply { extras.setAll(image.extras) }
+                    .extras(image.extras)
                     .build(),
                 contentDescription = null,
                 placeholder = ColorPainter(Color(image.color)),
@@ -255,6 +248,13 @@ private fun ListScreen(
 
 const val Title = "Coil"
 
+private val darkColors = darkColorScheme(
+    background = Color(0xFF141218),
+    surface = Color(0xFF121212),
+)
+
+private val lightColors = lightColorScheme()
+
 @OptIn(ExperimentalResourceApi::class)
 private val resourceDetailScreen = Screen.Detail(
     image = Image(
@@ -264,6 +264,26 @@ private val resourceDetailScreen = Screen.Detail(
         height = 1326,
     ),
 )
+
+@OptIn(ExperimentalResourceApi::class)
+private class ComposeResources : Resources {
+
+    override fun uri(path: String): String {
+        return try {
+            Res.getUri("files/$path")
+        } catch (_: MissingResourceException) {
+            ""
+        }
+    }
+
+    override suspend fun readBytes(path: String): ByteArray {
+        return try {
+            Res.readBytes("files/$path")
+        } catch (_: MissingResourceException) {
+            byteArrayOf()
+        }
+    }
+}
 
 @Stable
 expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier

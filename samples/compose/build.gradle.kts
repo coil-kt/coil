@@ -96,7 +96,6 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(compose.material3)
             }
-            resources.srcDir("../shared/src/commonMain/resources")
         }
         androidMain {
             dependencies {
