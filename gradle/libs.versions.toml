@@ -4,6 +4,7 @@ androidx-benchmark = "1.3.3"
 androidx-lifecycle = "2.8.6"
 androidx-tracing-perfetto = "1.0.0"
 androidx-runtime-tracing = "1.7.4"
+atomicfu = "0.25.0"
 coroutines = "1.9.0"
 jetbrains-compose = "1.7.0"
 kotlin = "2.0.21"
@@ -26,7 +27,7 @@ spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.7.1"
-gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.23.2"
+gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
