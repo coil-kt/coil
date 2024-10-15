@@ -1,6 +1,7 @@
 package sample.compose
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,15 +11,17 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.lightColors
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -74,10 +77,16 @@ fun App(
     }
 
     MaterialTheme(
-        colors = lightColors(
-            primary = Color.White,
-            onPrimary = Color.Black,
-        ),
+        colorScheme = if (isSystemInDarkTheme()) {
+            remember {
+                darkColorScheme(
+                    background = Color(0xFF141218),
+                    surface = Color(0xFF121212),
+                )
+            }
+        } else {
+            remember { lightColorScheme() }
+        },
     ) {
         val screen by viewModel.screen.collectAsState()
         val isDetail = screen is Screen.Detail
@@ -110,6 +119,7 @@ fun App(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Toolbar(
     assetType: AssetType,
@@ -119,11 +129,13 @@ private fun Toolbar(
     onBackPressed: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(Title) },
-        navigationIcon = if (backEnabled) {
-            { BackIconButton(onBackPressed) }
-        } else {
-            null
+        title = {
+            Text(Title)
+        },
+        navigationIcon = {
+            if (backEnabled) {
+                BackIconButton(onBackPressed)
+            }
         },
         actions = {
             IconButton(

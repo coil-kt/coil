@@ -25,6 +25,7 @@ kotlin {
                 api(projects.coilVideo)
                 api(libs.androidx.core)
                 api(libs.androidx.lifecycle.viewmodel)
+                api(libs.google.material)
             }
         }
         appleMain {
