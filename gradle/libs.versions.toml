@@ -26,7 +26,7 @@ spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.7.1"
-gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.25.0"
+gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.23.2"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
