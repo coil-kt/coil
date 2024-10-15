@@ -18,6 +18,7 @@ import sample.common.AssetType
 import sample.common.Image
 import sample.common.NUM_COLUMNS
 import sample.common.Screen
+import sample.common.extras
 import sample.common.next
 import sample.view.databinding.ActivityMainBinding
 
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
                     placeholderMemoryCacheKey(screen.placeholder)
-                    extras.setAll(screen.image.extras)
+                    extras(screen.image.extras)
                 }
             }
         }

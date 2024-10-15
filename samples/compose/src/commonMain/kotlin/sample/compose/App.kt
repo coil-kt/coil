@@ -54,6 +54,7 @@ import sample.common.NUM_COLUMNS
 import sample.common.Resources
 import sample.common.Screen
 import sample.common.calculateScaledSize
+import sample.common.extras
 import sample.common.newImageLoader
 import sample.common.next
 
@@ -192,7 +193,7 @@ private fun DetailScreen(screen: Screen.Detail) {
         model = ImageRequest.Builder(LocalPlatformContext.current)
             .data(screen.image.uri)
             .placeholderMemoryCacheKey(screen.placeholder)
-            .apply { extras.setAll(screen.image.extras) }
+            .extras(screen.image.extras)
             .build(),
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
@@ -230,7 +231,7 @@ private fun ListScreen(
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(image.uri)
-                    .apply { extras.setAll(image.extras) }
+                    .extras(image.extras)
                     .build(),
                 contentDescription = null,
                 placeholder = ColorPainter(Color(image.color)),
