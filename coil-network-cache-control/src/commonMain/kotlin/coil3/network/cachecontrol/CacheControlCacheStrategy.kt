@@ -264,7 +264,7 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
         }
     }
 
-    companion object {
+    private companion object {
         /** Returns true if the response can be stored to later serve another request. */
         private fun isCacheable(
             responseCaching: CacheControl,
