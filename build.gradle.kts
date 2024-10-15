@@ -7,8 +7,6 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -35,7 +33,6 @@ buildscript {
 plugins {
     alias(libs.plugins.baselineProfile) apply false
     alias(libs.plugins.binaryCompatibility)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
 }
@@ -49,10 +46,6 @@ extensions.configure<ApiValidationExtension> {
     klib {
         enabled = true
     }
-}
-
-tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory = layout.projectDirectory.dir("docs/api")
 }
 
 allprojects {
@@ -75,38 +68,14 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     }
 
-    tasks.withType<DokkaTaskPartial>().configureEach {
-        dokkaSourceSets.configureEach {
-            jdkVersion = 8
-            failOnWarning = true
-            skipDeprecated = true
-            suppressInheritedMembers = true
-
-            externalDocumentationLink(
-                url = "https://developer.android.com/reference/",
-            )
-            externalDocumentationLink(
-                url = "https://kotlinlang.org/api/kotlinx.coroutines/",
-            )
-            externalDocumentationLink(
-                url = "https://jetbrains.github.io/skiko/",
-                packageListUrl = "https://jetbrains.github.io/skiko/skiko/package-list",
-            )
-            externalDocumentationLink(
-                url = "https://api.ktor.io/",
-            )
-            externalDocumentationLink(
-                url = "https://kotlinlang.org/api/kotlinx-datetime/",
-                packageListUrl = "https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/package-list",
-            )
-            externalDocumentationLink(
-                url = "https://square.github.io/okio/3.x/okio/",
-                packageListUrl = "https://square.github.io/okio/3.x/okio/okio/package-list",
-            )
-            externalDocumentationLink(
-                url = "https://square.github.io/okhttp/5.x/okhttp/okhttp3/",
-                packageListUrl = "https://square.github.io/okhttp/5.x/package-list",
-            )
+    dependencies {
+        modules {
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
         }
     }
 

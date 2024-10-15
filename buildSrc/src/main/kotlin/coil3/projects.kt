@@ -30,12 +30,12 @@ fun Project.androidLibrary(
     sourceSets["main"].resources {
         srcDirs("src/commonMain/resources", "src/jvmCommonMain/resources")
     }
-    if (project.name in publicModules) {
+    if (false && project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
             val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-                KotlinMultiplatform(Dokka("dokkaHtml"))
+                KotlinMultiplatform(Dokka("dokkaGenerate"))
             } else {
                 AndroidSingleVariantLibrary()
             }

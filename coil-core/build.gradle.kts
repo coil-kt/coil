@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
     id("dev.drewhamilton.poko")
     id("androidx.baselineprofile")
+    id("org.jetbrains.dokka")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
