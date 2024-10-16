@@ -43,7 +43,8 @@ As part of decoupling from the Android SDK, a number of API changes were made. N
 - `Drawable` was replaced with a custom `Image` interface. Use `Drawable.asImage()` and `Image.asDrawable()` to convert between the classes on Android. On non-Android platforms use `Bitmap.asImage()` and `Image.toBitmap()`. You can also write your own subclasses, though that's more advanced.
 - Android's `android.net.Uri` class was replaced a multiplatform `coil3.Uri` class. Any instances of `android.net.Uri` that are used as `ImageRequest.data` will be mapped to `coil3.Uri` before being fetched/decoded.
 - Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms. Use `LocalPlatformContext.current` to get a reference in Compose Multiplatform.
-- The `Coil` class was renamed to `SingletonImageLoader`.
+- The `Coil` class was renamed to `SingletonImageLoader`. 
+- If you're implementing `ImageLoaderFactory` in your custom Android `Application` class, you'll need to switch to implementing `SingletonImageLoader.Factory` as a replacement for `ImageLoaderFactory`. Once you implement `SingletonImageLoader.Factory`, you'll be able to override `newImageLoader()` if you need or want to override it.
 
 The `coil-svg` is supported in multiplatform, but the `coil-gif` and `coil-video` artifacts continue to be Android-only (for now) as they rely on specific Android decoders and libraries.
 
