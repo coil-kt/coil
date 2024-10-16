@@ -1,5 +1,5 @@
 [versions]
-androidx-activity = "1.9.2"
+androidx-activity = "1.9.3"
 androidx-benchmark = "1.3.3"
 androidx-lifecycle = "2.8.6"
 androidx-tracing-perfetto = "1.0.0"
