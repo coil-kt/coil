@@ -91,6 +91,9 @@ Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource`
 
 See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 
+!!! Note
+    If you add a `Fetcher` that uses a custom data type, you need to also need to provide a custom `Keyer` to ensure results from requests that use it are memory cacheable. For example, `Fetcher.Factory<MyDataType>` will need to add a `Keyer<MyDataType`.
+
 ## Decoders
 
 Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
