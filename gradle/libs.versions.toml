@@ -19,7 +19,6 @@ skiko = "0.8.4"
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.16.3"
-dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.17.1"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha07"
 spotless = "com.diffplug.spotless:6.25.0"
@@ -27,8 +26,9 @@ spotless = "com.diffplug.spotless:6.25.0"
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.7.1"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.25.0"
-gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
+gradlePlugin-dokka = "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0-Beta"
+gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.30.0"
 gradlePlugin-paparazzi = { module = "app.cash.paparazzi:paparazzi-gradle-plugin", version.ref = "paparazzi" }

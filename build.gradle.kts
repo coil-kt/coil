@@ -7,8 +7,6 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -36,7 +34,6 @@ buildscript {
 plugins {
     alias(libs.plugins.baselineProfile) apply false
     alias(libs.plugins.binaryCompatibility)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
 }
@@ -50,10 +47,6 @@ extensions.configure<ApiValidationExtension> {
     klib {
         enabled = true
     }
-}
-
-tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory = layout.projectDirectory.dir("docs/api")
 }
 
 allprojects {
@@ -74,33 +67,6 @@ allprojects {
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions.jvmTarget = JvmTarget.JVM_1_8
-    }
-
-    tasks.withType<DokkaTaskPartial>().configureEach {
-        dokkaSourceSets.configureEach {
-            jdkVersion = 8
-            failOnWarning = true
-            skipDeprecated = true
-            suppressInheritedMembers = true
-
-            externalDocumentationLink(
-                url = "https://developer.android.com/reference/",
-            )
-            externalDocumentationLink(
-                url = "https://kotlinlang.org/api/kotlinx.coroutines/",
-            )
-            externalDocumentationLink(
-                url = "https://square.github.io/okio/3.x/okio/",
-                packageListUrl = "https://square.github.io/okio/3.x/okio/okio/package-list",
-            )
-            externalDocumentationLink(
-                url = "https://jetbrains.github.io/skiko/",
-                packageListUrl = "https://jetbrains.github.io/skiko/skiko/package-list",
-            )
-            externalDocumentationLink(
-                url = "https://api.ktor.io/",
-            )
-        }
     }
 
     dependencies {
