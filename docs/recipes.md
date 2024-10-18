@@ -35,7 +35,7 @@ val imageLoader = ImageLoader.Builder(context)
     .components {
         add(
             OkHttpNetworkFetcherFactory(
-                callFactory = { 
+                callFactory = {
                     OkHttpClient.Builder()
                         .addInterceptor(CustomInterceptor())
                         .build()
@@ -54,9 +54,12 @@ val imageLoader = ImageLoader.Builder(context)
 Headers can be added to your image requests in one of two ways. You can set headers for a single request:
 
 ```kotlin
+val headers = NetworkHeaders.Builder()
+    .set("Cache-Control", "no-cache")
+    .build()
 val request = ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
-    .setHeader("Cache-Control", "no-cache")
+    .httpHeaders(headers)
     .target(imageView)
     .build()
 imageLoader.execute(request)
@@ -71,8 +74,11 @@ class RequestHeaderInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "no-cache")
+            .build()
         val request = chain.request().newBuilder()
-            .header(name, value)
+            .httpHeaders(headers)
             .build()
         return chain.proceed(request)
     }
@@ -174,7 +180,7 @@ AsyncImage(
         painter = painterResource(R.drawable.placeholder),
         colorFilter = ColorFilter(Color.Red),
         alpha = 0.5f
-    )
+    ),
 )
 ```
 
@@ -190,6 +196,6 @@ AsyncImage(
                 draw(size, info.alpha, info.colorFilter)
             }
         }
-    }
+    },
 )
 ```
