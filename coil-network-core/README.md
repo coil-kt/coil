@@ -10,7 +10,7 @@ implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.0-rc01")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0-rc01")
 ```
 
-And that's it. Once, imported network URLs like `https://www.example.com/image.jpg` will automatically be supported.
+And that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported.
 
 However, if you depend on `coil-network-ktor2` or `coil-network-ktor3` you need to import a [Ktor engine](https://ktor.io/docs/client-engines.html) for each platform (except Javascript). Here's a quickstart set of engines:
 
