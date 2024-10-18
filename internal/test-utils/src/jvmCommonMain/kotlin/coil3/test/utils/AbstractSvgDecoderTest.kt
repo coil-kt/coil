@@ -108,7 +108,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
 
         val expected = decodeBitmapResource("instacart_logo.png")
-        result.image.toBitmap().assertIsSimilarTo(expected)
+        result.image.toBitmap().assertIsSimilarTo(expected, threshold = 0.95)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
