@@ -1,5 +1,6 @@
 package coil3.request
 
+import kotlin.jvm.JvmInline
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
@@ -22,7 +23,8 @@ internal interface RequestDelegate {
 }
 
 /** A request delegate for a one-shot requests. */
-internal class BaseRequestDelegate(
+@JvmInline
+internal value class BaseRequestDelegate(
     private val job: Job,
 ) : RequestDelegate {
 
