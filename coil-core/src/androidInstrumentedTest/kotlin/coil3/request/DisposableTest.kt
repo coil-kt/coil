@@ -86,8 +86,6 @@ class DisposableTest {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .size(100, 100)
             .transformations(GateTransformation())
             .target(imageView)
             .build()
@@ -105,8 +103,6 @@ class DisposableTest {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .size(100, 100)
             .transformations(transformation)
             .target(imageView)
             .build()
@@ -125,8 +121,6 @@ class DisposableTest {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .size(100, 100)
             .transformations(transformation)
             .target(imageView)
             .build()
@@ -156,8 +150,6 @@ class DisposableTest {
         fun launchNewRequest(): Disposable {
             val request = ImageRequest.Builder(context)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-                // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-                .size(100, 100)
                 .transformations(GateTransformation())
                 .target(imageView)
                 .build()
@@ -181,8 +173,6 @@ class DisposableTest {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .size(100, 100)
             .transformations(GateTransformation())
             .target(imageView)
             .build()
@@ -201,8 +191,6 @@ class DisposableTest {
 
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
-            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .size(100, 100)
             .target(imageView)
             .build()
         val disposable = imageLoader.enqueue(request)

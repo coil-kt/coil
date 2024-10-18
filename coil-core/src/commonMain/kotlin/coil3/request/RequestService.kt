@@ -20,7 +20,7 @@ internal expect fun RequestService(
 internal interface RequestService {
 
     @MainThread
-    fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate
+    fun requestDelegate(request: ImageRequest, job: Job, findLifecycle: Boolean): RequestDelegate
 
     @MainThread
     fun sizeResolver(request: ImageRequest): SizeResolver
