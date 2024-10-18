@@ -107,7 +107,7 @@ class StaticImageDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val source = result.source.toImageDecoderSource(options, animated = false) ?: return null
+            val source = result.source.toImageDecoderSourceOrNull(options, animated = false) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
         }
     }
@@ -115,7 +115,10 @@ class StaticImageDecoder(
 
 @InternalCoilApi
 @RequiresApi(28)
-fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): ImageDecoder.Source? {
+fun ImageSource.toImageDecoderSourceOrNull(
+    options: Options,
+    animated: Boolean,
+): ImageDecoder.Source? {
     if (fileSystem === FileSystem.SYSTEM) {
         val file = fileOrNull()
         if (file != null) {
@@ -128,6 +131,7 @@ fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): Image
         metadata is AssetMetadata -> {
             return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
+
         metadata is ContentMetadata && SDK_INT >= 29 -> {
             try {
                 // Ensure the file descriptor supports lseek.
@@ -137,9 +141,11 @@ fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): Image
                 return ImageDecoder.createSource { asset }
             } catch (_: ErrnoException) {}
         }
+
         metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)
         }
+
         metadata is ByteBufferMetadata && (SDK_INT >= 30 || !animated || metadata.byteBuffer.isDirect) -> {
             return ImageDecoder.createSource(metadata.byteBuffer)
         }

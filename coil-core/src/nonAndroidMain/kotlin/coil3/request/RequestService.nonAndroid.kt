@@ -17,7 +17,11 @@ internal actual fun RequestService(
 /** Handles operations that act on [ImageRequest]s. */
 internal class NonAndroidRequestService : RequestService {
 
-    override fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate {
+    override fun requestDelegate(
+        request: ImageRequest,
+        job: Job,
+        findLifecycle: Boolean,
+    ): RequestDelegate {
         return BaseRequestDelegate(job)
     }
 
@@ -25,7 +29,11 @@ internal class NonAndroidRequestService : RequestService {
         return request.sizeResolver
     }
 
-    override fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options {
+    override fun options(
+        request: ImageRequest,
+        sizeResolver: SizeResolver,
+        size: Size,
+    ): Options {
         return Options(
             request.context,
             size,

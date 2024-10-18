@@ -12,16 +12,6 @@ import coil3.util.removeAndAddObserver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
-/** A request delegate for a one-shot requests. */
-internal class BaseRequestDelegate(
-    private val job: Job,
-) : RequestDelegate {
-
-    override fun dispose() {
-        job.cancel()
-    }
-}
-
 /** A request delegate for a one-shot requests with no target or a non-[ViewTarget]. */
 internal class LifecycleRequestDelegate(
     private val lifecycle: Lifecycle,
@@ -65,16 +55,16 @@ internal class ViewTargetRequestDelegate(
         }
     }
 
-    override suspend fun awaitStarted() {
-        lifecycle.awaitStarted()
-    }
-
     override fun start() {
         lifecycle.addObserver(this)
         if (target is LifecycleObserver) {
             lifecycle.removeAndAddObserver(target)
         }
         target.view.requestManager.setRequest(this)
+    }
+
+    override suspend fun awaitStarted() {
+        lifecycle.awaitStarted()
     }
 
     override fun dispose() {
