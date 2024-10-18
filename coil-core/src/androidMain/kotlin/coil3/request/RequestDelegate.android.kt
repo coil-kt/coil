@@ -22,6 +22,10 @@ internal class LifecycleRequestDelegate(
         lifecycle.addObserver(this)
     }
 
+    override suspend fun awaitStarted() {
+        lifecycle.awaitStarted()
+    }
+
     override fun complete() {
         lifecycle.removeObserver(this)
     }
