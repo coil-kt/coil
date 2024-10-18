@@ -33,7 +33,7 @@ class VideoFrameDecoderTest {
                 source = context.assets.open("video.mp4").source().buffer(),
                 fileSystem = FileSystem.SYSTEM,
             ),
-            options = Options(context)
+            options = Options(context),
         ).decode()
 
         val actual = result.image.bitmap
@@ -58,8 +58,8 @@ class VideoFrameDecoderTest {
                 context = context,
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFrameMicros, 32600000L)
-                    .build()
-            )
+                    .build(),
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -85,7 +85,7 @@ class VideoFrameDecoderTest {
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFramePercent, 0.525)
                     .build(),
-            )
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -111,7 +111,7 @@ class VideoFrameDecoderTest {
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFrameIndex, 807)
                     .build(),
-            )
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -132,7 +132,7 @@ class VideoFrameDecoderTest {
                 source = context.assets.open("video_rotated.mp4").source().buffer(),
                 fileSystem = FileSystem.SYSTEM,
             ),
-            options = Options(context, size = Size(150, 150))
+            options = Options(context, size = Size(150, 150)),
         ).decode()
 
         val actual = result.image.bitmap
@@ -156,7 +156,7 @@ class VideoFrameDecoderTest {
                 fileSystem = FileSystem.SYSTEM,
                 metadata = AssetMetadata(path),
             ),
-            options = Options(context)
+            options = Options(context),
         ).decode()
 
         val actual = result.image.bitmap
