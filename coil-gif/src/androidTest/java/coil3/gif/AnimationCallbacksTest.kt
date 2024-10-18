@@ -1,13 +1,16 @@
 package coil3.gif
 
 import android.content.ContentResolver.SCHEME_FILE
+import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
+import coil3.asDrawable
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import coil3.request.crossfade
 import coil3.request.target
 import coil3.test.utils.ViewTestActivity
@@ -66,9 +69,17 @@ class AnimationCallbacksTest {
                 isEndCalled.value = true
             }
             .build()
-        val result = imageLoader.execute(request)
 
-        if (result is ErrorResult) throw result.throwable
+        when (val result = imageLoader.execute(request)) {
+            is SuccessResult -> {
+                // Need to manually invoke this as execute doesn't tie it to a lifecycle to start/stop.
+                (result.image.asDrawable(context.resources) as Animatable).start()
+            }
+            is ErrorResult -> {
+                throw result.throwable
+            }
+        }
+
         isStartCalled.first { it }
         isEndCalled.first { it }
     }
