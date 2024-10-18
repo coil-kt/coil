@@ -18,6 +18,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.buffer
+import okio.fakefilesystem.FakeFileSystem
 import okio.source
 import org.junit.Test
 
@@ -32,6 +33,34 @@ class VideoFrameDecoderTest {
             source = ImageSource(
                 source = context.assets.open("video.mp4").source().buffer(),
                 fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(context),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_1.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun noSetFrameTime_FakeFileSystem() = runTest(timeout = 1.minutes) {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val fileSystem = FakeFileSystem()
+        val path = fileSystem.workingDirectory / "video.mp4"
+
+        fileSystem.write(path) {
+            writeAll(context.assets.open("video.mp4").source().buffer())
+        }
+
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                file = path,
+                fileSystem = fileSystem,
             ),
             options = Options(context),
         ).decode()

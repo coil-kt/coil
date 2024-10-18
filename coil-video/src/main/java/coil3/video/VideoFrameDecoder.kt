@@ -32,12 +32,14 @@ import coil3.toAndroidUri
 import coil3.util.component1
 import coil3.util.component2
 import coil3.video.MediaDataSourceFetcher.MediaSourceMetadata
+import coil3.video.internal.FileHandleMediaDataSource
 import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.getFrameAtTime
 import coil3.video.internal.getScaledFrameAtTime
 import coil3.video.internal.use
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+import okio.FileSystem
 
 /**
  * A [Decoder] that uses [MediaMetadataRetriever] to fetch and decode a frame from a video.
@@ -214,28 +216,40 @@ class VideoFrameDecoder(
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
-        if (SDK_INT >= 23 && source.metadata is MediaSourceMetadata) {
-            setDataSource((source.metadata as MediaSourceMetadata).mediaDataSource)
-            return
-        }
+        val metadata = source.metadata
+        when {
+            SDK_INT >= 23 && metadata is MediaSourceMetadata -> {
+                setDataSource(metadata.mediaDataSource)
+            }
 
-        when (val metadata = source.metadata) {
-            is AssetMetadata -> {
+            metadata is AssetMetadata -> {
                 options.context.assets.openFd(metadata.filePath).use {
                     setDataSource(it.fileDescriptor, it.startOffset, it.length)
                 }
             }
 
-            is ContentMetadata -> {
+            metadata is ContentMetadata -> {
                 setDataSource(options.context, metadata.uri.toAndroidUri())
             }
 
-            is ResourceMetadata -> {
+            metadata is ResourceMetadata -> {
                 setDataSource("android.resource://${metadata.packageName}/${metadata.resId}")
             }
 
-            else -> {
+            source.fileSystem === FileSystem.SYSTEM -> {
                 setDataSource(source.file().toFile().path)
+            }
+
+            SDK_INT >= 23 -> {
+                val handle = source.fileSystem.openReadOnly(source.file())
+                setDataSource(FileHandleMediaDataSource(handle))
+            }
+
+            else -> {
+                error(
+                    "Unable to read ${source.file()} as a custom file system " +
+                        "(${source.fileSystem}) is used and the device is API 22 or earlier.",
+                )
             }
         }
     }

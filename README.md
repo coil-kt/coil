@@ -1,6 +1,6 @@
 ﻿![Coil](logo.svg)
 
-An image loading library for Android and [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Coil is:
+An image loading library for [Android](https://www.android.com/) and [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Coil is:
 
 - **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image, automatically pausing/cancelling requests, and more.
 - **Lightweight**: Coil only depends on Kotlin, Coroutines, and Okio and works seamlessly with [Google's R8](https://developer.android.com/build/shrink-code).
@@ -9,15 +9,11 @@ An image loading library for Android and [Compose Multiplatform](https://www.jet
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
-
 Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
 
 ## Quick Start
 
-#### Compose
-
-Import the Compose library and a networking library:
+Import the Compose library and a [networking library](https://coil-kt.github.io/coil/network/):
 
 ```kotlin
 implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
@@ -33,20 +29,7 @@ AsyncImage(
 )
 ```
 
-#### Views
-
-Import the core library and a networking library:
-
-```kotlin
-implementation("io.coil-kt.coil3:coil:3.0.0-rc01")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
-```
-
-To load an image into an `ImageView`, use the `load` extension function:
-
-```kotlin
-imageView.load("https://example.com/image.jpg")
-```
+Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
 ## License
 
