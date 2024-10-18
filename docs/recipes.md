@@ -35,7 +35,7 @@ val imageLoader = ImageLoader.Builder(context)
     .components {
         add(
             OkHttpNetworkFetcherFactory(
-                callFactory = { 
+                callFactory = {
                     OkHttpClient.Builder()
                         .addInterceptor(CustomInterceptor())
                         .build()
@@ -54,9 +54,12 @@ val imageLoader = ImageLoader.Builder(context)
 Headers can be added to your image requests in one of two ways. You can set headers for a single request:
 
 ```kotlin
+val headers = NetworkHeaders.Builder()
+    .set("Cache-Control", "no-cache")
+    .build()
 val request = ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
-    .setHeader("Cache-Control", "no-cache")
+    .httpHeaders(headers)
     .target(imageView)
     .build()
 imageLoader.execute(request)
@@ -71,8 +74,11 @@ class RequestHeaderInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "no-cache")
+            .build()
         val request = chain.request().newBuilder()
-            .header(name, value)
+            .httpHeaders(headers)
             .build()
         return chain.proceed(request)
     }
@@ -127,6 +133,8 @@ detailImageView.load("https://example.com/image.jpg") {
 
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.
 
+Using Compose? [Check out this article for how to perform shared element transitions with `AsyncImage`](https://www.tunjid.com/articles/animating-contentscale-during-image-shared-element-transitions-65fba03537c67f8df0161c31).
+
 ## Remote Views
 
 Coil does not provide a `Target` for [`RemoteViews`](https://developer.android.com/reference/android/widget/RemoteViews) out of the box, however you can create one like so:
@@ -173,8 +181,8 @@ AsyncImage(
     placeholder = forwardingPainter(
         painter = painterResource(R.drawable.placeholder),
         colorFilter = ColorFilter(Color.Red),
-        alpha = 0.5f
-    )
+        alpha = 0.5f,
+    ),
 )
 ```
 
@@ -190,6 +198,6 @@ AsyncImage(
                 draw(size, info.alpha, info.colorFilter)
             }
         }
-    }
+    },
 )
 ```
