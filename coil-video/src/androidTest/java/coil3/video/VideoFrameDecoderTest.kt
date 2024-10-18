@@ -15,7 +15,6 @@ import coil3.test.utils.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.buffer
@@ -25,7 +24,7 @@ import org.junit.Test
 class VideoFrameDecoderTest {
 
     @Test
-    fun noSetFrameTime() = runTest(timeout = 1.minutes) {
+    fun noSetFrameTime() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -46,7 +45,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFrameTime() = runTest(timeout = 1.minutes) {
+    fun specificFrameTime() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -72,7 +71,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFramePercent() = runTest(timeout = 1.minutes) {
+    fun specificFramePercent() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -98,7 +97,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFrameIndex() = runTest(timeout = 1.minutes) {
+    fun specificFrameIndex() = runTest {
         // MediaMetadataRetriever#getFrameAtIndex does not work on the emulator pre-API 28.
         assumeTrue(SDK_INT >= 28)
 
@@ -124,7 +123,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun rotation() = runTest(timeout = 1.minutes) {
+    fun rotation() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -146,7 +145,7 @@ class VideoFrameDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1482 */
     @Test
-    fun nestedAsset() = runTest(timeout = 1.minutes) {
+    fun nestedAsset() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -169,7 +168,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun mediaDataSource() = runTest(timeout = 1.minutes) {
+    fun mediaDataSource() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
         val file = context.copyAssetToFile("video.mp4")
