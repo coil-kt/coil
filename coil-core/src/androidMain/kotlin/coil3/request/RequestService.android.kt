@@ -49,16 +49,18 @@ internal class AndroidRequestService(
         job: Job,
         findLifecycle: Boolean,
     ): RequestDelegate {
-        val lifecycle = request.lifecycle ?: if (findLifecycle) request.findLifecycle() else null
         val target = request.target
-
-        return if (target is ViewTarget<*>) {
-            ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
-        } else if (lifecycle != null) {
-            LifecycleRequestDelegate(lifecycle, job)
-        } else {
-            BaseRequestDelegate(job)
+        if (target is ViewTarget<*>) {
+            val lifecycle = request.lifecycle ?: request.findLifecycle()
+            return ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
         }
+
+        val lifecycle = request.lifecycle ?: if (findLifecycle) request.findLifecycle() else null
+        if (lifecycle != null) {
+            return LifecycleRequestDelegate(lifecycle, job)
+        }
+
+        return BaseRequestDelegate(job)
     }
 
     private fun ImageRequest.findLifecycle(): Lifecycle? {
