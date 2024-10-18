@@ -1,0 +1,454 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>EventListener</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            coil-root
+                    </a>            </div>
+            <div class="library-version">3.0.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="coil-core::coil3/EventListener///PointingToDeclaration//977893130">
+  <div class="breadcrumbs"><a href="../../index.html">coil-core</a><span class="delimiter">/</span><a href="../index.html">coil3</a><span class="delimiter">/</span><span class="current">EventListener</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Event</span><wbr><span><span>Listener</span></span></h1>
+    <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+      <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">EventListener</a></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">EventListener</a> : <a href="../../coil3.request/-image-request/-listener/index.html">ImageRequest.Listener</a></div><p class="paragraph">A listener for tracking the progress of an image request. This class is useful for measuring analytics, performance, or other metrics tracking.</p><h4 class="">See also</h4><div class="table"><div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-image-loader/-builder/event-listener-factory.html"><span>Image</span><wbr><span>Loader.</span><wbr><span>Builder.</span><wbr><span>event</span><wbr><span>Listener</span><wbr><span><span>Factory</span></span></a></div></span></div><div></div></div></div></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">EventListener</a> : <a href="../../coil3.request/-image-request/-listener/index.html">ImageRequest.Listener</a></div></div>    </div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-995017797%2FConstructors%2F-1199396626" anchor-label="EventListener" id="-995017797%2FConstructors%2F-1199396626" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-event-listener.html"><span>Event</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-995017797%2FConstructors%2F-1199396626"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-2000170864%2FClasslikes%2F977893130" anchor-label="Companion" id="-2000170864%2FClasslikes%2F977893130" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2000170864%2FClasslikes%2F977893130"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="793942802%2FClasslikes%2F977893130" anchor-label="Factory" id="793942802%2FClasslikes%2F977893130" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/androidMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-factory/index.html"><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="793942802%2FClasslikes%2F977893130"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a></div></div><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1122694113%2FFunctions%2F-874330140" anchor-label="decodeEnd" id="1122694113%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="decode-end.html"><span>decode</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1122694113%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="decode-end.html"><span class="token function">decodeEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">decoder<span class="token operator">: </span><a href="../../coil3.decode/-decoder/index.html">Decoder</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.decode/-decode-result/index.html">DecodeResult</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.decode/-decoder/decode.html">Decoder.decode</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="decode-end.html"><span class="token function">decodeEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">decoder<span class="token operator">: </span><a href="../../coil3.decode/-decoder/index.html">Decoder</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.decode/-decode-result/index.html">DecodeResult</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-600402649%2FFunctions%2F-874330140" anchor-label="decodeStart" id="-600402649%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="decode-start.html"><span>decode</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-600402649%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="decode-start.html"><span class="token function">decodeStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">decoder<span class="token operator">: </span><a href="../../coil3.decode/-decoder/index.html">Decoder</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.decode/-decoder/decode.html">Decoder.decode</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="decode-start.html"><span class="token function">decodeStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">decoder<span class="token operator">: </span><a href="../../coil3.decode/-decoder/index.html">Decoder</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="806258270%2FFunctions%2F-874330140" anchor-label="fetchEnd" id="806258270%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-end.html"><span>fetch</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="806258270%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="fetch-end.html"><span class="token function">fetchEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">fetcher<span class="token operator">: </span><a href="../../coil3.fetch/-fetcher/index.html">Fetcher</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.fetch/-fetch-result/index.html">FetchResult</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.fetch/-fetcher/fetch.html">Fetcher.fetch</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="fetch-end.html"><span class="token function">fetchEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">fetcher<span class="token operator">: </span><a href="../../coil3.fetch/-fetcher/index.html">Fetcher</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.fetch/-fetch-result/index.html">FetchResult</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1069145332%2FFunctions%2F-874330140" anchor-label="fetchStart" id="1069145332%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fetch-start.html"><span>fetch</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1069145332%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="fetch-start.html"><span class="token function">fetchStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">fetcher<span class="token operator">: </span><a href="../../coil3.fetch/-fetcher/index.html">Fetcher</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.fetch/-fetcher/fetch.html">Fetcher.fetch</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="fetch-start.html"><span class="token function">fetchStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">fetcher<span class="token operator">: </span><a href="../../coil3.fetch/-fetcher/index.html">Fetcher</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../../coil3.request/-options/index.html">Options</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1054305786%2FFunctions%2F-874330140" anchor-label="keyEnd" id="-1054305786%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="key-end.html"><span>key</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1054305786%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="key-end.html"><span class="token function">keyEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">output<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.key/-keyer/key.html">Keyer.key</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="key-end.html"><span class="token function">keyEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">output<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1566405679%2FFunctions%2F-874330140" anchor-label="keyStart" id="1566405679%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="key-start.html"><span>key</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1566405679%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="key-start.html"><span class="token function">keyStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">input<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.key/-keyer/key.html">Keyer.key</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="key-start.html"><span class="token function">keyStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">input<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="958710475%2FFunctions%2F-874330140" anchor-label="mapEnd" id="958710475%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="map-end.html"><span>map</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="958710475%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="map-end.html"><span class="token function">mapEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">output<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.map/-mapper/map.html">Mapper.map</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="map-end.html"><span class="token function">mapEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">output<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1980098542%2FFunctions%2F-874330140" anchor-label="mapStart" id="-1980098542%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="map-start.html"><span>map</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1980098542%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="map-start.html"><span class="token function">mapStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">input<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.map/-mapper/map.html">Mapper.map</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="map-start.html"><span class="token function">mapStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">input<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="357971515%2FFunctions%2F-874330140" anchor-label="onCancel" id="357971515%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-cancel.html"><span>on</span><wbr><span><span>Cancel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="357971515%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-cancel.html"><span class="token function">onCancel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-cancel.html"><span class="token function">onCancel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called if the request is cancelled.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-652134934%2FFunctions%2F-874330140" anchor-label="onError" id="-652134934%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-error.html"><span>on</span><wbr><span><span>Error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-652134934%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-error.html"><span class="token function">onError</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.request/-error-result/index.html">ErrorResult</a></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-error.html"><span class="token function">onError</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.request/-error-result/index.html">ErrorResult</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called if an error occurs while executing the request.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-272541943%2FFunctions%2F-874330140" anchor-label="onStart" id="-272541943%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-start.html"><span>on</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-272541943%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-start.html"><span class="token function">onStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-start.html"><span class="token function">onStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called immediately after Target.onStart.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="11580468%2FFunctions%2F-874330140" anchor-label="onSuccess" id="11580468%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-success.html"><span>on</span><wbr><span><span>Success</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="11580468%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-success.html"><span class="token function">onSuccess</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.request/-success-result/index.html">SuccessResult</a></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-success.html"><span class="token function">onSuccess</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">result<span class="token operator">: </span><a href="../../coil3.request/-success-result/index.html">SuccessResult</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called if the request completes successfully.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1711778779%2FFunctions%2F-874330140" anchor-label="resolveSizeEnd" id="-1711778779%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-size-end.html"><span>resolve</span><wbr><span>Size</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1711778779%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-size-end.html"><span class="token function">resolveSizeEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.size/-size-resolver/size.html">SizeResolver.size</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-size-end.html"><span class="token function">resolveSizeEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="../../coil3.size/-size/index.html">Size</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-333950184%2FFunctions%2F-874330140" anchor-label="resolveSizeStart" id="-333950184%2FFunctions%2F-874330140" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain,:coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-size-start.html"><span>resolve</span><wbr><span>Size</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-333950184%2FFunctions%2F-874330140"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/commonMain">common</button><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">expect </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-size-start.html"><span class="token function">resolveSizeStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">sizeResolver<span class="token operator">: </span><a href="../../coil3.size/-size-resolver/index.html">SizeResolver</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.size/-size-resolver/size.html">SizeResolver.size</a>.</p></div></div><div class="content sourceset-dependent-content" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">actual </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-size-start.html"><span class="token function">resolveSizeStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../coil3.request/-image-request/index.html">ImageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">sizeResolver<span class="token operator">: </span><a href="../../coil3.size/-size-resolver/index.html">SizeResolver</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1886769322%2FFunctions%2F1315122098" anchor-label="transformEnd" id="1886769322%2FFunctions%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transform-end.html"><span>transform</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1886769322%2FFunctions%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="transform-end.html"><span class="token function">transformEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">output<span class="token operator">: </span><a href="https://developer.android.com/reference/android/graphics/Bitmap.html">Bitmap</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after any <a href="../../coil3.transform/-transformation/index.html">Transformation</a>s are applied.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="617348163%2FFunctions%2F1315122098" anchor-label="transformStart" id="617348163%2FFunctions%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transform-start.html"><span>transform</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="617348163%2FFunctions%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="transform-start.html"><span class="token function">transformStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">input<span class="token operator">: </span><a href="https://developer.android.com/reference/android/graphics/Bitmap.html">Bitmap</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before any <a href="../../coil3.transform/-transformation/index.html">Transformation</a>s are applied.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1653650150%2FFunctions%2F1315122098" anchor-label="transitionEnd" id="-1653650150%2FFunctions%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transition-end.html"><span>transition</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1653650150%2FFunctions%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="transition-end.html"><span class="token function">transitionEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">transition<span class="token operator">: </span><a href="../../coil3.transition/-transition/index.html">Transition</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called after <a href="../../coil3.transition/-transition/transition.html">Transition.transition</a>.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-144795661%2FFunctions%2F1315122098" anchor-label="transitionStart" id="-144795661%2FFunctions%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transition-start.html"><span>transition</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-144795661%2FFunctions%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="transition-start.html"><span class="token function">transitionStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">transition<span class="token operator">: </span><a href="../../coil3.transition/-transition/index.html">Transition</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called before <a href="../../coil3.transition/-transition/transition.html">Transition.transition</a>.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
