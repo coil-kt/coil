@@ -38,7 +38,7 @@ internal class ViewTargetRequestDelegate(
     private val imageLoader: ImageLoader,
     private val initialRequest: ImageRequest,
     private val target: ViewTarget<*>,
-    private val lifecycle: Lifecycle,
+    private val lifecycle: Lifecycle?,
     private val job: Job,
 ) : RequestDelegate, DefaultLifecycleObserver {
 
@@ -56,23 +56,23 @@ internal class ViewTargetRequestDelegate(
     }
 
     override fun start() {
-        lifecycle.addObserver(this)
+        lifecycle?.addObserver(this)
         if (target is LifecycleObserver) {
-            lifecycle.removeAndAddObserver(target)
+            lifecycle?.removeAndAddObserver(target)
         }
         target.view.requestManager.setRequest(this)
     }
 
     override suspend fun awaitStarted() {
-        lifecycle.awaitStarted()
+        lifecycle?.awaitStarted()
     }
 
     override fun dispose() {
         job.cancel()
         if (target is LifecycleObserver) {
-            lifecycle.removeObserver(target)
+            lifecycle?.removeObserver(target)
         }
-        lifecycle.removeObserver(this)
+        lifecycle?.removeObserver(this)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
