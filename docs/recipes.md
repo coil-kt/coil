@@ -133,6 +133,8 @@ detailImageView.load("https://example.com/image.jpg") {
 
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.
 
+Using Compose? [Check out this article for how to perform shared element transitions with `AsyncImage`](https://www.tunjid.com/articles/animating-contentscale-during-image-shared-element-transitions-65fba03537c67f8df0161c31).
+
 ## Remote Views
 
 Coil does not provide a `Target` for [`RemoteViews`](https://developer.android.com/reference/android/widget/RemoteViews) out of the box, however you can create one like so:
@@ -179,7 +181,7 @@ AsyncImage(
     placeholder = forwardingPainter(
         painter = painterResource(R.drawable.placeholder),
         colorFilter = ColorFilter(Color.Red),
-        alpha = 0.5f
+        alpha = 0.5f,
     ),
 )
 ```
