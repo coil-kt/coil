@@ -46,7 +46,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun noSetFrameTime_FakeFileSystem() = runTest(timeout = 1.minutes) {
+    fun noSetFrameTime_FakeFileSystem() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
