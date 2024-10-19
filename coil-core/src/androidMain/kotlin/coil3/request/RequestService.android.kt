@@ -44,22 +44,29 @@ internal class AndroidRequestService(
      * Wrap [request] to automatically dispose and/or restart the [ImageRequest]
      * based on its lifecycle.
      */
-    override fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate {
-        val lifecycle = request.lifecycle ?: request.findLifecycle()
+    override fun requestDelegate(
+        request: ImageRequest,
+        job: Job,
+        findLifecycle: Boolean,
+    ): RequestDelegate {
         val target = request.target
         if (target is ViewTarget<*>) {
+            val lifecycle = request.lifecycle ?: request.findLifecycle()
             return ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
-        } else if (lifecycle != GlobalLifecycle) {
-            return LifecycleRequestDelegate(lifecycle, job)
-        } else {
-            return BaseRequestDelegate(job)
         }
+
+        val lifecycle = request.lifecycle ?: if (findLifecycle) request.findLifecycle() else null
+        if (lifecycle != null) {
+            return LifecycleRequestDelegate(lifecycle, job)
+        }
+
+        return BaseRequestDelegate(job)
     }
 
-    private fun ImageRequest.findLifecycle(): Lifecycle {
+    private fun ImageRequest.findLifecycle(): Lifecycle? {
         val target = target
         val context = if (target is ViewTarget<*>) target.view.context else context
-        return context.getLifecycle() ?: GlobalLifecycle
+        return context.getLifecycle()
     }
 
     override fun sizeResolver(request: ImageRequest): SizeResolver {

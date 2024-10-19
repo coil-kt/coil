@@ -33,7 +33,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.buffer
@@ -259,7 +258,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_ignore() = runTest(timeout = 1.minutes) {
+    fun exifOrientationPolicy_ignore() = runTest {
         // Android ImageDecoder handle exif internally so we cannot tune it
         // Test BitmapFactoryDecoder only
         assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
@@ -283,7 +282,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectPerformance() = runTest(timeout = 1.minutes) {
+    fun exifOrientationPolicy_respectPerformance() = runTest {
         // Test JPG
         val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
         for (index in 1..8) {
@@ -301,7 +300,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectAll() = runTest(timeout = 1.minutes) {
+    fun exifOrientationPolicy_respectAll() = runTest {
         // Android ImageDecoder handle exif internally so we cannot tune it
         // Test BitmapFactoryDecoder only
         assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)

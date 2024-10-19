@@ -298,7 +298,6 @@ class AsyncImagePainter internal constructor(
                     // The request must be executed synchronously in the preview environment.
                     coroutineContext(EmptyCoroutineContext)
                 }
-                applyGlobalLifecycle()
             }
             .build()
     }
@@ -408,9 +407,6 @@ private fun unsupportedData(
 
 /** Validate platform-specific properties of an [ImageRequest]. */
 internal expect fun validateRequestProperties(request: ImageRequest)
-
-/** Set the request's lifecycle to `GlobalLifecycle` on Android to avoid dispatching. */
-internal expect fun ImageRequest.Builder.applyGlobalLifecycle()
 
 /** Create and return a [CrossfadePainter] if requested. */
 internal expect fun maybeNewCrossfadePainter(

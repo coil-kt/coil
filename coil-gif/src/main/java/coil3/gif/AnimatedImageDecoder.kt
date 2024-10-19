@@ -14,7 +14,7 @@ import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
-import coil3.decode.toImageDecoderSource
+import coil3.decode.toImageDecoderSourceOrNull
 import coil3.fetch.SourceFetchResult
 import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
@@ -56,7 +56,7 @@ class AnimatedImageDecoder(
         var isSampled = false
         val drawable = runInterruptible {
             maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
-                val imageSource = source.toImageDecoderSource(options, animated = true)
+                val imageSource = source.toImageDecoderSourceOrNull(options, animated = true)
                     ?: ImageDecoder.createSource(source.source().use { it.squashToDirectByteBuffer() })
                 imageSource.decodeDrawable { info, _ ->
                     // Configure the output image's size.
