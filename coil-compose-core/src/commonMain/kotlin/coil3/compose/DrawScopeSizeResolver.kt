@@ -3,7 +3,7 @@ package coil3.compose
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import coil3.annotation.ExperimentalCoilApi
-import coil3.compose.internal.toCoilSizeOrNull
+import coil3.compose.internal.toSizeOrNull
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.js.JsName
@@ -30,20 +30,20 @@ interface DrawScopeSizeResolver : SizeResolver {
 }
 
 private class RealDrawScopeSizeResolver : DrawScopeSizeResolver {
-    private val sizes = MutableSharedFlow<Flow<Size>>(
+    private val latestSize = MutableSharedFlow<Flow<Size>>(
         replay = 1,
         onBufferOverflow = DROP_OLDEST,
     )
 
     override fun connect(sizes: Flow<Size>) {
-        this.sizes.tryEmit(sizes)
+        latestSize.tryEmit(sizes)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun size(): CoilSize {
-        return sizes
+        return latestSize
             .transformLatest { emitAll(it) }
-            .mapNotNull { it.toCoilSizeOrNull() }
+            .mapNotNull { it.toSizeOrNull() }
             .first()
     }
 }
