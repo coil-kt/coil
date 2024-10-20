@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -793,6 +794,66 @@ class AsyncImageTest {
         assertEquals(2, onStartCount.get())
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
+    @Test
+    fun minIntrinsicSize() {
+        composeTestRule.setContent {
+            Box(
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .height(IntrinsicSize.Min),
+            ) {
+                AsyncImage(
+                    model = "https://example.com/image",
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    modifier = Modifier
+                        .testTag(Image),
+                )
+            }
+        }
+
+        waitForRequestComplete()
+        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(SampleWidth.toDp())
+            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
+    @Test
+    fun maxIntrinsicSize() {
+        composeTestRule.setContent {
+            Box(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Max),
+            ) {
+                AsyncImage(
+                    model = "https://example.com/image",
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    modifier = Modifier
+                        .testTag(Image),
+                )
+            }
+        }
+
+        waitForRequestComplete()
+        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(SampleWidth.toDp())
+            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
         requestTracker.finishedRequests >= finishedRequests
     }
@@ -832,7 +893,9 @@ class AsyncImageTest {
 
     private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
 
-    private fun Double.toDp() = with(composeTestRule.density) { toInt().toDp() }
+    private fun Int.toDp() = with(composeTestRule.density) { toDp() }
+
+    private fun Double.toDp() = toInt().toDp()
 
     private val displaySize: IntSize
         get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
