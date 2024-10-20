@@ -161,6 +161,15 @@ allprojects {
         }
     }
 
+    // https://youtrack.jetbrains.com/issue/CMP-5831
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlinx" && requested.name == "atomicfu") {
+                useVersion(libs.versions.atomicfu.get())
+            }
+        }
+    }
+
     applyOkioJsTestWorkaround()
 }
 
