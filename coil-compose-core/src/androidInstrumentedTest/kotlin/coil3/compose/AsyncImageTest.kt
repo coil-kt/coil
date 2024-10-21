@@ -798,6 +798,8 @@ class AsyncImageTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun minIntrinsicSize() {
+        assumeSupportsCaptureToImage()
+
         val dstWidth = 100.dp
         val dstHeight = 150.dp
 
@@ -839,6 +841,8 @@ class AsyncImageTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun maxIntrinsicSize() {
+        assumeSupportsCaptureToImage()
+
         val dstWidth = 100.dp
         val dstHeight = 150.dp
 
@@ -880,6 +884,8 @@ class AsyncImageTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun mixedIntrinsicSize() {
+        assumeSupportsCaptureToImage()
+
         val dstWidth = 100.dp
         val dstHeight = 150.dp
 
