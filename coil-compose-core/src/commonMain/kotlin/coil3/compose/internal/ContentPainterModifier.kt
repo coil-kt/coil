@@ -187,18 +187,11 @@ internal class ContentPainterNode(
             return constraints
         }
 
-        // Fill the available space if the painter has no intrinsic size.
-        val hasBoundedSize = constraints.hasBoundedWidth && constraints.hasBoundedHeight
+        // Changed from `PainterModifier`:
+        // The painter has no intrinsic size so we can't support scaling.
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
-            if (hasBoundedSize) {
-                return constraints.copy(
-                    minWidth = constraints.maxWidth,
-                    minHeight = constraints.maxHeight,
-                )
-            } else {
-                return constraints
-            }
+            return constraints
         }
 
         // Changed from `PainterModifier`:
@@ -206,7 +199,9 @@ internal class ContentPainterNode(
         // least one dimension is a fixed pixel value. Else, use the intrinsic size of the painter.
         val dstWidth: Float
         val dstHeight: Float
-        if (hasBoundedSize && (hasFixedWidth || hasFixedHeight)) {
+        if ((hasFixedWidth || hasFixedHeight) &&
+            (constraints.hasBoundedWidth && constraints.hasBoundedHeight)
+        ) {
             dstWidth = constraints.maxWidth.toFloat()
             dstHeight = constraints.maxHeight.toFloat()
         } else {
