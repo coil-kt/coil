@@ -819,14 +819,14 @@ class AsyncImageTest {
         val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .assertWidthIsEqualTo(expectedWidthPx.toDp())
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
@@ -854,14 +854,14 @@ class AsyncImageTest {
         val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .assertWidthIsEqualTo(expectedWidthPx.toDp())
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
@@ -889,14 +889,14 @@ class AsyncImageTest {
         val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .assertWidthIsEqualTo(expectedWidthPx.toDp())
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
