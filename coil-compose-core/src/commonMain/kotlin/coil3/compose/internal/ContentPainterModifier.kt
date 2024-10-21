@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
@@ -104,10 +105,9 @@ internal class ContentPainterNode(
         height: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = Constraints(maxHeight = height)
-            val layoutWidth = measurable.minIntrinsicWidth(modifyConstraints(constraints).maxHeight)
-            val scaledSize = calculateScaledSize(Size(layoutWidth.toFloat(), height.toFloat()))
-            maxOf(scaledSize.width.roundToInt(), layoutWidth)
+            val constraints = modifyConstraints(Constraints(maxHeight = height))
+            val layoutWidth = measurable.minIntrinsicWidth(height)
+            max(constraints.minWidth, layoutWidth)
         } else {
             measurable.minIntrinsicWidth(height)
         }
@@ -118,10 +118,9 @@ internal class ContentPainterNode(
         height: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = Constraints(maxHeight = height)
-            val layoutWidth = measurable.maxIntrinsicWidth(modifyConstraints(constraints).maxHeight)
-            val scaledSize = calculateScaledSize(Size(layoutWidth.toFloat(), height.toFloat()))
-            maxOf(scaledSize.width.roundToInt(), layoutWidth)
+            val constraints = modifyConstraints(Constraints(maxHeight = height))
+            val layoutWidth = measurable.maxIntrinsicWidth(height)
+            max(constraints.minWidth, layoutWidth)
         } else {
             measurable.maxIntrinsicWidth(height)
         }
@@ -132,11 +131,9 @@ internal class ContentPainterNode(
         width: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = Constraints(maxWidth = width)
-            val layoutHeight =
-                measurable.minIntrinsicHeight(modifyConstraints(constraints).maxWidth)
-            val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
-            maxOf(scaledSize.height.roundToInt(), layoutHeight)
+            val constraints = modifyConstraints(Constraints(maxWidth = width))
+            val layoutHeight = measurable.minIntrinsicHeight(width)
+            max(constraints.minHeight, layoutHeight)
         } else {
             measurable.minIntrinsicHeight(width)
         }
@@ -147,11 +144,9 @@ internal class ContentPainterNode(
         width: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = Constraints(maxWidth = width)
-            val layoutHeight =
-                measurable.maxIntrinsicHeight(modifyConstraints(constraints).maxWidth)
-            val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
-            maxOf(scaledSize.height.roundToInt(), layoutHeight)
+            val constraints = modifyConstraints(Constraints(maxWidth = width))
+            val layoutHeight = measurable.maxIntrinsicHeight(width)
+            max(constraints.minHeight, layoutHeight)
         } else {
             measurable.maxIntrinsicHeight(width)
         }
