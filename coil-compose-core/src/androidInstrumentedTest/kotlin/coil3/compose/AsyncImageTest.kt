@@ -854,6 +854,36 @@ class AsyncImageTest {
             .assertIsSimilarTo(R.drawable.sample)
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
+    @Test
+    fun mixedIntrinsicSize() {
+        composeTestRule.setContent {
+            Box(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Min),
+            ) {
+                AsyncImage(
+                    model = "https://example.com/image",
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    modifier = Modifier
+                        .testTag(Image),
+                )
+            }
+        }
+
+        waitForRequestComplete()
+        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(SampleWidth.toDp())
+            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
         requestTracker.finishedRequests >= finishedRequests
     }
