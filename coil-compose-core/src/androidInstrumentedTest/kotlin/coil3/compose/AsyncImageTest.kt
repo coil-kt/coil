@@ -814,12 +814,16 @@ class AsyncImageTest {
         }
 
         waitForRequestComplete()
-        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(SampleWidth.toDp())
-            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -844,12 +848,16 @@ class AsyncImageTest {
         }
 
         waitForRequestComplete()
-        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(SampleWidth.toDp())
-            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -874,12 +882,16 @@ class AsyncImageTest {
         }
 
         waitForRequestComplete()
-        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+
+        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(SampleWidth.toDp())
-            .assertHeightIsEqualTo(SampleHeight.toDp())
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
