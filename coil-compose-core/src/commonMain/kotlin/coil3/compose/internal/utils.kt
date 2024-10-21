@@ -170,14 +170,22 @@ internal fun ContentScale.toScale() = when (this) {
 
 @Stable
 internal fun Constraints.toSize(): CoilSize {
-    val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
-    val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-    return CoilSize(width, height)
+    return CoilSize(maxWidth.toDimension(), maxHeight.toDimension())
 }
 
 @Stable
-internal fun Constraints.toSizeOrNull(): CoilSize? {
-    return if (isZero) null else toSize()
+internal fun Size.toSizeOrNull() = when {
+    isUnspecified -> CoilSize.ORIGINAL
+    isPositive -> CoilSize(width.toDimension(), height.toDimension())
+    else -> null
+}
+
+private fun Int.toDimension(): Dimension {
+    return if (this != Int.MAX_VALUE) Dimension(this) else Dimension.Undefined
+}
+
+private fun Float.toDimension(): Dimension {
+    return if (isFinite()) Dimension(roundToInt()) else Dimension.Undefined
 }
 
 internal fun Constraints.constrainWidth(width: Float) =
@@ -185,15 +193,6 @@ internal fun Constraints.constrainWidth(width: Float) =
 
 internal fun Constraints.constrainHeight(height: Float) =
     height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
-
-internal fun Size.toCoilSizeOrNull() = when {
-    isUnspecified -> CoilSize.ORIGINAL
-    isPositive -> CoilSize(
-        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
-    )
-    else -> null
-}
 
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 

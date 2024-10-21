@@ -13,24 +13,25 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 
 /**
- * A [SizeResolver] that computes the size from the constraints passed during the layout phase.
+ * A [SizeResolver] that computes the size from the constraints passed during the layout phase
+ * or from [setConstraints].
  */
 class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-    private val currentConstraints = MutableSharedFlow<Constraints>(
+    private val latestConstraints = MutableSharedFlow<Constraints>(
         replay = 1,
         onBufferOverflow = DROP_OLDEST,
     )
 
     override suspend fun size(): Size {
-        return currentConstraints.first { !it.isZero }.toSize()
+        return latestConstraints.first { !it.isZero }.toSize()
     }
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
-        // Cache the current constraints.
-        currentConstraints.tryEmit(constraints)
+        // Cache the latest constraints.
+        latestConstraints.tryEmit(constraints)
 
         // Measure and layout the content.
         val placeable = measurable.measure(constraints)
@@ -40,6 +41,6 @@ class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     }
 
     fun setConstraints(constraints: Constraints) {
-        currentConstraints.tryEmit(constraints)
+        latestConstraints.tryEmit(constraints)
     }
 }
