@@ -28,7 +28,6 @@ val DefaultModelEqualityDelegate = object : EqualityDelegate {
             self.memoryCacheKey == other.memoryCacheKey &&
             self.memoryCacheKeyExtras == other.memoryCacheKeyExtras &&
             self.diskCacheKey == other.diskCacheKey &&
-            self.fileSystem == other.fileSystem &&
             self.sizeResolver == other.sizeResolver &&
             self.scale == other.scale &&
             self.precision == other.precision
@@ -44,7 +43,6 @@ val DefaultModelEqualityDelegate = object : EqualityDelegate {
         result = 31 * result + self.memoryCacheKey.hashCode()
         result = 31 * result + self.memoryCacheKeyExtras.hashCode()
         result = 31 * result + self.diskCacheKey.hashCode()
-        result = 31 * result + self.fileSystem.hashCode()
         result = 31 * result + self.sizeResolver.hashCode()
         result = 31 * result + self.scale.hashCode()
         result = 31 * result + self.precision.hashCode()
