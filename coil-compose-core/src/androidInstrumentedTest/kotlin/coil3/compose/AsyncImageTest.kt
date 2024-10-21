@@ -807,6 +807,7 @@ class AsyncImageTest {
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
@@ -841,6 +842,7 @@ class AsyncImageTest {
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
@@ -875,6 +877,7 @@ class AsyncImageTest {
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
