@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -115,7 +116,7 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        assertLoadedBitmapSize(128.dp.toPx(), 166.dp.toPx())
+        assertLoadedBitmapSize(128.dp.toPx().toInt(), 166.dp.toPx().toInt())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -797,17 +798,20 @@ class AsyncImageTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun minIntrinsicSize() {
+        val dstWidth = 100.dp
+        val dstHeight = 150.dp
+
         composeTestRule.setContent {
             Box(
                 modifier = Modifier
                     .width(IntrinsicSize.Min)
-                    .height(IntrinsicSize.Min),
+                    .height(IntrinsicSize.Min)
+                    .sizeIn(maxWidth = dstWidth, maxHeight = dstHeight),
             ) {
                 AsyncImage(
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
@@ -816,33 +820,39 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
-        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
-
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
+        val scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = SampleWidth.toFloat(),
+            srcHeight = SampleHeight.toFloat(),
+            dstWidth = dstWidth.toPx(),
+            dstHeight = dstHeight.toPx(),
+            scale = Scale.FIT,
+        ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(expectedWidthPx.toDp())
-            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun maxIntrinsicSize() {
+        val dstWidth = 100.dp
+        val dstHeight = 150.dp
+
         composeTestRule.setContent {
             Box(
                 modifier = Modifier
                     .width(IntrinsicSize.Max)
-                    .height(IntrinsicSize.Max),
+                    .height(IntrinsicSize.Max)
+                    .sizeIn(maxWidth = dstWidth, maxHeight = dstHeight),
             ) {
                 AsyncImage(
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
@@ -851,33 +861,39 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
-        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
-
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
+        val scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = SampleWidth.toFloat(),
+            srcHeight = SampleHeight.toFloat(),
+            dstWidth = dstWidth.toPx(),
+            dstHeight = dstHeight.toPx(),
+            scale = Scale.FIT,
+        ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(expectedWidthPx.toDp())
-            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
     @Test
     fun mixedIntrinsicSize() {
+        val dstWidth = 100.dp
+        val dstHeight = 150.dp
+
         composeTestRule.setContent {
             Box(
                 modifier = Modifier
                     .width(IntrinsicSize.Max)
-                    .height(IntrinsicSize.Min),
+                    .height(IntrinsicSize.Min)
+                    .sizeIn(maxWidth = dstWidth, maxHeight = dstHeight),
             ) {
                 AsyncImage(
                     model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .testTag(Image),
                 )
@@ -886,17 +902,20 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
-        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
-
-        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
+        val scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = SampleWidth.toFloat(),
+            srcHeight = SampleHeight.toFloat(),
+            dstWidth = dstWidth.toPx(),
+            dstHeight = dstHeight.toPx(),
+            scale = Scale.FIT,
+        ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(expectedWidthPx.toDp())
-            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
@@ -936,11 +955,13 @@ class AsyncImageTest {
         )
     }
 
-    private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
+    private fun Dp.toPx() = with(composeTestRule.density) { toPx() }
 
     private fun Int.toDp() = with(composeTestRule.density) { toDp() }
 
-    private fun Double.toDp() = toInt().toDp()
+    private fun Float.toDp() = with(composeTestRule.density) { toDp() }
+
+    private fun Double.toDp() = with(composeTestRule.density) { toFloat().toDp() }
 
     private val displaySize: IntSize
         get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
