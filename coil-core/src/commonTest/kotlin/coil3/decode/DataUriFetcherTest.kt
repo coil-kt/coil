@@ -20,7 +20,7 @@ class DataUriFetcherTest : RobolectricTest() {
 
     @OptIn(ExperimentalEncodingApi::class)
     @Test
-    fun default() = runTest {
+    fun supported() = runTest {
         val uri = "data:image/png;base64,$IMAGE_DATA".toUri()
         val fetcher = assertNotNull(fetcher.create(uri, Options(context), ImageLoader(context)))
 
