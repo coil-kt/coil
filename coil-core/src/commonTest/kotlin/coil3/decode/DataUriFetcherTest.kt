@@ -14,11 +14,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
-import okio.fakefilesystem.FakeFileSystem
 
 class DataUriFetcherTest : RobolectricTest() {
     private val fetcher = DataUriFetcher.Factory()
-    private val fileSystem = FakeFileSystem()
 
     @OptIn(ExperimentalEncodingApi::class)
     @Test
