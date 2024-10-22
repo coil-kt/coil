@@ -27,7 +27,10 @@ class DataUriFetcherTest : RobolectricTest() {
         val result = assertIs<SourceFetchResult>(fetcher.fetch())
 
         assertEquals("image/png", result.mimeType)
-        assertEquals(Base64.decode(IMAGE_DATA).joinToString(), result.source.use { it.source().readByteArray() }.joinToString())
+        assertEquals(
+            expected = Base64.decode(IMAGE_DATA).joinToString(),
+            actual = result.source.use { it.source().readByteArray() }.joinToString(),
+        )
     }
 }
 
