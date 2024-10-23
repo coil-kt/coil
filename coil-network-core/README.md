@@ -1,6 +1,6 @@
-# Network URLs
+# Network Images
 
-By default, Coil 3.x does not include support for network URLs. This is to avoid forcing a large networking dependency on users who want to use their own networking solution or do not need network URL support (e.g. only loading images from disk).
+By default, Coil 3.x does not include support for loading images from the network. This is to avoid forcing a large networking dependency on users who want to use their own networking solution or do not need network URL support (e.g. only loading images from disk).
 
 To add support for fetching images from the network import **only one of the following**:
 
@@ -10,9 +10,11 @@ implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.0-rc01")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0-rc01")
 ```
 
-And that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported.
+If you use OkHttp, that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform:
 
-However, if you depend on `coil-network-ktor2` or `coil-network-ktor3` you need to import a [Ktor engine](https://ktor.io/docs/client-engines.html) for each platform (except Javascript). Here's a quickstart set of engines:
+## Ktor network engines
+
+If you depend on `coil-network-ktor2` or `coil-network-ktor3` you need to import a [Ktor engine](https://ktor.io/docs/client-engines.html) for each platform (except Javascript). Here's a quickstart set of engines:
 
 ```kotlin
 androidMain {
@@ -47,4 +49,3 @@ KtorNetworkFetcher(
     cacheStrategy = CacheControlCacheStrategy(),
 )
 ```
-

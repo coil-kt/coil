@@ -57,8 +57,8 @@ extra:
 nav:
   - 'Overview': index.md
   - 'Getting Started': getting_started.md
-  - 'Network URLs': network.md
-  - 'Compose UI': compose.md
+  - 'Compose': compose.md
+  - 'Network Images': network.md
   - 'Image Loaders': image_loaders.md
   - 'Image Requests': image_requests.md
   - 'Targets': targets.md

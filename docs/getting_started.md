@@ -1,8 +1,84 @@
 # Getting Started
 
+## Compose UI
+
+A typical Compose UI project will want to import:
+
+```kotlin
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
+```
+
+!!! Note
+    If you use Compose Multiplatform, you'll need to use Ktor to download network images. See [here](network.md#ktor-network-engines) for how to do that.
+
+After that's imported you can load images from the network using `AsyncImage`:
+
+```kotlin
+AsyncImage(
+    model = "https://www.example.com/image.jpg",
+    contentDescription = null,
+)
+```
+
+## Android Views
+
+If you use Android Views instead of Compose UI import:
+
+```kotlin
+implementation("io.coil-kt.coil3:coil:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
+```
+
+After that's imported you can load images from the network using the `ImageView.load` extension function:
+
+```kotlin
+imageView.load("https://www.example.com/image.jpg") {
+    crossfade(true)
+}
+```
+
+## Configuring the singleton ImageLoader
+
+By default, Coil includes a singleton `ImageLoader`. The `ImageLoader` executes incoming `ImageRequest`s by fetching, decoding, caching, and returning the result. You don't need to configure your `ImageLoader`; if you don't Coil will create the singleton `ImageLoader` with the default configuration.
+
+You can configure it a number of ways (**choose only one**):
+
+- Call `setSingletonImageLoaderFactory` near the entrypoint to your app (the root `@Composable` of your app). **This works best for Compose Multiplatform apps.**
+
+```kotlin
+setSingletonImageLoaderFactory { context ->
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .build()
+}
+```
+
+- Implement `SingletonImageLoader.Factory` on your [`Application`](https://developer.android.com/reference/android/app/Application) in Android. **This works best for Android apps.**
+
+```kotlin
+class CustomApplication : Application(), SingletonImageLoader.Factory {
+    override fun newImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .crossfade(true)
+            .build()
+    }
+}
+```
+
+- Call `SingletonImageLoader.setSafe` near the entrypoint to your app (e.g. in `Application.onCreate` on Android). This is the most flexible.
+
+```kotlin
+SingletonImageLoader.setSafe { context ->
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .build()
+}
+```
+
 ## Artifacts
 
-Coil has several artifacts published to `mavenCentral()`:
+Here's a list of the main artifacts Coil has published to `mavenCentral()`:
 
 * `io.coil-kt.coil3:coil`: The default artifact which depends on `io.coil-kt.coil3:coil-core`. It includes a singleton `ImageLoader` and related extension functions.
 * `io.coil-kt.coil3:coil-core`: A subset of `io.coil-kt.coil3:coil` which **does not** include the singleton `ImageLoader` and related extension functions.
@@ -17,35 +93,3 @@ Coil has several artifacts published to `mavenCentral()`:
 * `io.coil-kt.coil3:coil-video`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 * `io.coil-kt.coil3:coil-test`: Includes classes to support testing. See [testing](testing.md) for more details.
 * `io.coil-kt.coil3:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
-
-## Quick Start
-
-A standard Android Compose UI project will want to import:
-
-```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
-```
-
-After that's imported you can load images from the network using `AsyncImage`:
-
-```kotlin
-AsyncImage(
-    model = "https://www.example.com/image.jpg",
-    contentDescription = null,
-)
-```
-
-If you want to add some shared configuration to your `AsyncImage`s, use `setSingletonImageLoader` to set a custom `ImageLoader`:
-
-```kotlin
-// Make sure this is set near the entrypoint of your app.
-setSingletonImageLoaderFactory { context ->
-    ImageLoader.Builder(context)
-        .crossfade(true)
-        .build()
-}
-```
-
-!!! Note
-    If you use Compose Multiplatform, you'll need to use Ktor for download network images. See [here](network.md) for how to do that.

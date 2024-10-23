@@ -33,11 +33,11 @@ AsyncImage(
     placeholder = painterResource(R.drawable.placeholder),
     contentDescription = stringResource(R.string.description),
     contentScale = ContentScale.Crop,
-    modifier = Modifier.clip(CircleShape)
+    modifier = Modifier.clip(CircleShape),
 )
 ```
 
-#### When to use this function
+**When to use this function:**
 
 Prefer using `AsyncImage` in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
 
@@ -51,7 +51,7 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 `rememberAsyncImagePainter` is more flexible than `AsyncImage` and `SubcomposeAsyncImage`, but has a couple drawbacks (see below).
 
-#### When to use this function
+**When to use this function:**
 
 Useful if you need a `Painter` instead of a composable - or if you need to observe the `AsyncImagePainter.state` and draw a different composable based on it - or if you need to manually restart the image request using `AsyncImagePainter.restart`.
 
@@ -63,7 +63,7 @@ val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalPlatformContext.current)
         .data("https://www.example.com/image.jpg")
         .size(sizeResolver)
-        .build()
+        .build(),
 )
 
 Image(
@@ -73,7 +73,7 @@ Image(
 )
 ```
 
-Another drawback is `AsyncImagePainter.state` will always be `Loading` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
+Another drawback is `AsyncImagePainter.state` will always be `AsyncImagePainter.State.Empty` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
 
 ## SubcomposeAsyncImage
 
@@ -85,7 +85,7 @@ SubcomposeAsyncImage(
     loading = {
         CircularProgressIndicator()
     },
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
@@ -97,10 +97,10 @@ SubcomposeAsyncImage(
     contentDescription = stringResource(R.string.description)
 ) {
     val state = painter.state
-    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-        CircularProgressIndicator()
-    } else {
+    if (state is AsyncImagePainter.State.Success) {
         SubcomposeAsyncImageContent()
+    } else {
+        CircularProgressIndicator()
     }
 }
 ```
@@ -108,7 +108,7 @@ SubcomposeAsyncImage(
 !!! Note
     Subcomposition is slower than regular composition so this composable may not be suitable for performance-critical parts of your UI (e.g. `LazyList`).
 
-#### When to use this function
+**When to use this function:**
 
 Generally prefer using `rememberAsyncImagePainter` instead of this function if you need to observe `AsyncImagePainter.state` as it does not use subcomposition.
 
@@ -122,6 +122,7 @@ Example:
 val painter = rememberAsyncImagePainter("https://www.example.com/image.jpg")
 
 when (painter.state) {
+    is AsyncImagePainter.State.Empty,
     is AsyncImagePainter.State.Loading -> {
         CircularProgressIndicator()
     }
@@ -133,9 +134,6 @@ when (painter.state) {
     }
     is AsyncImagePainter.State.Error -> {
         // Show some error UI.
-    }
-    is AsyncImagePainter.State.Empty -> {
-        // Render nothing. If the request is launched from the main thread this state will never be reached.
     }
 }
 ```
@@ -150,7 +148,7 @@ AsyncImage(
         .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 
@@ -168,7 +166,7 @@ if (state is AsyncImagePainter.State.Success && state.result.dataSource != DataS
 
 Image(
     painter = painter,
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
