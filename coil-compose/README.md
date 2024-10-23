@@ -33,7 +33,7 @@ AsyncImage(
     placeholder = painterResource(R.drawable.placeholder),
     contentDescription = stringResource(R.string.description),
     contentScale = ContentScale.Crop,
-    modifier = Modifier.clip(CircleShape)
+    modifier = Modifier.clip(CircleShape),
 )
 ```
 
