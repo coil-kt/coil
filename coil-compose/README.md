@@ -73,7 +73,7 @@ Image(
 )
 ```
 
-Another drawback is `AsyncImagePainter.state` will always be `Loading` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
+Another drawback is `AsyncImagePainter.state` will always be `AsyncImagePainter.State.Empty` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
 
 ## SubcomposeAsyncImage
 
@@ -97,10 +97,10 @@ SubcomposeAsyncImage(
     contentDescription = stringResource(R.string.description)
 ) {
     val state = painter.state
-    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-        CircularProgressIndicator()
-    } else {
+    if (state is AsyncImagePainter.State.Success) {
         SubcomposeAsyncImageContent()
+    } else {
+        CircularProgressIndicator()
     }
 }
 ```
@@ -122,6 +122,7 @@ Example:
 val painter = rememberAsyncImagePainter("https://www.example.com/image.jpg")
 
 when (painter.state) {
+    is AsyncImagePainter.State.Empty,
     is AsyncImagePainter.State.Loading -> {
         CircularProgressIndicator()
     }
@@ -133,9 +134,6 @@ when (painter.state) {
     }
     is AsyncImagePainter.State.Error -> {
         // Show some error UI.
-    }
-    is AsyncImagePainter.State.Empty -> {
-        // Render nothing. If the request is launched from the main thread this state will never be reached.
     }
 }
 ```
