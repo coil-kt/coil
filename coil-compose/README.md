@@ -37,7 +37,7 @@ AsyncImage(
 )
 ```
 
-#### When to use this function
+**When to use this function:**
 
 Prefer using `AsyncImage` in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
 
@@ -51,7 +51,7 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 `rememberAsyncImagePainter` is more flexible than `AsyncImage` and `SubcomposeAsyncImage`, but has a couple drawbacks (see below).
 
-#### When to use this function
+**When to use this function:**
 
 Useful if you need a `Painter` instead of a composable - or if you need to observe the `AsyncImagePainter.state` and draw a different composable based on it - or if you need to manually restart the image request using `AsyncImagePainter.restart`.
 
@@ -63,7 +63,7 @@ val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalPlatformContext.current)
         .data("https://www.example.com/image.jpg")
         .size(sizeResolver)
-        .build()
+        .build(),
 )
 
 Image(
@@ -85,7 +85,7 @@ SubcomposeAsyncImage(
     loading = {
         CircularProgressIndicator()
     },
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
@@ -108,7 +108,7 @@ SubcomposeAsyncImage(
 !!! Note
     Subcomposition is slower than regular composition so this composable may not be suitable for performance-critical parts of your UI (e.g. `LazyList`).
 
-#### When to use this function
+**When to use this function:**
 
 Generally prefer using `rememberAsyncImagePainter` instead of this function if you need to observe `AsyncImagePainter.state` as it does not use subcomposition.
 
@@ -150,7 +150,7 @@ AsyncImage(
         .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 
@@ -168,7 +168,7 @@ if (state is AsyncImagePainter.State.Success && state.result.dataSource != DataS
 
 Image(
     painter = painter,
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
