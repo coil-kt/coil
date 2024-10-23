@@ -1,6 +1,6 @@
-# Network URLs
+# Network Images
 
-By default, Coil 3.x does not include support for network URLs. This is to avoid forcing a large networking dependency on users who want to use their own networking solution or do not need network URL support (e.g. only loading images from disk).
+By default, Coil 3.x does not include support for loading images from the network. This is to avoid forcing a large networking dependency on users who want to use their own networking solution or do not need network URL support (e.g. only loading images from disk).
 
 To add support for fetching images from the network import **only one of the following**:
 
