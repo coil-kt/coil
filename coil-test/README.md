@@ -17,7 +17,6 @@ val engine = FakeImageLoaderEngine.Builder()
 val imageLoader = ImageLoader.Builder(context)
     .components { add(engine) }
     .build()
-Coil.setImageLoader(imageLoader)
 ```
 
 This strategy works great with [Paparazzi](https://github.com/cashapp/paparazzi) to screenshot test UIs without a physical device or emulator:
@@ -37,20 +36,26 @@ class PaparazziTest {
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
             .build()
-        Coil.setImageLoader(imageLoader)
+        SingletonImageLoader.setUnsafe(imageLoader)
     }
 
     @Test
-    fun testContentView() {
-        val view: View = paparazzi.inflate(R.layout.content)
-        paparazzi.snapshot(view)
-    }
-
-    @Test
-    fun testContentCompose() {
+    fun testContentComposeRed() {
+        // Will display a red box.
         paparazzi.snapshot {
             AsyncImage(
                 model = "https://www.example.com/image.jpg",
+                contentDescription = null,
+            )
+        }
+    }
+
+    @Test
+    fun testContentComposeGreen() {
+        // Will display a green box.
+        paparazzi.snapshot {
+            AsyncImage(
+                model = "https://www.example.com/test.png",
                 contentDescription = null,
             )
         }

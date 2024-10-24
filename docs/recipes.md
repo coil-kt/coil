@@ -70,7 +70,7 @@ Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/inte
 ```kotlin
 class RequestHeaderInterceptor(
     private val name: String,
-    private val value: String
+    private val value: String,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -96,7 +96,7 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Using a Memory Cache Key as a Placeholder
 
-Using a previous request's [`MemoryCache.Key`](getting_started.md#memory-cache) as a placeholder for a subsequent request can be useful if the two images are the same, though loaded at different sizes. For instance, if the first request loads the image at 100x100 and the second request loads the image at 500x500, we can use the first image as a synchronous placeholder for the second request.
+Using a previous request's `MemoryCache.Key` as a placeholder for a subsequent request can be useful if the two images are the same, though loaded at different sizes. For instance, if the first request loads the image at 100x100 and the second request loads the image at 500x500, we can use the first image as a synchronous placeholder for the second request.
 
 Here's what this effect looks like in the sample app:
 
@@ -119,9 +119,6 @@ detailImageView.load("https://example.com/image.jpg") {
     placeholderMemoryCacheKey(listImageView.result.memoryCacheKey)
 }
 ```
-
-!!! Note
-    Previous versions of Coil would attempt to set up this effect **automatically**. This required executing parts of the image pipeline synchronously on the main thread and it was ultimately removed in version `0.12.0`.
 
 ## Shared Element Transitions
 
@@ -153,7 +150,7 @@ class RemoteViewsTarget(
 
     override fun onSuccess(result: Image) = setDrawable(result)
 
-    private fun setDrawable(drawable: Image?) {
+    private fun setDrawable(image: Image?) {
         remoteViews.setImageViewBitmap(imageViewResId, image?.toBitmap())
         AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews)
     }

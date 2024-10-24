@@ -4,10 +4,10 @@ Coil's API is designed to be Kotlin-first. It leverages Kotlin language features
 
 Importantly, suspend functions cannot be implemented in Java. This means custom [Transformations](transformations.md), [Size Resolvers](/coil/api/coil-core/coil3.size/-size-resolver), [Fetchers](image_pipeline.md#fetchers), and [Decoders](image_pipeline.md#decoders) **must** be implemented in Kotlin.
 
-Despite these limitations, most of Coil's API is Java compatible. The `Context.imageLoader` extension function should not be used from Java. Instead, you can get the singleton `ImageLoader` using:
+Despite these limitations, most of Coil's API is Java compatible. You can get the singleton `ImageLoader` using:
 
 ```java
-ImageLoader imageLoader = SingletonImageLoader.get(context)
+ImageLoader imageLoader = SingletonImageLoader.get(context);
 ```
 
 The syntax to enqueue an `ImageRequest` is almost the same in Java and Kotlin:
@@ -18,7 +18,7 @@ ImageRequest request = new ImageRequest.Builder(context)
     .crossfade(true)
     .target(imageView)
     .build();
-imageLoader.enqueue(request)
+imageLoader.enqueue(request);
 ```
 
 !!! Note
