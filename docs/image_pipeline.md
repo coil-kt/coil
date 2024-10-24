@@ -87,7 +87,7 @@ See [Keyers](/coil/api/coil-core/coil3.key/-keyer) for more information.
 
 ## Fetchers
 
-Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or a `Drawable`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
+Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or an `Image`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
 
 See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 
@@ -96,6 +96,6 @@ See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 
 ## Decoders
 
-Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
+Decoders read an `ImageSource` and return an `Image`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
 See [Decoder](/coil/api/coil-core/coil3.decode/-decoder) for more information.

@@ -49,3 +49,6 @@ KtorNetworkFetcher(
     cacheStrategy = CacheControlCacheStrategy(),
 )
 ```
+
+!!! Note
+    You need to enable `coreLibraryDesugaring` to support Android API level 25 or below. Follow the docs [here](https://developer.android.com/studio/write/java8-support#library-desugaring) to enable it.
