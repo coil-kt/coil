@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -129,7 +130,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://example.com/image")
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -188,7 +189,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(R.drawable.sample)
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -247,7 +248,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(resourceUri(R.drawable.sample))
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),

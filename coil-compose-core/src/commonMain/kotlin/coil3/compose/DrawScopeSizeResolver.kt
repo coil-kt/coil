@@ -1,5 +1,8 @@
 package coil3.compose
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import coil3.annotation.ExperimentalCoilApi
@@ -16,6 +19,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transformLatest
 
+/**
+ * Create a [DrawScopeSizeResolver] and remember it.
+ */
+@ExperimentalCoilApi
+@Composable
+fun rememberDrawScopeSizeResolver(): DrawScopeSizeResolver {
+    return remember { DrawScopeSizeResolver() }
+}
+
 @ExperimentalCoilApi
 @JsName("newDrawScopeSizeResolver")
 fun DrawScopeSizeResolver(): DrawScopeSizeResolver = RealDrawScopeSizeResolver()
@@ -25,6 +37,7 @@ fun DrawScopeSizeResolver(): DrawScopeSizeResolver = RealDrawScopeSizeResolver()
  * [DrawScope]'s size.
  */
 @ExperimentalCoilApi
+@Stable
 interface DrawScopeSizeResolver : SizeResolver {
     fun connect(sizes: Flow<Size>)
 }

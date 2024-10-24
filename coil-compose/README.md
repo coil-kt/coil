@@ -58,7 +58,7 @@ Useful if you need a `Painter` instead of a composable - or if you need to obser
 The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `ConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
 
 ```kotlin
-val sizeResolver by remember { ConstraintsSizeResolver() }
+val sizeResolver = rememberConstraintsSizeResolver()
 val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalPlatformContext.current)
         .data("https://www.example.com/image.jpg")
