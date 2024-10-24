@@ -96,7 +96,7 @@ SubcomposeAsyncImage(
     model = "https://example.com/image.jpg",
     contentDescription = stringResource(R.string.description)
 ) {
-    val state = painter.state
+    val state = painter.state.collectAsState().value
     if (state is AsyncImagePainter.State.Success) {
         SubcomposeAsyncImageContent()
     } else {
@@ -159,7 +159,7 @@ That said, it's possible to create custom transitions in Compose by observing `A
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
-val state = painter.state
+val state = painter.state.collectAsState().value
 if (state is AsyncImagePainter.State.Success && state.result.dataSource != DataSource.MEMORY_CACHE) {
     // Perform the transition animation.
 }
