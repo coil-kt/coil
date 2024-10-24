@@ -61,17 +61,14 @@ nav:
   - 'Network Images': network.md
   - 'Image Loaders': image_loaders.md
   - 'Image Requests': image_requests.md
-  - 'Targets': targets.md
-  - 'Transformations': transformations.md
-  - 'Transitions': transitions.md
   - 'Extending the Image Pipeline': image_pipeline.md
-  - 'Java Compatibility': java_compatibility.md
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
   - 'Video Frames': videos.md
   - 'Testing': testing.md
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
+  - 'Java Compatibility': java_compatibility.md
   - 'Migrating from Glide/Picasso': migrating.md
   - 'Upgrading to Coil 2.x': upgrading_to_coil2.md
   - 'Upgrading to Coil 3.x': upgrading_to_coil3.md

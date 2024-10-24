@@ -10,7 +10,9 @@ To add GIF support, import the extension library:
 implementation("io.coil-kt.coil3:coil-gif:3.0.0-rc01")
 ```
 
-And add the decoders to your component registry when constructing your `ImageLoader`:
+And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
+
+Optionally, you can manually add the decoder to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -23,8 +25,6 @@ val imageLoader = ImageLoader.Builder(context)
     }
     .build()
 ```
-
-And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
 
 To transform the pixel data of each frame of a GIF, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
 
