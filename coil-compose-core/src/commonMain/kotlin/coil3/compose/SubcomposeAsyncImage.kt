@@ -59,9 +59,47 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    imageLoader: ImageLoader,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+) = SubcomposeAsyncImage(
+    state = AsyncImageState(model, imageLoader),
+    contentDescription = contentDescription,
+    modifier = modifier,
+    transform = transform,
+    onState = onStateOf(onLoading, onSuccess, onError),
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+    content = contentOf(loading, success, error),
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun SubcomposeAsyncImage(
@@ -124,10 +162,44 @@ fun SubcomposeAsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    imageLoader: ImageLoader,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
+) = SubcomposeAsyncImage(
+    state = AsyncImageState(model, imageLoader),
+    contentDescription = contentDescription,
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+    content = content,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun SubcomposeAsyncImage(

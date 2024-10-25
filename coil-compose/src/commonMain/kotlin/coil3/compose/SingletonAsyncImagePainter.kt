@@ -29,9 +29,37 @@ import coil3.request.ImageRequest
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    placeholder = placeholder,
+    error = error,
+    fallback = fallback,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(
@@ -73,9 +101,29 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    transform = transform,
+    onState = onState,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(

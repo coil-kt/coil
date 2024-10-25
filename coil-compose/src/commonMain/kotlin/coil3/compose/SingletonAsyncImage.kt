@@ -40,9 +40,49 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun AsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+) = AsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    modifier = modifier,
+    placeholder = placeholder,
+    error = error,
+    fallback = fallback,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun AsyncImage(
@@ -104,9 +144,41 @@ fun AsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun AsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+) = AsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun AsyncImage(

@@ -75,9 +75,33 @@ import kotlinx.coroutines.launch
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    imageLoader: ImageLoader,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    state = AsyncImageState(model, imageLoader),
+    transform = transformOf(placeholder, error, fallback),
+    onState = onStateOf(onLoading, onSuccess, onError),
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(
@@ -115,9 +139,29 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
+@Composable
+@NonRestartableComposable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    imageLoader: ImageLoader,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    state = AsyncImageState(model, imageLoader),
+    transform = transform,
+    onState = onState,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
 @Composable
 @NonRestartableComposable
 fun rememberAsyncImagePainter(
@@ -147,7 +191,7 @@ private fun rememberAsyncImagePainter(
     val request = requestOf(state.model)
     validateRequest(request)
 
-    val input = Input(state.imageLoader, request)
+    val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
     painter.scope = rememberCoroutineScope()
     painter.transform = transform
@@ -226,12 +270,11 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        val inputs = restartSignal.flatMapLatest { _input }
         val previewHandler = previewHandler
         if (previewHandler != null) {
             // If we're in inspection mode use the preview renderer.
             rememberJob = scope.launch(Dispatchers.Unconfined) {
-                inputs.mapLatest {
+                restartSignal.flatMapLatest { _input }.mapLatest {
                     val request = updateRequest(it.request, isPreview = true)
                     previewHandler.handle(it.imageLoader, request)
                 }.collect(::updateState)
@@ -239,7 +282,7 @@ class AsyncImagePainter internal constructor(
         } else {
             // Else, execute the request as normal.
             rememberJob = scope.launch(safeImmediateMainDispatcher) {
-                inputs.mapLatest {
+                restartSignal.flatMapLatest { _input }.mapLatest {
                     val request = updateRequest(it.request, isPreview = false)
                     it.imageLoader.execute(request).toState()
                 }.collect(::updateState)
@@ -336,7 +379,33 @@ class AsyncImagePainter internal constructor(
     class Input(
         val imageLoader: ImageLoader,
         val request: ImageRequest,
-    )
+        val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
+    ) {
+
+        @Deprecated(
+            message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+            level = DeprecationLevel.ERROR,
+        )
+        constructor(
+            imageLoader: ImageLoader,
+            request: ImageRequest,
+        ) : this(imageLoader, request, AsyncImageModelEqualityDelegate.Default)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Input &&
+                imageLoader == other.imageLoader &&
+                modelEqualityDelegate == other.modelEqualityDelegate &&
+                modelEqualityDelegate.equals(request, other.request)
+        }
+
+        override fun hashCode(): Int {
+            var result = imageLoader.hashCode()
+            result = 31 * result + modelEqualityDelegate.hashCode()
+            result = 31 * result + modelEqualityDelegate.hashCode(request)
+            return result
+        }
+    }
 
     /**
      * The current state of the [AsyncImagePainter].
