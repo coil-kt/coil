@@ -72,7 +72,7 @@ fun rememberAsyncImagePainter(
     onError: ((State.Error) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
@@ -132,7 +132,7 @@ fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),

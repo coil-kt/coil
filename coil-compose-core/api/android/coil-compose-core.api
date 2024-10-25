@@ -140,13 +140,8 @@ public final class coil3/compose/DrawScopeSizeResolverKt {
 }
 
 public abstract interface class coil3/compose/EqualityDelegate : coil3/compose/AsyncImageModelEqualityDelegate {
-	public static final field Companion Lcoil3/compose/EqualityDelegate$Companion;
-	public static final field Default Lcoil3/compose/EqualityDelegate;
 	public abstract fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
 	public abstract fun hashCode (Ljava/lang/Object;)I
-}
-
-public final class coil3/compose/EqualityDelegate$Companion {
 }
 
 public final class coil3/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter {
@@ -162,6 +157,7 @@ public final class coil3/compose/ImagePainter_androidKt {
 }
 
 public final class coil3/compose/LocalAsyncImageModelEqualityDelegateKt {
+	public static final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
 	public static final fun getLocalAsyncImageModelEqualityDelegate ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

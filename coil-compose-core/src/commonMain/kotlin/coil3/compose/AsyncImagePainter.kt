@@ -115,7 +115,7 @@ fun rememberAsyncImagePainter(
     onError: ((State.Error) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transformOf(placeholder, error, fallback),
@@ -171,7 +171,7 @@ fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transform,

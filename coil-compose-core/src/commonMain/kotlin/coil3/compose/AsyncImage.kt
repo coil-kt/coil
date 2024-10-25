@@ -107,7 +107,7 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
@@ -195,7 +195,7 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,

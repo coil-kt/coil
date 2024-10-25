@@ -107,7 +107,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -206,7 +206,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
     model = model,
