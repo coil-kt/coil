@@ -70,7 +70,7 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
 ) = AsyncImage(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transformOf(placeholder, error, fallback),
@@ -123,7 +123,7 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
 ) = AsyncImage(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,

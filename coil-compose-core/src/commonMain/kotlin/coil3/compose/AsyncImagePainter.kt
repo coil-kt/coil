@@ -90,7 +90,7 @@ fun rememberAsyncImagePainter(
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     contentScale = contentScale,
@@ -123,7 +123,7 @@ fun rememberAsyncImagePainter(
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     transform = transform,
     onState = onState,
     contentScale = contentScale,
@@ -141,7 +141,7 @@ private fun rememberAsyncImagePainter(
     val request = requestOf(state.model)
     validateRequest(request)
 
-    val input = Input(state.imageLoader, request, LocalAsyncImageModelEqualityDelegate.current)
+    val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
     painter.scope = rememberCoroutineScope()
     painter.transform = transform

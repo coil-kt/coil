@@ -2,6 +2,7 @@ package coil3.compose.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.LocalAsyncImageModelEqualityDelegate
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
@@ -127,6 +129,14 @@ internal fun onStateOf(
         null
     }
 }
+
+@Composable
+@NonRestartableComposable
+@ReadOnlyComposable
+internal fun AsyncImageState(
+    model: Any?,
+    imageLoader: ImageLoader,
+) = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader)
 
 /** Wrap [AsyncImage]'s unstable arguments to make them stable. */
 @Stable

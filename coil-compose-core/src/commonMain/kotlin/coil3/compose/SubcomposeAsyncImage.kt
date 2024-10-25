@@ -81,7 +81,7 @@ fun SubcomposeAsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
@@ -140,7 +140,7 @@ fun SubcomposeAsyncImage(
     clipToBounds: Boolean = true,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
