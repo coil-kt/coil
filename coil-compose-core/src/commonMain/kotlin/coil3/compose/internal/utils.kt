@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
-import coil3.compose.EqualityDelegate
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
@@ -132,19 +132,21 @@ internal fun onStateOf(
 @Stable
 internal class AsyncImageState(
     val model: Any?,
-    val modelEqualityDelegate: EqualityDelegate,
+    val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
     val imageLoader: ImageLoader,
 ) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is AsyncImageState &&
+            modelEqualityDelegate == other.modelEqualityDelegate &&
             modelEqualityDelegate.equals(model, other.model) &&
             imageLoader == other.imageLoader
     }
 
     override fun hashCode(): Int {
-        var result = modelEqualityDelegate.hashCode(model)
+        var result = modelEqualityDelegate.hashCode()
+        result = 31 * result + modelEqualityDelegate.hashCode(model)
         result = 31 * result + imageLoader.hashCode()
         return result
     }

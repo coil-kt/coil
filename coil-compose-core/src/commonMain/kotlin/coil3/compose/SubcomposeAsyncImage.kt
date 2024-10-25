@@ -59,8 +59,6 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -82,9 +80,8 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,
@@ -124,8 +121,6 @@ fun SubcomposeAsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
 @Composable
@@ -143,10 +138,9 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader),
     contentDescription = contentDescription,
     modifier = modifier,
     transform = transform,

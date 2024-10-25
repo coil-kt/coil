@@ -29,8 +29,6 @@ import coil3.request.ImageRequest
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -44,7 +42,6 @@ fun rememberAsyncImagePainter(
     onError: ((State.Error) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
@@ -56,7 +53,6 @@ fun rememberAsyncImagePainter(
     onError = onError,
     contentScale = contentScale,
     filterQuality = filterQuality,
-    modelEqualityDelegate = modelEqualityDelegate,
 )
 
 /**
@@ -73,8 +69,6 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -84,7 +78,6 @@ fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
@@ -92,5 +85,4 @@ fun rememberAsyncImagePainter(
     onState = onState,
     contentScale = contentScale,
     filterQuality = filterQuality,
-    modelEqualityDelegate = modelEqualityDelegate,
 )
