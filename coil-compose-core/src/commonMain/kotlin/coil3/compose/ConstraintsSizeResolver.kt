@@ -1,5 +1,8 @@
 package coil3.compose
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -13,9 +16,18 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 
 /**
+ * Create a [ConstraintsSizeResolver] and remember it.
+ */
+@Composable
+fun rememberConstraintsSizeResolver(): ConstraintsSizeResolver {
+    return remember { ConstraintsSizeResolver() }
+}
+
+/**
  * A [SizeResolver] that computes the size from the constraints passed during the layout phase
  * or from [setConstraints].
  */
+@Stable
 class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     private val latestConstraints = MutableSharedFlow<Constraints>(
         replay = 1,

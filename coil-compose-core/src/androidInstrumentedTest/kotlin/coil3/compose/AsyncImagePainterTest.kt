@@ -129,7 +129,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://example.com/image")
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -188,7 +188,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(R.drawable.sample)
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -247,7 +247,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(resourceUri(R.drawable.sample))
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),

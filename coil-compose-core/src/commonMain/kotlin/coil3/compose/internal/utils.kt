@@ -19,9 +19,9 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
-import coil3.compose.ConstraintsSizeResolver
 import coil3.compose.EqualityDelegate
 import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.size.Dimension
@@ -63,7 +63,7 @@ internal fun requestOfWithSizeResolver(
     val sizeResolver = if (contentScale == ContentScale.None) {
         SizeResolver.ORIGINAL
     } else {
-        remember { ConstraintsSizeResolver() }
+        rememberConstraintsSizeResolver()
     }
 
     if (model is ImageRequest) {
