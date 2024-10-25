@@ -1,6 +1,5 @@
 package sample.compose
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -43,12 +42,9 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import coil3.request.crossfade
 import coil3.util.component1
 import coil3.util.component2
 import io.coil_kt.coil3.compose.generated.resources.Res
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
@@ -70,7 +66,7 @@ fun App() {
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
-    App(viewModel, debug = true)
+    App(viewModel, debug = false)
 }
 
 @Composable
@@ -193,51 +189,15 @@ private fun ScaffoldContent(
 
 @Composable
 private fun DetailScreen(screen: Screen.Detail) {
-    val testFlow = remember {
-        flow {
-            var count = 0
-            while (true) {
-                delay(1000)
-                emit(count++)
-            }
-        }
-    }
-
-    val value by testFlow.collectAsState(0)
-    println("VALUE ${value / 10}")
-
-    val context = LocalPlatformContext.current
     AsyncImage(
-        model = ImageRequest.Builder(context)
+        model = ImageRequest.Builder(LocalPlatformContext.current)
             .data(screen.image.uri)
             .placeholderMemoryCacheKey(screen.placeholder)
-            .memoryCacheKey("${value / 10}")
             .extras(screen.image.extras)
-            .crossfade(true)
             .build(),
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
     )
-
-//    val context = LocalPlatformContext.current
-//    val painter = rememberAsyncImagePainter(
-//        model = remember {
-//            ImageRequest.Builder(context)
-//                .data(screen.image.uri)
-//                .placeholderMemoryCacheKey(screen.placeholder)
-//                .memoryCacheKey("${value / 10}")
-//                .extras(screen.image.extras)
-//                .crossfade(true)
-//                .build()
-//        }
-//    )
-//    Image(
-//        painter = painter,
-//        contentDescription = null,
-//        modifier = Modifier.fillMaxSize(),
-//    )
-//
-//    println("PAINTER STATE = ${painter.state.collectAsState().value}")
 }
 
 @Composable
