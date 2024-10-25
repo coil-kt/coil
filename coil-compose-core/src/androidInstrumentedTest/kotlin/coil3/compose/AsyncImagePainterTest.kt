@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.BitmapImage
 import coil3.EventListener
+import coil3.Extras
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.core.test.R
@@ -811,6 +813,39 @@ class AsyncImagePainterTest {
         assertEquals(1, compositionCount.get())
         assertSame(requestTracker.requests[0].data, requestTracker.requests[1].data)
         assertSame(requestTracker.requests[1].data, requestTracker.requests[2].data)
+    }
+
+    @Test
+    fun recomposesOnlyWhenStateChanges() {
+        val key = Extras.Key(0)
+        val value = AtomicInteger()
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://example.com/image")
+                    .apply { extras[key] = value.getAndIncrement() }
+                    .build(),
+                imageLoader = imageLoader,
+            )
+
+            Image(
+                painter = painter,
+                contentDescription = null,
+            )
+
+            val state by painter.state.collectAsState()
+
+            when (compositionCount.incrementAndGet()) {
+                1 -> assertIs<State.Empty>(state)
+                2 -> assertIs<State.Loading>(state)
+                3 -> assertIs<State.Success>(state)
+                else -> error("too many compositions")
+            }
+        }
+
+        assertEquals(3, compositionCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
