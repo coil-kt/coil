@@ -1,0 +1,334 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>coil3.decode</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            coil-root
+                    </a>            </div>
+            <div class="library-version">3.0.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/androidMain">android</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/commonMain">common</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/jvmCommonMain">jvmCommon</button>
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="coil-core::coil3.decode////PointingToDeclaration//-588249588">
+  <div class="breadcrumbs"><a href="../index.html">coil-core</a><span class="delimiter">/</span><span class="current">coil3.decode</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-875475127%2FClasslikes%2F1315122098" anchor-label="AssetMetadata" id="-875475127%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-asset-metadata/index.html"><span>Asset</span><wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-875475127%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-asset-metadata/index.html">AssetMetadata</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>filePath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Metadata containing the <a href="-asset-metadata/file-path.html">filePath</a> of an Android asset.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="157157649%2FClasslikes%2F1315122098" anchor-label="BitmapFactoryDecoder" id="157157649%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-bitmap-factory-decoder/index.html"><span>Bitmap</span><wbr><span>Factory</span><wbr><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="157157649%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-bitmap-factory-decoder/index.html">BitmapFactoryDecoder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">parallelismLock<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.sync/-semaphore/index.html">Semaphore</a><span class="token operator"> = </span>Semaphore(Int.MAX_VALUE)<span class="token punctuation">, </span></span><span class="parameter ">exifOrientationStrategy<span class="token operator">: </span><a href="-exif-orientation-strategy/index.html">ExifOrientationStrategy</a><span class="token operator"> = </span>RESPECT_PERFORMANCE</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The base Decoder that uses <a href="https://developer.android.com/reference/android/graphics/BitmapFactory.html">BitmapFactory</a> to decode a given ImageSource.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="825844547%2FClasslikes%2F665410318" anchor-label="ByteBufferMetadata" id="825844547%2FClasslikes%2F665410318" data-filterable-set=":coil-core:dokkaHtmlPartial/jvmCommonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/jvmCommonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/jvmCommonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-byte-buffer-metadata/index.html"><span>Byte</span><wbr><span>Buffer</span><wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="825844547%2FClasslikes%2F665410318"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/jvmCommonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/jvmCommonMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/jvmCommonMain">jvmCommon</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/jvmCommonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../coil-core/coil3.annotation/-experimental-coil-api/index.html"><span class="token annotation builtin">ExperimentalCoilApi</span></a></div></div><span class="token keyword">class </span><a href="-byte-buffer-metadata/index.html">ByteBufferMetadata</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>byteBuffer<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span></span></span><span class="token punctuation">)</span> : <a href="../../coil-core/coil3.decode/-image-source/-metadata/index.html">ImageSource.Metadata</a></div><div class="brief "><p class="paragraph">Metadata containing the underlying ByteBuffer of the <a href="../../coil-core/coil3.decode/-image-source/index.html">ImageSource</a>.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="436623648%2FClasslikes%2F1315122098" anchor-label="ContentMetadata" id="436623648%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-content-metadata/index.html"><span>Content</span><wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="436623648%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-content-metadata/index.html">ContentMetadata</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>uri<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>assetFileDescriptor<span class="token operator">: </span><a href="https://developer.android.com/reference/android/content/res/AssetFileDescriptor.html">AssetFileDescriptor</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Metadata containing the <a href="-content-metadata/uri.html">uri</a> and associated <a href="-content-metadata/asset-file-descriptor.html">assetFileDescriptor</a> of a <code class="lang-kotlin">content</code> URI.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1416663637%2FClasslikes%2F1772253480" anchor-label="DataSource" id="1416663637%2FClasslikes%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-data-source/index.html"><span>Data</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1416663637%2FClasslikes%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-data-source/index.html">DataSource</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-data-source/index.html">DataSource</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Represents the source that an image was loaded from.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1090698716%2FClasslikes%2F1772253480" anchor-label="Decoder" id="-1090698716%2FClasslikes%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-decoder/index.html"><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1090698716%2FClasslikes%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-decoder/index.html">Decoder</a></div><div class="brief "><p class="paragraph">A <a href="-decoder/index.html">Decoder</a> converts a <a href="../coil3.fetch/-source-fetch-result/index.html">SourceFetchResult</a> into a <a href="-decode-result/index.html">DecodeResult</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-340043889%2FClasslikes%2F1772253480" anchor-label="DecodeResult" id="-340043889%2FClasslikes%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-decode-result/index.html"><span>Decode</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-340043889%2FClasslikes%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../coil3.annotation/-poko/index.html"><span class="token annotation builtin">Poko</span></a></div></div><span class="token keyword">class </span><a href="-decode-result/index.html">DecodeResult</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>image<span class="token operator">: </span><a href="../coil3/-image/index.html">Image</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isSampled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The result of <a href="-decoder/decode.html">Decoder.decode</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1344510053%2FClasslikes%2F1772253480" anchor-label="DecodeUtils" id="1344510053%2FClasslikes%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-decode-utils/index.html"><span>Decode</span><wbr><span><span>Utils</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1344510053%2FClasslikes%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-decode-utils/index.html">DecodeUtils</a></div><div class="brief "><p class="paragraph">A collection of useful utility methods for decoding images.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="682875157%2FClasslikes%2F1315122098" anchor-label="ExifOrientationStrategy" id="682875157%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-exif-orientation-strategy/index.html"><span>Exif</span><wbr><span>Orientation</span><wbr><span><span>Strategy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="682875157%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-exif-orientation-strategy/index.html">ExifOrientationStrategy</a></div><div class="brief "><p class="paragraph">Specifies the strategy for handling the EXIF orientation flag.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="124839378%2FClasslikes%2F1772253480" anchor-label="ImageSource" id="124839378%2FClasslikes%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-image-source/index.html"><span>Image</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="124839378%2FClasslikes%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">interface </span><a href="-image-source/index.html">ImageSource</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-auto-closeable/index.html">AutoCloseable</a></div><div class="brief "><p class="paragraph">Provides access to the image data to be decoded.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1895411101%2FClasslikes%2F1315122098" anchor-label="ResourceMetadata" id="1895411101%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-resource-metadata/index.html"><span>Resource</span><wbr><span><span>Metadata</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1895411101%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-resource-metadata/index.html">ResourceMetadata</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>packageName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/DrawableRes.html"><span class="token annotation builtin">DrawableRes</span></a>&nbsp;</span><span class="token keyword">val </span>resId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>density<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Metadata containing the <a href="-resource-metadata/package-name.html">packageName</a>, <a href="-resource-metadata/res-id.html">resId</a>, and <a href="-resource-metadata/density.html">density</a> of an Android resource.</p></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1149258369%2FClasslikes%2F-455621304" anchor-label="SkiaImageDecoder" id="1149258369%2FClasslikes%2F-455621304" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-skia-image-decoder/index.html"><span>Skia</span><wbr><span>Image</span><wbr><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1149258369%2FClasslikes%2F-455621304"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/nonAndroidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/nonAndroidMain">nonAndroid</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/nonAndroidMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-skia-image-decoder/index.html">SkiaImageDecoder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="-image-source/index.html">ImageSource</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="../coil3.request/-options/index.html">Options</a></span></span><span class="token punctuation">)</span> : <a href="-decoder/index.html">Decoder</a></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-771038717%2FClasslikes%2F1315122098" anchor-label="StaticImageDecoder" id="-771038717%2FClasslikes%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-static-image-decoder/index.html"><span>Static</span><wbr><span>Image</span><wbr><span><span>Decoder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-771038717%2FClasslikes%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html"><span class="token annotation builtin">RequiresApi</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">29</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="-static-image-decoder/index.html">StaticImageDecoder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/android/graphics/ImageDecoder.Source.html">ImageDecoder.Source</a><span class="token punctuation">, </span></span><span class="parameter ">closeable<span class="token operator">: </span><a href="https://developer.android.com/reference/java/lang/AutoCloseable.html">AutoCloseable</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">parallelismLock<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.sync/-semaphore/index.html">Semaphore</a></span></span><span class="token punctuation">)</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1753928667%2FFunctions%2F1772253480" anchor-label="ImageSource" id="1753928667%2FFunctions%2F1772253480" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-core:dokkaHtmlPartial/commonMain" data-filterable-set=":coil-core:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-image-source.html"><span>Image</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1753928667%2FFunctions%2F1772253480"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-image-source.html"><span class="token function">ImageSource</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a><span class="token punctuation">, </span></span><span class="parameter ">fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a><span class="token punctuation">, </span></span><span class="parameter ">metadata<span class="token operator">: </span><a href="-image-source/-metadata/index.html">ImageSource.Metadata</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-image-source/index.html">ImageSource</a></div><div class="brief "><p class="paragraph">Create a new <a href="-image-source/index.html">ImageSource</a> backed by a <a href="https://square.github.io/okio/3.x/okio/okio/okio/-buffered-source/index.html">BufferedSource</a>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="-image-source.html"><span class="token function">ImageSource</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">file<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-path/index.html">Path</a><span class="token punctuation">, </span></span><span class="parameter ">fileSystem<span class="token operator">: </span><a href="https://square.github.io/okio/3.x/okio/okio/okio/-file-system/index.html">FileSystem</a><span class="token punctuation">, </span></span><span class="parameter ">diskCacheKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">closeable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-auto-closeable/index.html">AutoCloseable</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">metadata<span class="token operator">: </span><a href="-image-source/-metadata/index.html">ImageSource.Metadata</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-image-source/index.html">ImageSource</a></div><div class="brief "><p class="paragraph">Create a new <a href="-image-source/index.html">ImageSource</a> backed by a <a href="https://square.github.io/okio/3.x/okio/okio/okio/-path/index.html">Path</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1789493546%2FFunctions%2F1315122098" anchor-label="toImageDecoderSourceOrNull" id="1789493546%2FFunctions%2F1315122098" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-image-decoder-source-or-null.html"><span>to</span><wbr><span>Image</span><wbr><span>Decoder</span><wbr><span>Source</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1789493546%2FFunctions%2F1315122098"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted  with-platform-tabs" data-platform-hinted="data-platform-hinted">
+                    <div class="platform-bookmarks-row" data-toggle-list="data-toggle-list"><button class="platform-bookmark" data-filterable-current=":coil-core:dokkaHtmlPartial/androidMain" data-filterable-set=":coil-core:dokkaHtmlPartial/androidMain" data-active="" data-toggle=":coil-core:dokkaHtmlPartial/androidMain">android</button></div>
+<div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-core:dokkaHtmlPartial/androidMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html"><span class="token annotation builtin">RequiresApi</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">28</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">fun </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">.</span><a href="to-image-decoder-source-or-null.html"><span class="token function">toImageDecoderSourceOrNull</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">options<span class="token operator">: </span><span data-unresolved-link="/<Error class: unknown class>///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">animated<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/android/graphics/ImageDecoder.Source.html">ImageDecoder.Source</a><span class="token operator">?</span></div></div>                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
