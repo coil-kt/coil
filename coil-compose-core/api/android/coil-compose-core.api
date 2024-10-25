@@ -144,6 +144,17 @@ public abstract interface class coil3/compose/EqualityDelegate : coil3/compose/A
 	public abstract fun hashCode (Ljava/lang/Object;)I
 }
 
+public final class coil3/compose/EqualityDelegateKt {
+	public static final field $stable I
+	public static final field Companion Lcoil3/compose/EqualityDelegateKt$Companion;
+	public fun <init> ()V
+	public static final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
+}
+
+public final class coil3/compose/EqualityDelegateKt$Companion {
+	public final fun getDefaultModelEqualityDelegate ()Lcoil3/compose/EqualityDelegate;
+}
+
 public final class coil3/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter {
 	public static final field $stable I
 	public fun <init> (Lcoil3/Image;)V

@@ -5,6 +5,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import coil3.annotation.ExperimentalCoilApi
 import coil3.request.ImageRequest
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 
 @ExperimentalCoilApi
 val LocalAsyncImageModelEqualityDelegate = staticCompositionLocalOf {
@@ -65,6 +66,22 @@ interface EqualityDelegate : AsyncImageModelEqualityDelegate {
     override fun hashCode(self: Any?): Int
 }
 
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
+class EqualityDelegateKt {
+    companion object {
+        @Suppress("DEPRECATION_ERROR")
+        @JvmStatic
+        fun getDefaultModelEqualityDelegate(): EqualityDelegate = object : EqualityDelegate,
+            AsyncImageModelEqualityDelegate by AsyncImageModelEqualityDelegate.Default {}
+    }
+}
+
 @Suppress("DEPRECATION_ERROR")
-val DefaultModelEqualityDelegate: EqualityDelegate = object : EqualityDelegate,
-    AsyncImageModelEqualityDelegate by AsyncImageModelEqualityDelegate.Default {}
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
+val DefaultModelEqualityDelegate get() = EqualityDelegateKt.getDefaultModelEqualityDelegate()
