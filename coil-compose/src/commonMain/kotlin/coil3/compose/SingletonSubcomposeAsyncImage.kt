@@ -83,6 +83,52 @@ fun SubcomposeAsyncImage(
     clipToBounds = clipToBounds,
 )
 
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+) = SubcomposeAsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    modifier = modifier,
+    transform = transform,
+    loading = loading,
+    success = success,
+    error = error,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+    modelEqualityDelegate = modelEqualityDelegate,
+)
+
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
  *
@@ -138,5 +184,43 @@ fun SubcomposeAsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    content = content,
+)
+
+@Suppress("DEPRECATION_ERROR")
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
+@Composable
+@NonRestartableComposable
+fun SubcomposeAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+    modelEqualityDelegate: EqualityDelegate = EqualityDelegate.Default,
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
+) = SubcomposeAsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    clipToBounds = clipToBounds,
+    modelEqualityDelegate = modelEqualityDelegate,
     content = content,
 )

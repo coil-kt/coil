@@ -25,7 +25,7 @@ interface AsyncImageModelEqualityDelegate {
     fun hashCode(self: Any?): Int
 
     companion object {
-        @JvmField val Default = object : AsyncImageModelEqualityDelegate {
+        @JvmField val Default: AsyncImageModelEqualityDelegate = object : AsyncImageModelEqualityDelegate {
 
             override fun equals(self: Any?, other: Any?): Boolean {
                 if (this === other) return true
@@ -54,5 +54,17 @@ interface AsyncImageModelEqualityDelegate {
                 return result
             }
         }
+    }
+}
+
+@Deprecated(
+    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+    level = DeprecationLevel.ERROR,
+)
+interface EqualityDelegate : AsyncImageModelEqualityDelegate {
+    companion object {
+        @Suppress("DEPRECATION_ERROR")
+        @JvmField val Default: EqualityDelegate = object : EqualityDelegate,
+            AsyncImageModelEqualityDelegate by AsyncImageModelEqualityDelegate.Default {}
     }
 }
