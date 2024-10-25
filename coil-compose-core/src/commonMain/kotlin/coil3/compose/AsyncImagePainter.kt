@@ -382,6 +382,15 @@ class AsyncImagePainter internal constructor(
         val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
     ) {
 
+        @Deprecated(
+            message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
+            level = DeprecationLevel.ERROR,
+        )
+        constructor(
+            imageLoader: ImageLoader,
+            request: ImageRequest,
+        ) : this(imageLoader, request, AsyncImageModelEqualityDelegate.Default)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             return other is Input &&

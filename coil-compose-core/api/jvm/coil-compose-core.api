@@ -33,6 +33,7 @@ public final class coil3/compose/AsyncImagePainter$Companion {
 
 public final class coil3/compose/AsyncImagePainter$Input {
 	public static final field $stable I
+	public fun <init> (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)V
 	public fun <init> (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;Lcoil3/compose/AsyncImageModelEqualityDelegate;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getImageLoader ()Lcoil3/ImageLoader;

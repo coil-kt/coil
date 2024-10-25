@@ -86,7 +86,7 @@ fun SubcomposeAsyncImage(
 @Suppress("DEPRECATION_ERROR")
 @Deprecated(
     message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-    level = DeprecationLevel.HIDDEN,
+    level = DeprecationLevel.ERROR,
 )
 @Composable
 @NonRestartableComposable

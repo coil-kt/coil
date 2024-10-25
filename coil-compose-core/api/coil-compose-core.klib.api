@@ -124,6 +124,7 @@ final class coil3.compose/AsyncImagePainter : androidx.compose.runtime/RememberO
     }
 
     final class Input { // coil3.compose/AsyncImagePainter.Input|null[0]
+        constructor <init>(coil3/ImageLoader, coil3.request/ImageRequest) // coil3.compose/AsyncImagePainter.Input.<init>|<init>(coil3.ImageLoader;coil3.request.ImageRequest){}[0]
         constructor <init>(coil3/ImageLoader, coil3.request/ImageRequest, coil3.compose/AsyncImageModelEqualityDelegate) // coil3.compose/AsyncImagePainter.Input.<init>|<init>(coil3.ImageLoader;coil3.request.ImageRequest;coil3.compose.AsyncImageModelEqualityDelegate){}[0]
 
         final val imageLoader // coil3.compose/AsyncImagePainter.Input.imageLoader|{}imageLoader[0]
