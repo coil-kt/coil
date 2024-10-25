@@ -20,7 +20,6 @@ val LocalAsyncImageModelEqualityDelegate = staticCompositionLocalOf {
 @ExperimentalCoilApi
 @Stable
 interface AsyncImageModelEqualityDelegate {
-
     fun equals(self: Any?, other: Any?): Boolean
     fun hashCode(self: Any?): Int
 
@@ -62,6 +61,9 @@ interface AsyncImageModelEqualityDelegate {
     level = DeprecationLevel.ERROR,
 )
 interface EqualityDelegate : AsyncImageModelEqualityDelegate {
+    override fun equals(self: Any?, other: Any?): Boolean
+    override fun hashCode(self: Any?): Int
+
     companion object {
         @Suppress("DEPRECATION_ERROR")
         @JvmField val Default: EqualityDelegate = object : EqualityDelegate,

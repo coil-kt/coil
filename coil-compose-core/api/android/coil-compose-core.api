@@ -142,6 +142,8 @@ public final class coil3/compose/DrawScopeSizeResolverKt {
 public abstract interface class coil3/compose/EqualityDelegate : coil3/compose/AsyncImageModelEqualityDelegate {
 	public static final field Companion Lcoil3/compose/EqualityDelegate$Companion;
 	public static final field Default Lcoil3/compose/EqualityDelegate;
+	public abstract fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
+	public abstract fun hashCode (Ljava/lang/Object;)I
 }
 
 public final class coil3/compose/EqualityDelegate$Companion {

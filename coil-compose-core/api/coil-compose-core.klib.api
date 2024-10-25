@@ -30,6 +30,9 @@ abstract interface coil3.compose/DrawScopeSizeResolver : coil3.size/SizeResolver
 }
 
 abstract interface coil3.compose/EqualityDelegate : coil3.compose/AsyncImageModelEqualityDelegate { // coil3.compose/EqualityDelegate|null[0]
+    abstract fun equals(kotlin/Any?, kotlin/Any?): kotlin/Boolean // coil3.compose/EqualityDelegate.equals|equals(kotlin.Any?;kotlin.Any?){}[0]
+    abstract fun hashCode(kotlin/Any?): kotlin/Int // coil3.compose/EqualityDelegate.hashCode|hashCode(kotlin.Any?){}[0]
+
     final object Companion { // coil3.compose/EqualityDelegate.Companion|null[0]
         final val Default // coil3.compose/EqualityDelegate.Companion.Default|{}Default[0]
             final fun <get-Default>(): coil3.compose/EqualityDelegate // coil3.compose/EqualityDelegate.Companion.Default.<get-Default>|<get-Default>(){}[0]
