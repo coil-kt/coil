@@ -6,6 +6,7 @@ public final class coil3/compose/AsyncImageKt {
 }
 
 public abstract interface class coil3/compose/AsyncImageModelEqualityDelegate {
+	public static final field AllProperties Lcoil3/compose/AsyncImageModelEqualityDelegate;
 	public static final field Companion Lcoil3/compose/AsyncImageModelEqualityDelegate$Companion;
 	public static final field Default Lcoil3/compose/AsyncImageModelEqualityDelegate;
 	public abstract fun equals (Ljava/lang/Object;Ljava/lang/Object;)Z
