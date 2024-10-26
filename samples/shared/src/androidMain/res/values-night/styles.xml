@@ -4,7 +4,7 @@
         <item name="colorPrimary">#121212</item>
         <item name="colorPrimaryDark">#121212</item>
         <item name="colorAccent">#121212</item>
-
+        <item name="android:background">#121212</item>
         <item name="android:statusBarColor">#121212</item>
     </style>
 
