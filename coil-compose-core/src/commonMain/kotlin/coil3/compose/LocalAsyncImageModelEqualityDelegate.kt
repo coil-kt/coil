@@ -1,7 +1,7 @@
 package coil3.compose
 
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import coil3.annotation.ExperimentalCoilApi
 import coil3.request.ImageRequest
