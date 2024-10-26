@@ -18,7 +18,7 @@ Optionally, you can manually add the decoder to your component registry when con
 val imageLoader = ImageLoader.Builder(context)
     .components {
         if (SDK_INT >= 28) {
-            add(ImageDecoderDecoder.Factory())
+            add(AnimatedImageDecoder.Factory())
         } else {
             add(GifDecoder.Factory())
         }
