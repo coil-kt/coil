@@ -14,6 +14,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coil)
+                api(projects.coilGif)
                 api(projects.coilSvg)
                 api(libs.kotlinx.serialization.json)
             }
@@ -21,7 +22,6 @@ kotlin {
         androidMain {
             dependencies {
                 api(projects.coilNetworkOkhttp)
-                api(projects.coilGif)
                 api(projects.coilVideo)
                 api(libs.androidx.core)
                 api(libs.androidx.lifecycle.viewmodel)

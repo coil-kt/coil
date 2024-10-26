@@ -1,0 +1,21 @@
+public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
+	public fun <init> (Lcoil3/decode/ImageSource;Z)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/gif/AnimatedSkiaImageDecoder$Factory : coil3/decode/Decoder$Factory {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/gif/DecodeUtilsKt {
+	public static final fun isAnimatedHeif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isAnimatedWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isGif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isHeif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+}
+

@@ -1,0 +1,28 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.coil-kt.coil3:coil-gif>
+final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
+    constructor <init>(coil3.decode/ImageSource, kotlin/Boolean = ...) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;kotlin.Boolean){}[0]
+
+    final suspend fun decode(): coil3.decode/DecodeResult // coil3.gif/AnimatedSkiaImageDecoder.decode|decode(){}[0]
+
+    final class Factory : coil3.decode/Decoder.Factory { // coil3.gif/AnimatedSkiaImageDecoder.Factory|null[0]
+        constructor <init>(kotlin/Boolean = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Boolean){}[0]
+
+        final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.gif/AnimatedSkiaImageDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+    }
+}
+
+final val coil3.gif.internal/initHook // coil3.gif.internal/initHook|{}initHook[0]
+    final fun <get-initHook>(): kotlin/Any // coil3.gif.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
+
+final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedHeif|isAnimatedHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedWebP|isAnimatedWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isGif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isGif|isGif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isHeif|isHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isWebP|isWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
