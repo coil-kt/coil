@@ -249,8 +249,8 @@ private fun ListScreen(
 const val Title = "Coil"
 
 private val darkColors = darkColorScheme(
-    background = Color(0xFF121212),
-    surface = Color(0xFF121212),
+    background = Color(0xFF141218),
+    surface = Color(0xFF141218),
 )
 
 private val lightColors = lightColorScheme(
