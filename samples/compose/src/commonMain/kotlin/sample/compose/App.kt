@@ -250,10 +250,13 @@ const val Title = "Coil"
 
 private val darkColors = darkColorScheme(
     background = Color(0xFF141218),
-    surface = Color(0xFF121212),
+    surface = Color(0xFF141218),
 )
 
-private val lightColors = lightColorScheme()
+private val lightColors = lightColorScheme(
+    background = Color.White,
+    surface = Color.White,
+)
 
 @OptIn(ExperimentalResourceApi::class)
 private val resourceDetailScreen = Screen.Detail(

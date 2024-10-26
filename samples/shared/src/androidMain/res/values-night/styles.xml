@@ -1,11 +1,11 @@
 <resources>
 
     <style name="AppTheme.v21" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#121212</item>
-        <item name="colorPrimaryDark">#121212</item>
-        <item name="colorAccent">#121212</item>
-
-        <item name="android:statusBarColor">#121212</item>
+        <item name="colorPrimary">#141218</item>
+        <item name="colorPrimaryDark">#141218</item>
+        <item name="colorAccent">#141218</item>
+        <item name="android:background">#141218</item>
+        <item name="android:statusBarColor">#141218</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.v21"/>
