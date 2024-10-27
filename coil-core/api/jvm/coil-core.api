@@ -221,6 +221,24 @@ public abstract interface annotation class coil3/annotation/ExperimentalCoilApi 
 public abstract interface annotation class coil3/annotation/InternalCoilApi : java/lang/annotation/Annotation {
 }
 
+public final class coil3/decode/BlackholeDecoder : coil3/decode/Decoder {
+	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/decode/BlackholeDecoder$Factory : coil3/decode/Decoder$Factory {
+	public static final field Companion Lcoil3/decode/BlackholeDecoder$Factory$Companion;
+	public static final field EMPTY_IMAGE Lcoil3/Image;
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/BlackholeDecoder;
+	public synthetic fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/decode/BlackholeDecoder$Factory$Companion {
+}
+
 public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Metadata {
 	public fun <init> (Ljava/nio/ByteBuffer;)V
 	public final fun getByteBuffer ()Ljava/nio/ByteBuffer;
