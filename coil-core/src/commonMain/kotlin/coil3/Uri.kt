@@ -4,7 +4,9 @@ import kotlin.jvm.JvmOverloads
 import okio.Path
 
 /**
- * A uniform resource locator (https://www.w3.org/Addressing/URL/url-spec.html).
+ * A uniform resource locator. See [RFC 3986](https://tools.ietf.org/html/rfc3986).
+ *
+ * @see toUri
  */
 class Uri internal constructor(
     private val data: String,
@@ -27,6 +29,62 @@ class Uri internal constructor(
 
     override fun toString(): String {
         return data
+    }
+}
+
+/**
+ * Create a [Uri] from parts without parsing.
+ *
+ * @see toUri
+ */
+fun Uri(
+    scheme: String? = null,
+    authority: String? = null,
+    path: String? = null,
+    query: String? = null,
+    fragment: String? = null,
+    separator: String = Path.DIRECTORY_SEPARATOR,
+): Uri {
+    require(scheme != null || authority != null || path != null || query != null || fragment != null) {
+        "At least one of scheme, authority, path, query, or fragment must be non-null."
+    }
+
+    return Uri(
+        data = buildData(scheme, authority, path, query, fragment),
+        separator = separator,
+        scheme = scheme,
+        authority = authority,
+        path = path,
+        query = query,
+        fragment = fragment,
+    )
+}
+
+private fun buildData(
+    scheme: String?,
+    authority: String?,
+    path: String?,
+    query: String?,
+    fragment: String?,
+) = buildString {
+    if (scheme != null) {
+        append(scheme)
+        append(':')
+    }
+    if (authority != null) {
+        append("//")
+        append(authority)
+    }
+    if (path != null) {
+        append(path)
+    }
+    if (query != null) {
+        append('?')
+        append(query)
+    }
+    if (fragment != null) {
+        append('#')
+        append(fragment)
     }
 }
 

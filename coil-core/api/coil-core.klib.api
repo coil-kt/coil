@@ -993,6 +993,7 @@ final fun coil3.size/Size(kotlin/Int, coil3.size/Dimension): coil3.size/Size // 
 final fun coil3.size/Size(kotlin/Int, kotlin/Int): coil3.size/Size // coil3.size/Size|Size(kotlin.Int;kotlin.Int){}[0]
 final fun coil3.size/SizeResolver(coil3.size/Size): coil3.size/SizeResolver // coil3.size/SizeResolver|SizeResolver(coil3.size.Size){}[0]
 final fun coil3/ImageLoader(coil3/PlatformContext): coil3/ImageLoader // coil3/ImageLoader|ImageLoader(coil3.PlatformContext){}[0]
+final fun coil3/Uri(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ...): coil3/Uri // coil3/Uri|Uri(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String){}[0]
 final inline fun (coil3.size/Dimension).coil3.size/pxOrElse(kotlin/Function0<kotlin/Int>): kotlin/Int // coil3.size/pxOrElse|pxOrElse@coil3.size.Dimension(kotlin.Function0<kotlin.Int>){}[0]
 final inline fun (coil3.util/IntPair).coil3.util/component1(): kotlin/Int // coil3.util/component1|component1@coil3.util.IntPair(){}[0]
 final inline fun (coil3.util/IntPair).coil3.util/component2(): kotlin/Int // coil3.util/component2|component2@coil3.util.IntPair(){}[0]
