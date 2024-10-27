@@ -10,14 +10,16 @@ testImplementation("io.coil-kt.coil3:coil-test:3.0.0-rc01")
 
 ```kotlin
 val engine = FakeImageLoaderEngine.Builder()
-    .intercept("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
-    .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
-    .default(ColorDrawable(Color.BLUE))
+    .intercept("https://www.example.com/image.jpg", FakeImage(color = 0xF00)) // Red
+    .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
+    .default(FakeImage(color = 0x00F)) // Blue
     .build()
 val imageLoader = ImageLoader.Builder(context)
     .components { add(engine) }
     .build()
 ```
+
+`FakeImage` is useful as it draws a colored box and is supported on all platforms, but you can also use any `Drawable` on Android.
 
 This strategy works great with [Paparazzi](https://github.com/cashapp/paparazzi) to screenshot test UIs without a physical device or emulator:
 
@@ -29,9 +31,9 @@ class PaparazziTest {
     @Before
     fun before() {
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
-            .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
-            .default(ColorDrawable(Color.BLUE))
+            .intercept("https://www.example.com/image.jpg", FakeImage(color = 0xF00)) // Red
+            .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
+            .default(FakeImage(color = 0x00F)) // Blue
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -56,6 +58,17 @@ class PaparazziTest {
         paparazzi.snapshot {
             AsyncImage(
                 model = "https://www.example.com/test.png",
+                contentDescription = null,
+            )
+        }
+    }
+
+    @Test
+    fun testContentComposeBlue() {
+        // Will display a blue box.
+        paparazzi.snapshot {
+            AsyncImage(
+                model = "https://www.example.com/default.png",
                 contentDescription = null,
             )
         }
