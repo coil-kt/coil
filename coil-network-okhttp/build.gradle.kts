@@ -30,6 +30,11 @@ kotlin {
                 implementation(libs.okhttp.mockwebserver)
             }
         }
+        androidUnitTest {
+            dependencies {
+                implementation(libs.bundles.test.jvm)
+            }
+        }
         androidInstrumentedTest {
             dependencies {
                 implementation(projects.internal.testUtils)
