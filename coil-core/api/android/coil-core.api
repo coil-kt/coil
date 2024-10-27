@@ -233,6 +233,8 @@ public final class coil3/Uri {
 }
 
 public final class coil3/UriKt {
+	public static final fun Uri (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcoil3/Uri;
+	public static synthetic fun Uri$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcoil3/Uri;
 	public static final fun getFilePath (Lcoil3/Uri;)Ljava/lang/String;
 	public static final fun getPathSegments (Lcoil3/Uri;)Ljava/util/List;
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;

@@ -5,16 +5,16 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.toUri
 import coil3.util.SCHEME_FILE
-import kotlin.test.Test
+import java.io.File
 import kotlin.test.assertEquals
-import okio.Path.Companion.toPath
+import org.junit.Test
 
-class PathMapperTest : RobolectricTest() {
-    private val mapper = PathMapper()
+class FileMapperTest : RobolectricTest() {
+    private val mapper = FileMapper()
 
     @Test
     fun basic() {
-        val file = "/path/to/file".toPath()
+        val file = File("/path/to/file")
         val uri = "$SCHEME_FILE:/path/to/file".toUri()
         assertEquals(uri, mapper.map(file, Options(context)))
     }
@@ -23,7 +23,7 @@ class PathMapperTest : RobolectricTest() {
     @Test
     fun parsesPoundCharacterCorrectly() {
         val path = "/sdcard/fi#le.jpg"
-        val file = "/sdcard/fi#le.jpg".toPath()
+        val file = File("/sdcard/fi#le.jpg")
         assertEquals(path, mapper.map(file, Options(context)).path)
     }
 
@@ -32,7 +32,7 @@ class PathMapperTest : RobolectricTest() {
     fun decodesEncodedPath() {
         val path = "/sdcard/Some+File.jpg"
         val uri = "$SCHEME_FILE:$path".toUri()
-        val file = path.toPath()
+        val file = File(path)
         assertEquals(uri, mapper.map(file, Options(context)))
     }
 }
