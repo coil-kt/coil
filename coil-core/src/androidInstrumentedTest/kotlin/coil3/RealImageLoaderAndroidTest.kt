@@ -101,32 +101,6 @@ class RealImageLoaderAndroidTest {
         fileSystem.checkNoOpenFiles()
     }
 
-    // region Test all the supported data types.
-
-//    @Test
-//    fun string() = runTest {
-//        val data = server.url(IMAGE).toString()
-//        server.enqueueImage(IMAGE)
-//        testEnqueue(data)
-//        testExecute(data)
-//    }
-
-//    @Test
-//    fun httpUri() = runTest {
-//        val data = server.url(IMAGE).toString().toUri()
-//        server.enqueueImage(IMAGE)
-//        testEnqueue(data)
-//        testExecute(data)
-//    }
-
-//    @Test
-//    fun httpUrl() = runTest {
-//        val data = server.url(IMAGE)
-//        server.enqueueImage(IMAGE)
-//        testEnqueue(data)
-//        testExecute(data)
-//    }
-
     @Test
     fun resourceInt() = runTest {
         val data = R.drawable.normal
@@ -280,21 +254,6 @@ class RealImageLoaderAndroidTest {
         }
     }
 
-//    @Test
-//    fun loadedImageIsPresentInMemoryCache() = runTest {
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .size(100, 100)
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertTrue(result is SuccessResult)
-//        val bitmap = (result.image as BitmapDrawable).bitmap
-//        assertNotNull(bitmap)
-//        assertEquals(bitmap, imageLoader.memoryCache!![result.memoryCacheKey!!]?.bitmap)
-//    }
-
     @Test
     fun placeholderKeyReturnsCorrectMemoryCacheEntry() = runTest {
         val key = MemoryCache.Key("fake_key")
@@ -363,143 +322,6 @@ class RealImageLoaderAndroidTest {
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
         assertSame(imageLoader1.diskCache, imageLoader2.diskCache)
     }
-
-//    @Test
-//    fun customMemoryCacheKey() = runTest {
-//        val imageLoader = ImageLoader(context)
-//        val key = MemoryCache.Key("fake_key")
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .memoryCacheKey(key)
-//            .build()
-//        val result = imageLoader.execute(request) as SuccessResult
-//
-//        assertEquals(DataSource.NETWORK, result.dataSource)
-//        assertEquals(key, result.memoryCacheKey)
-//        assertSame(imageLoader.memoryCache!![key]!!.bitmap, result.image.toBitmap())
-//    }
-
-//    @Test
-//    fun customDiskCacheKey() = runTest {
-//        val imageLoader = ImageLoader(context)
-//        val key = "fake_key"
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .diskCacheKey(key)
-//            .build()
-//        val result = imageLoader.execute(request) as SuccessResult
-//
-//        assertEquals(DataSource.NETWORK, result.dataSource)
-//        assertEquals(key, result.diskCacheKey)
-//        imageLoader.diskCache!!.openSnapshot(key)!!.use { assertNotNull(it) }
-//    }
-
-//    @Test
-//    fun callFactoryIsInitializedLazily() = runTest {
-//        var isInitialized = false
-//        val imageLoader = ImageLoader.Builder(context)
-//            .callFactory {
-//                assertFalse(isMainThread())
-//                check(!isInitialized)
-//                isInitialized = true
-//                OkHttpClient()
-//            }
-//            .build()
-//
-//        assertFalse(isInitialized)
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertIs<SuccessResult>(result)
-//        assertTrue(isInitialized)
-//    }
-
-//    @Test
-//    fun memoryCacheIsInitializedLazily() = runTest {
-//        var isInitialized = false
-//        val imageLoader = ImageLoader.Builder(context)
-//            .memoryCache {
-//                check(!isInitialized)
-//                isInitialized = true
-//                null
-//            }
-//            .build()
-//
-//        assertFalse(isInitialized)
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertIs<SuccessResult>(result)
-//        assertTrue(isInitialized)
-//    }
-
-//    @Test
-//    fun diskCacheIsInitializedLazily() = runTest {
-//        var isInitialized = false
-//        val imageLoader = ImageLoader.Builder(context)
-//            .diskCache {
-//                assertFalse(isMainThread())
-//                check(!isInitialized)
-//                isInitialized = true
-//                null
-//            }
-//            .build()
-//
-//        assertFalse(isInitialized)
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertIs<SuccessResult>(result)
-//        assertTrue(isInitialized)
-//    }
-
-//    @Test
-//    fun noMemoryCacheReturnsNoMemoryCacheKey() = runTest {
-//        val imageLoader = ImageLoader.Builder(context)
-//            .memoryCache(null)
-//            .build()
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertIs<SuccessResult>(result)
-//        assertNull(result.memoryCacheKey)
-//    }
-
-//    @Test
-//    fun noDiskCacheReturnsNoDiskCacheKey() = runTest {
-//        val imageLoader = ImageLoader.Builder(context)
-//            .diskCache(null)
-//            .build()
-//
-//        server.enqueueImage(IMAGE)
-//        val request = ImageRequest.Builder(context)
-//            .data(server.url(IMAGE))
-//            .build()
-//        val result = imageLoader.execute(request)
-//
-//        assertIs<SuccessResult>(result)
-//        assertNull(result.diskCacheKey)
-//    }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1201 */
     @Test
