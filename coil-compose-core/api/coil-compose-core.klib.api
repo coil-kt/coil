@@ -20,6 +20,8 @@ abstract interface coil3.compose/AsyncImageModelEqualityDelegate { // coil3.comp
     abstract fun hashCode(kotlin/Any?): kotlin/Int // coil3.compose/AsyncImageModelEqualityDelegate.hashCode|hashCode(kotlin.Any?){}[0]
 
     final object Companion { // coil3.compose/AsyncImageModelEqualityDelegate.Companion|null[0]
+        final val AllProperties // coil3.compose/AsyncImageModelEqualityDelegate.Companion.AllProperties|{}AllProperties[0]
+            final fun <get-AllProperties>(): coil3.compose/AsyncImageModelEqualityDelegate // coil3.compose/AsyncImageModelEqualityDelegate.Companion.AllProperties.<get-AllProperties>|<get-AllProperties>(){}[0]
         final val Default // coil3.compose/AsyncImageModelEqualityDelegate.Companion.Default|{}Default[0]
             final fun <get-Default>(): coil3.compose/AsyncImageModelEqualityDelegate // coil3.compose/AsyncImageModelEqualityDelegate.Companion.Default.<get-Default>|<get-Default>(){}[0]
     }
