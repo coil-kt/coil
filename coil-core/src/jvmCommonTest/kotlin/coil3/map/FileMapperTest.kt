@@ -12,7 +12,7 @@ class FileMapperTest {
     private val mapper = FileMapper()
 
     @Test
-    fun noScheme() {
+    fun basic() {
         val file = File("/path/to/file")
         val uri = "$SCHEME_FILE:/path/to/file".toUri()
         assertEquals(uri, mapper.map(file, Options(context)))
