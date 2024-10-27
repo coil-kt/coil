@@ -3,6 +3,7 @@ package coil3.decode
 import coil3.ImageLoader
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,7 +11,7 @@ import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import okio.fakefilesystem.FakeFileSystem
 
-class BlackholeDecoderTest {
+class BlackholeDecoderTest : RobolectricTest() {
 
     @Test
     fun basic() = runTest {
