@@ -422,6 +422,23 @@ abstract class coil3/PlatformContext { // coil3/PlatformContext|null[0]
     }
 }
 
+final class coil3.decode/BlackholeDecoder : coil3.decode/Decoder { // coil3.decode/BlackholeDecoder|null[0]
+    constructor <init>(kotlin/Function0<coil3/Image>) // coil3.decode/BlackholeDecoder.<init>|<init>(kotlin.Function0<coil3.Image>){}[0]
+
+    final suspend fun decode(): coil3.decode/DecodeResult // coil3.decode/BlackholeDecoder.decode|decode(){}[0]
+
+    final class Factory : coil3.decode/Decoder.Factory { // coil3.decode/BlackholeDecoder.Factory|null[0]
+        constructor <init>(kotlin/Function0<coil3/Image> = ...) // coil3.decode/BlackholeDecoder.Factory.<init>|<init>(kotlin.Function0<coil3.Image>){}[0]
+
+        final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/BlackholeDecoder // coil3.decode/BlackholeDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+
+        final object Companion { // coil3.decode/BlackholeDecoder.Factory.Companion|null[0]
+            final val EMPTY_IMAGE // coil3.decode/BlackholeDecoder.Factory.Companion.EMPTY_IMAGE|{}EMPTY_IMAGE[0]
+                final fun <get-EMPTY_IMAGE>(): coil3/Image // coil3.decode/BlackholeDecoder.Factory.Companion.EMPTY_IMAGE.<get-EMPTY_IMAGE>|<get-EMPTY_IMAGE>(){}[0]
+        }
+    }
+}
+
 final class coil3.decode/DecodeResult { // coil3.decode/DecodeResult|null[0]
     constructor <init>(coil3/Image, kotlin/Boolean) // coil3.decode/DecodeResult.<init>|<init>(coil3.Image;kotlin.Boolean){}[0]
 
