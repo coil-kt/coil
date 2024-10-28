@@ -76,6 +76,9 @@ SingletonImageLoader.setSafe { context ->
 }
 ```
 
+!!! Note
+    If you are writing a library that depends on Coil you should NOT get/set the singleton `ImageLoader`. Instead, you should depend on `io.coil-kt.coil3:coil-core`, create your own `ImageLoader`, and pass it around manually. If you set the singleton `ImageLoader` in your library you could be overwriting the `ImageLoader` set by the app using your library if they also use Coil.
+
 ## Artifacts
 
 Here's a list of the main artifacts Coil has published to `mavenCentral()`:
