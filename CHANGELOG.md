@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0-rc02] - October 28, 2024
+
+[For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-rc01`:
+
+- Add `BlackholeDecoder`. This simplifies [disk-cache only preloading](https://coil-kt.github.io/coil/faq/#how-do-i-preload-an-image).
+- Add `remember` functions for `ConstraintsSizeResolver` and `DrawScopeSizeResolver`.
+- Remove `EqualityDelegate` as a parameter to `AsyncImage`. Instead, it should be set through `LocalAsyncImageModelEqualityDelegate`.
+- Fix `AsyncImage` not rendering when parent composable uses `IntrinsicSize`.
+- Fix `AsyncImage` filling the available constraints when `AsyncImagePainter` has no child painter.
+- Fix `rememberAsyncImagePainter` recomposing infinitely when its state is observed due to `EqualityDelegate` being ignored.
+- Fix parsing `File`/`Path` paths with special characters.
+- Fix using custom `FileSystem` implementations with `VideoFrameDecoder`.
+- Update Ktor to `3.0.0`.
+- Update `androidx.annotation` to `1.9.0`.
+
 ## [3.0.0-rc01] - October 8, 2024
 
 [For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:
