@@ -1019,6 +1019,33 @@ class AsyncImageTest {
         assertEquals(1, requestTracker.finishedRequests)
     }
 
+    @Test
+    fun zeroHeightWhenAsyncImageIsEmpty() {
+        composeTestRule.setContent {
+            Column(Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(Unit)
+                        // Skip waiting for the constraints which will always be empty.
+                        .size(100)
+                        .build(),
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(Image),
+                )
+            }
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertWidthIsEqualTo(context.resources.displayMetrics.widthPixels.toDp())
+            .assertHeightIsEqualTo(0.dp)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
         requestTracker.finishedRequests >= finishedRequests
     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -183,16 +184,21 @@ internal class ContentPainterNode(
         }
 
         // Fill the available space if the painter has no intrinsic size.
+        val painter = painter
         val hasBoundedSize = constraints.hasBoundedWidth && constraints.hasBoundedHeight
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
-            if (hasBoundedSize) {
+            // Changed from `PainterModifier`:
+            // If AsyncImagePainter has no child painter, do not occupy the max constraints.
+            if (!hasBoundedSize ||
+                (painter is AsyncImagePainter && painter.state.value.painter == null)
+            ) {
+                return constraints
+            } else {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
                     minHeight = constraints.maxHeight,
                 )
-            } else {
-                return constraints
             }
         }
 
