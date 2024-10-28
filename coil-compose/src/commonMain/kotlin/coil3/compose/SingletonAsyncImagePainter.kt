@@ -55,38 +55,6 @@ fun rememberAsyncImagePainter(
     filterQuality = filterQuality,
 )
 
-@Suppress("DEPRECATION_ERROR")
-@Deprecated(
-    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-    level = DeprecationLevel.ERROR,
-)
-@Composable
-@NonRestartableComposable
-fun rememberAsyncImagePainter(
-    model: Any?,
-    placeholder: Painter? = null,
-    error: Painter? = null,
-    fallback: Painter? = error,
-    onLoading: ((State.Loading) -> Unit)? = null,
-    onSuccess: ((State.Success) -> Unit)? = null,
-    onError: ((State.Error) -> Unit)? = null,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
-) = rememberAsyncImagePainter(
-    model = model,
-    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-    placeholder = placeholder,
-    error = error,
-    fallback = fallback,
-    onLoading = onLoading,
-    onSuccess = onSuccess,
-    onError = onError,
-    contentScale = contentScale,
-    filterQuality = filterQuality,
-    modelEqualityDelegate = modelEqualityDelegate,
-)
-
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
@@ -117,28 +85,4 @@ fun rememberAsyncImagePainter(
     onState = onState,
     contentScale = contentScale,
     filterQuality = filterQuality,
-)
-
-@Suppress("DEPRECATION_ERROR")
-@Deprecated(
-    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-    level = DeprecationLevel.ERROR,
-)
-@Composable
-@NonRestartableComposable
-fun rememberAsyncImagePainter(
-    model: Any?,
-    transform: (State) -> State = DefaultTransform,
-    onState: ((State) -> Unit)? = null,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
-) = rememberAsyncImagePainter(
-    model = model,
-    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-    transform = transform,
-    onState = onState,
-    contentScale = contentScale,
-    filterQuality = filterQuality,
-    modelEqualityDelegate = modelEqualityDelegate,
 )

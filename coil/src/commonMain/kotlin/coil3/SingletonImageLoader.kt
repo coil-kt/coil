@@ -81,20 +81,6 @@ object SingletonImageLoader {
         reference.value = null
     }
 
-    @Deprecated(
-        message = "'set' has been renamed to 'setUnsafe'.",
-        replaceWith = ReplaceWith("setUnsafe(imageLoader)"),
-    )
-    @JvmStatic
-    fun set(imageLoader: ImageLoader) = setUnsafe(imageLoader)
-
-    @Deprecated(
-        message = "'set' has been renamed to 'setUnsafe'.",
-        replaceWith = ReplaceWith("setUnsafe(factory)"),
-    )
-    @JvmStatic
-    fun set(factory: Factory) = setUnsafe(factory)
-
     /**
      * Create and set the new singleton [ImageLoader].
      */

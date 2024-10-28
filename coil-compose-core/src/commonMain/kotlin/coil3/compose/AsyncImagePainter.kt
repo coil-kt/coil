@@ -97,33 +97,6 @@ fun rememberAsyncImagePainter(
     filterQuality = filterQuality,
 )
 
-@Suppress("DEPRECATION_ERROR")
-@Deprecated(
-    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-    level = DeprecationLevel.ERROR,
-)
-@Composable
-@NonRestartableComposable
-fun rememberAsyncImagePainter(
-    model: Any?,
-    imageLoader: ImageLoader,
-    placeholder: Painter? = null,
-    error: Painter? = null,
-    fallback: Painter? = error,
-    onLoading: ((State.Loading) -> Unit)? = null,
-    onSuccess: ((State.Success) -> Unit)? = null,
-    onError: ((State.Error) -> Unit)? = null,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
-) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
-    transform = transformOf(placeholder, error, fallback),
-    onState = onStateOf(onLoading, onSuccess, onError),
-    contentScale = contentScale,
-    filterQuality = filterQuality,
-)
-
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
@@ -151,29 +124,6 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
     state = AsyncImageState(model, imageLoader),
-    transform = transform,
-    onState = onState,
-    contentScale = contentScale,
-    filterQuality = filterQuality,
-)
-
-@Suppress("DEPRECATION_ERROR")
-@Deprecated(
-    message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-    level = DeprecationLevel.ERROR,
-)
-@Composable
-@NonRestartableComposable
-fun rememberAsyncImagePainter(
-    model: Any?,
-    imageLoader: ImageLoader,
-    transform: (State) -> State = DefaultTransform,
-    onState: ((State) -> Unit)? = null,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
-) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transform,
     onState = onState,
     contentScale = contentScale,
@@ -381,15 +331,6 @@ class AsyncImagePainter internal constructor(
         val request: ImageRequest,
         val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
     ) {
-
-        @Deprecated(
-            message = "Migrate to LocalAsyncImageModelEqualityDelegate.",
-            level = DeprecationLevel.ERROR,
-        )
-        constructor(
-            imageLoader: ImageLoader,
-            request: ImageRequest,
-        ) : this(imageLoader, request, AsyncImageModelEqualityDelegate.Default)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
