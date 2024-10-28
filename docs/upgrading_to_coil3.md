@@ -54,6 +54,7 @@ The `coil-compose` artifact's APIs are mostly unchanged. You can continue using 
 
 Other import behavior changes include:
 
+- First party `Fetcher`s and `Decoder`s (e.g. `NetworkFetcher.Factory`, `SvgDecoder`, etc.) are now added to each new `ImageLoader` by default. This behaviour can be disabled with `ImageLoader.Builder.serviceLoaderEnabled(false)`.
 - Remove support for `android.resource://example.package.name/drawable/image` URIs as it prevents resource shrinking optimizations. If you still needs its functionality you can [manually include `ResourceUriMapper` in your component registry](https://github.com/coil-kt/coil/blob/main/coil-core/src/androidInstrumentedTest/kotlin/coil3/map/ResourceUriMapper.kt).
 - A file's last write timestamp is no longer added to its cache key by default. This is to avoid reading the disk on the main thread (even for a very short amount of time). This can be re-enabled with `ImageRequest.Builder.addLastModifiedToFileCacheKey(true)` or `ImageLoader.Builder.addLastModifiedToFileCacheKey(true)`.
 - Output image dimensions are now forced to be less than 4096x4096 to guard against accidental OOMs. This can be configured with `ImageLoader/ImageRequest.Builder.maxBitmapSize`.
