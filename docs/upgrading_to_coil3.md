@@ -21,7 +21,7 @@ The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` an
 
 **`coil-core` no longer supports loading images from the network by default.** [You must add a dependency on one of Coil's network artifacts. See here for more info.](network.md). This was changed so consumers could use different networking libraries or avoid a network dependency if their app doesn't need it.
 
-Additionally, Cache control headers are no longer respected by default. See [here](network.md) for more info.
+Additionally, cache control headers are no longer respected by default. See [here](network.md) for more info.
 
 ## Multiplatform
 
