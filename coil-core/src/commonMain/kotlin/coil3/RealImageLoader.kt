@@ -200,9 +200,12 @@ internal class RealImageLoader(
         eventListener: EventListener,
     ) {
         val request = result.request
-        options.logger?.log(TAG, Logger.Level.Info) {
-            "🚨 Failed - ${request.data} - ${result.throwable}"
-        }
+        options.logger?.log(
+            TAG, 
+            Logger.Level.Error,
+            "🚨 Failed - ${request.data} - ${result.throwable}",
+            throwable,
+        )
         transition(result, target, eventListener) {
             target?.onError(result.image)
         }
