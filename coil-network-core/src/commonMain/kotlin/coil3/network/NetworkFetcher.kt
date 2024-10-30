@@ -78,7 +78,7 @@ class NetworkFetcher(
                 // Write the response to the disk cache then open a new snapshot.
                 snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, response)
                 if (snapshot != null) {
-                    val cacheResponse = snapshot!!.toNetworkResponseOrNull()
+                    cacheResponse = snapshot!!.toNetworkResponseOrNull()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
