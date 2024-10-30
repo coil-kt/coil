@@ -3,7 +3,6 @@ androidx-activity = "1.9.3"
 androidx-benchmark = "1.3.3"
 androidx-lifecycle = "2.8.6"
 androidx-tracing-perfetto = "1.0.0"
-androidx-runtime-tracing = "1.7.4"
 atomicfu = "0.26.0"
 coroutines = "1.9.0"
 jetbrains-compose = "1.6.11"
@@ -40,7 +39,6 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.0"
 androidx-annotation = "androidx.annotation:annotation:1.9.0"
 androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.3.3"
-androidx-compose-runtime-tracing = { module = "androidx.compose.runtime:runtime-tracing", version.ref = "androidx-runtime-tracing" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core = "androidx.core:core-ktx:1.13.1"
