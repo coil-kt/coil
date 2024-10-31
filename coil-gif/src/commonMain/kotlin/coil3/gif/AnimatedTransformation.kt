@@ -1,6 +1,6 @@
 package coil3.gif
 
-import android.graphics.Canvas
+import coil3.Canvas
 import coil3.annotation.ExperimentalCoilApi
 
 /**

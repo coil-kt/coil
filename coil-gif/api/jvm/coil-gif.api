@@ -15,11 +15,43 @@ public final class coil3/gif/AnimatedSkiaImageDecoder$Factory : coil3/decode/Dec
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
+public abstract interface class coil3/gif/AnimatedTransformation {
+	public abstract fun transform (Lorg/jetbrains/skia/Canvas;)Lcoil3/gif/PixelOpacity;
+}
+
 public final class coil3/gif/DecodeUtilsKt {
 	public static final fun isAnimatedHeif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isAnimatedWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isGif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isHeif (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isWebP (Lcoil3/decode/DecodeUtils;Lokio/BufferedSource;)Z
+}
+
+public final class coil3/gif/ImageRequestsKt {
+	public static final fun animatedTransformation (Lcoil3/request/ImageRequest$Builder;Lcoil3/gif/AnimatedTransformation;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun getAnimatedTransformation (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimatedTransformation (Lcoil3/request/ImageRequest;)Lcoil3/gif/AnimatedTransformation;
+	public static final fun getAnimatedTransformation (Lcoil3/request/Options;)Lcoil3/gif/AnimatedTransformation;
+	public static final fun getAnimationEndCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimationEndCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationEndCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getRepeatCount (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getRepeatCount (Lcoil3/request/ImageRequest;)I
+	public static final fun getRepeatCount (Lcoil3/request/Options;)I
+	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/gif/PixelOpacity : java/lang/Enum {
+	public static final field OPAQUE Lcoil3/gif/PixelOpacity;
+	public static final field TRANSLUCENT Lcoil3/gif/PixelOpacity;
+	public static final field UNCHANGED Lcoil3/gif/PixelOpacity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcoil3/gif/PixelOpacity;
+	public static fun values ()[Lcoil3/gif/PixelOpacity;
 }
 

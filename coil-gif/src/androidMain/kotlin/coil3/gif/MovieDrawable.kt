@@ -283,6 +283,6 @@ class MovieDrawable @JvmOverloads constructor(
 
     companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
+        const val REPEAT_INFINITE = CONST_REPEAT_INFINITE
     }
 }
