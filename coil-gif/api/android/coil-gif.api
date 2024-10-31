@@ -11,6 +11,10 @@ public final class coil3/gif/AnimatedImageDecoder$Factory : coil3/decode/Decoder
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
+public final class coil3/gif/AnimatedImageDecoderFactory_androidKt {
+	public static final fun AnimatedImageDecoderFactory ()Lcoil3/decode/Decoder$Factory;
+}
+
 public abstract interface class coil3/gif/AnimatedTransformation {
 	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil3/gif/PixelOpacity;
 }

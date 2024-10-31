@@ -13,24 +13,14 @@ And that's it! The `ImageLoader` will automatically detect any supported files u
 Optionally, you can manually add the decoder to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
-// For Android
 val imageLoader = ImageLoader.Builder(context)
     .components {
-        if (SDK_INT >= 28) {
-            add(AnimatedImageDecoder.Factory())
-        } else {
-            add(GifDecoder.Factory())
-        }
-    }
-    .build()
-
-// For other platforms
-val imageLoader = ImageLoader.Builder(context)
-    .components {
-        add(AnimatedSkiaImageDecoder.Factory())
+        add(AnimatedImageDecoderFactory())
     }
     .build()
 ```
+
+`AnimatedImageDecoderFactory` will automatically select the best decoder for the current platform.
 
 ## Supported decoders and formats
 

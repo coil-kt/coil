@@ -26,3 +26,4 @@ final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedWebP(okio/BufferedSourc
 final fun (coil3.decode/DecodeUtils).coil3.gif/isGif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isGif|isGif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
 final fun (coil3.decode/DecodeUtils).coil3.gif/isHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isHeif|isHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
 final fun (coil3.decode/DecodeUtils).coil3.gif/isWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isWebP|isWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun coil3.gif/AnimatedImageDecoderFactory(): coil3.decode/Decoder.Factory // coil3.gif/AnimatedImageDecoderFactory|AnimatedImageDecoderFactory(){}[0]
