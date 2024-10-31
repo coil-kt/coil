@@ -101,6 +101,8 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
+                implementation(compose.preview)
+                implementation(compose.uiTooling)
             }
         }
         named("desktopMain") {
