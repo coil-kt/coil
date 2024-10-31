@@ -35,6 +35,7 @@ import org.jetbrains.skia.ImageInfo
  */
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
+    private val options: Options,
     private val prerenderFrames: Boolean = true,
 ) : Decoder {
 
@@ -59,6 +60,7 @@ class AnimatedSkiaImageDecoder(
             if (!isApplicable(result.source.source())) return null
             return AnimatedSkiaImageDecoder(
                 source = result.source,
+                options = options,
                 prerenderFrames = prerenderFrames,
             )
         }

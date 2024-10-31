@@ -3,8 +3,8 @@ public final class coil3/gif/AnimatedImageDecoderFactory_nonAndroidKt {
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Z)V
-	public synthetic fun <init> (Lcoil3/decode/ImageSource;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

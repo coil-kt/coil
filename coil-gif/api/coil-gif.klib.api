@@ -23,7 +23,7 @@ abstract fun interface coil3.gif/AnimatedTransformation { // coil3.gif/AnimatedT
 }
 
 final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
-    constructor <init>(coil3.decode/ImageSource, kotlin/Boolean = ...) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;kotlin.Boolean){}[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean = ...) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean){}[0]
 
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.gif/AnimatedSkiaImageDecoder.decode|decode(){}[0]
 
