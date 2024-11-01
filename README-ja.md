@@ -1,57 +1,24 @@
 ![Coil](logo.svg)
 
-Coil は Kotlin Coroutines で作られた Android 用の画像読み込みライブラリです。 Coil は:
+[Android](https://www.android.com/) および [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) 用の画像読み込みライブラリ。Coil の特徴:
 
-- **高速**: Coil は、メモリとディスクのキャッシング、メモリ内の画像のダウンサンプリング、リクエストの一時停止/キャンセルの自動化など、多くの最適化を実行します。
-- **軽量**: Coil は ~2000 のメソッドを APK に追加します (すでに OkHttp と Coroutines を使用しているアプリの場合)。これは Picasso に匹敵し、Glide や Fresco よりも大幅に少ない数です。
-- **使いやすい**: Coil の API は、ボイラープレートの最小化とシンプルさのために Kotlin の言語機能を活用しています。
-- **現代的**: Coil は Kotlin ファーストで、Coroutines、OkHttp、Okio、AndroidX Lifecycles などの最新のライブラリを使用します。
+- **高速**: Coil は、メモリとディスクのキャッシュ、画像のダウンサンプリング、リクエストの自動一時停止/キャンセルなど、さまざまな最適化を実行します。
+- **軽量**: Coil は Kotlin、Coroutines、Okio のみに依存し、Google の R8 コード シュリンカーとシームレスに連携します。
+- **使いやすい**: Coil の API は、シンプルさと最小限の定型文を実現するために Kotlin の言語機能を活用しています。
+- **最新**: Coil は Kotlin ファーストであり、Compose、Coroutines、Okio、OkHttp、Ktor などの最新のライブラリと相互運用できます。
 
-Coil は **Co**routine **I**mage **L**oader の頭字語です。
-
-## ダウンロード
-
-Coil は `mavenCentral()` で利用できます。
-
-```kotlin
-implementation("io.coil-kt:coil:2.7.0")
-```
+Coil は、**Co**routine **I**mage **L**oader の頭字語です。
 
 ## クイックスタート
 
-#### ImageViews
-
-画像を `ImageView` に読み込むには、 `load` 拡張関数を使用します。
+Compose ライブラリと [ネットワーク ライブラリ](https://coil-kt.github.io/coil/network/) をインポートします:
 
 ```kotlin
-// URL
-imageView.load("https://example.com/image.jpg")
-
-// File
-imageView.load(File("/path/to/image.jpg"))
-
-// And more...
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
 ```
 
-Requests は、 trailing lambda 式を使用して追加の設定を行うことができます:
-
-```kotlin
-imageView.load("https://example.com/image.jpg") {
-    crossfade(true)
-    placeholder(R.drawable.image)
-    transformations(CircleCropTransformation())
-}
-```
-
-#### Jetpack Compose
-
-[Jetpack Compose](https://developer.android.com/jetpack/compose) 拡張ライブラリをインポートします:
-
-```kotlin
-implementation("io.coil-kt:coil-compose:2.7.0")
-```
-
-画像を読み込むには、`AsyncImage` composable を使用します:
+画像を読み込むには、`AsyncImage` を使用しますcomposable:
 
 ```kotlin
 AsyncImage(
@@ -60,52 +27,7 @@ AsyncImage(
 )
 ```
 
-#### Image Loaders
-
-`imageView.load` と `AsyncImage` はシングルトンの `ImageLoader` を使用して画像リクエストを実行します。 シングルトンの `ImageLoader` には `Context` 拡張関数を使用してアクセスできます:
-
-```kotlin
-val imageLoader = context.imageLoader
-```
-
-`ImageLoader` は共有できるように設計されており、単一のインスタンスを作成してアプリ全体で共有すると最も効率的です。 また、独自の `ImageLoader` インスタンスを作成することもできます:
-
-```kotlin
-val imageLoader = ImageLoader(context)
-```
-
-シングルトンの `ImageLoader` が必要ない場合は、 `io.coil-kt:coil` の代わりに `io.coil-kt:coil-base` を使用してください。
-
-#### Requests
-
-画像をカスタムターゲットにロードするには、 `ImageRequest` を `enqueue` してください:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .target { drawable ->
-        // Handle the result.
-    }
-    .build()
-val disposable = imageLoader.enqueue(request)
-```
-
-画像を命令的にロードするには、 `ImageRequest` を `execute` してください:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .build()
-val drawable = imageLoader.execute(request).drawable
-```
-
-[こちらで Coil の完全なドキュメント](https://coil-kt.github.io/coil/getting_started/) を確認してください。
-
-## R8 / Proguard
-
-Coil は R8 と完全に互換性があり、追加のルールを追加する必要はありません。
-
-Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro)、[OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro)にルールを追加する必要があるかもしれません。
+Coil の [完全なドキュメントはこちら](https://coil-kt.github.io/coil/getting_started/) をご覧ください。
 
 ## ライセンス
 

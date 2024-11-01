@@ -1,57 +1,24 @@
 ﻿![Coil](logo.svg)
 
-Библиотека для загрузки изображений на Android, работающая с корутинами Kotlin. Coil - это:
+Библиотека загрузки изображений для [Android](https://www.android.com/) и [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Coil:
 
-- **Скорость**: Coil выполняет оптимизации, включая кэширование в памяти и на диске, уменьшение дискретизации изображения в памяти, автоматическая приостановка/отмена запросов, и многое другое.
-- **Маленький вес**: Coil добавляет ~2000 методов в ваш APK (для приложений, уже пользующихся OkHttp и корутинами), что сравнимо с Picasso и гораздо меньше, чем Glide и Fresco.
-- **Простота в использовании**: API Coil использует преимущества Kotlin, чтобы уменьшить количество повторяющегося кода.
-- **Современность**: Coil в первую очередь предназначен для Kotlin и использует современные библиотеки, включая корутины, OkHttp, Okio, и AndroidX Lifecycles.
+- **Быстрая**: Coil выполняет ряд оптимизаций, включая кэширование памяти и диска, понижение разрешения изображения, автоматическую приостановку/отмену запросов и многое другое.
+- **Легкая**: Coil зависит только от Kotlin, Coroutines и Okio и без проблем работает с укоротителем кода R8 от Google.
+- **Простая в использовании**: API Coil использует возможности языка Kotlin для простоты и минимального шаблона.
+- **Современная**: Coil ориентирована на Kotlin и взаимодействует с современными библиотеками, включая Compose, Coroutines, Okio, OkHttp и Ktor.
 
-Coil - аббревиатура: **Co**routine **I**mage **L**oader (загрузчик изображений при помощи корутин).
+Coil — это аббревиатура от: **Co**routine **I**mage **L**loader.
 
-## Установка
+## Быстрый старт
 
-Coil доступен в `mavenCentral()`.
-
-```kotlin
-implementation("io.coil-kt:coil:2.7.0")
-```
-
-## Начало работы
-
-#### ImageViews
-
-Чтобы загрузить изображение в `ImageView`, воспользуйтесь расширением `load`:
+Импортируйте библиотеку Compose и [сетевую библиотеку](https://coil-kt.github.io/coil/network/):
 
 ```kotlin
-// URL
-imageView.load("https://example.com/image.jpg")
-
-// Файл
-imageView.load(File("/path/to/image.jpg"))
-
-// И многое другое...
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
 ```
 
-Запросы могут конфигурироваться лямбда-функцией:
-
-```kotlin
-imageView.load("https://example.com/image.jpg") {
-    crossfade(true)
-    placeholder(R.drawable.image)
-    transformations(CircleCropTransformation())
-}
-```
-
-#### Jetpack Compose
-
-Установите библиотеку-расширение для [Jetpack Compose](https://developer.android.com/jetpack/compose):
-
-```kotlin
-implementation("io.coil-kt:coil-compose:2.7.0")
-```
-
-Чтобы загрузить изображение, воспользуйтесь composable-функцией `AsyncImage`:
+Чтобы загрузите изображение, используйте `AsyncImage` composable:
 
 ```kotlin
 AsyncImage(
@@ -60,52 +27,7 @@ AsyncImage(
 )
 ```
 
-#### Загрузчики изображений
-
-Как `imageView.load`, так и `AsyncImage` используют синглтон `ImageLoader` для исполнения запросов на загрузку. Синглтон `ImageLoader` доступен через расширение `Context`:
-
-```kotlin
-val imageLoader = context.imageLoader
-```
-
-`ImageLoader`ы максимально эффективны, когда во всем приложении используется один и тот же его экземпляр. Тем не менее, вы можете создавать и свои экземпляры `ImageLoader`, если потребуется:
-
-```kotlin
-val imageLoader = ImageLoader(context)
-```
-
-Если вам не требуется синглтон `ImageLoader`, используйте `io.coil-kt:coil-base` вместо `io.coil-kt:coil`.
-
-#### Запросы
-
-Чтобы загрузить изображение в заданную цель, выполните метод `enqueue` на `ImageRequest`:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .target { drawable ->
-        // Распоряжайтесь результатом.
-    }
-    .build()
-val disposable = imageLoader.enqueue(request)
-```
-
-Чтобы загрузить изображение императивно, выполните `execute` на `ImageRequest`:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .build()
-val drawable = imageLoader.execute(request).drawable
-```
-
-Полную документацию для Coil можно найти [здесь](https://coil-kt.github.io/coil/getting_started/).
-
-## R8 / Proguard
-
-Coil полностью совместим с R8 "из коробки" и не требует дополнительной настройки.
-
-Если вы используете Proguard, вам может понадобиться добавить правила для [корутин](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro) и [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro).
+Ознакомьтесь с [полной документацией Coil] здесь (https://coil-kt.github.io/coil/getting_started/).
 
 ## Лицензия
 

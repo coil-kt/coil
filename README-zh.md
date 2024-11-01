@@ -1,58 +1,24 @@
 ![Coil](logo.svg)
 
-Coil 是一个 Android 图片加载库，通过 Kotlin 协程的方式加载图片。特点如下：
+适用于 [Android](https://www.android.com/) 和 [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) 的图像加载库。Coil 具有以下特点：
 
-- **更快**: Coil 在性能上有很多优化，包括内存缓存和磁盘缓存，把缩略图存保存在内存中，循环利用 bitmap，自动暂停和取消图片网络请求等。
-- **更轻量级**: Coil 只有2000个方法（前提是你的 APP 里面集成了 OkHttp 和 Coroutines），Coil 和 Picasso 的方法数差不多，相比 Glide 和 Fresco 要轻量很多。
-- **更容易使用**: Coil 的 API 充分利用了 Kotlin 语言的新特性，简化和减少了很多样板代码。
-- **更流行**: Coil 首选 Kotlin 语言开发并且使用包含 Coroutines, OkHttp, Okio 和 AndroidX Lifecycles 在内最流行的开源库。
+- **快速**：Coil 执行多项优化，包括内存和磁盘缓存、图像降采样、自动暂停/取消请求等。
+- **轻量**：Coil 仅依赖于 Kotlin、Coroutines 和 Okio，可与 Google 的 R8 代码压缩器无缝协作。
+- **易于使用**：Coil 的 API 利用 Kotlin 的语言功能实现简单性并减少样板代码。
+- **现代**：Coil 是 Kotlin 优先的，可与包括 Compose、Coroutines、Okio、OkHttp 和 Ktor 在内的现代库互操作。
 
-Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
+Coil 是 Co**routine **I**mage **L**oader 的缩写。
 
-## 下载
+## 快速入门
 
-Coil 可以在 `mavenCentral()` 下载
-
-```kotlin
-implementation("io.coil-kt:coil:2.7.0")
-```
-
-## 快速上手
-
-可以使用 `ImageView` 的扩展函数 `load` 加载一张图片：
+导入 Compose 库和 [网络库](https://coil-kt.github.io/coil/network/)：
 
 ```kotlin
-// URL
-imageView.load("https://example.com/image.jpg")
-
-// Resource
-imageView.load(R.drawable.image)
-
-// File
-imageView.load(File("/path/to/image.jpg"))
-
-// And more...
+implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
 ```
 
-可以使用 lambda 语法轻松配置请求选项：
-
-```kotlin
-imageView.load("https://example.com/image.jpg") {
-    crossfade(true)
-    placeholder(R.drawable.image)
-    transformations(CircleCropTransformation())
-}
-```
-
-#### Jetpack Compose
-
-引入 [Jetpack Compose](https://developer.android.com/jetpack/compose) 扩展库:
-
-```kotlin
-implementation("io.coil-kt:coil-compose:2.7.0")
-```
-
-使用 `AsyncImage` 加载图片:
+要加载图像，请使用 `AsyncImage`可组合：
 
 ```kotlin
 AsyncImage(
@@ -61,52 +27,7 @@ AsyncImage(
 )
 ```
 
-### 图片加载器 `ImageLoader`
-
-`imageView.load` 使用单例 `ImageLoader` 来把 `ImageRequest` 加入队列. `ImageLoader` 单例可以通过扩展方法来获取：
-
-```kotlin
-val imageLoader = context.imageLoader
-```
-
-此外，你也可以通过创建 `ImageLoader` 实例从而实现依赖注入：
-
-```kotlin
-val imageLoader = ImageLoader(context)
-```
-
-如果你不需要 `ImageLoader` 作为单例，请把Gradle依赖替换成 `io.coil-kt:coil-base`.
-
-### 图片请求 `ImageRequest`
-
-如果想定制 `ImageRequest` 的加载目标，可以依照如下方式把 `ImageRequest` 加入队列：
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .target { drawable ->
-        // Handle the result.
-    }
-    .build()
-val disposable = imageLoader.enqueue(request)
-```
-
-如果想命令式地执行图片加载，也可以直接调用 `execute(ImageRequest)`：
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .build()
-val drawable = imageLoader.execute(request).drawable
-```
-
-请至 Coil 的[完整文档](https://coil-kt.github.io/coil/getting_started/)获得更多信息。
-
-## R8 / Proguard
-
-Coil 兼容 R8 混淆，您无需再添加其他的规则
-
-如果您需要混淆代码，可能需要添加对应的混淆规则：[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro), [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro)。
+查看 Coil 的[完整文档](https://coil-kt.github.io/coil/getting_started/)。
 
 ## License
 
