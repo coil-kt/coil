@@ -9,7 +9,7 @@ An image loading library for [Android](https://www.android.com/) and [Compose Mu
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md),  [Türkçe](README-tr.md), [中文](README-zh.md)
+Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
 
 ## Quick Start
 
