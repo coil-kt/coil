@@ -25,6 +25,7 @@ import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image as SkiaImage
+import kotlinx.coroutines.plus
 
 /**
  * A [Decoder] that uses Skia to decode animated images (GIF, WebP).
@@ -44,7 +45,7 @@ class AnimatedSkiaImageDecoder(
         DecodeResult(
             image = AnimatedSkiaImage(
                 codec = codec,
-                coroutineScope = this,
+                coroutineScope = this + Job(),
                 bufferedFramesCount = bufferedFramesCount,
             ),
             isSampled = false,
@@ -128,7 +129,7 @@ private class AnimatedSkiaImage(
 
         // Buffer the next frames in the background.
         if (bufferFramesJob == null || bufferFramesJob?.isCancelled == true) {
-            bufferFramesJob = coroutineScope.launch(Dispatchers.Default + Job()) {
+            bufferFramesJob = coroutineScope.launch(Dispatchers.Default) {
                 frames.forEachIndexed { index, bytes ->
                     if (bytes == null) {
                         frames[index] = decodeFrame(index)
