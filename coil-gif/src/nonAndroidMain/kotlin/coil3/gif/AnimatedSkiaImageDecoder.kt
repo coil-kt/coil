@@ -13,6 +13,11 @@ import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import kotlin.time.TimeSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import okio.BufferedSource
 import okio.use
 import org.jetbrains.skia.AnimationFrameInfo
@@ -24,27 +29,30 @@ import org.jetbrains.skia.Image as SkiaImage
 /**
  * A [Decoder] that uses Skia to decode animated images (GIF, WebP).
  *
- * @param prerenderFrames If true, prerender all frames when the image is decoded.
- * This means the image will consume more memory, and will only start playing after it has been
- * fully buffered, but will also play more smoothly.
+ * @param bufferedFramesCount The number of frames to be pre-buffered before the animation
+ * starts playing.
  */
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
     private val options: Options,
-    private val prerenderFrames: Boolean = true,
+    private val bufferedFramesCount: Int,
 ) : Decoder {
 
-    override suspend fun decode(): DecodeResult {
+    override suspend fun decode(): DecodeResult = coroutineScope {
         val bytes = source.source().use { it.readByteArray() }
         val codec = Codec.makeFromData(Data.makeFromBytes(bytes))
-        return DecodeResult(
-            image = AnimatedSkiaImage(codec, prerenderFrames),
+        DecodeResult(
+            image = AnimatedSkiaImage(
+                codec = codec,
+                coroutineScope = this,
+                bufferedFramesCount = bufferedFramesCount,
+            ),
             isSampled = false,
         )
     }
 
     class Factory(
-        private val prerenderFrames: Boolean = true,
+        private val bufferedFramesCount: Int = DEFAULT_BUFFERED_FRAMES_COUNT,
     ) : Decoder.Factory {
 
         override fun create(
@@ -56,7 +64,7 @@ class AnimatedSkiaImageDecoder(
             return AnimatedSkiaImageDecoder(
                 source = result.source,
                 options = options,
-                prerenderFrames = prerenderFrames,
+                bufferedFramesCount = bufferedFramesCount,
             )
         }
 
@@ -68,12 +76,14 @@ class AnimatedSkiaImageDecoder(
 
 private class AnimatedSkiaImage(
     private val codec: Codec,
-    prerenderFrames: Boolean,
+    private val coroutineScope: CoroutineScope,
+    bufferedFramesCount: Int,
 ) : Image {
 
     private val bitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
+
     private val frames = Array(codec.frameCount) { index ->
-        if (prerenderFrames) decodeFrame(index) else null
+        if (index in 0..<bufferedFramesCount) decodeFrame(index) else null
     }
 
     private var invalidateTick by mutableIntStateOf(0)
@@ -102,6 +112,8 @@ private class AnimatedSkiaImage(
     override val shareable: Boolean
         get() = false
 
+    private var bufferFramesJob: Job? = null
+
     override fun draw(canvas: Canvas) {
         if (codec.frameCount == 0) {
             // The image is empty, nothing to draw.
@@ -112,6 +124,17 @@ private class AnimatedSkiaImage(
             // This is a static image, simply draw it.
             canvas.drawFrame(0)
             return
+        }
+
+        // Buffer the next frames in the background.
+        if (bufferFramesJob == null || bufferFramesJob?.isCancelled == true) {
+            bufferFramesJob = coroutineScope.launch(Dispatchers.Default + Job()) {
+                frames.forEachIndexed { index, bytes ->
+                    if (bytes == null) {
+                        frames[index] = decodeFrame(index)
+                    }
+                }
+            }
         }
 
         if (isAnimationComplete) {
@@ -174,16 +197,17 @@ private class AnimatedSkiaImage(
     }
 
     private fun Canvas.drawFrame(frameIndex: Int) {
-        val frame = frames[frameIndex] ?: decodeFrame(frameIndex).also { frames[frameIndex] = it }
-        drawImage(
-            image = SkiaImage.makeRaster(
-                imageInfo = codec.imageInfo,
-                bytes = frame,
-                rowBytes = codec.imageInfo.minRowBytes,
-            ),
-            left = 0f,
-            top = 0f,
-        )
+        frames[frameIndex]?.let { frame ->
+            drawImage(
+                image = SkiaImage.makeRaster(
+                    imageInfo = codec.imageInfo,
+                    bytes = frame,
+                    rowBytes = codec.imageInfo.minRowBytes,
+                ),
+                left = 0f,
+                top = 0f,
+            )
+        }
     }
 }
 
@@ -191,3 +215,4 @@ private val AnimationFrameInfo.safeFrameDuration: Int
     get() = duration.let { if (it <= 0) DEFAULT_FRAME_DURATION else it }
 
 private const val DEFAULT_FRAME_DURATION = 100
+private const val DEFAULT_BUFFERED_FRAMES_COUNT = 5
