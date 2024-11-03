@@ -4,7 +4,7 @@ Coil 3 is the next major version of Coil that has a number of major improvements
 
 - Full support for [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) including all major targets (Android, iOS, JVM, JS, and [WASM](https://coil-kt.github.io/coil/sample/)).
 - Support for multiple networking libraries (Ktor and OkHttp). Alternatively, Coil can be used without a network dependency if you only need to load local/static files.
-- Significant improvements to the Compose integration. Faster runtime performance, better support for `@Preview` rendering, and .
+- Improved Compose `@Preview` rendering and support for custom preview behavior via `LocalAsyncImagePreviewHandler`.
 - Important fixes for bugs that required breaking existing behaviour (outlined below).
 
 This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour changes.
