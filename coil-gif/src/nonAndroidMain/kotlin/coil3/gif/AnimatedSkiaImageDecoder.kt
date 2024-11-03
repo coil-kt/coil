@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import okio.BufferedSource
 import okio.use
 import org.jetbrains.skia.AnimationFrameInfo
@@ -25,7 +26,6 @@ import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image as SkiaImage
-import kotlinx.coroutines.plus
 
 /**
  * A [Decoder] that uses Skia to decode animated images (GIF, WebP).
@@ -47,6 +47,7 @@ class AnimatedSkiaImageDecoder(
                 codec = codec,
                 coroutineScope = this + Job(),
                 bufferedFramesCount = bufferedFramesCount,
+                animatedTransformation = options.animatedTransformation,
             ),
             isSampled = false,
         )
@@ -78,6 +79,7 @@ class AnimatedSkiaImageDecoder(
 private class AnimatedSkiaImage(
     private val codec: Codec,
     private val coroutineScope: CoroutineScope,
+    private val animatedTransformation: AnimatedTransformation? = null,
     bufferedFramesCount: Int,
 ) : Image {
 
@@ -205,6 +207,8 @@ private class AnimatedSkiaImage(
     }
 
     private fun Canvas.drawFrame(frameIndex: Int) {
+        animatedTransformation?.transform(this)
+
         frames[frameIndex]?.let { frame ->
             drawImage(
                 image = SkiaImage.makeRaster(
