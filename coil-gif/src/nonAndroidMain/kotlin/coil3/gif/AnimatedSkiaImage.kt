@@ -18,6 +18,8 @@ internal class AnimatedSkiaImage(
     private val codec: Codec,
     private val coroutineScope: CoroutineScope,
     private val animatedTransformation: AnimatedTransformation? = null,
+    private val onAnimationStart: (() -> Unit)? = null,
+    private val onAnimationEnd: (() -> Unit)? = null,
     bufferedFramesCount: Int,
 ) : Image {
 
@@ -55,6 +57,9 @@ internal class AnimatedSkiaImage(
 
     private var bufferFramesJob: Job? = null
 
+    private var hasNotifiedAnimationStart = false
+    private var hasNotifiedAnimationEnd = false
+
     override fun draw(canvas: Canvas) {
         if (codec.frameCount == 0) {
             // The image is empty, nothing to draw.
@@ -81,9 +86,20 @@ internal class AnimatedSkiaImage(
             }
         }
 
+        if (!hasNotifiedAnimationStart) {
+            onAnimationStart?.invoke()
+            hasNotifiedAnimationStart = true
+        }
+
         if (isAnimationComplete) {
             // The animation is complete, freeze on the last frame.
             canvas.drawFrame(lastDrawnFrameIndex)
+
+            if (!hasNotifiedAnimationEnd) {
+                onAnimationEnd?.invoke()
+                hasNotifiedAnimationEnd = true
+            }
+
             return
         }
 

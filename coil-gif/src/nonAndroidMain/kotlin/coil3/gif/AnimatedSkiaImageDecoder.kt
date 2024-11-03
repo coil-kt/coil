@@ -36,6 +36,8 @@ class AnimatedSkiaImageDecoder(
                 coroutineScope = this + Job(),
                 bufferedFramesCount = bufferedFramesCount,
                 animatedTransformation = options.animatedTransformation,
+                onAnimationStart = options.animationStartCallback,
+                onAnimationEnd = options.animationEndCallback,
             ),
             isSampled = false,
         )
