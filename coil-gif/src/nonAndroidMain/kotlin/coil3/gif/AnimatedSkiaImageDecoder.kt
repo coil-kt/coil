@@ -80,7 +80,7 @@ private class AnimatedSkiaImage(
     bufferedFramesCount: Int,
 ) : Image {
 
-    private val bitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
+    private val tempBitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
 
     private val frames = Array(codec.frameCount) { index ->
         if (index in 0..<bufferedFramesCount) decodeFrame(index) else null
@@ -134,6 +134,9 @@ private class AnimatedSkiaImage(
                         frames[index] = decodeFrame(index)
                     }
                 }
+
+                // Everything has been buffered.
+                tempBitmap.close()
             }
         }
 
@@ -189,8 +192,12 @@ private class AnimatedSkiaImage(
     }
 
     private fun decodeFrame(frameIndex: Int): ByteArray {
-        codec.readPixels(bitmap, frameIndex)
-        return bitmap.readPixels(
+        if (tempBitmap.isClosed) {
+            throw IllegalStateException("Cannot decode frame: the bitmap is closed.")
+        }
+
+        codec.readPixels(tempBitmap, frameIndex)
+        return tempBitmap.readPixels(
             dstInfo = codec.imageInfo,
             dstRowBytes = codec.imageInfo.minRowBytes,
         )!!
