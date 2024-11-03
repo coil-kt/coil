@@ -32,4 +32,4 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Transforms
 
-On Android, to transform the pixel data of each frame of a GIF, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
+To transform the pixel data of each frame of a GIF, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
