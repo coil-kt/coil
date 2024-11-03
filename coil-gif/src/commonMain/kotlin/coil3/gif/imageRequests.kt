@@ -6,27 +6,6 @@ import coil3.getExtra
 import coil3.request.ImageRequest
 import coil3.request.Options
 
-internal const val CONST_REPEAT_INFINITE = -1
-
-/**
- * Set the number of times to repeat the animation if the result is an animated [Drawable].
- */
-fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
-    require(repeatCount >= CONST_REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-    extras[repeatCountKey] = repeatCount
-}
-
-val ImageRequest.repeatCount: Int
-    get() = getExtra(repeatCountKey)
-
-val Options.repeatCount: Int
-    get() = getExtra(repeatCountKey)
-
-val Extras.Key.Companion.repeatCount: Extras.Key<Int>
-    get() = repeatCountKey
-
-private val repeatCountKey = Extras.Key(default = CONST_REPEAT_INFINITE)
-
 /**
  * Set the [AnimatedTransformation] that will be applied to the result if it is an animated drawable.
  */

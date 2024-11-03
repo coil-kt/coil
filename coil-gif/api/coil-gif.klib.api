@@ -54,12 +54,6 @@ final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@
     final fun (coil3.request/ImageRequest).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.ImageRequest(){}[0]
 final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@coil3.request.Options{}animationStartCallback[0]
     final fun (coil3.request/Options).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.Options(){}[0]
-final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.Extras.Key.Companion{}repeatCount[0]
-    final fun (coil3/Extras.Key.Companion).<get-repeatCount>(): coil3/Extras.Key<kotlin/Int> // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.Extras.Key.Companion(){}[0]
-final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.request.ImageRequest{}repeatCount[0]
-    final fun (coil3.request/ImageRequest).<get-repeatCount>(): kotlin/Int // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.request.ImageRequest(){}[0]
-final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.request.Options{}repeatCount[0]
-    final fun (coil3.request/Options).<get-repeatCount>(): kotlin/Int // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.request.Options(){}[0]
 
 final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedHeif|isAnimatedHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
 final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedWebP|isAnimatedWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
@@ -69,5 +63,4 @@ final fun (coil3.decode/DecodeUtils).coil3.gif/isWebP(okio/BufferedSource): kotl
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/animatedTransformation(coil3.gif/AnimatedTransformation?): coil3.request/ImageRequest.Builder // coil3.gif/animatedTransformation|animatedTransformation@coil3.request.ImageRequest.Builder(coil3.gif.AnimatedTransformation?){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationEnd(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationEnd|onAnimationEnd@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationStart(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationStart|onAnimationStart@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
-final fun (coil3.request/ImageRequest.Builder).coil3.gif/repeatCount(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.gif/repeatCount|repeatCount@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
 final fun coil3.gif/AnimatedImageDecoderFactory(): coil3.decode/Decoder.Factory // coil3.gif/AnimatedImageDecoderFactory|AnimatedImageDecoderFactory(){}[0]

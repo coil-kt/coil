@@ -38,12 +38,8 @@ public final class coil3/gif/ImageRequestsKt {
 	public static final fun getAnimationStartCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
 	public static final fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
-	public static final fun getRepeatCount (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getRepeatCount (Lcoil3/request/ImageRequest;)I
-	public static final fun getRepeatCount (Lcoil3/request/Options;)I
 	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/gif/PixelOpacity : java/lang/Enum {
