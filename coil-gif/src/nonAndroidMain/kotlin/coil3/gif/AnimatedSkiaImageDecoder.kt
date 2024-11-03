@@ -18,13 +18,8 @@ import okio.use
 import org.jetbrains.skia.AnimationFrameInfo
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
-import org.jetbrains.skia.ColorAlphaType
-import org.jetbrains.skia.ColorInfo
-import org.jetbrains.skia.ColorSpace
-import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image as SkiaImage
-import org.jetbrains.skia.ImageInfo
 
 /**
  * A [Decoder] that uses Skia to decode animated images (GIF, WebP).
@@ -75,15 +70,6 @@ private class AnimatedSkiaImage(
     private val codec: Codec,
     prerenderFrames: Boolean,
 ) : Image {
-    private val imageInfo = ImageInfo(
-        colorInfo = ColorInfo(
-            colorType = ColorType.BGRA_8888,
-            alphaType = ColorAlphaType.UNPREMUL,
-            colorSpace = ColorSpace.sRGB,
-        ),
-        width = codec.width,
-        height = codec.height,
-    )
 
     private val bitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
     private val frames = Array(codec.frameCount) { index ->
@@ -181,16 +167,19 @@ private class AnimatedSkiaImage(
 
     private fun decodeFrame(frameIndex: Int): ByteArray {
         codec.readPixels(bitmap, frameIndex)
-        return bitmap.readPixels(imageInfo, imageInfo.minRowBytes)!!
+        return bitmap.readPixels(
+            dstInfo = codec.imageInfo,
+            dstRowBytes = codec.imageInfo.minRowBytes,
+        )!!
     }
 
     private fun Canvas.drawFrame(frameIndex: Int) {
         val frame = frames[frameIndex] ?: decodeFrame(frameIndex).also { frames[frameIndex] = it }
         drawImage(
             image = SkiaImage.makeRaster(
-                imageInfo = imageInfo,
+                imageInfo = codec.imageInfo,
                 bytes = frame,
-                rowBytes = imageInfo.minRowBytes,
+                rowBytes = codec.imageInfo.minRowBytes,
             ),
             left = 0f,
             top = 0f,
