@@ -10,7 +10,7 @@ implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.0")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0")
 ```
 
-If you use OkHttp, that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform:
+If you use OkHttp, that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
 
 ## Ktor network engines
 
@@ -36,6 +36,27 @@ jvmMain {
 
 If you want to use a custom networking library, you can import `io.coil-kt.coil3:coil-network-core`, implement `NetworkClient`, and register `NetworkFetcher` with your custom `NetworkClient` in your `ImageLoader`.
 
+## Using a custom OkHttpClient
+
+If you use `io.coil-kt.coil3:coil-network-okhttp` You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
+
+```kotlin
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        add(
+            OkHttpNetworkFetcherFactory(
+                callFactory = {
+                    OkHttpClient()
+                }
+            )
+        )
+    }
+    .build()
+```
+
+!!! Note
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
+
 ## Cache-Control support
 
 By default, Coil 3.x does not respect `Cache-Control` headers and always saves a response to its disk cache.
@@ -45,7 +66,7 @@ By default, Coil 3.x does not respect `Cache-Control` headers and always saves a
 Pass `CacheControlCacheStrategy` to your `NetworkFetcher` then register the custom `NetworkFetcher` in your `ImageLoader`:
 
 ```kotlin
-KtorNetworkFetcher(
+OkHttpNetworkFetcherFactory(
     cacheStrategy = CacheControlCacheStrategy(),
 )
 ```
