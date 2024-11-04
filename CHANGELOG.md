@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.0] - November 4, 2024
+
+Coil 3.0.0 is the next major release of Coil with full support for [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/).
+
+[For the full list of improvements and important changes in 3.0.0, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/).
+
+Changes since `3.0.0-rc02`:
+
+- Remove remaining deprecated methods.
+
 ## [3.0.0-rc02] - October 28, 2024
 
 [For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-rc01`:

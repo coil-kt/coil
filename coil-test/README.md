@@ -3,7 +3,7 @@
 To use the testing support classes, import the extension library:
 
 ```kotlin
-testImplementation("io.coil-kt.coil3:coil-test:3.0.0-rc02")
+testImplementation("io.coil-kt.coil3:coil-test:3.0.0")
 ```
 
 `coil-test` includes a `FakeImageLoaderEngine`, which can be added to your `ImageLoader` to intercept all incoming `ImageRequest`s and return a custom `ImageResult`. This is useful for testing as it makes loading images synchronous (from the main thread) and consistent. By using `FakeImageLoaderEngine` the `ImageLoader` will avoid all the memory caching, thread jumping, disk/network I/O fetching, and image decoding that's typically done to load an image. Here's an example:

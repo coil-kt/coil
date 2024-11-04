@@ -14,8 +14,8 @@ Spole är en akronym för: **Co**rutin **I**bild **L**loader.
 Importera Compose-biblioteket och ett [nätverksbibliotek](https://coil-kt.github.io/coil/network/):
 
 ```kotlin
-implementering("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
-implementering("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
+implementering("io.coil-kt.coil3:coil-compose:3.0.0")
+implementering("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 ```
 
 För att ladda en bild, använd "AsyncImage" komponerbar:
