@@ -34,7 +34,6 @@ internal class AnimatedSkiaImage(
     private var invalidateTick by mutableIntStateOf(0)
 
     private var animationStartTime: TimeMark? = null
-    private var isAnimationComplete = false
 
     override val size: Long
         get() {
@@ -93,6 +92,18 @@ internal class AnimatedSkiaImage(
             hasNotifiedAnimationStart = true
         }
 
+        // Remember the time when the animation first started playing.
+        val animationStartTime = animationStartTime
+            ?: timeSource.markNow().also { animationStartTime = it }
+
+        val totalElapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
+
+        val frameDurationsMs = codec.framesInfo.map { it.safeFrameDuration }
+        val singleIterationDurationMs = frameDurationsMs.sum()
+
+        val isAnimationComplete =
+            codec.repetitionCount > 0 && totalElapsedTimeMs > singleIterationDurationMs * codec.repetitionCount
+
         if (isAnimationComplete) {
             // The animation is complete, freeze on the last frame.
             canvas.drawFrame(
@@ -107,15 +118,9 @@ internal class AnimatedSkiaImage(
             return
         }
 
-        // Remember the time when the animation first started playing.
-        val animationStartTime = animationStartTime
-            ?: timeSource.markNow().also { animationStartTime = it }
-
-        val totalElapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
-
         val frameIndexToDraw = getFrameIndexToDraw(
-            animationStartTime = animationStartTime,
-            frameDurationsMs = codec.framesInfo.map { frame -> frame.safeFrameDuration },
+            frameDurationsMs = frameDurationsMs,
+            singleIterationDurationMs = singleIterationDurationMs,
             totalElapsedTimeMs = totalElapsedTimeMs,
             repetitionCount = codec.repetitionCount,
         )
@@ -135,21 +140,18 @@ internal class AnimatedSkiaImage(
      *
      * If the animation is complete, the index of the last frame is returned.
      *
-     * @param animationStartTime The time mark when the animation started.
      * @param frameDurationsMs The list of frame durations in milliseconds.
      * @param repetitionCount The number of times the animation should repeat, or -1 for infinite.
      */
     private fun getFrameIndexToDraw(
-        animationStartTime: TimeMark,
         frameDurationsMs: List<Int>,
+        singleIterationDurationMs: Int,
         totalElapsedTimeMs: Long,
         repetitionCount: Int,
     ): Int {
         if (frameDurationsMs.size == 1) {
             return 0
         }
-
-        val singleIterationDurationMs = frameDurationsMs.sum()
 
         val currentIteration = totalElapsedTimeMs / singleIterationDurationMs
         if (repetitionCount in 1..currentIteration) {
