@@ -33,9 +33,7 @@ internal class AnimatedSkiaImage(
 
     private var invalidateTick by mutableIntStateOf(0)
 
-    private var currentRepetitionStartTime: TimeMark? = null
-    private var currentRepetitionCount = 0
-    private var lastDrawnFrameIndex = 0
+    private var animationStartTime: TimeMark? = null
     private var isAnimationComplete = false
 
     override val size: Long
@@ -62,6 +60,8 @@ internal class AnimatedSkiaImage(
     private var hasNotifiedAnimationStart = false
     private var hasNotifiedAnimationEnd = false
 
+    private var lastDrawnFrameIndex = -1
+
     override fun draw(canvas: Canvas) {
         if (codec.frameCount == 0) {
             // The image is empty, nothing to draw.
@@ -70,7 +70,7 @@ internal class AnimatedSkiaImage(
 
         if (codec.frameCount == 1) {
             // This is a static image, simply draw it.
-            canvas.drawFrame(0)
+            canvas.drawFrame(frameIndex = 0)
             return
         }
 
@@ -95,7 +95,9 @@ internal class AnimatedSkiaImage(
 
         if (isAnimationComplete) {
             // The animation is complete, freeze on the last frame.
-            canvas.drawFrame(lastDrawnFrameIndex)
+            canvas.drawFrame(
+                frameIndex = codec.framesInfo.lastIndex,
+            )
 
             if (!hasNotifiedAnimationEnd) {
                 onAnimationEnd?.invoke()
@@ -105,99 +107,69 @@ internal class AnimatedSkiaImage(
             return
         }
 
-        val startTime = currentRepetitionStartTime
-            ?: timeSource.markNow().also { currentRepetitionStartTime = it }
-        val elapsedTime = startTime.elapsedNow().inWholeMilliseconds
+        // Remember the time when the animation first started playing.
+        val animationStartTime = animationStartTime
+            ?: timeSource.markNow().also { animationStartTime = it }
 
-        var accumulatedDuration = 0
-        var frameIndexToDraw = codec.frameCount - 1
+        val totalElapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
 
-        // Find the right frame to draw based on the elapsed time.
-        for ((index, frame) in codec.framesInfo.withIndex()) {
-            if (accumulatedDuration > elapsedTime) {
-                frameIndexToDraw = (index - 1).coerceAtLeast(0)
-                break
-            }
-
-            accumulatedDuration += frame.safeFrameDuration
-        }
-
-        // Remember the last frame we drew; the next time we draw, we'll start from here.
-        lastDrawnFrameIndex = frameIndexToDraw
-
-        // Check if we've reached the last frame of the last repetition. If so, we're done.
-        isAnimationComplete = codec.repetitionCount in 1..currentRepetitionCount &&
-            frameIndexToDraw == (codec.frameCount - 1)
-
-        println(
-            "frameIndexToDraw: $frameIndexToDraw, " +
-                "elapsedTime: $elapsedTime, " +
-                "accumulatedDuration: $accumulatedDuration, " +
-                "currentRepetitionCount: $currentRepetitionCount, " +
-                "isAnimationComplete: $isAnimationComplete",
+        val frameIndexToDraw = getFrameIndexToDraw(
+            animationStartTime = animationStartTime,
+            frameDurationsMs = codec.framesInfo.map { frame -> frame.safeFrameDuration },
+            totalElapsedTimeMs = totalElapsedTimeMs,
+            repetitionCount = codec.repetitionCount,
         )
 
         canvas.drawFrame(frameIndexToDraw)
-
-        // We still need to wait for the last frame's duration before we start with the next repetition.
-        val drewLastFrame = frameIndexToDraw == codec.frameCount - 1
-        val hasLastFrameDurationElapsed = elapsedTime >= accumulatedDuration
-
-        println(
-            "drewLastFrame: $drewLastFrame, " +
-                "hasLastFrameDurationElapsed: $hasLastFrameDurationElapsed, " +
-                "invalidateTick: $invalidateTick",
-        )
-
-        if (!isAnimationComplete && drewLastFrame && hasLastFrameDurationElapsed) {
-            // We've reached the last frame of the current repetition, but we can still loop.
-            // Reset the state and start over from the first frame.
-            lastDrawnFrameIndex = 0
-            currentRepetitionCount++
-            currentRepetitionStartTime = null
-        }
 
         if (!isAnimationComplete) {
             // Increment this value to force the image to be redrawn.
             invalidateTick++
         }
+
+        lastDrawnFrameIndex = frameIndexToDraw
     }
 
+    /**
+     * Returns the index of the frame to draw based on the current time.
+     *
+     * If the animation is complete, the index of the last frame is returned.
+     *
+     * @param animationStartTime The time mark when the animation started.
+     * @param frameDurationsMs The list of frame durations in milliseconds.
+     * @param repetitionCount The number of times the animation should repeat, or -1 for infinite.
+     */
     private fun getFrameIndexToDraw(
         animationStartTime: TimeMark,
         frameDurationsMs: List<Int>,
+        totalElapsedTimeMs: Long,
         repetitionCount: Int,
     ): Int {
         if (frameDurationsMs.size == 1) {
             return 0
         }
 
-        val elapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
-        val totalIterationDurationMs = frameDurationsMs.sum()
+        val singleIterationDurationMs = frameDurationsMs.sum()
 
-        val currentIteration = elapsedTimeMs / totalIterationDurationMs
-        if (currentIteration >= repetitionCount) {
+        val currentIteration = totalElapsedTimeMs / singleIterationDurationMs
+        if (repetitionCount in 1..currentIteration) {
             return frameDurationsMs.lastIndex
         }
 
-        val currentIterationElapsedTimeMs = elapsedTimeMs % totalIterationDurationMs
+        val currentIterationElapsedTimeMs = totalElapsedTimeMs % singleIterationDurationMs
 
-        val frameIndexToDraw = getFrameIndexToDrawWithinIteration(
+        return getFrameIndexToDrawWithinIteration(
             frameDurationsMs = frameDurationsMs,
             elapsedTimeMs = currentIterationElapsedTimeMs,
         )
-
-        println(
-            "elapsedTimeMs: $elapsedTimeMs, " +
-                "totalIterationDurationMs: $totalIterationDurationMs, " +
-                "currentIteration: $currentIteration, " +
-                "currentIterationElapsedTimeMs: $currentIterationElapsedTimeMs, " +
-                "frameIndexToDraw: $frameIndexToDraw",
-        )
-
-        return frameIndexToDraw
     }
 
+    /**
+     * Returns the index of the frame to draw within the current iteration.
+     *
+     * @param frameDurationsMs The list of frame durations in milliseconds.
+     * @param elapsedTimeMs The elapsed time in milliseconds since the start of the iteration.
+     */
     private fun getFrameIndexToDrawWithinIteration(
         frameDurationsMs: List<Int>,
         elapsedTimeMs: Long,
