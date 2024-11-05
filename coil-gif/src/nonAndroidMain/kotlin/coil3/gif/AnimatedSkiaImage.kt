@@ -56,7 +56,6 @@ internal class AnimatedSkiaImage(
 
     private var bufferFramesJob: Job? = null
 
-    private var hasNotifiedAnimationStart = false
     private var hasNotifiedAnimationEnd = false
 
     private var lastDrawnFrameIndex = -1
@@ -87,9 +86,8 @@ internal class AnimatedSkiaImage(
             }
         }
 
-        if (!hasNotifiedAnimationStart) {
+        if (animationStartTime == null) {
             onAnimationStart?.invoke()
-            hasNotifiedAnimationStart = true
         }
 
         // Remember the time when the animation first started playing.
