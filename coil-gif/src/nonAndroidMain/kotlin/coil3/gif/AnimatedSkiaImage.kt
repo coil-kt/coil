@@ -131,10 +131,10 @@ internal class AnimatedSkiaImage(
 
         println(
             "frameIndexToDraw: $frameIndexToDraw, " +
-            "elapsedTime: $elapsedTime, " +
-            "accumulatedDuration: $accumulatedDuration, " +
-            "currentRepetitionCount: $currentRepetitionCount, " +
-            "isAnimationComplete: $isAnimationComplete"
+                "elapsedTime: $elapsedTime, " +
+                "accumulatedDuration: $accumulatedDuration, " +
+                "currentRepetitionCount: $currentRepetitionCount, " +
+                "isAnimationComplete: $isAnimationComplete",
         )
 
         canvas.drawFrame(frameIndexToDraw)
@@ -145,8 +145,8 @@ internal class AnimatedSkiaImage(
 
         println(
             "drewLastFrame: $drewLastFrame, " +
-            "hasLastFrameDurationElapsed: $hasLastFrameDurationElapsed, " +
-            "invalidateTick: $invalidateTick"
+                "hasLastFrameDurationElapsed: $hasLastFrameDurationElapsed, " +
+                "invalidateTick: $invalidateTick",
         )
 
         if (!isAnimationComplete && drewLastFrame && hasLastFrameDurationElapsed) {
@@ -161,6 +161,58 @@ internal class AnimatedSkiaImage(
             // Increment this value to force the image to be redrawn.
             invalidateTick++
         }
+    }
+
+    private fun getFrameIndexToDraw(
+        animationStartTime: TimeMark,
+        frameDurationsMs: List<Int>,
+        repetitionCount: Int,
+    ): Int {
+        if (frameDurationsMs.size == 1) {
+            return 0
+        }
+
+        val elapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
+        val totalIterationDurationMs = frameDurationsMs.sum()
+
+        val currentIteration = elapsedTimeMs / totalIterationDurationMs
+        if (currentIteration >= repetitionCount) {
+            return frameDurationsMs.lastIndex
+        }
+
+        val currentIterationElapsedTimeMs = elapsedTimeMs % totalIterationDurationMs
+
+        val frameIndexToDraw = getFrameIndexToDrawWithinIteration(
+            frameDurationsMs = frameDurationsMs,
+            elapsedTimeMs = currentIterationElapsedTimeMs,
+        )
+
+        println(
+            "elapsedTimeMs: $elapsedTimeMs, " +
+                "totalIterationDurationMs: $totalIterationDurationMs, " +
+                "currentIteration: $currentIteration, " +
+                "currentIterationElapsedTimeMs: $currentIterationElapsedTimeMs, " +
+                "frameIndexToDraw: $frameIndexToDraw",
+        )
+
+        return frameIndexToDraw
+    }
+
+    private fun getFrameIndexToDrawWithinIteration(
+        frameDurationsMs: List<Int>,
+        elapsedTimeMs: Long,
+    ): Int {
+        var accumulatedDuration = 0
+
+        for ((index, frameDuration) in frameDurationsMs.withIndex()) {
+            if (accumulatedDuration > elapsedTimeMs) {
+                return (index - 1).coerceAtLeast(0)
+            }
+
+            accumulatedDuration += frameDuration
+        }
+
+        return frameDurationsMs.lastIndex
     }
 
     private fun decodeFrame(frameIndex: Int): ByteArray {
