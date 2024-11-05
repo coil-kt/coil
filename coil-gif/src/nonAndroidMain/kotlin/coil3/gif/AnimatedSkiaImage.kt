@@ -25,16 +25,6 @@ internal class AnimatedSkiaImage(
     bufferedFramesCount: Int,
 ) : Image {
 
-    private val tempBitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
-
-    private val frames = Array(codec.frameCount) { index ->
-        if (index in 0..<bufferedFramesCount) decodeFrame(index) else null
-    }
-
-    private var invalidateTick by mutableIntStateOf(0)
-
-    private var animationStartTime: TimeMark? = null
-
     override val size: Long
         get() {
             var size = codec.imageInfo.computeMinByteSize().toLong()
@@ -54,18 +44,40 @@ internal class AnimatedSkiaImage(
     override val shareable: Boolean
         get() = false
 
+    /**
+     * A temporary [Bitmap] used to decode individual frames.
+     */
+    private val tempBitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
+
+    /**
+     * An array of decoded frames.
+     *
+     * Initially load `bufferedFramesCount` frames; the rest will be loaded in the background.
+     */
+    private val frames = Array(codec.frameCount) { index ->
+        if (index in 0..<bufferedFramesCount) decodeFrame(index) else null
+    }
+
     private var bufferFramesJob: Job? = null
+
+    /**
+     * A value that is incremented to force the image to be invalidated by Compose.
+     */
+    private var invalidateTick by mutableIntStateOf(0)
+
+    /**
+     * The time when the animation first started playing. Used to calculate the current frame to be drawn.
+     */
+    private var animationStartTime: TimeMark? = null
 
     private var hasNotifiedAnimationEnd = false
 
     override fun draw(canvas: Canvas) {
         if (codec.frameCount == 0) {
-            // The image is empty, nothing to draw.
             return
         }
 
         if (codec.frameCount == 1) {
-            // This is a static image, simply draw it.
             canvas.drawFrame(frameIndex = 0)
             return
         }
@@ -79,7 +91,7 @@ internal class AnimatedSkiaImage(
                     }
                 }
 
-                // Everything has been buffered.
+                // Everything has been buffered, we can free some memory.
                 tempBitmap.close()
             }
         }
@@ -124,7 +136,6 @@ internal class AnimatedSkiaImage(
         canvas.drawFrame(frameIndexToDraw)
 
         if (!isAnimationComplete) {
-            // Increment this value to force the image to be redrawn.
             invalidateTick++
         }
     }
