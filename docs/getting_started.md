@@ -16,7 +16,7 @@ After that's imported you can load images from the network using `AsyncImage`:
 
 ```kotlin
 AsyncImage(
-    model = "https://www.example.com/image.jpg",
+    model = "https://example.com/image.jpg",
     contentDescription = null,
 )
 ```
@@ -33,7 +33,7 @@ implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 After that's imported you can load images from the network using the `ImageView.load` extension function:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
 }
 ```

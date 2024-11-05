@@ -55,13 +55,13 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 Useful if you need a `Painter` instead of a composable - or if you need to observe the `AsyncImagePainter.state` and draw a different composable based on it - or if you need to manually restart the image request using `AsyncImagePainter.restart`.
 
-The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `ConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
+The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `rememberConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
 
 ```kotlin
 val sizeResolver = rememberConstraintsSizeResolver()
 val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalPlatformContext.current)
-        .data("https://www.example.com/image.jpg")
+        .data("https://example.com/image.jpg")
         .size(sizeResolver)
         .build(),
 )
@@ -112,14 +112,14 @@ SubcomposeAsyncImage(
 
 Generally prefer using `rememberAsyncImagePainter` instead of this function if you need to observe `AsyncImagePainter.state` as it does not use subcomposition.
 
-Specifically, this function is only useful if you need to observe `AsyncImagePainter.state` and you can't have it be `Loading` for the first composition and first frame like with `rememberAsyncImagePainter`. `SubcomposeAsyncImage` uses subcomposition to get the image's constraints so it's `AsyncImagePainter.state` is up to date immediately.
+Specifically, this function is only useful if you need to observe `AsyncImagePainter.state` and you can't have it be `Empty` for the first composition and first frame like with `rememberAsyncImagePainter`. `SubcomposeAsyncImage` uses subcomposition to get the image's constraints so it's `AsyncImagePainter.state` is up to date immediately.
 
 ## Observing AsyncImagePainter.state
 
 Example:
 
 ```kotlin
-val painter = rememberAsyncImagePainter("https://www.example.com/image.jpg")
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 when (painter.state) {
     is AsyncImagePainter.State.Empty,
@@ -183,7 +183,7 @@ val previewHandler = AsyncImagePreviewHandler {
 
 CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
     AsyncImage(
-        model = "https://www.example.com/image.jpg",
+        model = "https://example.com/image.jpg",
         contentDescription = null,
     )
 }
