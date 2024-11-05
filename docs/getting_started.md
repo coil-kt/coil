@@ -33,9 +33,7 @@ implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 After that's imported you can load images from the network using the `ImageView.load` extension function:
 
 ```kotlin
-imageView.load("https://example.com/image.jpg") {
-    crossfade(true)
-}
+imageView.load("https://example.com/image.jpg")
 ```
 
 ## Configuring the singleton ImageLoader
