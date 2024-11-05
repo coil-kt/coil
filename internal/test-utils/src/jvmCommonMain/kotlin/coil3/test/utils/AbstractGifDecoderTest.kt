@@ -10,7 +10,6 @@ import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.toBitmap
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.milliseconds
@@ -90,8 +89,6 @@ abstract class AbstractGifDecoderTest {
         actual.assertIsSimilarTo(expected)
     }
 
-    // FIXME fix this test
-    @Ignore
     @Test
     fun `Each frame is displayed correctly with expected timing for two full iterations`() =
         runTest {
@@ -112,10 +109,12 @@ abstract class AbstractGifDecoderTest {
 
             // First iteration
             for (frame in 1..5) {
+                println()
+                println("iteration 1, frame $frame")
+
                 // Compare each frame of the GIF to the expected bitmap.
                 val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
-                println("iteration 1, frame $frame")
                 actual.assertIsSimilarTo(expected)
 
                 // Each frame of the GIF lasts 400ms.
@@ -124,10 +123,12 @@ abstract class AbstractGifDecoderTest {
 
             // Second iteration
             for (frame in 1..5) {
+                println()
+                println("iteration 2, frame $frame")
+
                 // Compare each frame of the GIF to the expected bitmap.
                 val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
-                println("iteration 2, frame $frame")
                 actual.assertIsSimilarTo(expected)
 
                 // Each frame of the GIF lasts 400ms.
