@@ -45,6 +45,26 @@ internal class AnimatedSkiaImage(
         get() = false
 
     /**
+     * The number of times the animation must be played through.
+     */
+    val maxIterationCount: Int
+        get() = codec.repetitionCount + 1
+
+    /**
+     * The duration of each frame, in order, in milliseconds.
+     */
+    val frameDurationsMs: List<Int> by lazy {
+        codec.framesInfo.map { it.safeFrameDuration }
+    }
+
+    /**
+     * The total duration of a single iteration of the animation in milliseconds.
+     */
+    val singleIterationDurationMs: Int by lazy {
+        frameDurationsMs.sum()
+    }
+
+    /**
      * A temporary [Bitmap] used to decode individual frames.
      */
     private val tempBitmap = Bitmap().apply { allocPixels(codec.imageInfo) }
@@ -106,11 +126,8 @@ internal class AnimatedSkiaImage(
 
         val totalElapsedTimeMs = animationStartTime.elapsedNow().inWholeMilliseconds
 
-        val frameDurationsMs = codec.framesInfo.map { it.safeFrameDuration }
-        val singleIterationDurationMs = frameDurationsMs.sum()
-
         val isAnimationComplete =
-            codec.repetitionCount > 0 && totalElapsedTimeMs > singleIterationDurationMs * codec.repetitionCount
+            maxIterationCount > 0 && totalElapsedTimeMs >= singleIterationDurationMs * maxIterationCount
 
         if (isAnimationComplete) {
             // The animation is complete, freeze on the last frame.
@@ -130,7 +147,6 @@ internal class AnimatedSkiaImage(
             frameDurationsMs = frameDurationsMs,
             singleIterationDurationMs = singleIterationDurationMs,
             totalElapsedTimeMs = totalElapsedTimeMs,
-            repetitionCount = codec.repetitionCount,
         )
 
         canvas.drawFrame(frameIndexToDraw)
@@ -146,21 +162,13 @@ internal class AnimatedSkiaImage(
      * If the animation is complete, the index of the last frame is returned.
      *
      * @param frameDurationsMs The list of frame durations in milliseconds.
-     * @param repetitionCount The number of times the animation should repeat, or -1 for infinite.
      */
     private fun getFrameIndexToDraw(
         frameDurationsMs: List<Int>,
         singleIterationDurationMs: Int,
         totalElapsedTimeMs: Long,
-        repetitionCount: Int,
     ): Int {
-        val currentIteration = totalElapsedTimeMs / singleIterationDurationMs
-        if (repetitionCount in 1..currentIteration) {
-            return frameDurationsMs.lastIndex
-        }
-
         val currentIterationElapsedTimeMs = totalElapsedTimeMs % singleIterationDurationMs
-
         return getFrameIndexToDrawWithinIteration(
             frameDurationsMs = frameDurationsMs,
             elapsedTimeMs = currentIterationElapsedTimeMs,

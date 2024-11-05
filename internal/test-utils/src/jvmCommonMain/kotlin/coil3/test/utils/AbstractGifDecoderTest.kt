@@ -13,6 +13,7 @@ import coil3.toBitmap
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TestTimeSource
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
@@ -127,6 +128,55 @@ abstract class AbstractGifDecoderTest {
 
                 // Each frame of the GIF lasts 400ms.
                 testTimeSource += 400.milliseconds
+            }
+        }
+
+    @Test
+    fun `Image with repeat count of 3 is played 3 times then freezes on last frame`() =
+        runTest {
+            val source = FileSystem.RESOURCES.source("animated_3loops.gif".toPath()).buffer()
+            val options = Options(
+                context = context,
+                size = Size(300, 300),
+                scale = Scale.FIT,
+            )
+
+            val result = assertNotNull(
+                decoderFactory.create(
+                    result = source.asSourceResult(),
+                    options = options,
+                    imageLoader = ImageLoader(context),
+                )?.decode(),
+            )
+
+            for (loop in 1..3) {
+                for (frame in 1..5) {
+                    // Compare each frame of the GIF to the expected bitmap.
+                    val expected: Bitmap = decodeBitmapResource("frame$frame.png")
+                    val actual: Bitmap = result.image.toBitmap()
+                    actual.assertIsSimilarTo(expected)
+
+                    // Each frame of the GIF lasts 400ms.
+                    testTimeSource += 400.milliseconds
+                }
+            }
+
+            val intervals = arrayOf(
+                400.milliseconds,
+                400.milliseconds,
+                400.milliseconds,
+                1.seconds,
+                3.seconds,
+                5.seconds,
+            )
+
+            // The loop is done; no matter how much time passes, the last frame should be displayed.
+            for (interval in intervals) {
+                val expected: Bitmap = decodeBitmapResource("frame5.png")
+                val actual: Bitmap = result.image.toBitmap()
+                actual.assertIsSimilarTo(expected)
+
+                testTimeSource += interval
             }
         }
 
