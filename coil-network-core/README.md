@@ -10,7 +10,7 @@ implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.0")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0")
 ```
 
-If you use OkHttp, that's it. Once imported, network URLs like `https://www.example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
+If you use OkHttp, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
 
 ## Ktor network engines
 

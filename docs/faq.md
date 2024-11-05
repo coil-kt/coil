@@ -12,7 +12,7 @@ Launch an image request with no target:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 imageLoader.enqueue(request)
 ```
@@ -23,7 +23,7 @@ If you only want to preload to the disk cache you can skip decoding and saving t
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     // Disables writing to the memory cache.
     .memoryCachePolicy(CachePolicy.DISABLED)
     // Skips the decode step so we don't waste time/memory decoding the image into memory.

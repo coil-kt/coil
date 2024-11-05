@@ -9,17 +9,17 @@ implementation("io.coil-kt.coil3:coil-compose:3.0.0")
 implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 ```
 
-!!! Note
-    If you use Compose Multiplatform, you'll need to use Ktor to download network images. See [here](network.md#ktor-network-engines) for how to do that.
-
 After that's imported you can load images from the network using `AsyncImage`:
 
 ```kotlin
 AsyncImage(
-    model = "https://www.example.com/image.jpg",
+    model = "https://example.com/image.jpg",
     contentDescription = null,
 )
 ```
+
+!!! Note
+    If you use Compose Multiplatform, you'll need to use Ktor instead of OkHttp. See [here](network.md#ktor-network-engines) for how to do that.
 
 ## Android Views
 
@@ -33,9 +33,7 @@ implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 After that's imported you can load images from the network using the `ImageView.load` extension function:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
-    crossfade(true)
-}
+imageView.load("https://example.com/image.jpg")
 ```
 
 ## Configuring the singleton ImageLoader

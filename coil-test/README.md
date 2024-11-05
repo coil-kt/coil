@@ -10,7 +10,7 @@ testImplementation("io.coil-kt.coil3:coil-test:3.0.0")
 
 ```kotlin
 val engine = FakeImageLoaderEngine.Builder()
-    .intercept("https://www.example.com/image.jpg", FakeImage(color = 0xF00)) // Red
+    .intercept("https://example.com/image.jpg", FakeImage(color = 0xF00)) // Red
     .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
     .default(FakeImage(color = 0x00F)) // Blue
     .build()
@@ -31,7 +31,7 @@ class PaparazziTest {
     @Before
     fun before() {
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("https://www.example.com/image.jpg", FakeImage(color = 0xF00)) // Red
+            .intercept("https://example.com/image.jpg", FakeImage(color = 0xF00)) // Red
             .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
             .default(FakeImage(color = 0x00F)) // Blue
             .build()
@@ -46,7 +46,7 @@ class PaparazziTest {
         // Will display a red box.
         paparazzi.snapshot {
             AsyncImage(
-                model = "https://www.example.com/image.jpg",
+                model = "https://example.com/image.jpg",
                 contentDescription = null,
             )
         }
