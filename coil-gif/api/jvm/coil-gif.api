@@ -3,14 +3,14 @@ public final class coil3/gif/AnimatedImageDecoderFactory_nonAndroidKt {
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;I)V
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ILkotlin/time/TimeSource;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (I)V
-	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ILkotlin/time/TimeSource;)V
+	public synthetic fun <init> (ILkotlin/time/TimeSource;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 

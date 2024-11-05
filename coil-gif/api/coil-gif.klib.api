@@ -23,12 +23,12 @@ abstract fun interface coil3.gif/AnimatedTransformation { // coil3.gif/AnimatedT
 }
 
 final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
-    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int){}[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int, kotlin.time/TimeSource) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int;kotlin.time.TimeSource){}[0]
 
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.gif/AnimatedSkiaImageDecoder.decode|decode(){}[0]
 
     final class Factory : coil3.decode/Decoder.Factory { // coil3.gif/AnimatedSkiaImageDecoder.Factory|null[0]
-        constructor <init>(kotlin/Int = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Int){}[0]
+        constructor <init>(kotlin/Int = ..., kotlin.time/TimeSource = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Int;kotlin.time.TimeSource){}[0]
 
         final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.gif/AnimatedSkiaImageDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
     }
