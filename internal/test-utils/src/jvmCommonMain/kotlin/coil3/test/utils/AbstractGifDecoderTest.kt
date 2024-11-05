@@ -30,7 +30,7 @@ abstract class AbstractGifDecoderTest {
     @Test
     fun `Each frame is displayed correctly with expected timing for one full iteration`() =
         runTest {
-            val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
+            val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
             val options = Options(
                 context = context,
                 size = Size(300, 300),
@@ -47,7 +47,7 @@ abstract class AbstractGifDecoderTest {
 
             for (frame in 1..5) {
                 // Compare each frame of the GIF to the expected bitmap.
-                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val expected: Bitmap = decodeBitmapResource("frame$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
                 actual.assertIsSimilarTo(expected)
 
@@ -58,7 +58,7 @@ abstract class AbstractGifDecoderTest {
 
     @Test
     fun `First frame is redrawn correctly until second frame is expected`() = runTest {
-        val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
+        val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
         val options = Options(
             context = context,
             size = Size(300, 300),
@@ -76,7 +76,7 @@ abstract class AbstractGifDecoderTest {
         // Each frame of the GIF lasts 400ms.
         // Check that the first frame is drawn during 400ms.
         for (i in 1..4) {
-            val expected: Bitmap = decodeBitmapResource("animated_1.png")
+            val expected: Bitmap = decodeBitmapResource("frame1.png")
             val actual: Bitmap = result.image.toBitmap()
             actual.assertIsSimilarTo(expected)
 
@@ -84,7 +84,7 @@ abstract class AbstractGifDecoderTest {
         }
 
         // Once the 400ms have passed, the second frame should be displayed.
-        val expected: Bitmap = decodeBitmapResource("animated_2.png")
+        val expected: Bitmap = decodeBitmapResource("frame2.png")
         val actual: Bitmap = result.image.toBitmap()
         actual.assertIsSimilarTo(expected)
     }
@@ -92,7 +92,7 @@ abstract class AbstractGifDecoderTest {
     @Test
     fun `Each frame is displayed correctly with expected timing for two full iterations`() =
         runTest {
-            val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
+            val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
             val options = Options(
                 context = context,
                 size = Size(300, 300),
@@ -110,7 +110,7 @@ abstract class AbstractGifDecoderTest {
             // First iteration
             for (frame in 1..5) {
                 // Compare each frame of the GIF to the expected bitmap.
-                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val expected: Bitmap = decodeBitmapResource("frame$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
                 actual.assertIsSimilarTo(expected)
 
@@ -121,7 +121,7 @@ abstract class AbstractGifDecoderTest {
             // Second iteration
             for (frame in 1..5) {
                 // Compare each frame of the GIF to the expected bitmap.
-                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val expected: Bitmap = decodeBitmapResource("frame$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
                 actual.assertIsSimilarTo(expected)
 
