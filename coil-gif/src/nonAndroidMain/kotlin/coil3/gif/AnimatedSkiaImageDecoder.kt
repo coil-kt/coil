@@ -7,6 +7,7 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import kotlin.time.TimeSource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.plus
@@ -25,6 +26,7 @@ class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val bufferedFramesCount: Int,
+    private val timeSource: TimeSource,
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult = coroutineScope {
@@ -34,6 +36,7 @@ class AnimatedSkiaImageDecoder(
             image = AnimatedSkiaImage(
                 codec = codec,
                 coroutineScope = this + Job(),
+                timeSource = timeSource,
                 bufferedFramesCount = bufferedFramesCount,
                 animatedTransformation = options.animatedTransformation,
                 onAnimationStart = options.animationStartCallback,
@@ -45,6 +48,7 @@ class AnimatedSkiaImageDecoder(
 
     class Factory(
         private val bufferedFramesCount: Int = DEFAULT_BUFFERED_FRAMES_COUNT,
+        private val timeSource: TimeSource = TimeSource.Monotonic,
     ) : Decoder.Factory {
 
         override fun create(
@@ -57,6 +61,7 @@ class AnimatedSkiaImageDecoder(
                 source = result.source,
                 options = options,
                 bufferedFramesCount = bufferedFramesCount,
+                timeSource = timeSource,
             )
         }
 

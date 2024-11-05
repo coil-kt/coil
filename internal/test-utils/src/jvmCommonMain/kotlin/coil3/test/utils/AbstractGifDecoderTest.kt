@@ -10,8 +10,11 @@ import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.toBitmap
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertNotNull
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TestTimeSource
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.FileSystem
@@ -19,12 +22,43 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 
-abstract class AbstractGifDecoderTest(
-    private val decoderFactory: Decoder.Factory,
-) {
+abstract class AbstractGifDecoderTest {
+
+    protected val testTimeSource = TestTimeSource()
+
+    abstract val decoderFactory: Decoder.Factory
 
     @Test
-    fun basic() = runTest {
+    fun `Each frame is displayed correctly with expected timing for one full iteration`() =
+        runTest {
+            val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
+            val options = Options(
+                context = context,
+                size = Size(300, 300),
+                scale = Scale.FIT,
+            )
+
+            val result = assertNotNull(
+                decoderFactory.create(
+                    result = source.asSourceResult(),
+                    options = options,
+                    imageLoader = ImageLoader(context),
+                )?.decode(),
+            )
+
+            for (frame in 1..5) {
+                // Compare each frame of the GIF to the expected bitmap.
+                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val actual: Bitmap = result.image.toBitmap()
+                actual.assertIsSimilarTo(expected)
+
+                // Each frame of the GIF lasts 400ms.
+                testTimeSource += 400.milliseconds
+            }
+        }
+
+    @Test
+    fun `First frame is redrawn correctly until second frame is expected`() = runTest {
         val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
         val options = Options(
             context = context,
@@ -40,12 +74,66 @@ abstract class AbstractGifDecoderTest(
             )?.decode(),
         )
 
-        (1..5).forEach { frameIndex ->
-            val expected: Bitmap = decodeBitmapResource("animated_$frameIndex.png")
-            val actual: Bitmap = result.image.toBitmap(frameIndex)
+        // Each frame of the GIF lasts 400ms.
+        // Check that the first frame is drawn during 400ms.
+        for (i in 1..4) {
+            val expected: Bitmap = decodeBitmapResource("animated_1.png")
+            val actual: Bitmap = result.image.toBitmap()
             actual.assertIsSimilarTo(expected)
+
+            testTimeSource += 100.milliseconds
         }
+
+        // Once the 400ms have passed, the second frame should be displayed.
+        val expected: Bitmap = decodeBitmapResource("animated_2.png")
+        val actual: Bitmap = result.image.toBitmap()
+        actual.assertIsSimilarTo(expected)
     }
+
+    // FIXME fix this test
+    @Ignore
+    @Test
+    fun `Each frame is displayed correctly with expected timing for two full iterations`() =
+        runTest {
+            val source = FileSystem.RESOURCES.source("animated.gif".toPath()).buffer()
+            val options = Options(
+                context = context,
+                size = Size(300, 300),
+                scale = Scale.FIT,
+            )
+
+            val result = assertNotNull(
+                decoderFactory.create(
+                    result = source.asSourceResult(),
+                    options = options,
+                    imageLoader = ImageLoader(context),
+                )?.decode(),
+            )
+
+            // First iteration
+            for (frame in 1..5) {
+                // Compare each frame of the GIF to the expected bitmap.
+                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val actual: Bitmap = result.image.toBitmap()
+                println("iteration 1, frame $frame")
+                actual.assertIsSimilarTo(expected)
+
+                // Each frame of the GIF lasts 400ms.
+                testTimeSource += 400.milliseconds
+            }
+
+            // Second iteration
+            for (frame in 1..5) {
+                // Compare each frame of the GIF to the expected bitmap.
+                val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
+                val actual: Bitmap = result.image.toBitmap()
+                println("iteration 2, frame $frame")
+                actual.assertIsSimilarTo(expected)
+
+                // Each frame of the GIF lasts 400ms.
+                testTimeSource += 400.milliseconds
+            }
+        }
 
     fun BufferedSource.asSourceResult(
         mimeType: String? = null,

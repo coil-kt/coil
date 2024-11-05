@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import coil3.Canvas
 import coil3.Image
+import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import org.jetbrains.skia.Codec
 internal class AnimatedSkiaImage(
     private val codec: Codec,
     private val coroutineScope: CoroutineScope,
+    private val timeSource: TimeSource,
     private val animatedTransformation: AnimatedTransformation? = null,
     private val onAnimationStart: (() -> Unit)? = null,
     private val onAnimationEnd: (() -> Unit)? = null,
@@ -31,7 +33,7 @@ internal class AnimatedSkiaImage(
 
     private var invalidateTick by mutableIntStateOf(0)
 
-    private var currentRepetitionStartTime: TimeSource.Monotonic.ValueTimeMark? = null
+    private var currentRepetitionStartTime: TimeMark? = null
     private var currentRepetitionCount = 0
     private var lastDrawnFrameIndex = 0
     private var isAnimationComplete = false
@@ -104,7 +106,7 @@ internal class AnimatedSkiaImage(
         }
 
         val startTime = currentRepetitionStartTime
-            ?: TimeSource.Monotonic.markNow().also { currentRepetitionStartTime = it }
+            ?: timeSource.markNow().also { currentRepetitionStartTime = it }
         val elapsedTime = startTime.elapsedNow().inWholeMilliseconds
 
         var accumulatedDuration = 0
