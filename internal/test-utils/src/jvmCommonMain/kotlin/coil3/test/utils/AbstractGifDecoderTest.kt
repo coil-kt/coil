@@ -109,9 +109,6 @@ abstract class AbstractGifDecoderTest {
 
             // First iteration
             for (frame in 1..5) {
-                println()
-                println("iteration 1, frame $frame")
-
                 // Compare each frame of the GIF to the expected bitmap.
                 val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
                 val actual: Bitmap = result.image.toBitmap()
@@ -123,9 +120,6 @@ abstract class AbstractGifDecoderTest {
 
             // Second iteration
             for (frame in 1..5) {
-                println()
-                println("iteration 2, frame $frame")
-
                 // Compare each frame of the GIF to the expected bitmap.
                 val expected: Bitmap = decodeBitmapResource("animated_$frame.png")
                 val actual: Bitmap = result.image.toBitmap()

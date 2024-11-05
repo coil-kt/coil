@@ -58,8 +58,6 @@ internal class AnimatedSkiaImage(
 
     private var hasNotifiedAnimationEnd = false
 
-    private var lastDrawnFrameIndex = -1
-
     override fun draw(canvas: Canvas) {
         if (codec.frameCount == 0) {
             // The image is empty, nothing to draw.
@@ -129,8 +127,6 @@ internal class AnimatedSkiaImage(
             // Increment this value to force the image to be redrawn.
             invalidateTick++
         }
-
-        lastDrawnFrameIndex = frameIndexToDraw
     }
 
     /**
@@ -147,10 +143,6 @@ internal class AnimatedSkiaImage(
         totalElapsedTimeMs: Long,
         repetitionCount: Int,
     ): Int {
-        if (frameDurationsMs.size == 1) {
-            return 0
-        }
-
         val currentIteration = totalElapsedTimeMs / singleIterationDurationMs
         if (repetitionCount in 1..currentIteration) {
             return frameDurationsMs.lastIndex
