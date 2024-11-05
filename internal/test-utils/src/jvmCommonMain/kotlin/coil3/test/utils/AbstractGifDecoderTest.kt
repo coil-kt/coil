@@ -1,5 +1,6 @@
 package coil3.test.utils
 
+import coil3.Bitmap
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.decode.Decoder
@@ -39,8 +40,11 @@ abstract class AbstractGifDecoderTest(
             )?.decode(),
         )
 
-        val expected = decodeBitmapResource("animated_1.png")
-        result.image.toBitmap().assertIsSimilarTo(expected)
+        (1..5).forEach { frameIndex ->
+            val expected: Bitmap = decodeBitmapResource("animated_$frameIndex.png")
+            val actual: Bitmap = result.image.toBitmap(frameIndex)
+            actual.assertIsSimilarTo(expected)
+        }
     }
 
     fun BufferedSource.asSourceResult(
