@@ -2,12 +2,13 @@ package coil3.compose
 
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class AsyncImageModelEqualityDelegateTest {
+class AsyncImageModelEqualityDelegateTest : RobolectricTest() {
     private val equalityDelegate = AsyncImageModelEqualityDelegate.Default
 
     @Test
