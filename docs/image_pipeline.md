@@ -99,3 +99,63 @@ See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 Decoders read an `ImageSource` and return an `Image`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
 See [Decoder](/coil/api/coil-core/coil3.decode/-decoder) for more information.
+
+## Chaining components
+
+A useful property of Coil's image loader components is that they can be chained internally. For example, say you need to perform a network request to get the image URL that will be loaded.
+
+First, let's create a custom data type that only our fetcher will handle:
+
+```kotlin
+data class PartialUrl(
+    val baseUrl: String,
+)
+```
+
+Then let's create our custom `Fetcher` that will get the image URL and delegate to the internal network fetcher:
+
+```kotlin
+class PartialUrlFetcher(
+    private val callFactory: Call.Factory,
+    private val partialUrl: PartialUrl,
+    private val options: Options,
+    private val imageLoader: ImageLoader,
+) : Fetcher {
+
+    override suspend fun fetch(): FetchResult? {
+        val request = Request.Builder()
+            .url(partialUrl.baseUrl)
+            .build()
+        val response = callFactory.newCall(request).await()
+
+        // Read the image URL.
+        val imageUrl = readImageUrl(response.body).toUri()
+
+        // This will delegate to the internal network fetcher.
+        val (fetcher) = checkNotNull(imageLoader.components.newFetcher(imageUrl, options, imageLoader)) {
+            "no supported fetcher"
+        }
+
+        return fetcher.fetch()
+    }
+
+    class Factory(
+        private val callFactory: Call.Factory = OkHttpClient(),
+    ) : Fetcher.Factory<PartialUrl> {
+        override fun create(data: PartialUrl, options: Options, imageLoader: ImageLoader): Fetcher {
+            return PartialUrlFetcher(callFactory, data, options, imageLoader)
+        }
+    }
+}
+```
+
+Finally all we have to do is register the `Fetcher` in our `ComponentRegistry` and pass a `PartialUrl` as our `model`/`data`:
+
+```kotlin
+AsyncImage(
+    model = PartialUrl("https://example.com/image.jpg"),
+    contentDescription = null,
+)
+```
+
+This pattern can similarly be applied to `Mapper`s, `Keyer`s, and `Decoder`s.
