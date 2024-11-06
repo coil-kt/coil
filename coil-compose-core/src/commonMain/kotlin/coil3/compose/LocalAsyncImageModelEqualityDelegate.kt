@@ -33,8 +33,8 @@ interface AsyncImageModelEqualityDelegate {
 
             override fun equals(self: Any?, other: Any?): Boolean {
                 if (this === other) return true
-                return self is ImageRequest &&
-                    other is ImageRequest &&
+                if (self !is ImageRequest || other !is ImageRequest) return self == other
+                return self.context == other.context &&
                     self.context == other.context &&
                     self.data == other.data &&
                     self.memoryCacheKey == other.memoryCacheKey &&
