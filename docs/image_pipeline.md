@@ -149,7 +149,7 @@ class PartialUrlFetcher(
 }
 ```
 
-Then all we have to do is register the `Fetcher` in our `ComponentRegistry` and pass a `PartialUrl` as our `model`/`data`:
+Finally all we have to do is register the `Fetcher` in our `ComponentRegistry` and pass a `PartialUrl` as our `model`/`data`:
 
 ```kotlin
 AsyncImage(
