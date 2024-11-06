@@ -73,3 +73,48 @@ OkHttpNetworkFetcherFactory(
 
 !!! Note
     You need to enable `coreLibraryDesugaring` to support Android API level 25 or below. Follow the docs [here](https://developer.android.com/studio/write/java8-support#library-desugaring) to enable it.
+
+#### Headers
+
+Headers can be added to your image requests in one of two ways. You can set headers for a single request:
+
+```kotlin
+val headers = NetworkHeaders.Builder()
+    .set("Cache-Control", "no-cache")
+    .build()
+val request = ImageRequest.Builder(context)
+    .data("https://example.com/image.jpg")
+    .httpHeaders(headers)
+    .target(imageView)
+    .build()
+imageLoader.execute(request)
+```
+
+Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
+
+```kotlin
+class RequestHeaderInterceptor(
+    private val name: String,
+    private val value: String,
+) : Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "no-cache")
+            .build()
+        val request = chain.request().newBuilder()
+            .httpHeaders(headers)
+            .build()
+        return chain.proceed(request)
+    }
+}
+
+val imageLoader = ImageLoader.Builder(context)
+    .okHttpClient {
+        OkHttpClient.Builder()
+            // This header will be added to every image request.
+            .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
+            .build()
+    }
+    .build()
+```
