@@ -99,11 +99,11 @@ class RequestHeaderInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val headers = NetworkHeaders.Builder()
+        val headers = Headers.Builder()
             .set("Cache-Control", "no-cache")
             .build()
         val request = chain.request().newBuilder()
-            .httpHeaders(headers)
+            .headers(headers)
             .build()
         return chain.proceed(request)
     }
