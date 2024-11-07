@@ -1,5 +1,6 @@
 package coil3.decode
 
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build.VERSION.SDK_INT
 import android.system.ErrnoException
@@ -107,8 +108,17 @@ class StaticImageDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
+            if (!isApplicable(options)) return null
             val source = result.source.toImageDecoderSourceOrNull(options, animated = false) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
+        }
+
+        private fun isApplicable(options: Options): Boolean {
+            // ImageDecoder doesn't let us control the bitmap config beyond software/hardware so
+            // fall back to BitmapFactory if we need a special config.
+            return options.bitmapConfig.let {
+                it == Bitmap.Config.ARGB_8888 || it == Bitmap.Config.HARDWARE
+            }
         }
     }
 }
