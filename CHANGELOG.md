@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.1] - November 7, 2024
+
+- Fix crash when calling `Image.toBitmap` with a hardware bitmap-backed `BitmapImage`.
+- Fix `AsyncImageModelEqualityDelegate.Default` comparing equality incorrectly for non-`ImageRequest` models.
+
 ## [3.0.0] - November 4, 2024
 
 Coil 3.0.0 is the next major release of Coil with full support for [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/).
