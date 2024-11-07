@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import coil3.Extras
 import coil3.annotation.ExperimentalCoilApi
 import coil3.getExtra
+import coil3.gif.MovieDrawable.Companion.GIF_LOOP_COUNT
 import coil3.gif.MovieDrawable.Companion.REPEAT_INFINITE
 import coil3.request.ImageRequest
 import coil3.request.Options
@@ -17,7 +18,7 @@ import coil3.request.Options
  * @see AnimatedImageDrawable.setRepeatCount
  */
 fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
-    require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+    require(repeatCount >= GIF_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
     extras[repeatCountKey] = repeatCount
 }
 

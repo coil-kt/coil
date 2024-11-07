@@ -151,7 +151,7 @@ class MovieDrawable @JvmOverloads constructor(
      * Default: [REPEAT_INFINITE]
      */
     fun setRepeatCount(repeatCount: Int) {
-        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        require(repeatCount >= GIF_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
         this.repeatCount = repeatCount
     }
 
@@ -193,7 +193,8 @@ class MovieDrawable @JvmOverloads constructor(
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         return if (paint.alpha == 255 &&
-            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))) {
+            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))
+        ) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT
@@ -284,5 +285,12 @@ class MovieDrawable @JvmOverloads constructor(
     companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */
         const val REPEAT_INFINITE = -1
+
+        /**
+         * Pass this to [setRepeatCount] to repeat according to GIF's LoopCount metadata.
+         *
+         * If the metadata is not available, it will default to infinite repetition.
+         */
+        const val GIF_LOOP_COUNT = -2
     }
 }

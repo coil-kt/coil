@@ -34,6 +34,13 @@ class GifDecoder(
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
+        val loopCount = if (options.repeatCount == MovieDrawable.GIF_LOOP_COUNT) {
+            source.source().peek().let { extractLoopCountFromGif(it) }
+                ?: MovieDrawable.REPEAT_INFINITE
+        } else {
+            options.repeatCount
+        }
+
         val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
         val movie: Movie? = source.use { Movie.decodeStream(it.source().inputStream()) }
 
@@ -49,9 +56,8 @@ class GifDecoder(
             scale = options.scale,
         )
 
-        drawable.setRepeatCount(options.repeatCount)
+        drawable.setRepeatCount(loopCount)
 
-        // Set the start and end animation callbacks if any one is supplied through the request.
         val onStart = options.animationStartCallback
         val onEnd = options.animationEndCallback
         if (onStart != null || onEnd != null) {
