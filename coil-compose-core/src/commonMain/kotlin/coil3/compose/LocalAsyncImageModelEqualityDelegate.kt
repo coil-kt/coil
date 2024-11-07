@@ -35,7 +35,6 @@ interface AsyncImageModelEqualityDelegate {
                 if (this === other) return true
                 if (self !is ImageRequest || other !is ImageRequest) return self == other
                 return self.context == other.context &&
-                    self.context == other.context &&
                     self.data == other.data &&
                     self.memoryCacheKey == other.memoryCacheKey &&
                     self.memoryCacheKeyExtras == other.memoryCacheKeyExtras &&
