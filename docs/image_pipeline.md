@@ -129,13 +129,12 @@ class PartialUrlFetcher(
         val response = callFactory.newCall(request).await()
 
         // Read the image URL.
-        val imageUrl = readImageUrl(response.body).toUri()
+        val imageUrl: String = readImageUrl(response.body)
 
         // This will delegate to the internal network fetcher.
-        val (fetcher) = checkNotNull(imageLoader.components.newFetcher(imageUrl, options, imageLoader)) {
-            "no supported fetcher"
-        }
-
+        val data = imageLoader.components.map(imageUrl, options)
+        val output = imageLoader.components.newFetcher(data, options, imageLoader)
+        val (fetcher) = checkNotNull(output) { "no supported fetcher" }
         return fetcher.fetch()
     }
 
