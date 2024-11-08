@@ -52,7 +52,7 @@ The `coil-compose` artifact's APIs are mostly unchanged. You can continue using 
 
 ## General
 
-Other import behavior changes include:
+Other important behavior changes include:
 
 - First party `Fetcher`s and `Decoder`s (e.g. `NetworkFetcher.Factory`, `SvgDecoder`, etc.) are now automatically added to each new `ImageLoader` through a service loader. This behaviour can be disabled with `ImageLoader.Builder.serviceLoaderEnabled(false)`.
 - Remove support for `android.resource://example.package.name/drawable/image` URIs as it prevents resource shrinking optimizations. It's recommended to pass `R.drawable.image` values directly. Passing the resource ID instead of the resource name will still work: `android.resource://example.package.name/12345678`. If you still needs its functionality you can [manually include `ResourceUriMapper` in your component registry](https://github.com/coil-kt/coil/blob/da7d872e340430014dbc5136e35eb62f9b17662e/coil-core/src/androidInstrumentedTest/kotlin/coil3/map/ResourceUriMapper.kt).
