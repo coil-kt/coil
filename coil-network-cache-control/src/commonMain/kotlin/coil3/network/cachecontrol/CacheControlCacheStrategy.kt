@@ -91,16 +91,14 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
         private var expires: Instant? = null
 
         /**
-         * Extension header set by OkHttp specifying the timestamp when the cached HTTP request was
-         * first initiated.
+         * The timestamp when the cached HTTP request was first initiated.
          */
-        private var sentRequestMillis = 0L
+        private var requestMillis = 0L
 
         /**
-         * Extension header set by OkHttp specifying the timestamp when the cached HTTP response was
-         * first received.
+         * The timestamp when the cached HTTP response was first received.
          */
-        private var receivedResponseMillis = 0L
+        private var responseMillis = 0L
 
         /** Etag of the cached response. */
         private var etag: String? = null
@@ -109,6 +107,9 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
         private var ageSeconds = -1
 
         init {
+            requestMillis = cacheResponse.requestMillis
+            responseMillis = cacheResponse.responseMillis
+
             for ((name, values) in cacheResponse.headers.asMap()) {
                 val value = values.firstOrNull() ?: continue
                 when {
@@ -221,7 +222,7 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
 
             val expires = expires
             if (expires != null) {
-                val servedMillis = servedDate?.toEpochMilliseconds() ?: receivedResponseMillis
+                val servedMillis = servedDate?.toEpochMilliseconds() ?: responseMillis
                 val delta = expires.toEpochMilliseconds() - servedMillis
                 return if (delta > 0L) delta else 0L
             }
@@ -236,7 +237,7 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
         private fun cacheResponseAge(): Long {
             val servedDate = servedDate
             val apparentReceivedAge = if (servedDate != null) {
-                maxOf(0, receivedResponseMillis - servedDate.toEpochMilliseconds())
+                maxOf(0, responseMillis - servedDate.toEpochMilliseconds())
             } else {
                 0
             }
@@ -248,8 +249,8 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
                 apparentReceivedAge
             }
 
-            val responseDuration = maxOf(0, receivedResponseMillis - sentRequestMillis)
-            val residentDuration = maxOf(0, now.toEpochMilliseconds() - receivedResponseMillis)
+            val responseDuration = maxOf(0, responseMillis - requestMillis)
+            val residentDuration = maxOf(0, now.toEpochMilliseconds() - responseMillis)
             return receivedAge + responseDuration + residentDuration
         }
 
