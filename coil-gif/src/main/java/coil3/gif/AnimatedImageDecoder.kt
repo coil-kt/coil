@@ -16,8 +16,7 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.decode.toImageDecoderSourceOrNull
 import coil3.fetch.SourceFetchResult
-import coil3.gif.MovieDrawable.Companion.GIF_LOOP_COUNT
-import coil3.gif.MovieDrawable.Companion.REPEAT_INFINITE
+import coil3.gif.MovieDrawable.Companion.ENCODED_LOOP_COUNT
 import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
@@ -57,21 +56,10 @@ class AnimatedImageDecoder(
     override suspend fun decode(): DecodeResult {
         var isSampled = false
 
-        val loopCount = if (options.repeatCount == GIF_LOOP_COUNT) {
-            extractLoopCountFromGif(source.source().peek()) ?: REPEAT_INFINITE
-        } else {
-            options.repeatCount
-        }
-
         val drawable = runInterruptible {
-            maybeWrapImageSourceToRewriteFrameDelay(
-                source,
-                enforceMinimumFrameDelay,
-            ).use { source ->
+            maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
                 val imageSource = source.toImageDecoderSourceOrNull(options, animated = true)
-                    ?: ImageDecoder.createSource(
-                        source.source().use { it.squashToDirectByteBuffer() },
-                    )
+                    ?: ImageDecoder.createSource(source.source().use { it.squashToDirectByteBuffer() })
                 imageSource.decodeDrawable { info, _ ->
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
@@ -102,13 +90,14 @@ class AnimatedImageDecoder(
                             setTargetSize(targetWidth, targetHeight)
                         }
                     }
+
                     // Configure any other attributes.
                     configureImageDecoderProperties()
                 }
             }
         }
         return DecodeResult(
-            image = wrapDrawable(drawable, loopCount).asImage(),
+            image = wrapDrawable(drawable).asImage(),
             isSampled = isSampled,
         )
     }
@@ -130,12 +119,14 @@ class AnimatedImageDecoder(
         postProcessor = options.animatedTransformation?.asPostProcessor()
     }
 
-    private suspend fun wrapDrawable(baseDrawable: Drawable, loopCount: Int): Drawable {
+    private suspend fun wrapDrawable(baseDrawable: Drawable): Drawable {
         if (baseDrawable !is AnimatedImageDrawable) {
             return baseDrawable
         }
 
-        baseDrawable.repeatCount = loopCount
+        if (options.repeatCount != ENCODED_LOOP_COUNT) {
+            baseDrawable.repeatCount = options.repeatCount
+        }
 
         // Set the start and end animation callbacks if any one is supplied through the request.
         val onStart = options.animationStartCallback

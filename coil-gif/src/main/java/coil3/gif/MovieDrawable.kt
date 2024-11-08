@@ -14,7 +14,9 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.SystemClock
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -151,7 +153,11 @@ class MovieDrawable @JvmOverloads constructor(
      * Default: [REPEAT_INFINITE]
      */
     fun setRepeatCount(repeatCount: Int) {
-        require(repeatCount >= GIF_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
+        if (SDK_INT >= 28) {
+            require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
+        } else {
+            require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        }
         this.repeatCount = repeatCount
     }
 
@@ -193,8 +199,7 @@ class MovieDrawable @JvmOverloads constructor(
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         return if (paint.alpha == 255 &&
-            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))
-        ) {
+            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT
@@ -287,10 +292,10 @@ class MovieDrawable @JvmOverloads constructor(
         const val REPEAT_INFINITE = -1
 
         /**
-         * Pass this to [setRepeatCount] to repeat according to GIF's LoopCount metadata.
-         *
-         * If the metadata is not available, it will default to infinite repetition.
+         * Pass this to [setRepeatCount] to repeat according to encoded LoopCount metadata.
+         * This only applies when using [AnimatedImageDecoder].
          */
-        const val GIF_LOOP_COUNT = -2
+        @RequiresApi(28)
+        const val ENCODED_LOOP_COUNT = -2
     }
 }

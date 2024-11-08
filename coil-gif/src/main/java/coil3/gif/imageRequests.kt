@@ -3,10 +3,11 @@ package coil3.gif
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION.SDK_INT
 import coil3.Extras
 import coil3.annotation.ExperimentalCoilApi
 import coil3.getExtra
-import coil3.gif.MovieDrawable.Companion.GIF_LOOP_COUNT
+import coil3.gif.MovieDrawable.Companion.ENCODED_LOOP_COUNT
 import coil3.gif.MovieDrawable.Companion.REPEAT_INFINITE
 import coil3.request.ImageRequest
 import coil3.request.Options
@@ -18,7 +19,11 @@ import coil3.request.Options
  * @see AnimatedImageDrawable.setRepeatCount
  */
 fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
-    require(repeatCount >= GIF_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
+    if (SDK_INT >= 28) {
+        require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
+    } else {
+        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+    }
     extras[repeatCountKey] = repeatCount
 }
 
