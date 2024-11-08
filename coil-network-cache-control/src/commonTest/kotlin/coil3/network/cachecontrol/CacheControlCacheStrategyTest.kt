@@ -6,7 +6,6 @@ import coil3.disk.DiskCache
 import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
 import coil3.network.CacheNetworkResponse
-import coil3.network.CacheStrategy
 import coil3.network.ConnectivityChecker
 import coil3.network.NetworkClient
 import coil3.network.NetworkFetcher
@@ -23,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.datetime.Instant
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
@@ -31,13 +31,16 @@ import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 
 class CacheControlCacheStrategyTest : RobolectricTest() {
+    // Friday, November 8, 2024 8:00:00 AM UTC
+    private var now = Instant.fromEpochSeconds(1731052800)
+
     private val fileSystem = FakeFileSystem()
     private val diskCache = DiskCache.Builder()
         .fileSystem(fileSystem)
         .directory(fileSystem.workingDirectory)
         .build()
     private val networkClient = FakeNetworkClient()
-    private val cacheStrategy = CacheControlCacheStrategy(now = { Instant.DISTANT_PAST })
+    private val cacheStrategy = CacheControlCacheStrategy(now = { now })
 
     @Test
     fun emptyMetadataIsAlwaysReturned() = runTestAsync {
@@ -60,22 +63,19 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
     fun noStoreIsNeverCachedOrReturned() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        val newResponse = {
-            NetworkResponse(
-                headers = NetworkHeaders.Builder()
-                    .set("Cache-Control", "no-store")
-                    .build(),
-                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-            )
-        }
-        networkClient.enqueue(url, newResponse())
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "no-store")
+            .build()
+        var response = FakeNetworkResponse(headers = headers)
+        networkClient.enqueue(url, response)
         var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        networkClient.enqueue(url, newResponse())
+        response = FakeNetworkResponse(headers = headers)
+        networkClient.enqueue(url, response)
         result = newFetcher(url).fetch()
 
         assertEquals(2, networkClient.requests.size)
@@ -93,10 +93,7 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
             .set("Cache-Control", "no-cache")
             .set("ETag", etag)
             .build()
-        var response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        var response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
         var result = newFetcher(url).fetch()
 
@@ -107,9 +104,10 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
-        response = NetworkResponse(
+        response = FakeNetworkResponse(
             code = 304,
             headers = headers,
+            body = null,
         )
         networkClient.enqueue(url, response)
         result = newFetcher(url).fetch()
@@ -133,10 +131,7 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
             .set("Cache-Header", "none")
             .set("ETag", "fake_etag")
             .build()
-        var response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        var response = FakeNetworkResponse(headers = headers)
 
         networkClient.enqueue(url, response)
         var result = newFetcher(url).fetch()
@@ -148,11 +143,12 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
-        response = NetworkResponse(
+        response = FakeNetworkResponse(
             code = 304,
             headers = NetworkHeaders.Builder()
                 .set("Response-Header", "none")
                 .build(),
+            body = null,
         )
         networkClient.enqueue(url, response)
         result = newFetcher(url).fetch()
@@ -177,71 +173,65 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1838 */
     @Test
-    fun HTTP_NOT_MODIFIED_ResponseCombinesHeadersWithCachedResponseWithNonASCII_CachedHeaders() =
-        runTestAsync {
-            val url = FAKE_URL
-            val expectedSize = FAKE_DATA.size.toLong()
-            val headers = NetworkHeaders.Builder()
-                .set("Cache-Control", "no-cache")
-                .set("Cache-Header", "none")
-                .set("ETag", "fake_etag")
-                .add("Content-Disposition", "inline; filename=\"alimentación.webp\"")
-                .build()
-            var response = NetworkResponse(
-                headers = headers,
-                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-            )
+    fun HTTP_NOT_MODIFIED_ResponseCombinesHeadersWithCachedResponseWithNonASCII_CachedHeaders() = runTestAsync {
+        val url = FAKE_URL
+        val expectedSize = FAKE_DATA.size.toLong()
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "no-cache")
+            .set("Cache-Header", "none")
+            .set("ETag", "fake_etag")
+            .add("Content-Disposition", "inline; filename=\"alimentación.webp\"")
+            .build()
+        var response = FakeNetworkResponse(headers = headers)
 
-            networkClient.enqueue(url, response)
-            var result = newFetcher(url).fetch()
+        networkClient.enqueue(url, response)
+        var result = newFetcher(url).fetch()
 
-            assertEquals(1, networkClient.requests.size)
-            assertIs<SourceFetchResult>(result)
-            assertEquals(DataSource.NETWORK, result.dataSource)
-            assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-            diskCache.openSnapshot(url).use(::assertNotNull)
+        assertEquals(1, networkClient.requests.size)
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
-            // Don't set a response body as it should be read from the cache.
-            response = NetworkResponse(
-                code = 304,
-                headers = NetworkHeaders.Builder()
-                    .set("Response-Header", "none")
-                    .build(),
-            )
-            networkClient.enqueue(url, response)
-            result = newFetcher(url).fetch()
+        // Don't set a response body as it should be read from the cache.
+        response = FakeNetworkResponse(
+            code = 304,
+            headers = NetworkHeaders.Builder()
+                .set("Response-Header", "none")
+                .build(),
+            body = null,
+        )
+        networkClient.enqueue(url, response)
+        result = newFetcher(url).fetch()
 
-            assertIs<SourceFetchResult>(result)
-            assertEquals(DataSource.NETWORK, result.dataSource)
-            assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-            assertEquals(2, networkClient.requests.size)
-            val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
-                CacheNetworkResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
-            }
-            val expectedNetworkHeaders = headers.newBuilder()
-                .apply {
-                    for ((name, values) in response.headers.asMap()) {
-                        for (value in values) add(name, value)
-                    }
-                }
-                .build()
-            assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.headers.asMap())
+        assertEquals(2, networkClient.requests.size)
+        val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
+            CacheNetworkResponse.readFrom(diskCache.fileSystem.source(snapshot.metadata).buffer())
         }
+        val expectedNetworkHeaders = headers.newBuilder()
+            .apply {
+                for ((name, values) in response.headers.asMap()) {
+                    for (value in values) add(name, value)
+                }
+            }
+            .build()
+        assertEquals(expectedNetworkHeaders.asMap(), cacheResponse.headers.asMap())
+    }
 
     @Test
     fun unexpiredMaxAgeIsReturnedFromCache() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        val newResponse = {
-            NetworkResponse(
-                headers = NetworkHeaders.Builder()
-                    .set("Cache-Control", "max-age=60")
-                    .build(),
-                body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-            )
-        }
-        networkClient.enqueue(url, newResponse())
+
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "max-age=60")
+            .build()
+        val response = FakeNetworkResponse(headers = headers)
+        networkClient.enqueue(url, response)
         var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
@@ -250,7 +240,6 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
         diskCache.openSnapshot(url).use(::assertNotNull)
 
-        networkClient.enqueue(url, newResponse())
         result = newFetcher(url).fetch()
 
         assertEquals(1, networkClient.requests.size)
@@ -263,19 +252,13 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
     fun expiredMaxAgeIsNotReturnedFromCache() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        var now = 1000L
-
-        val cacheStrategy = CacheControlCacheStrategy(now = { Instant.fromEpochMilliseconds(now) })
 
         val headers = NetworkHeaders.Builder()
             .set("Cache-Control", "max-age=60")
             .build()
-        var response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        var response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
-        var result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
@@ -284,14 +267,11 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Increase the current time.
-        now += 65_000
+        now += 65.seconds
 
-        response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
-        result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        result = newFetcher(url).fetch()
 
         assertEquals(2, networkClient.requests.size)
         assertIs<SourceFetchResult>(result)
@@ -301,22 +281,18 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
     @Test
     fun expiredHeaderIsNotReturnedFromCache() = runTestAsync {
+        now = Instant.fromEpochMilliseconds(1723436400000L)
+
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        val now = 1723436400000L
-
-        val cacheStrategy = CacheControlCacheStrategy(now = { Instant.fromEpochMilliseconds(now) })
 
         val headers = NetworkHeaders.Builder()
             .set("Cache-Control", "public")
             .set("Expires", "Fri, 9 Aug 2024 12:00:00 GMT")
             .build()
-        var response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        var response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
-        var result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
@@ -324,12 +300,9 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
         diskCache.openSnapshot(url).use(::assertNotNull)
 
-        response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
-        result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        result = newFetcher(url).fetch()
 
         assertEquals(2, networkClient.requests.size)
         assertIs<SourceFetchResult>(result)
@@ -339,22 +312,18 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
     @Test
     fun unexpiredHeaderIsReturnedFromCache() = runTestAsync {
+        now = Instant.fromEpochMilliseconds(1623436400000L)
+
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
-        val now = 1623436400000L
-
-        val cacheStrategy = CacheControlCacheStrategy(now = { Instant.fromEpochMilliseconds(now) })
 
         val headers = NetworkHeaders.Builder()
             .set("Cache-Control", "public")
             .set("Expires", "Fri, 9 Aug 2024 12:00:00 GMT")
             .build()
-        var response = NetworkResponse(
-            headers = headers,
-            body = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
-        )
+        var response = FakeNetworkResponse(headers = headers)
         networkClient.enqueue(url, response)
-        var result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        var result = newFetcher(url).fetch()
 
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
@@ -363,11 +332,12 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
-        response = NetworkResponse(
+        response = FakeNetworkResponse(
             headers = headers,
+            body = null,
         )
         networkClient.enqueue(url, response)
-        result = newFetcher(url, cacheStrategy = cacheStrategy).fetch()
+        result = newFetcher(url).fetch()
 
         assertEquals(1, networkClient.requests.size)
         assertIs<SourceFetchResult>(result)
@@ -377,7 +347,6 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
 
     private fun newFetcher(
         url: String,
-        cacheStrategy: CacheStrategy = this.cacheStrategy,
         networkClient: NetworkClient = this.networkClient,
         diskCache: DiskCache? = this.diskCache,
         options: Options = Options(context),
@@ -392,6 +361,22 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
             .build()
         return checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
     }
+
+    private fun FakeNetworkResponse(
+        code: Int = 200,
+        requestMillis: Long = now.toEpochMilliseconds(),
+        responseMillis: Long = now.toEpochMilliseconds(),
+        headers: NetworkHeaders = NetworkHeaders.EMPTY,
+        body: NetworkResponseBody? = NetworkResponseBody(Buffer().apply { write(FAKE_DATA) }),
+        delegate: Any? = null,
+    ) = NetworkResponse(
+        code = code,
+        requestMillis = requestMillis,
+        responseMillis = responseMillis,
+        headers = headers,
+        body = body,
+        delegate = delegate,
+    )
 
     class FakeNetworkClient : NetworkClient {
         private val queue = mutableMapOf<String, ArrayDeque<NetworkResponse>>()
