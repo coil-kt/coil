@@ -29,36 +29,35 @@ abstract class AbstractGifDecoderTest {
     abstract val decoderFactory: Decoder.Factory
 
     @Test
-    fun `Each frame is displayed correctly with expected timing for one full iteration`() =
-        runTest {
-            val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
-            val options = Options(
-                context = context,
-                size = Size(300, 300),
-                scale = Scale.FIT,
-            )
+    fun eachFrameIsDisplayedCorrectlyWithExpectedTimingForOneFullIteration() = runTest {
+        val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
+        val options = Options(
+            context = context,
+            size = Size(300, 300),
+            scale = Scale.FIT,
+        )
 
-            val result = assertNotNull(
-                decoderFactory.create(
-                    result = source.asSourceResult(),
-                    options = options,
-                    imageLoader = ImageLoader(context),
-                )?.decode(),
-            )
+        val result = assertNotNull(
+            decoderFactory.create(
+                result = source.asSourceResult(),
+                options = options,
+                imageLoader = ImageLoader(context),
+            )?.decode(),
+        )
 
-            for (frame in 1..5) {
-                // Compare each frame of the GIF to the expected bitmap.
-                val expected: Bitmap = decodeBitmapResource("frame$frame.png")
-                val actual: Bitmap = result.image.toBitmap()
-                actual.assertIsSimilarTo(expected)
+        for (frame in 1..5) {
+            // Compare each frame of the GIF to the expected bitmap.
+            val expected: Bitmap = decodeBitmapResource("frame$frame.png")
+            val actual: Bitmap = result.image.toBitmap()
+            actual.assertIsSimilarTo(expected)
 
-                // Each frame of the GIF lasts 400ms.
-                testTimeSource += 400.milliseconds
-            }
+            // Each frame of the GIF lasts 400ms.
+            testTimeSource += 400.milliseconds
         }
+    }
 
     @Test
-    fun `First frame is redrawn correctly until second frame is expected`() = runTest {
+    fun firstFrameIsRedrawnCorrectlyUntilSecondFrameIsExpected() = runTest {
         val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
         val options = Options(
             context = context,
@@ -91,7 +90,7 @@ abstract class AbstractGifDecoderTest {
     }
 
     @Test
-    fun `Each frame is displayed correctly with expected timing for two full iterations`() =
+    fun eachFrameIsDisplayedCorrectlyWithExpectedTimingForTwoFullIterations() =
         runTest {
             val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
             val options = Options(
@@ -132,7 +131,7 @@ abstract class AbstractGifDecoderTest {
         }
 
     @Test
-    fun `Image with repeat count of 3 is played 3 times then freezes on last frame`() =
+    fun imageWithRepeatCountOf3IsPlayed3TimesThenFreezesOnLastFrame() =
         runTest {
             val source = FileSystem.RESOURCES.source("animated_3loops.gif".toPath()).buffer()
             val options = Options(
