@@ -67,7 +67,7 @@ Pass `CacheControlCacheStrategy` to your `NetworkFetcher` then register the cust
 
 ```kotlin
 OkHttpNetworkFetcherFactory(
-    cacheStrategy = CacheControlCacheStrategy(),
+    cacheStrategy = { CacheControlCacheStrategy() },
 )
 ```
 
