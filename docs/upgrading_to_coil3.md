@@ -13,7 +13,7 @@ Using Coil 3 in a Compose Multiplatform project? Check out the [`samples`](https
 
 ## Maven Coordinates and Package Name
 
-Coil's Maven coordinates were updated from `io.coil-kt` to `io.coil-kt.coil3` and its package name was updated from `coil` to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.7.0` is now `io.coil-kt.coil3:coil:3.0.1`.
+Coil's Maven coordinates were updated from `io.coil-kt` to `io.coil-kt.coil3` and its package name was updated from `coil` to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.7.0` is now `io.coil-kt.coil3:coil:3.0.2`.
 
 The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` and `coil-compose-core` respectively to align with the naming conventions used by Coroutines, Ktor, and AndroidX.
 

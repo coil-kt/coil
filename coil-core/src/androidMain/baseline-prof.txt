@@ -267,6 +267,7 @@ HSPLcoil3/decode/StaticImageDecoder;->decode(Lkotlin/coroutines/Continuation;)Lj
 Lcoil3/decode/StaticImageDecoder$Factory;
 HSPLcoil3/decode/StaticImageDecoder$Factory;-><init>(Lkotlinx/coroutines/sync/Semaphore;)V
 HSPLcoil3/decode/StaticImageDecoder$Factory;->create(Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+HSPLcoil3/decode/StaticImageDecoder$Factory;->isApplicable(Lcoil3/request/Options;)Z
 Lcoil3/decode/StaticImageDecoder$decode$1;
 HSPLcoil3/decode/StaticImageDecoder$decode$1;-><init>(Lcoil3/decode/StaticImageDecoder;Lkotlin/coroutines/Continuation;)V
 HSPLcoil3/decode/StaticImageDecoder$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
