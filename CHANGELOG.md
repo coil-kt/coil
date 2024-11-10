@@ -3,7 +3,7 @@
 ## [3.0.2] - November 9, 2024
 
 - Fix crash when invoking `OkHttpNetworkFetcherFactory` with a custom `CacheStrategy` on Android.
-- Fix age of a cache entry to being computed incorrectly by `CacheControlCacheStrategy`.
+- Fix `CacheControlCacheStrategy` computing the age of a cache entry incorrectly.
 - Fix case where `ImageRequest.bitmapConfig` would only be respected on >= API 28 if it was `ARGB_8888` or `HARDWARE`.
 
 ## [3.0.1] - November 7, 2024
