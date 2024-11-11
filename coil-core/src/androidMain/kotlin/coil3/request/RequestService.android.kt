@@ -24,6 +24,7 @@ import coil3.util.VALID_TRANSFORMATION_CONFIGS
 import coil3.util.getLifecycle
 import coil3.util.isHardware
 import coil3.util.safeConfig
+import coil3.util.scale
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -105,12 +106,22 @@ internal class AndroidRequestService(
     }
 
     private fun ImageRequest.resolveScale(size: Size): Scale {
+        if (defined.scale != null) {
+            return defined.scale
+        }
+
         // Use `Scale.FIT` if either dimension is undefined.
         if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
             return Scale.FIT
-        } else {
-            return scale
         }
+
+        // Autodetect the scale from the ImageView.
+        val imageView = (target as? ViewTarget<*>)?.view as? ImageView
+        if (imageView != null) {
+            return imageView.scale
+        }
+
+        return scale
     }
 
     private fun ImageRequest.resolvePrecision(sizeResolver: SizeResolver): Precision {
