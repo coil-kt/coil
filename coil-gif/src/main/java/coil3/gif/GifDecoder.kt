@@ -4,7 +4,6 @@ package coil3.gif
 
 import android.graphics.Bitmap
 import android.graphics.Movie
-import android.os.Build
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DecodeResult

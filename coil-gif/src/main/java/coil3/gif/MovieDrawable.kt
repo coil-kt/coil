@@ -14,9 +14,7 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION.SDK_INT
 import android.os.SystemClock
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -195,7 +193,8 @@ class MovieDrawable @JvmOverloads constructor(
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         return if (paint.alpha == 255 &&
-            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))) {
+            (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))
+        ) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT
