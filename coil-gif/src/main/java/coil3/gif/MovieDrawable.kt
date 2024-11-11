@@ -153,11 +153,7 @@ class MovieDrawable @JvmOverloads constructor(
      * Default: [REPEAT_INFINITE]
      */
     fun setRepeatCount(repeatCount: Int) {
-        if (SDK_INT >= 28) {
-            require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
-        } else {
-            require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-        }
+        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
         this.repeatCount = repeatCount
     }
 
@@ -290,12 +286,5 @@ class MovieDrawable @JvmOverloads constructor(
     companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */
         const val REPEAT_INFINITE = -1
-
-        /**
-         * Pass this to [setRepeatCount] to repeat according to encoded LoopCount metadata.
-         * This only applies when using [AnimatedImageDecoder].
-         */
-        @RequiresApi(28)
-        const val ENCODED_LOOP_COUNT = -2
     }
 }

@@ -16,11 +16,11 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.decode.toImageDecoderSourceOrNull
 import coil3.fetch.SourceFetchResult
-import coil3.gif.MovieDrawable.Companion.ENCODED_LOOP_COUNT
 import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.gif.internal.squashToDirectByteBuffer
+import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
@@ -161,5 +161,14 @@ class AnimatedImageDecoder(
                 DecodeUtils.isAnimatedWebP(source) ||
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
+    }
+
+    companion object {
+        /**
+         * Pass this to [ImageRequest.Builder.repeatCount] to repeat according to encoded LoopCount metadata.
+         * This only applies when using [AnimatedImageDecoder].
+         */
+        @RequiresApi(28)
+        const val ENCODED_LOOP_COUNT = -2
     }
 }

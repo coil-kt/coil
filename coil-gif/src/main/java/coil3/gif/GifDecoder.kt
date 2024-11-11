@@ -4,6 +4,7 @@ package coil3.gif
 
 import android.graphics.Bitmap
 import android.graphics.Movie
+import android.os.Build
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DecodeResult
@@ -11,6 +12,7 @@ import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.AnimatedImageDecoder.Companion.ENCODED_LOOP_COUNT
 import coil3.gif.internal.animatable2CompatCallbackOf
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.request.Options
@@ -49,7 +51,9 @@ class GifDecoder(
             scale = options.scale,
         )
 
-        drawable.setRepeatCount(options.repeatCount)
+        if (options.repeatCount != ENCODED_LOOP_COUNT) {
+            drawable.setRepeatCount(options.repeatCount)
+        }
 
         // Set the start and end animation callbacks if any one is supplied through the request.
         val onStart = options.animationStartCallback
