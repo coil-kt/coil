@@ -19,6 +19,7 @@ Import the Compose library and a [networking library](https://coil-kt.github.io/
 implementation("io.coil-kt.coil3:coil-compose:3.0.2")
 implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.2")
 ```
+> **⚠️ Important:** If you use Compose Multiplatform, you'll need to use Ktor instead of OkHttp. See [here](https://coil-kt.github.io/coil/network/#ktor-network-engines) for how to do that.
 
 To load an image, use the `AsyncImage` composable:
 
