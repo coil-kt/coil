@@ -998,6 +998,7 @@ final inline fun (coil3.size/Dimension).coil3.size/pxOrElse(kotlin/Function0<kot
 final inline fun (coil3.util/IntPair).coil3.util/component1(): kotlin/Int // coil3.util/component1|component1@coil3.util.IntPair(){}[0]
 final inline fun (coil3.util/IntPair).coil3.util/component2(): kotlin/Int // coil3.util/component2|component2@coil3.util.IntPair(){}[0]
 final inline fun (coil3.util/Logger).coil3.util/log(kotlin/String, coil3.util/Logger.Level, kotlin/Function0<kotlin/String>) // coil3.util/log|log@coil3.util.Logger(kotlin.String;coil3.util.Logger.Level;kotlin.Function0<kotlin.String>){}[0]
+final inline fun (coil3.util/Logger).coil3.util/log(kotlin/String, kotlin/Throwable, kotlin/Function0<kotlin/String>) // coil3.util/log|log@coil3.util.Logger(kotlin.String;kotlin.Throwable;kotlin.Function0<kotlin.String>){}[0]
 
 // Targets: [apple]
 final fun (coil3/ImageLoader).coil3/executeBlocking(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/executeBlocking|executeBlocking@coil3.ImageLoader(coil3.request.ImageRequest){}[0]
