@@ -847,5 +847,6 @@ public final class coil3/util/Logger$Level : java/lang/Enum {
 public final class coil3/util/LoggingKt {
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Lcoil3/util/Logger$Level;Lkotlin/jvm/functions/Function0;)V
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
 }
 

@@ -46,7 +46,6 @@ class DebugLogger @JvmOverloads constructor(
         if (message != null) {
             println(level, tag, message)
         }
-
         if (throwable != null) {
             println(level, tag, throwable.stackTraceToString())
         }
@@ -56,6 +55,12 @@ class DebugLogger @JvmOverloads constructor(
 fun Logger.log(tag: String, throwable: Throwable) {
     if (minLevel <= Logger.Level.Error) {
         log(tag, Logger.Level.Error, null, throwable)
+    }
+}
+
+inline fun Logger.log(tag: String, throwable: Throwable, message: () -> String) {
+    if (minLevel <= Logger.Level.Error) {
+        log(tag, Logger.Level.Error, message(), throwable)
     }
 }
 
