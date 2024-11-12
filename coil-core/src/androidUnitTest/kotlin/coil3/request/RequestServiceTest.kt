@@ -6,6 +6,7 @@ import android.widget.ImageView
 import coil3.ImageLoader
 import coil3.RealImageLoader
 import coil3.size.Precision
+import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.target.ViewTarget
@@ -139,10 +140,9 @@ class RequestServiceTest : RobolectricTest() {
     @Config(sdk = [23])
     fun `RGB_565 is preserved if hardware bitmaps are disabled`() {
         val request = ImageRequest.Builder(context)
-            .data(Unit)
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build()
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
+        val sizeResolver = service.sizeResolver(request)
         val options = service.options(request, sizeResolver, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
@@ -154,11 +154,23 @@ class RequestServiceTest : RobolectricTest() {
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build()
         val request = ImageRequest.Builder(context)
-            .data(Unit)
             .defaults(imageLoader.defaults)
             .build()
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
+        val sizeResolver = service.sizeResolver(request)
         val options = service.options(request, sizeResolver, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/pull/2669 */
+    @Test
+    fun `ImageView scaleType sets scale`() {
+        val imageView = ImageView(context)
+        imageView.scaleType = ImageView.ScaleType.FIT_XY
+        val request = ImageRequest.Builder(context)
+            .target(imageView)
+            .build()
+        val sizeResolver = service.sizeResolver(request)
+        val options = service.options(request, sizeResolver, Size(100, 100))
+        assertEquals(Scale.FILL, options.scale)
     }
 }
