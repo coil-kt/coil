@@ -25,10 +25,12 @@ import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.datetime.Instant
 import okio.Buffer
+import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
 import okio.blackholeSink
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
+import okio.use
 
 class CacheControlCacheStrategyTest : RobolectricTest() {
     // Friday, November 8, 2024 8:00:00 AM UTC
@@ -85,7 +87,7 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
     }
 
     @Test
-    fun cachedResponseIsVerifiedAndReturnedFromTheCache() = runTestAsync {
+    fun etagIsVerified_304() = runTestAsync {
         val url = FAKE_URL
         val expectedSize = FAKE_DATA.size.toLong()
         val etag = "fake_etag"
@@ -100,8 +102,14 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         assertEquals(1, networkClient.requests.size)
         assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
-        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-        diskCache.openSnapshot(url).use(::assertNotNull)
+        assertEquals(FAKE_DATA, result.source.use { it.source().readByteString() })
+
+        // Assert is was persisted to the disk cache with the correct etag and data.
+        diskCache.openSnapshot(url)!!.use {
+            val cachedResponse = fileSystem.source(it.metadata).buffer().use(CacheNetworkResponse::readFrom)
+            assertEquals(etag, cachedResponse.headers["ETag"])
+            assertEquals(FAKE_DATA, fileSystem.source(it.data).buffer().use(BufferedSource::readByteString))
+        }
 
         // Don't set a response body as it should be read from the cache.
         response = FakeNetworkResponse(
@@ -119,6 +127,61 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         // Ensure we passed the correct etag.
         assertEquals(2, networkClient.requests.size)
         assertEquals(etag, networkClient.requests[1].headers["If-None-Match"])
+    }
+
+    @Test
+    fun etagIsVerified_different() = runTestAsync {
+        val url = FAKE_URL
+        val newHeaders = { etag: String ->
+            NetworkHeaders.Builder()
+                .set("Cache-Control", "no-cache")
+                .set("ETag", etag)
+                .build()
+        }
+        var data = "abcdefg".encodeUtf8()
+        var response = FakeNetworkResponse(
+            headers = newHeaders("first_etag"),
+            body = NetworkResponseBody(Buffer().apply { write(data) }),
+        )
+        networkClient.enqueue(url, response)
+        var result = newFetcher(url).fetch()
+
+        assertEquals(1, networkClient.requests.size)
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(data, result.source.use { it.source().readByteString() })
+
+        // Assert is was persisted to the disk cache with the correct etag and data.
+        diskCache.openSnapshot(url)!!.use {
+            val cachedResponse = fileSystem.source(it.metadata).buffer().use(CacheNetworkResponse::readFrom)
+            assertEquals("first_etag", cachedResponse.headers["ETag"])
+            assertEquals(data, fileSystem.source(it.data).buffer().use(BufferedSource::readByteString))
+        }
+
+        // Don't set a response body as it should be read from the cache.
+        data = "1234567".encodeUtf8()
+        response = FakeNetworkResponse(
+            code = 200,
+            headers = newHeaders("second_etag"),
+            body = NetworkResponseBody(Buffer().apply { write(data) }),
+        )
+        networkClient.enqueue(url, response)
+        result = newFetcher(url).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(data, result.source.use { it.source().readByteString() })
+
+        // Ensure we passed the correct etag.
+        assertEquals(2, networkClient.requests.size)
+        assertEquals("first_etag", networkClient.requests[1].headers["If-None-Match"])
+
+        // Assert is was persisted to the disk cache with the correct etag and data.
+        diskCache.openSnapshot(url)!!.use {
+            val cachedResponse = fileSystem.source(it.metadata).buffer().use(CacheNetworkResponse::readFrom)
+            assertEquals("second_etag", cachedResponse.headers["ETag"])
+            assertEquals(data, fileSystem.source(it.data).buffer().use(BufferedSource::readByteString))
+        }
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1256 */
