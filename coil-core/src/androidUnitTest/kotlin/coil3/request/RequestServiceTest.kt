@@ -142,7 +142,7 @@ class RequestServiceTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build()
-        val sizeResolver = service.sizeResolver(request)
+        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
         val options = service.options(request, sizeResolver, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
@@ -156,7 +156,7 @@ class RequestServiceTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .defaults(imageLoader.defaults)
             .build()
-        val sizeResolver = service.sizeResolver(request)
+        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
         val options = service.options(request, sizeResolver, Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
@@ -169,7 +169,7 @@ class RequestServiceTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .target(imageView)
             .build()
-        val sizeResolver = service.sizeResolver(request)
+        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
         val options = service.options(request, sizeResolver, Size(100, 100))
         assertEquals(Scale.FILL, options.scale)
     }
