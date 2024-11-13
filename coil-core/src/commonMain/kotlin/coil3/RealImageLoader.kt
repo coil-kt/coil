@@ -98,7 +98,7 @@ internal class RealImageLoader(
 
         // Apply this image loader's defaults to this request.
         val request = initialRequest.newBuilder()
-            .defaults(defaults)
+            .defaults(requestService.defaults(initialRequest))
             .build()
 
         // Create a new event listener.
@@ -125,7 +125,7 @@ internal class RealImageLoader(
             request.listener?.onStart(request)
 
             // Resolve the size.
-            val sizeResolver = requestService.sizeResolver(request)
+            val sizeResolver = request.sizeResolver
             eventListener.resolveSizeStart(request, sizeResolver)
             val size = sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
@@ -138,7 +138,6 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
-                    sizeResolver = sizeResolver,
                     eventListener = eventListener,
                     isPlaceholderCached = cachedPlaceholder != null,
                 ).proceed()

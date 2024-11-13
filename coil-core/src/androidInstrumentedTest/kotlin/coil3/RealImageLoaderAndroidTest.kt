@@ -40,6 +40,7 @@ import coil3.util.getDrawableCompat
 import coil3.util.toDrawable
 import java.io.File
 import java.nio.ByteBuffer
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.roundToInt
@@ -268,7 +269,7 @@ class RealImageLoaderAndroidTest {
                 .size(100, 100)
                 .precision(Precision.INEXACT)
                 .allowHardware(true)
-                .coroutineContext(Dispatchers.Main.immediate)
+                .coroutineContext(EmptyCoroutineContext)
                 .target(
                     onStart = {
                         // The drawable in the memory cache should be returned here.

@@ -9,7 +9,6 @@ import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
-import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
@@ -70,12 +69,46 @@ internal class AndroidRequestService(
         return context.getLifecycle()
     }
 
-    override fun sizeResolver(request: ImageRequest): SizeResolver {
-        if (request.defined.sizeResolver != null) {
-            return request.defined.sizeResolver
+    override fun defaults(request: ImageRequest): ImageRequest.Defaults {
+        val sizeResolver = request.resolveSizeResolver()
+        val scale = request.resolveScale()
+        val precision = request.resolvePrecision()
+        var defaults = imageLoader.defaults
+
+        if (sizeResolver != request.defaults.sizeResolver ||
+            scale != request.defaults.scale ||
+            precision != request.defaults.precision
+        ) {
+            defaults = defaults.copy(
+                sizeResolver = sizeResolver,
+                scale = scale,
+                precision = precision,
+            )
         }
 
-        val target = request.target
+        return defaults
+    }
+
+    override fun options(request: ImageRequest, size: Size): Options {
+        return Options(
+            request.context,
+            size,
+            request.scale,
+            request.precision,
+            request.diskCacheKey,
+            request.fileSystem,
+            request.memoryCachePolicy,
+            request.diskCachePolicy,
+            request.networkCachePolicy,
+            request.resolveExtras(size),
+        )
+    }
+
+    private fun ImageRequest.resolveSizeResolver(): SizeResolver {
+        if (defined.sizeResolver != null) {
+            return defined.sizeResolver
+        }
+
         if (target is ViewTarget<*>) {
             // CENTER and MATRIX scale types should be decoded at the image's original size.
             val view = target.view
@@ -90,29 +123,9 @@ internal class AndroidRequestService(
         }
     }
 
-    override fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options {
-        return Options(
-            request.context,
-            size,
-            request.resolveScale(size),
-            request.resolvePrecision(sizeResolver),
-            request.diskCacheKey,
-            request.fileSystem,
-            request.memoryCachePolicy,
-            request.diskCachePolicy,
-            request.networkCachePolicy,
-            request.resolveExtras(size),
-        )
-    }
-
-    private fun ImageRequest.resolveScale(size: Size): Scale {
+    private fun ImageRequest.resolveScale(): Scale {
         if (defined.scale != null) {
             return defined.scale
-        }
-
-        // Use `Scale.FIT` if either dimension is undefined.
-        if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
-            return Scale.FIT
         }
 
         // Autodetect the scale from the ImageView.
@@ -124,7 +137,7 @@ internal class AndroidRequestService(
         return scale
     }
 
-    private fun ImageRequest.resolvePrecision(sizeResolver: SizeResolver): Precision {
+    private fun ImageRequest.resolvePrecision(): Precision {
         if (defined.precision != null) {
             return defined.precision
         }
@@ -173,7 +186,7 @@ internal class AndroidRequestService(
         return builder.build()
     }
 
-    override fun updateOptionsOnWorkerThread(options: Options): Options {
+    override fun updateOptions(options: Options): Options {
         var extras = options.extras
         var changed = false
 
@@ -233,7 +246,7 @@ internal class AndroidRequestService(
     }
 
     /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
-    fun isBitmapConfigValidMainThread(
+    private fun isBitmapConfigValidMainThread(
         request: ImageRequest,
         size: Size,
     ): Boolean {
@@ -246,7 +259,7 @@ internal class AndroidRequestService(
     }
 
     /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
-    fun isBitmapConfigValidWorkerThread(
+    private fun isBitmapConfigValidWorkerThread(
         options: Options,
     ): Boolean {
         return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()

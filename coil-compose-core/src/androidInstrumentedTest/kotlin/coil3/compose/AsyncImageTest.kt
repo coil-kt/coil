@@ -58,13 +58,13 @@ import coil3.size.Scale
 import coil3.test.utils.ComposeTestActivity
 import coil3.test.utils.context
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.junit.After
@@ -577,7 +577,7 @@ class AsyncImageTest {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
                     .memoryCachePolicy(CachePolicy.ENABLED)
-                    .coroutineContext(Dispatchers.Main.immediate)
+                    .coroutineContext(EmptyCoroutineContext)
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader,

@@ -1,6 +1,5 @@
 package coil3.transition
 
-import android.widget.ImageView
 import coil3.asDrawable
 import coil3.asImage
 import coil3.decode.DataSource
@@ -8,8 +7,6 @@ import coil3.request.DEFAULT_CROSSFADE_MILLIS
 import coil3.request.ErrorResult
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
-import coil3.size.Scale
-import coil3.util.scale
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
@@ -32,7 +29,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         val drawable = CrossfadeDrawable(
             start = target.drawable,
             end = result.image?.asDrawable(target.view.resources),
-            scale = scale(),
+            scale = result.request.scale,
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = preferExactIntrinsicSize,
@@ -41,20 +38,6 @@ class CrossfadeTransition @JvmOverloads constructor(
             is SuccessResult -> target.onSuccess(drawable.asImage())
             is ErrorResult -> target.onError(drawable.asImage())
         }
-    }
-
-    private fun scale(): Scale {
-        val scale = result.request.defined.scale
-        if (scale != null) {
-            return scale
-        }
-
-        val view = target.view
-        if (view is ImageView) {
-            return view.scale
-        }
-
-        return result.request.scale
     }
 
     class Factory @JvmOverloads constructor(
