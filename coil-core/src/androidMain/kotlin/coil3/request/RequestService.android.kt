@@ -69,24 +69,25 @@ internal class AndroidRequestService(
         return context.getLifecycle()
     }
 
-    override fun defaults(request: ImageRequest): ImageRequest.Defaults {
-        val sizeResolver = request.resolveSizeResolver()
-        val scale = request.resolveScale()
-        val precision = request.resolvePrecision()
-        var defaults = imageLoader.defaults
+    override fun updateRequest(request: ImageRequest): ImageRequest {
+        val builder = request.newBuilder()
+            .defaults(imageLoader.defaults)
 
-        if (sizeResolver != request.defaults.sizeResolver ||
-            scale != request.defaults.scale ||
-            precision != request.defaults.precision
-        ) {
-            defaults = defaults.copy(
-                sizeResolver = sizeResolver,
-                scale = scale,
-                precision = precision,
-            )
+        var sizeResolver = request.defined.sizeResolver
+        if (sizeResolver == null) {
+            sizeResolver = request.resolveSizeResolver()
+            builder.size(sizeResolver)
         }
 
-        return defaults
+        if (request.defined.scale == null) {
+            builder.scale(request.resolveScale())
+        }
+
+        if (request.defined.precision == null) {
+            builder.precision(request.resolvePrecision(sizeResolver))
+        }
+
+        return builder.build()
     }
 
     override fun options(request: ImageRequest, size: Size): Options {
@@ -105,10 +106,6 @@ internal class AndroidRequestService(
     }
 
     private fun ImageRequest.resolveSizeResolver(): SizeResolver {
-        if (defined.sizeResolver != null) {
-            return defined.sizeResolver
-        }
-
         if (target is ViewTarget<*>) {
             // CENTER and MATRIX scale types should be decoded at the image's original size.
             val view = target.view
@@ -124,10 +121,6 @@ internal class AndroidRequestService(
     }
 
     private fun ImageRequest.resolveScale(): Scale {
-        if (defined.scale != null) {
-            return defined.scale
-        }
-
         // Autodetect the scale from the ImageView.
         val imageView = (target as? ViewTarget<*>)?.view as? ImageView
         if (imageView != null) {
@@ -137,11 +130,8 @@ internal class AndroidRequestService(
         return scale
     }
 
-    private fun ImageRequest.resolvePrecision(): Precision {
-        if (defined.precision != null) {
-            return defined.precision
-        }
-
+    private fun ImageRequest.resolvePrecision(sizeResolver: SizeResolver): Precision {
+        // Use inexact precision if we're falling back to the source dimensions.
         if (defined.sizeResolver == null && sizeResolver == SizeResolver.ORIGINAL) {
             return Precision.INEXACT
         }

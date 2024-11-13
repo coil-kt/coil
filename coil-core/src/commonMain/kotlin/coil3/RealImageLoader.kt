@@ -96,10 +96,8 @@ internal class RealImageLoader(
             findLifecycle = type == REQUEST_TYPE_ENQUEUE,
         ).apply { assertActive() }
 
-        // Apply this image loader's defaults to this request.
-        val request = initialRequest.newBuilder()
-            .defaults(requestService.defaults(initialRequest))
-            .build()
+        // Apply this image loader's defaults and other configuration to this request.
+        val request = requestService.updateRequest(initialRequest)
 
         // Create a new event listener.
         val eventListener = options.eventListenerFactory.create(request)

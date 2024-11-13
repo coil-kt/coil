@@ -26,8 +26,10 @@ internal class NonAndroidRequestService(
         return BaseRequestDelegate(job)
     }
 
-    override fun defaults(request: ImageRequest): ImageRequest.Defaults {
-        return imageLoader.defaults
+    override fun updateRequest(request: ImageRequest): ImageRequest {
+        return request.newBuilder()
+            .defaults(imageLoader.defaults)
+            .build()
     }
 
     override fun options(request: ImageRequest, size: Size): Options {

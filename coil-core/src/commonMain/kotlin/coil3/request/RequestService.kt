@@ -22,7 +22,7 @@ internal interface RequestService {
     fun requestDelegate(request: ImageRequest, job: Job, findLifecycle: Boolean): RequestDelegate
 
     @MainThread
-    fun defaults(request: ImageRequest): ImageRequest.Defaults
+    fun updateRequest(request: ImageRequest): ImageRequest
 
     @MainThread
     fun options(request: ImageRequest, size: Size): Options
