@@ -241,6 +241,42 @@ class ImageRequest private constructor(
             placeholderFactory: (ImageRequest) -> Image? = this.placeholderFactory,
             errorFactory: (ImageRequest) -> Image? = this.errorFactory,
             fallbackFactory: (ImageRequest) -> Image? = this.fallbackFactory,
+            sizeResolver: SizeResolver = this.sizeResolver,
+            scale: Scale = this.scale,
+            precision: Precision = this.precision,
+            extras: Extras = this.extras,
+        ) = Defaults(
+            fileSystem = fileSystem,
+            interceptorCoroutineContext = interceptorCoroutineContext,
+            fetcherCoroutineContext = fetcherCoroutineContext,
+            decoderCoroutineContext = decoderCoroutineContext,
+            memoryCachePolicy = memoryCachePolicy,
+            diskCachePolicy = diskCachePolicy,
+            networkCachePolicy = networkCachePolicy,
+            placeholderFactory = placeholderFactory,
+            errorFactory = errorFactory,
+            fallbackFactory = fallbackFactory,
+            sizeResolver = sizeResolver,
+            scale = scale,
+            precision = precision,
+            extras = extras,
+        )
+
+        @Deprecated(
+            level = DeprecationLevel.HIDDEN,
+            message = "Kept for binary compatibility."
+        )
+        fun copy(
+            fileSystem: FileSystem = this.fileSystem,
+            interceptorCoroutineContext: CoroutineContext = this.interceptorCoroutineContext,
+            fetcherCoroutineContext: CoroutineContext = this.fetcherCoroutineContext,
+            decoderCoroutineContext: CoroutineContext = this.decoderCoroutineContext,
+            memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+            diskCachePolicy: CachePolicy = this.diskCachePolicy,
+            networkCachePolicy: CachePolicy = this.networkCachePolicy,
+            placeholderFactory: (ImageRequest) -> Image? = this.placeholderFactory,
+            errorFactory: (ImageRequest) -> Image? = this.errorFactory,
+            fallbackFactory: (ImageRequest) -> Image? = this.fallbackFactory,
             precision: Precision = this.precision,
             extras: Extras = this.extras,
         ) = Defaults(

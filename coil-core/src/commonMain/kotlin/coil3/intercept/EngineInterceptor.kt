@@ -24,7 +24,6 @@ import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
 import coil3.util.isPlaceholderCached
-import coil3.util.sizeResolver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
@@ -42,9 +41,8 @@ internal class EngineInterceptor(
             val request = chain.request
             val data = request.data
             val size = chain.size
-            val sizeResolver = chain.sizeResolver
             val eventListener = chain.eventListener
-            val options = requestService.options(request, sizeResolver, size)
+            val options = requestService.options(request, size)
             val scale = options.scale
 
             // Perform any data mapping.
@@ -103,7 +101,7 @@ internal class EngineInterceptor(
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
-            options = requestService.updateOptionsOnWorkerThread(options)
+            options = requestService.updateOptions(options)
 
             if (request.fetcherFactory != null || request.decoderFactory != null) {
                 components = components.newBuilder()

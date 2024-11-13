@@ -5,7 +5,6 @@ import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.size.Size
-import coil3.size.SizeResolver
 import coil3.target.Target
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -159,7 +158,6 @@ class RealInterceptorChainTests : RobolectricTest() {
             index = 0,
             request = request,
             size = size,
-            sizeResolver = SizeResolver(size),
             eventListener = EventListener.NONE,
             isPlaceholderCached = false
         )

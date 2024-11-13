@@ -35,9 +35,8 @@ class RequestServiceTest : RobolectricTest() {
             target(ImageView(context))
             precision(Precision.EXACT)
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     @Test
@@ -45,9 +44,8 @@ class RequestServiceTest : RobolectricTest() {
         val request = createRequest(context) {
             precision(Precision.INEXACT)
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.INEXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.INEXACT, options.precision)
     }
 
     @Test
@@ -55,9 +53,8 @@ class RequestServiceTest : RobolectricTest() {
         val request = createRequest(context) {
             target(ImageView(context))
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.INEXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.INEXACT, options.precision)
     }
 
     @Test
@@ -66,9 +63,8 @@ class RequestServiceTest : RobolectricTest() {
             target(ImageView(context))
             size(100, 100)
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     @Test
@@ -78,9 +74,8 @@ class RequestServiceTest : RobolectricTest() {
             target(imageView)
             size(ViewSizeResolver(imageView))
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.INEXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.INEXACT, options.precision)
     }
 
     @Test
@@ -89,17 +84,15 @@ class RequestServiceTest : RobolectricTest() {
             target(ImageView(context))
             size(ViewSizeResolver(ImageView(context)))
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     @Test
     fun `allowInexactSize - unspecified SizeResolver`() {
         val request = createRequest(context)
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.INEXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.INEXACT, options.precision)
     }
 
     @Test
@@ -108,9 +101,8 @@ class RequestServiceTest : RobolectricTest() {
             target { /* Empty. */ }
             size(100, 100)
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     @Test
@@ -120,9 +112,8 @@ class RequestServiceTest : RobolectricTest() {
                 override val view = View(context)
             })
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     @Test
@@ -130,9 +121,8 @@ class RequestServiceTest : RobolectricTest() {
         val request = createRequest(context) {
             size(100, 100)
         }
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val actual = service.options(request, sizeResolver, Size(100, 100)).precision
-        assertEquals(Precision.EXACT, actual)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertEquals(Precision.EXACT, options.precision)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1768 */
@@ -142,8 +132,7 @@ class RequestServiceTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build()
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val options = service.options(request, sizeResolver, Size(100, 100))
+        val options = service.options(service.updateRequest(request), Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
 
@@ -152,12 +141,12 @@ class RequestServiceTest : RobolectricTest() {
     fun `ImageLoader bitmapConfig is preserved`() {
         val imageLoader = ImageLoader.Builder(context)
             .bitmapConfig(Bitmap.Config.RGB_565)
-            .build()
+            .build() as RealImageLoader
         val request = ImageRequest.Builder(context)
             .defaults(imageLoader.defaults)
             .build()
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val options = service.options(request, sizeResolver, Size(100, 100))
+        val service = RequestService(imageLoader, SystemCallbacks(imageLoader), null)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
 
@@ -169,8 +158,7 @@ class RequestServiceTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .target(imageView)
             .build()
-        val sizeResolver = request.defined.sizeResolver ?: service.sizeResolver(request)
-        val options = service.options(request, sizeResolver, Size(100, 100))
+        val options = service.options(service.updateRequest(request), Size(100, 100))
         assertEquals(Scale.FILL, options.scale)
     }
 }
