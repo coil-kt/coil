@@ -94,7 +94,7 @@ internal class RealImageLoader(
             request = initialRequest,
             job = coroutineContext.job,
             findLifecycle = type == REQUEST_TYPE_ENQUEUE,
-        )
+        ).apply { assertActive() }
 
         // Apply this image loader's defaults and other configuration to this request.
         val request = requestService.updateRequest(initialRequest)
