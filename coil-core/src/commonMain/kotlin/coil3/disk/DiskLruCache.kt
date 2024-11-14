@@ -370,6 +370,7 @@ internal class DiskLruCache(
             writeByte(' '.code)
             writeUtf8(key)
             writeByte('\n'.code)
+            flush()
         }
 
         if (journalRewriteRequired()) {
@@ -519,7 +520,9 @@ internal class DiskLruCache(
 
         val entry = lruEntries[key] ?: return false
         val removed = removeEntry(entry)
-        if (removed && size <= maxSize) mostRecentTrimFailed = false
+        if (removed && size <= maxSize) {
+            mostRecentTrimFailed = false
+        }
         return removed
     }
 
@@ -553,6 +556,7 @@ internal class DiskLruCache(
             writeByte(' '.code)
             writeUtf8(entry.key)
             writeByte('\n'.code)
+            flush()
         }
         lruEntries.remove(entry.key)
 
