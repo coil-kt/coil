@@ -52,14 +52,14 @@ internal class ViewTargetRequestDelegate(
         imageLoader.enqueue(initialRequest)
     }
 
-    override fun assertActive() {
+    override fun start() {
+        // Cancel the request before starting if the view is not attached.
+        // It will be restarted automatically when the view is attached.
         if (!target.view.isAttachedToWindow) {
             target.view.requestManager.setRequest(this)
             throw CancellationException("'ViewTarget.view' must be attached to a window.")
         }
-    }
 
-    override fun start() {
         lifecycle?.addObserver(this)
         if (target is LifecycleObserver) {
             lifecycle?.removeAndAddObserver(target)
