@@ -1,13 +1,9 @@
 package coil3.request
 
 import kotlin.jvm.JvmInline
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
 internal interface RequestDelegate {
-
-    /** Throw a [CancellationException] if this request should be cancelled before starting. */
-    fun assertActive() {}
 
     /** Register all lifecycle observers. */
     fun start() {}
