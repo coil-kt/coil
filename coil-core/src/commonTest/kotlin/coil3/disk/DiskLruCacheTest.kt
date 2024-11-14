@@ -1119,6 +1119,25 @@ class DiskLruCacheTest {
     }
 
     @Test
+    fun evictAllDeletesAllEntriesInJournalWithoutFlush() {
+        set("a", "a", "a")
+        set("b", "b", "b")
+        set("c", "c", "c")
+
+        cache.evictAll()
+        assertAbsent("a")
+        assertAbsent("b")
+        assertAbsent("c")
+        assertEquals(0, cache.size())
+
+        createNewCache()
+        assertAbsent("a")
+        assertAbsent("b")
+        assertAbsent("c")
+        assertEquals(0, cache.size())
+    }
+
+    @Test
     fun editSnapshotAfterEvictAllReturnsNullDueToStaleValue() {
         val expectedByteCount = 2L
         val afterRemoveFileContents = "a"
