@@ -520,7 +520,9 @@ internal class DiskLruCache(
 
         val entry = lruEntries[key] ?: return false
         val removed = removeEntry(entry)
-        if (removed && size <= maxSize) mostRecentTrimFailed = false
+        if (removed && size <= maxSize) {
+            mostRecentTrimFailed = false
+        }
         return removed
     }
 
