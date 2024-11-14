@@ -157,7 +157,7 @@ jobs:
                   gradle-home-cache-cleanup: true
 
             - name: Build iOS sample
-              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
     deploy-snapshot:
         name: Deploy snapshot
