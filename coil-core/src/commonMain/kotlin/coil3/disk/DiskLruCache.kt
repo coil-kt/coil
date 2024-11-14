@@ -370,6 +370,7 @@ internal class DiskLruCache(
             writeByte(' '.code)
             writeUtf8(key)
             writeByte('\n'.code)
+            flush()
         }
 
         if (journalRewriteRequired()) {
@@ -553,6 +554,7 @@ internal class DiskLruCache(
             writeByte(' '.code)
             writeUtf8(entry.key)
             writeByte('\n'.code)
+            flush()
         }
         lruEntries.remove(entry.key)
 
