@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3] - November 14, 2024
+
+- Fix setting `ImageRequest.scale` based on an `ImageView`'s `ScaleType`.
+- Fix edge case where `DiskCache` would not track removal of an entry after deleting its files.
+- Pass throwable to `Logger` when logging errors.
+- Don't replace `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` with `kotlin-stdlib`.
+
 ## [3.0.2] - November 9, 2024
 
 - Fix crash when invoking `OkHttpNetworkFetcherFactory` with a custom `CacheStrategy` on Android.

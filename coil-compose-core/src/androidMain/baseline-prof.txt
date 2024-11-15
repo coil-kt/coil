@@ -213,7 +213,7 @@ HSPLcoil3/compose/internal/UtilsKt;->onStateOf(Lkotlin/jvm/functions/Function1;L
 HSPLcoil3/compose/internal/UtilsKt;->requestOf(Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lcoil3/request/ImageRequest;
 HSPLcoil3/compose/internal/UtilsKt;->requestOfWithSizeResolver(Ljava/lang/Object;Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/runtime/Composer;I)Lcoil3/request/ImageRequest;
 HSPLcoil3/compose/internal/UtilsKt;->toDimension(I)Lcoil3/size/Dimension;
-HPLcoil3/compose/internal/UtilsKt;->toIntSize-uvyYCjk(J)J
+HSPLcoil3/compose/internal/UtilsKt;->toIntSize-uvyYCjk(J)J
 HSPLcoil3/compose/internal/UtilsKt;->toScale(Landroidx/compose/ui/layout/ContentScale;)Lcoil3/size/Scale;
 HSPLcoil3/compose/internal/UtilsKt;->toSize-BRTryo0(J)Lcoil3/size/Size;
 HSPLcoil3/compose/internal/UtilsKt;->transformOf$lambda$3(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/compose/AsyncImagePainter$State;)Lcoil3/compose/AsyncImagePainter$State;
