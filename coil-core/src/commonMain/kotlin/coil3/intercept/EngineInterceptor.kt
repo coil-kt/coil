@@ -24,6 +24,7 @@ import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
 import coil3.util.isPlaceholderCached
+import coil3.util.memoryCacheKey
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
@@ -32,35 +33,18 @@ internal class EngineInterceptor(
     private val imageLoader: ImageLoader,
     private val systemCallbacks: SystemCallbacks,
     private val requestService: RequestService,
+    private val memoryCacheService: MemoryCacheService,
     private val logger: Logger?,
 ) : Interceptor {
-    private val memoryCacheService = MemoryCacheService(imageLoader, requestService, logger)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        try {
-            val request = chain.request
-            val data = request.data
-            val size = chain.size
-            val eventListener = chain.eventListener
-            val options = requestService.options(request, size)
-            val scale = options.scale
+        return withContext(chain.request.fetcherCoroutineContext) {
+            try {
+                val request = chain.request
+                val eventListener = chain.eventListener
+                val options = requestService.options(request, chain.size)
+                val mappedData = memoryCacheService.mapData(request, options, eventListener)
 
-            // Perform any data mapping.
-            eventListener.mapStart(request, data)
-            val mappedData = imageLoader.components.map(data, options)
-            eventListener.mapEnd(request, mappedData)
-
-            // Check the memory cache.
-            val cacheKey = memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
-            val cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
-
-            // Fast path: return the value from the memory cache.
-            if (cacheValue != null) {
-                return memoryCacheService.newResult(chain, request, cacheKey, cacheValue)
-            }
-
-            // Slow path: fetch, decode, transform, and cache the image.
-            return withContext(request.fetcherCoroutineContext) {
                 // Fetch and decode the image.
                 val result = execute(request, mappedData, options, eventListener)
 
@@ -68,24 +52,24 @@ internal class EngineInterceptor(
                 systemCallbacks.registerMemoryPressureCallbacks()
 
                 // Write the result to the memory cache.
-                val isCached = memoryCacheService.setCacheValue(cacheKey, request, result)
+                val memoryCacheKey = memoryCacheService.setCacheValue(chain.memoryCacheKey, request, result)
 
                 // Return the result.
                 SuccessResult(
                     image = result.image,
                     request = request,
                     dataSource = result.dataSource,
-                    memoryCacheKey = cacheKey.takeIf { isCached },
+                    memoryCacheKey = memoryCacheKey,
                     diskCacheKey = result.diskCacheKey,
                     isSampled = result.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
                 )
-            }
-        } catch (throwable: Throwable) {
-            if (throwable is CancellationException) {
-                throw throwable
-            } else {
-                return ErrorResult(chain.request, throwable)
+            } catch (throwable: Throwable) {
+                if (throwable is CancellationException) {
+                    throw throwable
+                } else {
+                    ErrorResult(chain.request, throwable)
+                }
             }
         }
     }

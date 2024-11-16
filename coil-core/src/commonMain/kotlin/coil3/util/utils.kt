@@ -9,6 +9,7 @@ import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.intercept.Interceptor
 import coil3.intercept.RealInterceptorChain
+import coil3.memory.MemoryCache
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
@@ -45,6 +46,10 @@ internal fun AutoCloseable.closeQuietly() {
 internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
 
 internal fun ComponentRegistry.Builder.addFirst(
+    interceptor: Interceptor,
+) = apply { interceptors.add(0, interceptor) }
+
+internal fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?
 ) = apply { if (pair != null) lazyFetcherFactories.add(0) { listOf(pair) } }
 
@@ -57,6 +62,15 @@ internal const val MIME_TYPE_WEBP = "image/webp"
 internal const val MIME_TYPE_HEIC = "image/heic"
 internal const val MIME_TYPE_HEIF = "image/heif"
 internal const val MIME_TYPE_XML = "text/xml"
+
+internal val Interceptor.Chain.initialRequest: ImageRequest?
+    get() = if (this is RealInterceptorChain) initialRequest else null
+
+internal val Interceptor.Chain.mappedData: Any?
+    get() = if (this is RealInterceptorChain) mappedData else null
+
+internal val Interceptor.Chain.memoryCacheKey: MemoryCache.Key?
+    get() = if (this is RealInterceptorChain) memoryCacheKey else null
 
 internal val Interceptor.Chain.isPlaceholderCached: Boolean
     get() = this is RealInterceptorChain && isPlaceholderCached

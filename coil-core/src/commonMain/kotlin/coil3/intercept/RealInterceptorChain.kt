@@ -1,6 +1,7 @@
 package coil3.intercept
 
 import coil3.EventListener
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.NullRequestData
@@ -12,6 +13,7 @@ internal class RealInterceptorChain(
     val index: Int,
     override val request: ImageRequest,
     override val size: Size,
+    val memoryCacheKey: MemoryCache.Key?,
     val eventListener: EventListener,
     val isPlaceholderCached: Boolean,
 ) : Interceptor.Chain {
@@ -23,6 +25,10 @@ internal class RealInterceptorChain(
 
     override fun withSize(size: Size): Interceptor.Chain {
         return copy(size = size)
+    }
+
+    internal fun withMemoryCacheKey(key: MemoryCache.Key?): Interceptor.Chain {
+        return copy(memoryCacheKey = key)
     }
 
     override suspend fun proceed(): ImageResult {
@@ -53,12 +59,14 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size,
+        memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
     ) = RealInterceptorChain(
         initialRequest = initialRequest,
         interceptors = interceptors,
         index = index,
         request = request,
         size = size,
+        memoryCacheKey = memoryCacheKey,
         eventListener = eventListener,
         isPlaceholderCached = isPlaceholderCached,
     )

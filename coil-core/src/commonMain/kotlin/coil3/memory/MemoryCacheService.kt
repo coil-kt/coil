@@ -6,7 +6,6 @@ import coil3.annotation.VisibleForTesting
 import coil3.decode.DataSource
 import coil3.decode.DecodeUtils
 import coil3.intercept.EngineInterceptor.ExecuteResult
-import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
@@ -18,7 +17,6 @@ import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import coil3.util.Logger
 import coil3.util.isMinOrMax
-import coil3.util.isPlaceholderCached
 import coil3.util.log
 import kotlin.math.abs
 
@@ -27,6 +25,18 @@ internal class MemoryCacheService(
     private val requestService: RequestService,
     private val logger: Logger?,
 ) {
+
+    /** Map the [request]'s data and return the result. */
+    fun mapData(
+        request: ImageRequest,
+        options: Options,
+        eventListener: EventListener,
+    ): Any {
+        eventListener.mapStart(request, request.data)
+        val mappedData = imageLoader.components.map(request.data, options)
+        eventListener.mapEnd(request, mappedData)
+        return mappedData
+    }
 
     /** Create a [MemoryCache.Key] for this request. */
     fun newCacheKey(
@@ -172,19 +182,19 @@ internal class MemoryCacheService(
         return true
     }
 
-    /** Write [result] to the memory cache. Return 'true' if it was added to the cache. */
+    /** Write [result] to the memory cache. Return [cacheKey] if it was added to the cache. */
     fun setCacheValue(
         cacheKey: MemoryCache.Key?,
         request: ImageRequest,
         result: ExecuteResult,
-    ): Boolean {
+    ): MemoryCache.Key? {
         if (cacheKey == null ||
             !request.memoryCachePolicy.writeEnabled ||
             !result.image.shareable
         ) {
-            return false
+            return null
         }
-        val memoryCache = imageLoader.memoryCache ?: return false
+        val memoryCache = imageLoader.memoryCache ?: return null
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()
@@ -192,15 +202,15 @@ internal class MemoryCacheService(
         result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
         memoryCache[cacheKey] = MemoryCache.Value(result.image, extras)
 
-        return true
+        return cacheKey
     }
 
     /** Create a [SuccessResult] from the given [cacheKey] and [cacheValue]. */
     fun newResult(
-        chain: Interceptor.Chain,
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
+        isPlaceholderCached: Boolean,
     ) = SuccessResult(
         image = cacheValue.image,
         request = request,
@@ -208,7 +218,7 @@ internal class MemoryCacheService(
         memoryCacheKey = cacheKey,
         diskCacheKey = cacheValue.diskCacheKey,
         isSampled = cacheValue.isSampled,
-        isPlaceholderCached = chain.isPlaceholderCached,
+        isPlaceholderCached = isPlaceholderCached,
     )
 
     private val MemoryCache.Value.isSampled: Boolean

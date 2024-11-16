@@ -4,12 +4,14 @@ import coil3.disk.DiskCache
 import coil3.fetch.ByteArrayFetcher
 import coil3.fetch.FileUriFetcher
 import coil3.intercept.EngineInterceptor
+import coil3.intercept.MemoryCacheInterceptor
 import coil3.intercept.RealInterceptorChain
 import coil3.key.FileUriKeyer
 import coil3.key.UriKeyer
 import coil3.map.PathMapper
 import coil3.map.StringMapper
 import coil3.memory.MemoryCache
+import coil3.memory.MemoryCacheService
 import coil3.request.Disposable
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
@@ -24,6 +26,7 @@ import coil3.util.FetcherServiceLoaderTarget
 import coil3.util.Logger
 import coil3.util.ServiceLoaderComponentRegistry
 import coil3.util.SystemCallbacks
+import coil3.util.addFirst
 import coil3.util.emoji
 import coil3.util.log
 import coil3.util.mapNotNullIndices
@@ -39,7 +42,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
-import kotlinx.coroutines.withContext
 
 internal class RealImageLoader(
     val options: Options,
@@ -47,6 +49,7 @@ internal class RealImageLoader(
     private val scope = CoroutineScope(options.logger)
     private val systemCallbacks = SystemCallbacks(this)
     private val requestService = RequestService(this, systemCallbacks, options.logger)
+    private val memoryCacheService = MemoryCacheService(this, requestService, options.logger)
     override val defaults get() = options.defaults
     override val memoryCache by options.memoryCacheLazy
     override val diskCache by options.diskCacheLazy
@@ -56,7 +59,22 @@ internal class RealImageLoader(
         .addJvmComponents(options)
         .addAppleComponents(options)
         .addCommonComponents()
-        .add(EngineInterceptor(this, systemCallbacks, requestService, options.logger))
+        .apply {
+            if (options.checkMemoryCacheBeforeInterceptorChain) {
+                addFirst(MemoryCacheInterceptor(requestService, memoryCacheService))
+            } else {
+                add(MemoryCacheInterceptor(requestService, memoryCacheService))
+            }
+        }
+        .add(
+            EngineInterceptor(
+                imageLoader = this,
+                systemCallbacks = systemCallbacks,
+                requestService = requestService,
+                memoryCacheService = memoryCacheService,
+                logger = options.logger,
+            ),
+        )
         .build()
     private val shutdown = atomic(false)
 
@@ -129,17 +147,16 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = withContext(request.interceptorCoroutineContext) {
-                RealInterceptorChain(
-                    initialRequest = request,
-                    interceptors = components.interceptors,
-                    index = 0,
-                    request = request,
-                    size = size,
-                    eventListener = eventListener,
-                    isPlaceholderCached = cachedPlaceholder != null,
-                ).proceed()
-            }
+            val result = RealInterceptorChain(
+                initialRequest = request,
+                interceptors = components.interceptors,
+                index = 0,
+                request = request,
+                size = size,
+                memoryCacheKey = null,
+                eventListener = eventListener,
+                isPlaceholderCached = cachedPlaceholder != null,
+            ).proceed()
 
             // Set the result on the target.
             when (result) {
