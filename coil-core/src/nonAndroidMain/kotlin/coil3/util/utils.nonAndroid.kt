@@ -1,5 +1,6 @@
 package coil3.util
 
+import coil3.Image
 import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.request.Options
@@ -7,7 +8,7 @@ import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
-import org.jetbrains.skia.Image
+import org.jetbrains.skia.Image as SkiaImage
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.impl.use
 
@@ -21,7 +22,7 @@ internal actual fun println(
 
 /** Create a [Bitmap] from [image] for the given [options]. */
 internal fun Bitmap.Companion.makeFromImage(
-    image: Image,
+    image: SkiaImage,
     options: Options,
 ): Bitmap {
     val srcWidth = image.width
@@ -64,4 +65,8 @@ internal fun Bitmap.Companion.makeFromImage(
 internal actual fun isAssetUri(uri: Uri): Boolean {
     // Asset URIs are only supported on Android.
     return false
+}
+
+internal actual fun Image.prepareToDraw() {
+    // Do nothing.
 }
