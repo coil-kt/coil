@@ -75,7 +75,7 @@ class StaticImageDecoder(
                 // Configure any other attributes.
                 configureImageDecoderProperties()
             }
-            return@withPermit DecodeResult(
+            DecodeResult(
                 image = bitmap.asImage(),
                 isSampled = isSampled,
             )
@@ -83,6 +83,7 @@ class StaticImageDecoder(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
+        onPartialImageListener = ImageDecoder.OnPartialImageListener { true }
         allocator = if (options.bitmapConfig.isHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
