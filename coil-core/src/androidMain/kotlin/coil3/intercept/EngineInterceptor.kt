@@ -3,9 +3,7 @@ package coil3.intercept
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import coil3.BitmapImage
 import coil3.EventListener
-import coil3.Image
 import coil3.asDrawable
 import coil3.asImage
 import coil3.intercept.EngineInterceptor.Companion.TAG
@@ -91,8 +89,4 @@ private fun convertDrawableToBitmap(
         scale = options.scale,
         allowInexactSize = options.precision == Precision.INEXACT,
     )
-}
-
-internal actual fun prepareToDraw(image: Image) {
-    (image as? BitmapImage)?.bitmap?.prepareToDraw()
 }

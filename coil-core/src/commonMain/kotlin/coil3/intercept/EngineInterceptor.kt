@@ -24,6 +24,7 @@ import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
 import coil3.util.isPlaceholderCached
+import coil3.util.prepareToDraw
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
@@ -132,8 +133,10 @@ internal class EngineInterceptor(
             (fetchResult as? SourceFetchResult)?.source?.closeQuietly()
         }
 
-        // Apply any transformations.
-        return transform(executeResult, request, options, eventListener, logger)
+        // Apply any transformations and prepare to draw.
+        val finalResult = transform(executeResult, request, options, eventListener, logger)
+        finalResult.image.prepareToDraw()
+        return finalResult
     }
 
     private suspend fun fetch(
@@ -223,7 +226,3 @@ internal expect suspend fun transform(
     eventListener: EventListener,
     logger: Logger?,
 ): ExecuteResult
-
-internal expect fun prepareToDraw(
-    image: Image,
-)

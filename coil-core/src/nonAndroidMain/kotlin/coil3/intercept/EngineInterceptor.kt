@@ -1,7 +1,6 @@
 package coil3.intercept
 
 import coil3.EventListener
-import coil3.Image
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.request.ImageRequest
 import coil3.request.Options
@@ -14,7 +13,3 @@ internal actual suspend fun transform(
     eventListener: EventListener,
     logger: Logger?,
 ) = result
-
-internal actual fun prepareToDraw(
-    image: Image,
-) { /* Do nothing. */ }
