@@ -12,8 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil3.load
-import coil3.request.transformations
-import coil3.transform.CircleCropTransformation
 import kotlinx.coroutines.launch
 import sample.common.AndroidMainViewModel
 import sample.common.AssetType
@@ -72,9 +70,6 @@ class MainActivity : AppCompatActivity() {
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
                     placeholderMemoryCacheKey(screen.placeholder)
-                    transformations(
-                        CircleCropTransformation()
-                    )
                     extras(screen.image.extras)
                 }
             }
