@@ -53,6 +53,10 @@ fun ImageRequest.Builder.transformations(vararg transformations: Transformation)
 
 fun ImageRequest.Builder.transformations(transformations: List<Transformation>) = apply {
     extras[transformationsKey] = transformations.toImmutableList()
+
+    var index = 0
+    val memoryCacheKey = transformations.joinToString { "${++index}:${it.cacheKey}" }
+    memoryCacheKeyExtra("coil#transformations", memoryCacheKey)
 }
 
 val ImageRequest.transformations: List<Transformation>
