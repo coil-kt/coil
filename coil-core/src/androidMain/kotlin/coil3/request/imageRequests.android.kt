@@ -56,7 +56,7 @@ fun ImageRequest.Builder.transformations(transformations: List<Transformation>) 
 
     var index = 0
     val memoryCacheKey = transformations.joinToString { "${index++}:${it.cacheKey}" }
-    memoryCacheKeyExtra("coil#transformations", memoryCacheKey)
+    memoryCacheKeyExtra(EXTRA_TRANSFORMATIONS, memoryCacheKey)
 }
 
 val ImageRequest.transformations: List<Transformation>
@@ -68,7 +68,7 @@ val Options.transformations: List<Transformation>
 val Extras.Key.Companion.transformations: Extras.Key<List<Transformation>>
     get() = transformationsKey
 
-private val transformationsKey = Extras.Key<List<Transformation>>(default = emptyList())
+private const val EXTRA_TRANSFORMATIONS = "coil#transformations"
 
 // endregion
 // region crossfade
