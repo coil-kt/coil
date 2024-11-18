@@ -17,10 +17,10 @@ expect class FakeImage(
 
     @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     constructor(
-        width: Int = 100,
-        height: Int = 100,
-        size: Long = 4L * width * height,
-        shareable: Boolean = true,
+        width: Int,
+        height: Int,
+        size: Long,
+        shareable: Boolean,
         color: Int = Black,
     )
 
