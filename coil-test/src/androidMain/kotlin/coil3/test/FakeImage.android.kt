@@ -7,12 +7,22 @@ import coil3.annotation.Poko
 
 @Poko
 actual class FakeImage actual constructor(
+    actual val color: Int,
     actual override val width: Int,
     actual override val height: Int,
     actual override val size: Long,
     actual override val shareable: Boolean,
-    actual val color: Int,
 ) : Image {
+
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    actual constructor(
+        width: Int,
+        height: Int,
+        size: Long,
+        shareable: Boolean,
+        color: Int,
+    ) : this(color, width, height, size, shareable)
+
     private var lazyPaint: Paint? = null
 
     actual override fun draw(canvas: Canvas) {
