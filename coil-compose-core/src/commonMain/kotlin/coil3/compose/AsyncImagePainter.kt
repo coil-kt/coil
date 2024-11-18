@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
@@ -33,6 +32,7 @@ import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.CrossfadePainter
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.rememberImmediateCoroutineScope
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
@@ -42,7 +42,6 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
-import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -142,7 +141,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberCoroutineScope()
+    painter.scope = rememberImmediateCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -219,7 +218,7 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        rememberJob = scope.launch(resolveImmediateDispatcher(scope.coroutineContext)) {
+        rememberJob = scope.launch {
             restartSignal
                 .flatMapLatest { _input }
                 .mapLatest {

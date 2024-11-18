@@ -5,6 +5,7 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
@@ -30,7 +31,9 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
+import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -208,3 +211,11 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
+
+@Composable
+internal fun rememberImmediateCoroutineScope(): CoroutineScope {
+    val scope = rememberCoroutineScope()
+    return remember(scope) {
+        CoroutineScope(scope.coroutineContext + resolveImmediateDispatcher(scope.coroutineContext))
+    }
+}
