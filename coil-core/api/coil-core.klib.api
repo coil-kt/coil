@@ -931,6 +931,10 @@ final object coil3.request/NullRequestData { // coil3.request/NullRequestData|nu
     final fun toString(): kotlin/String // coil3.request/NullRequestData.toString|toString(){}[0]
 }
 
+final object coil3.util/InternalCoilUtils { // coil3.util/InternalCoilUtils|null[0]
+    final fun resolveImmediateDispatcher(kotlin.coroutines/CoroutineContext): kotlin.coroutines/CoroutineContext // coil3.util/InternalCoilUtils.resolveImmediateDispatcher|resolveImmediateDispatcher(kotlin.coroutines.CoroutineContext){}[0]
+}
+
 final object coil3.util/MimeTypeMap { // coil3.util/MimeTypeMap|null[0]
     final fun getMimeTypeFromExtension(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromExtension|getMimeTypeFromExtension(kotlin.String){}[0]
     final fun getMimeTypeFromUrl(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromUrl|getMimeTypeFromUrl(kotlin.String){}[0]
