@@ -12,7 +12,6 @@ import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
 import coil3.size.SizeResolver
-import coil3.transform.Transformation
 import coil3.transition.NoneTransition
 import coil3.transition.Transition
 import coil3.transition.TransitionTarget
@@ -59,23 +58,9 @@ actual abstract class EventListener : ImageRequest.Listener {
         result: DecodeResult?,
     ) {}
 
-    /**
-     * Called before any [Transformation]s are applied.
-     *
-     * This is skipped if `ImageRequest.transformations` is empty.
-     *
-     * @param input The [Image] that will be transformed.
-     */
-    open fun transformStart(request: ImageRequest, input: Bitmap) {}
+    actual open fun transformStart(request: ImageRequest, input: Bitmap) {}
 
-    /**
-     * Called after any [Transformation]s are applied.
-     *
-     * This is skipped if `ImageRequest.transformations` is empty.
-     *
-     * @param output The [Image] that was transformed.
-     */
-    open fun transformEnd(request: ImageRequest, output: Bitmap) {}
+    actual open fun transformEnd(request: ImageRequest, output: Bitmap) {}
 
     /**
      * Called before [Transition.transition].

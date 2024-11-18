@@ -723,21 +723,31 @@ public abstract interface class coil3/request/ImageRequest$Listener {
 public final class coil3/request/ImageRequestsKt {
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/Options;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
+	public static final fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
+	public static final fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
 	public static final fun maxBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
 	public static final fun maxBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/request/ImageRequests_androidKt {
-	public static final fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
-	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final synthetic fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowHardware (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun allowHardware (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowRgb565 (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
@@ -752,9 +762,9 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun error (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun fallback (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 	public static final fun fallback (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
-	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
 	public static final fun getAllowHardware (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAllowHardware (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAllowHardware (Lcoil3/request/Options;)Z
@@ -774,9 +784,9 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun getPremultipliedAlpha (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getPremultipliedAlpha (Lcoil3/request/ImageRequest;)Z
 	public static final fun getPremultipliedAlpha (Lcoil3/request/Options;)Z
-	public static final fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
-	public static final fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
+	public static final synthetic fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final synthetic fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
+	public static final synthetic fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
 	public static final fun getTransitionFactory (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getTransitionFactory (Lcoil3/request/ImageRequest;)Lcoil3/transition/Transition$Factory;
 	public static final fun lifecycle (Lcoil3/request/ImageRequest$Builder;Landroidx/lifecycle/Lifecycle;)Lcoil3/request/ImageRequest$Builder;
@@ -786,8 +796,8 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun premultipliedAlpha (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun premultipliedAlpha (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun target (Lcoil3/request/ImageRequest$Builder;Landroid/widget/ImageView;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun transitionFactory (Lcoil3/ImageLoader$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/ImageLoader$Builder;
 	public static final fun transitionFactory (Lcoil3/request/ImageRequest$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/request/ImageRequest$Builder;
 }

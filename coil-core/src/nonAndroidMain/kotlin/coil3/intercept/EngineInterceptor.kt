@@ -1,15 +1,26 @@
 package coil3.intercept
 
-import coil3.EventListener
-import coil3.intercept.EngineInterceptor.ExecuteResult
-import coil3.request.ImageRequest
+import coil3.Bitmap
+import coil3.BitmapImage
+import coil3.Image
 import coil3.request.Options
+import coil3.transform.Transformation
 import coil3.util.Logger
 
-internal actual suspend fun transform(
-    result: ExecuteResult,
-    request: ImageRequest,
+internal actual fun convertImageToBitmap(
+    image: Image,
     options: Options,
-    eventListener: EventListener,
+    transformations: List<Transformation>,
     logger: Logger?,
-) = result
+): Bitmap {
+    if (image is BitmapImage) {
+        return image.bitmap
+    } else {
+        error(
+            "Converting image of type ${image::class.simpleName} " +
+                "to apply transformations: $transformations is not currently supported." +
+                "Set ImageRequest.Builder.allowConversionToBitmap(false) to skip applying these " +
+                "transformations."
+        )
+    }
+}

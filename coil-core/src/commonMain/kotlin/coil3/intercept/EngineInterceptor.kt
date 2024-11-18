@@ -1,31 +1,40 @@
 package coil3.intercept
 
+import coil3.Bitmap
+import coil3.BitmapImage
 import coil3.ComponentRegistry
 import coil3.EventListener
 import coil3.Image
 import coil3.ImageLoader
+import coil3.asImage
 import coil3.decode.DataSource
 import coil3.decode.DecodeResult
 import coil3.decode.FileImageSource
 import coil3.fetch.FetchResult
 import coil3.fetch.ImageFetchResult
 import coil3.fetch.SourceFetchResult
-import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.memory.MemoryCacheService
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
+import coil3.request.allowConversionToBitmap
+import coil3.request.transformations
+import coil3.transform.Transformation
 import coil3.util.ErrorResult
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
+import coil3.util.foldIndices
 import coil3.util.isPlaceholderCached
+import coil3.util.log
 import coil3.util.prepareToDraw
+import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
@@ -134,7 +143,7 @@ internal class EngineInterceptor(
         }
 
         // Apply any transformations and prepare to draw.
-        val finalResult = transform(executeResult, request, options, eventListener, logger)
+        val finalResult = transform(executeResult, request, options, eventListener)
         finalResult.image.prepareToDraw()
         return finalResult
     }
@@ -207,6 +216,37 @@ internal class EngineInterceptor(
         )
     }
 
+    private suspend fun transform(
+        result: ExecuteResult,
+        request: ImageRequest,
+        options: Options,
+        eventListener: EventListener,
+    ): ExecuteResult {
+        val transformations = request.transformations
+        if (transformations.isEmpty()) {
+            return result
+        }
+
+        // Skip the transformations as converting to a bitmap is disabled.
+        val image = result.image
+        if (image is BitmapImage && !request.allowConversionToBitmap) {
+            logger?.log(TAG, Logger.Level.Info) {
+                val type = result.image::class.simpleName
+                "allowConversionToBitmap=false, skipping transformations for type $type."
+            }
+            return result
+        }
+
+        // Apply the transformations.
+        val input = convertImageToBitmap(image, options, transformations, logger)
+        eventListener.transformStart(request, input)
+        val output = transformations.foldIndices(input) { bitmap, transformation ->
+            transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
+        }
+        eventListener.transformEnd(request, output)
+        return result.copy(image = output.asImage())
+    }
+
     data class ExecuteResult(
         val image: Image,
         val isSampled: Boolean,
@@ -219,10 +259,10 @@ internal class EngineInterceptor(
     }
 }
 
-internal expect suspend fun transform(
-    result: ExecuteResult,
-    request: ImageRequest,
+/** Convert [image] to a [Bitmap]. */
+internal expect fun convertImageToBitmap(
+    image: Image,
     options: Options,
-    eventListener: EventListener,
+    transformations: List<Transformation>,
     logger: Logger?,
-): ExecuteResult
+): Bitmap

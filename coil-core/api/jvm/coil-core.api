@@ -60,6 +60,8 @@ public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener 
 	public fun onSuccess (Lcoil3/request/ImageRequest;Lcoil3/request/SuccessResult;)V
 	public fun resolveSizeEnd (Lcoil3/request/ImageRequest;Lcoil3/size/Size;)V
 	public fun resolveSizeStart (Lcoil3/request/ImageRequest;Lcoil3/size/SizeResolver;)V
+	public fun transformEnd (Lcoil3/request/ImageRequest;Lorg/jetbrains/skia/Bitmap;)V
+	public fun transformStart (Lcoil3/request/ImageRequest;Lorg/jetbrains/skia/Bitmap;)V
 }
 
 public final class coil3/EventListener$Companion {
@@ -640,16 +642,26 @@ public abstract interface class coil3/request/ImageRequest$Listener {
 public final class coil3/request/ImageRequestsKt {
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/Options;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
+	public static final fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
+	public static final fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
 	public static final fun maxBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
 	public static final fun maxBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/request/ImageRequests_nonAndroidKt {
@@ -798,6 +810,15 @@ public abstract interface class coil3/target/Target {
 	public fun onError (Lcoil3/Image;)V
 	public fun onStart (Lcoil3/Image;)V
 	public fun onSuccess (Lcoil3/Image;)V
+}
+
+public abstract class coil3/transform/Transformation {
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public abstract fun getCacheKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public abstract fun transform (Lorg/jetbrains/skia/Bitmap;Lcoil3/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/util/CollectionsKt {

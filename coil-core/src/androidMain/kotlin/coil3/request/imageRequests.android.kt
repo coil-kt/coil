@@ -20,7 +20,6 @@ import coil3.transition.Transition
 import coil3.util.DEFAULT_BITMAP_CONFIG
 import coil3.util.NULL_COLOR_SPACE
 import coil3.util.getDrawableCompat
-import coil3.util.toImmutableList
 
 fun ImageRequest.Builder.target(imageView: ImageView) =
     target(ImageViewTarget(imageView))
@@ -48,29 +47,25 @@ fun ImageRequest.Builder.fallback(drawable: Drawable?) =
 /**
  * Set [Transformation]s to be applied to the output image.
  */
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 fun ImageRequest.Builder.transformations(vararg transformations: Transformation) =
     transformations(transformations.toList())
 
-fun ImageRequest.Builder.transformations(transformations: List<Transformation>) = apply {
-    extras[transformationsKey] = transformations.toImmutableList()
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+fun ImageRequest.Builder.transformations(transformations: List<Transformation>) =
+    transformations(transformations)
 
-    var index = 0
-    val memoryCacheKey = transformations.joinToString { "${index++}:${it.cacheKey}" }
-    memoryCacheKeyExtra(EXTRA_TRANSFORMATIONS, memoryCacheKey)
-}
-
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val ImageRequest.transformations: List<Transformation>
-    get() = getExtra(transformationsKey)
+    get() = transformations
 
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val Options.transformations: List<Transformation>
-    get() = getExtra(transformationsKey)
+    get() = transformations
 
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val Extras.Key.Companion.transformations: Extras.Key<List<Transformation>>
-    get() = transformationsKey
-
-private const val EXTRA_TRANSFORMATIONS = "coil#transformations"
-
-private val transformationsKey = Extras.Key<List<Transformation>>(default = emptyList())
+    get() = transformations
 
 // endregion
 // region crossfade
@@ -242,24 +237,23 @@ private val lifecycleKey = Extras.Key<Lifecycle?>(default = null)
  * If false and the result drawable is not a [BitmapDrawable] any [transformations] will
  * be ignored.
  */
-fun ImageRequest.Builder.allowConversionToBitmap(enable: Boolean) = apply {
-    extras[allowConversionToBitmapKey] = enable
-}
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+fun ImageRequest.Builder.allowConversionToBitmap(enable: Boolean) = allowConversionToBitmap(enable)
 
-fun ImageLoader.Builder.allowConversionToBitmap(enable: Boolean) = apply {
-    extras[allowConversionToBitmapKey] = enable
-}
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+fun ImageLoader.Builder.allowConversionToBitmap(enable: Boolean) = allowConversionToBitmap(enable)
 
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val ImageRequest.allowConversionToBitmap: Boolean
-    get() = getExtra(allowConversionToBitmapKey)
+    get() = allowConversionToBitmap
 
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val Options.allowConversionToBitmap: Boolean
-    get() = getExtra(allowConversionToBitmapKey)
+    get() = allowConversionToBitmap
 
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 val Extras.Key.Companion.allowConversionToBitmap: Extras.Key<Boolean>
-    get() = allowConversionToBitmapKey
-
-private val allowConversionToBitmapKey = Extras.Key(default = true)
+    get() = allowConversionToBitmap
 
 // endregion
 // region allowHardware
