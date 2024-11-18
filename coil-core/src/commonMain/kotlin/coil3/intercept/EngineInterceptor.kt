@@ -244,7 +244,7 @@ internal suspend fun transform(
 
     // Skip the transformations as converting to a bitmap is disabled.
     val image = result.image
-    if (image is BitmapImage && !request.allowConversionToBitmap) {
+    if (image !is BitmapImage && !request.allowConversionToBitmap) {
         logger?.log(TAG, Logger.Level.Info) {
             val type = result.image::class.simpleName
             "allowConversionToBitmap=false, skipping transformations for type $type."
