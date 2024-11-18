@@ -123,12 +123,12 @@ object InternalCoilUtils {
     }
 
     fun resolveImmediateDispatcher(context: CoroutineContext): CoroutineContext {
-        var dispatcher: CoroutineContext? = context[CoroutineDispatcher]
+        var dispatcher = context[CoroutineDispatcher]
         if (dispatcher is MainCoroutineDispatcher) {
             try {
-                dispatcher = dispatcher.immediate
+                return dispatcher.immediate
             } catch (_: UnsupportedOperationException) {}
         }
-        return dispatcher ?: immediateDispatcher
+        return immediateDispatcher
     }
 }
