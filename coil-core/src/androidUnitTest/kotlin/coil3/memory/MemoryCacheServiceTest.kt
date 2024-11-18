@@ -7,8 +7,7 @@ import coil3.RealImageLoader
 import coil3.asImage
 import coil3.key.Keyer
 import coil3.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
-import coil3.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
-import coil3.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_SIZE
+import coil3.memory.MemoryCacheService.Companion.EXTRA_SIZE
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
@@ -25,7 +24,6 @@ import coil3.transform.Transformation
 import coil3.util.SystemCallbacks
 import coil3.util.createBitmap
 import coil3.util.createRequest
-import coil3.util.forEachIndexedIndices
 import coil3.util.toDrawable
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -535,10 +533,11 @@ class MemoryCacheServiceTest : RobolectricTest() {
     ): MemoryCache.Key {
         val extras = memoryCacheKeyExtras.toMutableMap()
         if (transformations.isNotEmpty()) {
-            transformations.forEachIndexedIndices { index, transformation ->
-                extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey
-            }
-            extras[EXTRA_TRANSFORMATION_SIZE] = size.toString()
+            extras += ImageRequest.Builder(context)
+                .transformations(transformations)
+                .build()
+                .memoryCacheKeyExtras
+            extras[EXTRA_SIZE] = size.toString()
         }
         return MemoryCache.Key(key, extras)
     }

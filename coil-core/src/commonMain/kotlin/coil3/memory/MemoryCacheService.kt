@@ -49,7 +49,10 @@ internal class MemoryCacheService(
         }
 
         // Else, create a memory cache key with all extras.
-        val extras = createComplexMemoryCacheKeyExtras(request, options)
+        val extras = request.memoryCacheKeyExtras.toMutableMap()
+        if (request.needsSizeInCacheKey()) {
+            extras[EXTRA_SIZE] = options.size.toString()
+        }
         return MemoryCache.Key(key, extras)
     }
 
@@ -111,7 +114,7 @@ internal class MemoryCacheService(
         // The requested dimensions must match the transformation size exactly if it is present.
         // Unlike standard, requests we can't assume transformed bitmaps for the same image have
         // the same aspect ratio.
-        val transformationSize = cacheKey.extras[EXTRA_TRANSFORMATION_SIZE]
+        val transformationSize = cacheKey.extras[EXTRA_SIZE]
         if (transformationSize != null) {
             // 'Size.toString' is safe to use to determine equality.
             return transformationSize == size.toString()
@@ -219,14 +222,10 @@ internal class MemoryCacheService(
 
     companion object {
         private const val TAG = "MemoryCacheService"
-        internal const val EXTRA_TRANSFORMATION_INDEX = "coil#transformation_"
-        internal const val EXTRA_TRANSFORMATION_SIZE = "coil#transformation_size"
+        internal const val EXTRA_SIZE = "coil#size"
         internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
         internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }
 }
 
-internal expect fun createComplexMemoryCacheKeyExtras(
-    request: ImageRequest,
-    options: Options,
-): Map<String, String>
+internal expect fun ImageRequest.needsSizeInCacheKey(): Boolean

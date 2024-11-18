@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
+import coil3.Bitmap
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
@@ -54,9 +55,12 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.request.crossfade
+import coil3.request.transformations
 import coil3.size.Scale
+import coil3.size.Size
 import coil3.test.utils.ComposeTestActivity
 import coil3.test.utils.context
+import coil3.transform.Transformation
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertContains
@@ -1044,6 +1048,45 @@ class AsyncImageTest {
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(context.resources.displayMetrics.widthPixels.toDp())
             .assertHeightIsEqualTo(0.dp)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2693 */
+    @Test
+    fun recomposesWhenTransformationsChange() {
+        val totalCompositions = 2
+        val compositionCount = AtomicInteger()
+
+        val fakeTransformation = object : Transformation() {
+            override val cacheKey: String
+                get() = "cache_key"
+            override suspend fun transform(input: Bitmap, size: Size) = input
+        }
+
+        val flow = flow {
+            delay(20.milliseconds)
+            emit(listOf(fakeTransformation, fakeTransformation))
+        }
+
+        composeTestRule.setContent {
+            if (compositionCount.incrementAndGet() > totalCompositions) {
+                error("too many compositions")
+            }
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://example.com/image")
+                    .transformations(flow.collectAsState(listOf(fakeTransformation)).value)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+            )
+        }
+
+        waitForRequestComplete(finishedRequests = 2)
+
+        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(2, requestTracker.startedRequests)
+        assertEquals(2, requestTracker.finishedRequests)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
