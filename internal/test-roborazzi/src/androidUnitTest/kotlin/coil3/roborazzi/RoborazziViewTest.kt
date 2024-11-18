@@ -1,7 +1,6 @@
 package coil3.roborazzi
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
@@ -9,8 +8,8 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.target
+import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
-import coil3.test.intercept
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.activity
@@ -37,12 +36,8 @@ class RoborazziViewTest : RobolectricTest() {
     @Test
     fun imageView() {
         val url = "https://www.example.com/image.jpg"
-        val drawable = object : ColorDrawable(Color.RED) {
-            override fun getIntrinsicWidth() = 100
-            override fun getIntrinsicHeight() = 100
-        }
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, drawable)
+            .intercept(url, FakeImage(color = Color.RED))
             .build()
         val activity = activityRule.scenario.activity
         val imageLoader = ImageLoader.Builder(activity)

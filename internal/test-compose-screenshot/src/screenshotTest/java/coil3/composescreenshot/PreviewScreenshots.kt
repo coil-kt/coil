@@ -1,7 +1,6 @@
 package coil3.composescreenshot
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -14,19 +13,16 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
-import coil3.asImage
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
+import coil3.test.FakeImage
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
     private val previewHandler = AsyncImagePreviewHandler {
-        object : ColorDrawable(Color.RED) {
-            override fun getIntrinsicWidth() = 100
-            override fun getIntrinsicHeight() = 100
-        }.asImage()
+        FakeImage(color = Color.RED)
     }
 
     @Preview(
