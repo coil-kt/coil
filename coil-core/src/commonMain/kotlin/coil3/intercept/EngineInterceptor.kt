@@ -13,6 +13,8 @@ import coil3.decode.FileImageSource
 import coil3.fetch.FetchResult
 import coil3.fetch.ImageFetchResult
 import coil3.fetch.SourceFetchResult
+import coil3.intercept.EngineInterceptor.Companion.TAG
+import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.memory.MemoryCacheService
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -143,7 +145,7 @@ internal class EngineInterceptor(
         }
 
         // Apply any transformations and prepare to draw.
-        val finalResult = transform(executeResult, request, options, eventListener)
+        val finalResult = transform(executeResult, request, options, eventListener, logger)
         finalResult.image.prepareToDraw()
         return finalResult
     }
@@ -216,37 +218,6 @@ internal class EngineInterceptor(
         )
     }
 
-    private suspend fun transform(
-        result: ExecuteResult,
-        request: ImageRequest,
-        options: Options,
-        eventListener: EventListener,
-    ): ExecuteResult {
-        val transformations = request.transformations
-        if (transformations.isEmpty()) {
-            return result
-        }
-
-        // Skip the transformations as converting to a bitmap is disabled.
-        val image = result.image
-        if (image is BitmapImage && !request.allowConversionToBitmap) {
-            logger?.log(TAG, Logger.Level.Info) {
-                val type = result.image::class.simpleName
-                "allowConversionToBitmap=false, skipping transformations for type $type."
-            }
-            return result
-        }
-
-        // Apply the transformations.
-        val input = convertImageToBitmap(image, options, transformations, logger)
-        eventListener.transformStart(request, input)
-        val output = transformations.foldIndices(input) { bitmap, transformation ->
-            transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
-        }
-        eventListener.transformEnd(request, output)
-        return result.copy(image = output.asImage())
-    }
-
     data class ExecuteResult(
         val image: Image,
         val isSampled: Boolean,
@@ -257,6 +228,38 @@ internal class EngineInterceptor(
     companion object {
         internal const val TAG = "EngineInterceptor"
     }
+}
+
+internal suspend fun transform(
+    result: ExecuteResult,
+    request: ImageRequest,
+    options: Options,
+    eventListener: EventListener,
+    logger: Logger?,
+): ExecuteResult {
+    val transformations = request.transformations
+    if (transformations.isEmpty()) {
+        return result
+    }
+
+    // Skip the transformations as converting to a bitmap is disabled.
+    val image = result.image
+    if (image is BitmapImage && !request.allowConversionToBitmap) {
+        logger?.log(TAG, Logger.Level.Info) {
+            val type = result.image::class.simpleName
+            "allowConversionToBitmap=false, skipping transformations for type $type."
+        }
+        return result
+    }
+
+    // Apply the transformations.
+    val input = convertImageToBitmap(image, options, transformations, logger)
+    eventListener.transformStart(request, input)
+    val output = transformations.foldIndices(input) { bitmap, transformation ->
+        transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
+    }
+    eventListener.transformEnd(request, output)
+    return result.copy(image = output.asImage())
 }
 
 /** Convert [image] to a [Bitmap]. */

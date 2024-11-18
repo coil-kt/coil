@@ -7,7 +7,6 @@ import coil3.asDrawable
 import coil3.intercept.EngineInterceptor.Companion.TAG
 import coil3.request.Options
 import coil3.request.bitmapConfig
-import coil3.request.transformations
 import coil3.size.Precision
 import coil3.transform.Transformation
 import coil3.util.DrawableUtils
