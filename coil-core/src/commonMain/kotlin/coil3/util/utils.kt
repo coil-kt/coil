@@ -4,6 +4,7 @@ import coil3.ComponentRegistry
 import coil3.EventListener
 import coil3.Image
 import coil3.Uri
+import coil3.annotation.InternalCoilApi
 import coil3.decode.DataSource
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
@@ -12,8 +13,13 @@ import coil3.intercept.RealInterceptorChain
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
 import okio.Closeable
 
 internal expect fun println(level: Logger.Level, tag: String, message: String)
@@ -97,3 +103,32 @@ internal expect class WeakReference<T : Any>(referred: T) {
 }
 
 internal expect fun Image.prepareToDraw()
+
+@InternalCoilApi
+object InternalCoilUtils {
+    // We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so
+    // we can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
+    // The default main dispatcher provided with Compose always dispatches, which will often cause
+    // one frame of delay. If `Dispatchers.Main.immediate` isn't available, fall back to
+    // `Dispatchers.Unconfined`, which will execute immediately even if we're not on the main
+    // thread. This will typically only occur in preview/test environments where image loading
+    // should execute synchronously.
+    private val immediateDispatcher: CoroutineContext = try {
+        Dispatchers.Main.immediate.also {
+            // This will throw if the implementation is missing.
+            it.isDispatchNeeded(EmptyCoroutineContext)
+        }
+    } catch (_: Throwable) {
+        Dispatchers.Unconfined
+    }
+
+    fun resolveImmediateDispatcher(context: CoroutineContext): CoroutineContext {
+        var dispatcher: CoroutineContext? = context[CoroutineDispatcher]
+        if (dispatcher is MainCoroutineDispatcher) {
+            try {
+                dispatcher = dispatcher.immediate
+            } catch (_: UnsupportedOperationException) {}
+        }
+        return dispatcher ?: immediateDispatcher
+    }
+}

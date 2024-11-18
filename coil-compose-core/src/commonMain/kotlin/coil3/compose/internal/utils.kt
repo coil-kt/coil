@@ -30,10 +30,7 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.roundToInt
-import kotlinx.coroutines.Dispatchers
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -211,17 +208,3 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
-
-// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so we
-// can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
-// The default main dispatcher provided with Compose always dispatches, which will often cause one
-// frame of delay. In the cases where we don't have the main dispatcher implicitly fall back to
-// Compose's built in main dispatcher.
-internal val safeImmediateMainDispatcher: CoroutineContext = try {
-    Dispatchers.Main.immediate.also {
-        // This will throw if the implementation is missing.
-        it.isDispatchNeeded(EmptyCoroutineContext)
-    }
-} catch (_: Throwable) {
-    EmptyCoroutineContext
-}
