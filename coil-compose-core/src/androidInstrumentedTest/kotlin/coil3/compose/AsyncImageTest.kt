@@ -70,6 +70,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import org.junit.After
 import org.junit.Before
@@ -1062,10 +1063,7 @@ class AsyncImageTest {
             override suspend fun transform(input: Bitmap, size: Size) = input
         }
 
-        val flow = flow {
-            delay(20.milliseconds)
-            emit(listOf(fakeTransformation, fakeTransformation))
-        }
+        val flow = MutableStateFlow(listOf(fakeTransformation))
 
         composeTestRule.setContent {
             if (compositionCount.incrementAndGet() > totalCompositions) {
@@ -1075,12 +1073,16 @@ class AsyncImageTest {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
-                    .transformations(flow.collectAsState(listOf(fakeTransformation)).value)
+                    .transformations(flow.collectAsState().value)
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader,
             )
         }
+
+        waitForRequestComplete(finishedRequests = 1)
+
+        flow.value = listOf(fakeTransformation, fakeTransformation)
 
         waitForRequestComplete(finishedRequests = 2)
 
