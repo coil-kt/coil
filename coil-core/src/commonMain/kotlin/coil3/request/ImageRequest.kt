@@ -262,10 +262,7 @@ class ImageRequest private constructor(
             extras = extras,
         )
 
-        @Deprecated(
-            level = DeprecationLevel.HIDDEN,
-            message = "Kept for binary compatibility."
-        )
+        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
         fun copy(
             fileSystem: FileSystem = this.fileSystem,
             interceptorCoroutineContext: CoroutineContext = this.interceptorCoroutineContext,

@@ -1,7 +1,6 @@
 package coil3.paparazzi
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +14,8 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.decode.ImageSource
 import coil3.request.ImageRequest
 import coil3.request.target
+import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
-import coil3.test.intercept
 import kotlin.test.assertTrue
 import okio.Buffer
 import okio.FileSystem
@@ -38,12 +37,8 @@ class PaparazziTest {
     @Test
     fun imageView() {
         val url = "https://www.example.com/image.jpg"
-        val drawable = object : ColorDrawable(Color.RED) {
-            override fun getIntrinsicWidth() = 100
-            override fun getIntrinsicHeight() = 100
-        }
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, drawable)
+            .intercept(url, FakeImage(color = Color.RED))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -64,12 +59,8 @@ class PaparazziTest {
     @Test
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
-        val drawable = object : ColorDrawable(Color.RED) {
-            override fun getIntrinsicWidth() = 100
-            override fun getIntrinsicHeight() = 100
-        }
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, drawable)
+            .intercept(url, FakeImage(color = Color.RED))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -89,12 +80,8 @@ class PaparazziTest {
     @Test
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
-        val drawable = object : ColorDrawable(Color.RED) {
-            override fun getIntrinsicWidth() = 100
-            override fun getIntrinsicHeight() = 100
-        }
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, drawable)
+            .intercept(url, FakeImage(color = Color.RED))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
