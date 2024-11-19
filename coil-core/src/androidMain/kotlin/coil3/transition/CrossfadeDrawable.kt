@@ -154,15 +154,19 @@ class CrossfadeDrawable @JvmOverloads constructor(
         end?.let { updateBounds(it, bounds) }
     }
 
-    override fun onLevelChange(level: Int): Boolean {
-        val startChanged = start?.setLevel(level) ?: false
-        val endChanged = end?.setLevel(level) ?: false
-        return startChanged || endChanged
+    override fun isStateful(): Boolean {
+        return (start?.isStateful ?: false) || (end?.isStateful ?: false)
     }
 
     override fun onStateChange(state: IntArray): Boolean {
         val startChanged = start?.setState(state) ?: false
         val endChanged = end?.setState(state) ?: false
+        return startChanged || endChanged
+    }
+
+    override fun onLevelChange(level: Int): Boolean {
+        val startChanged = start?.setLevel(level) ?: false
+        val endChanged = end?.setLevel(level) ?: false
         return startChanged || endChanged
     }
 
@@ -183,7 +187,9 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
+        start?.invalidateSelf()
         end?.setTintList(tint)
+        end?.invalidateSelf()
     }
 
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
