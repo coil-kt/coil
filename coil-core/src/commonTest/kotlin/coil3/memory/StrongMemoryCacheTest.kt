@@ -3,7 +3,6 @@ package coil3.memory
 import coil3.Image
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
-import coil3.test.utils.DEFAULT_FAKE_IMAGE_SIZE
 import coil3.test.utils.FakeImage
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,7 +14,7 @@ class StrongMemoryCacheTest {
     @Test
     fun canRetrieveCachedValue() {
         val weakCache = FakeWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2 * FakeImage().size, weakCache)
 
         val image = FakeImage()
         strongCache.set(Key("1"), image, emptyMap(), image.size)
@@ -26,7 +25,7 @@ class StrongMemoryCacheTest {
     @Test
     fun leastRecentlyUsedValueIsEvicted() {
         val weakCache = FakeWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2 * FakeImage().size, weakCache)
 
         val first = FakeImage()
         strongCache.set(Key("1"), first, emptyMap(), first.size)
@@ -44,7 +43,7 @@ class StrongMemoryCacheTest {
     @Test
     fun valueCanBeRemoved() {
         val weakCache = FakeWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2 * FakeImage().size, weakCache)
 
         val image = FakeImage()
         strongCache.set(Key("1"), image, emptyMap(), image.size)
