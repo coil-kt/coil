@@ -2,6 +2,7 @@ package coil3.test
 
 import coil3.Canvas
 import coil3.Image
+import coil3.test.internal.Black
 
 /**
  * A simple [Image] that draws a 100x100 black square by default.
@@ -11,7 +12,7 @@ expect class FakeImage(
     height: Int = 100,
     size: Long = 4L * width * height,
     shareable: Boolean = true,
-    color: Int = 0xFF000000.toInt(),
+    color: Int = Black,
 ) : Image {
     override val width: Int
     override val height: Int
