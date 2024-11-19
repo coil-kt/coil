@@ -187,9 +187,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
-        start?.invalidateSelf()
         end?.setTintList(tint)
-        end?.invalidateSelf()
     }
 
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
