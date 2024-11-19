@@ -6,6 +6,11 @@ import coil3.annotation.Poko
 import org.jetbrains.skia.Paint
 import org.jetbrains.skia.Rect
 
+@Deprecated(
+    message = "This use case is better fulfilled by ColorImage.",
+    replaceWith = ReplaceWith("ColorImage(color, width, height, size, shareable)", ["coil3.test.ColorImage"]),
+    level = DeprecationLevel.WARNING,
+)
 @Poko
 actual class FakeImage actual constructor(
     actual override val width: Int,

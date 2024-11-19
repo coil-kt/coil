@@ -1,6 +1,5 @@
 package coil3.paparazzi
 
-import android.graphics.Color
 import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,8 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.decode.ImageSource
 import coil3.request.ImageRequest
 import coil3.request.target
-import coil3.test.FakeImage
+import coil3.test.ColorImage
+import coil3.test.ColorImage.Companion.Red
 import coil3.test.FakeImageLoaderEngine
 import kotlin.test.assertTrue
 import okio.Buffer
@@ -38,7 +38,7 @@ class PaparazziTest {
     fun imageView() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Red, width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -60,7 +60,7 @@ class PaparazziTest {
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Red, width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -81,7 +81,7 @@ class PaparazziTest {
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Red, width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
