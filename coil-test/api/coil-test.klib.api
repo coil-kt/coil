@@ -7,8 +7,7 @@
 
 // Library unique name: <io.coil-kt.coil3:coil-test>
 final class coil3.test/FakeImage : coil3/Image { // coil3.test/FakeImage|null[0]
-    constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Boolean = ...) // coil3.test/FakeImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean){}[0]
-    constructor <init>(kotlin/Int, kotlin/Int, kotlin/Long, kotlin/Boolean, kotlin/Int = ...) // coil3.test/FakeImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean;kotlin.Int){}[0]
+    constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Boolean = ..., kotlin/Int = ...) // coil3.test/FakeImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean;kotlin.Int){}[0]
 
     final val color // coil3.test/FakeImage.color|{}color[0]
         final fun <get-color>(): kotlin/Int // coil3.test/FakeImage.color.<get-color>|<get-color>(){}[0]

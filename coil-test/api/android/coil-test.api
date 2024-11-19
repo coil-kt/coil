@@ -1,8 +1,6 @@
 public final class coil3/test/FakeImage : coil3/Image {
 	public fun <init> ()V
-	public fun <init> (IIIJZ)V
-	public synthetic fun <init> (IIIJZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (IIJZI)V
+	public fun <init> (IIJZI)V
 	public synthetic fun <init> (IIJZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun equals (Ljava/lang/Object;)Z
