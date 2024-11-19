@@ -4,22 +4,55 @@
     <inspection_tool class="BlockingMethodInNonBlockingContext" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CanBeParameter" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CascadeIf" enabled="false" level="INFO" enabled_by_default="false" />
+    <inspection_tool class="ComposePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="ComposePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="ComposePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="ComposePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
     <inspection_tool class="ConflictingExtensionProperty" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ConstPropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="DeprecatedCallableAddReplaceWith" enabled="false" level="INFO" enabled_by_default="false" />
     <inspection_tool class="EditorConfigKeyCorrectness" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FunctionName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="FunctionWithLambdaExpressionBody" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GlancePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="GlancePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="GlancePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="GlancePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+    </inspection_tool>
     <inspection_tool class="KotlinRedundantDiagnosticSuppress" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LiftReturnOrAssignment" enabled="false" level="INFO" enabled_by_default="false" />
     <inspection_tool class="MemberVisibilityCanBePrivate" enabled="false" level="INFO" enabled_by_default="false" />
     <inspection_tool class="MoveVariableDeclarationIntoWhen" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="NullableBooleanElvis" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="ObjectPropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
       <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="PreviewApiLevelMustBeValid" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PreviewDeviceShouldUseNewSpec" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="composableFile" value="true" />
       <option name="previewFile" value="true" />
     </inspection_tool>
