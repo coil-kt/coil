@@ -904,6 +904,7 @@ public final class coil3/size/ScaleDrawable : android/graphics/drawable/Drawable
 	public final fun getScale ()Lcoil3/size/Scale;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
+	public fun isStateful ()Z
 	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
 	public fun setAlpha (I)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
@@ -1049,6 +1050,7 @@ public final class coil3/transition/CrossfadeDrawable : android/graphics/drawabl
 	public final fun getStart ()Landroid/graphics/drawable/Drawable;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
+	public fun isStateful ()Z
 	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
 	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
 	public fun setAlpha (I)V
