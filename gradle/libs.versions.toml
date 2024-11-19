@@ -21,7 +21,7 @@ baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-ben
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.16.3"
 dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.17.2"
-screenshot = "com.android.compose.screenshot:0.0.1-alpha07"
+screenshot = "com.android.compose.screenshot:0.0.1-alpha08"
 spotless = "com.diffplug.spotless:6.25.0"
 
 [libraries]
