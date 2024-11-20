@@ -20,6 +20,7 @@ import coil3.request.OneShotDisposable
 import coil3.request.lifecycle
 import coil3.request.requestManager
 import coil3.request.transitionFactory
+import coil3.size.ViewSizeResolver
 import coil3.target.Target
 import coil3.target.ViewTarget
 import coil3.transition.NoneTransition
@@ -31,7 +32,9 @@ internal actual fun needsExecuteOnMainDispatcher(
     request: ImageRequest,
 ): Boolean {
     // Don't dispatch to the main thread unless we have to interact with a view or a lifecycle.
-    return request.target is ViewTarget<*> || request.lifecycle != null
+    return request.target is ViewTarget<*> ||
+        request.sizeResolver is ViewSizeResolver<*> ||
+        request.lifecycle != null
 }
 
 internal actual fun getDisposable(
