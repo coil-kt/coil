@@ -228,7 +228,7 @@ internal class RealImageLoader(
 
 private fun CoroutineScope(logger: Logger?): CoroutineScope {
     val context = SupervisorJob() +
-        Dispatchers.Main.immediate
+        Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }
