@@ -233,20 +233,20 @@ private val immediateDispatcher: CoroutineDispatcher = try {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun CoroutineContext.withImmediateDispatcher(): CoroutineContext {
+private fun CoroutineContext.resolveImmediateDispatcher(): CoroutineDispatcher {
     val dispatcher = get(CoroutineDispatcher)
     if (dispatcher is MainCoroutineDispatcher) {
         try {
             return dispatcher.immediate
         } catch (_: UnsupportedOperationException) {}
     }
-    return this + immediateDispatcher
+    return immediateDispatcher
 }
 
 @Composable
 internal fun rememberImmediateCoroutineScope(): CoroutineScope {
     val scope = rememberCoroutineScope()
     return remember(scope) {
-        CoroutineScope(scope.coroutineContext.withImmediateDispatcher())
+        CoroutineScope(scope.coroutineContext.run { this + resolveImmediateDispatcher() })
     }
 }
