@@ -15,8 +15,6 @@ import coil3.request.ImageRequest
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
- * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
- *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param placeholder A [Painter] that is displayed while the image is loading.
  * @param error A [Painter] that is displayed when the image request is unsuccessful.
@@ -57,8 +55,6 @@ fun rememberAsyncImagePainter(
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
- *
- * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param transform A callback to transform a new [State] before it's applied to the
