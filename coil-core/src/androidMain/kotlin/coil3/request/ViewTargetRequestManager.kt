@@ -6,7 +6,6 @@ import coil3.core.R
 import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import coil3.util.getCompletedOrNull
 import coil3.util.isMainThread
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

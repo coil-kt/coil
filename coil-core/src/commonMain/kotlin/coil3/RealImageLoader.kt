@@ -28,7 +28,6 @@ import coil3.util.SystemCallbacks
 import coil3.util.emoji
 import coil3.util.log
 import coil3.util.mapNotNullIndices
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
