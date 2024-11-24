@@ -21,7 +21,6 @@ import coil3.request.SuccessResult
 import coil3.target.Target
 import coil3.util.ErrorResult
 import coil3.util.FetcherServiceLoaderTarget
-import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import coil3.util.Logger
 import coil3.util.ServiceLoaderComponentRegistry
 import coil3.util.SystemCallbacks
@@ -34,6 +33,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -75,7 +75,7 @@ internal class RealImageLoader(
             // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
-                val job = async(resolveImmediateDispatcher(coroutineContext)) {
+                val job = async(Dispatchers.Main.immediate) {
                     execute(request, REQUEST_TYPE_EXECUTE)
                 }
 
@@ -228,7 +228,7 @@ internal class RealImageLoader(
 
 private fun CoroutineScope(logger: Logger?): CoroutineScope {
     val context = SupervisorJob() +
-        resolveImmediateDispatcher()
+        Dispatchers.Main.immediate
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }

@@ -27,12 +27,11 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.size.ScaleDrawable
-import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
-import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
@@ -130,7 +129,7 @@ class AnimatedImageDecoder(
         val onEnd = options.animationEndCallback
         if (onStart != null || onEnd != null) {
             // Animation callbacks must be set on the main thread.
-            withContext(resolveImmediateDispatcher(coroutineContext)) {
+            withContext(Dispatchers.Main.immediate) {
                 baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
             }
         }

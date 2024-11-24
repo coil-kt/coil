@@ -3,11 +3,11 @@ package coil3.request
 import android.view.View
 import androidx.annotation.MainThread
 import coil3.core.R
-import coil3.util.InternalCoilUtils.resolveImmediateDispatcher
 import coil3.util.getCompletedOrNull
 import coil3.util.isMainThread
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -78,7 +78,7 @@ internal class ViewTargetRequestManager(private val view: View) : View.OnAttachS
     @OptIn(DelicateCoroutinesApi::class)
     fun dispose() {
         pendingClear?.cancel()
-        pendingClear = GlobalScope.launch(resolveImmediateDispatcher()) { setRequest(null) }
+        pendingClear = GlobalScope.launch(Dispatchers.Main.immediate) { setRequest(null) }
         currentDisposable = null
     }
 
