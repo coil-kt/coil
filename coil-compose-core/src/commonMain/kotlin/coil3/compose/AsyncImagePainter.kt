@@ -217,16 +217,16 @@ class AsyncImagePainter internal constructor(
         rememberJob = scope.launch {
             restartSignal
                 .flatMapLatest { _input }
-                .mapLatest {
+                .mapLatest { input ->
                     val previewHandler = previewHandler
                     if (previewHandler != null) {
                         // If we're in inspection mode use the preview renderer.
-                        val request = updateRequest(it.request, isPreview = true)
-                        previewHandler.handle(it.imageLoader, request)
+                        val request = updateRequest(input.request, isPreview = true)
+                        previewHandler.handle(input.imageLoader, request)
                     } else {
                         // Else, execute the request as normal.
-                        val request = updateRequest(it.request, isPreview = false)
-                        it.imageLoader.execute(request).toState()
+                        val request = updateRequest(input.request, isPreview = false)
+                        input.imageLoader.execute(request).toState()
                     }
                 }
                 .collect(::updateState)
