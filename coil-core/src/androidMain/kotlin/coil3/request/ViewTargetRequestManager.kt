@@ -79,8 +79,7 @@ internal class ViewTargetRequestManager(private val view: View) : View.OnAttachS
     @OptIn(DelicateCoroutinesApi::class)
     fun dispose() {
         pendingClear?.cancel()
-        pendingClear = GlobalScope
-            .launch(resolveImmediateDispatcher(EmptyCoroutineContext)) { setRequest(null) }
+        pendingClear = GlobalScope.launch(resolveImmediateDispatcher()) { setRequest(null) }
         currentDisposable = null
     }
 

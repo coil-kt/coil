@@ -122,8 +122,11 @@ object InternalCoilUtils {
         Dispatchers.Unconfined
     }
 
-    fun resolveImmediateDispatcher(context: CoroutineContext): CoroutineContext {
-        var dispatcher = context[CoroutineDispatcher]
+    @OptIn(ExperimentalStdlibApi::class)
+    fun resolveImmediateDispatcher(
+        context: CoroutineContext = EmptyCoroutineContext,
+    ): CoroutineContext {
+        val dispatcher = context[CoroutineDispatcher]
         if (dispatcher is MainCoroutineDispatcher) {
             try {
                 return dispatcher.immediate
