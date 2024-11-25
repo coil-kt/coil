@@ -33,8 +33,8 @@ internal expect fun extensionFromMimeTypeMap(extension: String): String?
 // https://mimetype.io/all-types
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
 private val mimeTypeData = buildMap {
-    put("gz", "application/gzip")
     put("bin", "application/octet-stream")
+    put("gz", "application/gzip")
     put("pdf", "application/pdf")
     put("yaml", "application/yaml")
 
