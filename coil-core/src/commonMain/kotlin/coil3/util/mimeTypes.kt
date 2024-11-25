@@ -24,14 +24,20 @@ object MimeTypeMap {
         }
 
         val lowerExtension = extension.lowercase()
-        return extensionFromMimeTypeMap(lowerExtension) ?: mimeTypeData[lowerExtension]
+        return mimeTypeData[lowerExtension] ?: extensionFromMimeTypeMap(lowerExtension)
     }
 }
 
 internal expect fun extensionFromMimeTypeMap(extension: String): String?
 
 // https://mimetype.io/all-types
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
 private val mimeTypeData = buildMap {
+    put("gz", "application/gzip")
+    put("bin", "application/octet-stream")
+    put("pdf", "application/pdf")
+    put("yaml", "application/yaml")
+
     put("avif", "image/avif")
     put("avifs", "image/avif")
     put("bmp", "image/bmp")
@@ -48,14 +54,6 @@ private val mimeTypeData = buildMap {
     put("jfif", "image/jpeg")
     put("jfif-tbnl", "image/jpeg")
     put("jif", "image/jpeg")
-    put("jpe", "image/pjpeg")
-    put("jpeg", "image/pjpeg")
-    put("jpg", "image/pjpeg")
-    put("pjpg", "image/pjpeg")
-    put("jfi", "image/pjpeg")
-    put("jfif", "image/pjpeg")
-    put("jfif-tbnl", "image/pjpeg")
-    put("jif", "image/pjpeg")
     put("png", "image/png")
     put("btif", "image/prs.btif")
     put("svg", "image/svg+xml")
@@ -118,6 +116,17 @@ private val mimeTypeData = buildMap {
     put("xpm", "image/x-xpixmap")
     put("xwd", "image/x-xwindowdump")
 
+    put("css", "text/css")
+    put("csv", "text/csv")
+    put("htm", "text/html")
+    put("html", "text/html")
+    put("ics", "text/calendar")
+    put("js", "text/javascript")
+    put("mjs", "text/javascript")
+    put("md", "text/markdown")
+    put("txt", "text/plain")
+    put("xml", "text/xml")
+
     put("3gp", "video/3gpp")
     put("3g2", "video/3gpp2")
     put("h261", "video/h261")
@@ -160,6 +169,4 @@ private val mimeTypeData = buildMap {
     put("wvx", "video/x-ms-wvx")
     put("avi", "video/x-msvideo")
     put("movie", "video/x-sgi-movie")
-
-    put("pdf", "application/pdf")
 }

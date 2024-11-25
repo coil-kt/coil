@@ -18,6 +18,7 @@ import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
 import coil3.test.FakeImage
+import coil3.test.composescreenshot.R
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
@@ -65,5 +66,24 @@ class PreviewScreenshots {
                 modifier = Modifier.fillMaxSize(),
             )
         }
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2489 */
+    @Preview(
+        device = Devices.PIXEL,
+        showBackground = true,
+    )
+    @Composable
+    fun vector() {
+        val context = LocalContext.current
+        val imageLoader = remember { ImageLoader(context) }
+
+        AsyncImage(
+            model = R.drawable.ic_tinted_vector,
+            contentDescription = null,
+            imageLoader = imageLoader,
+            contentScale = ContentScale.None,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
