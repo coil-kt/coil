@@ -1,23 +1,23 @@
 package coil3.memory
 
+import coil3.BitmapImage
 import coil3.EventListener
 import coil3.ImageLoader
 import coil3.annotation.VisibleForTesting
 import coil3.decode.DataSource
-import coil3.decode.DecodeUtils
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
+import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import coil3.util.Logger
-import coil3.util.isMinOrMax
 import coil3.util.isPlaceholderCached
 import coil3.util.log
 import kotlin.math.abs
@@ -87,92 +87,107 @@ internal class MemoryCacheService(
         }
 
         // Ensure the size of the cached bitmap is valid for the request.
-        return isSizeValid(request, cacheKey, cacheValue, size, scale)
+        return isCacheValueValidForSize(request, cacheKey, cacheValue, size, scale)
     }
 
     /** Return 'true' if [cacheValue]'s size satisfies the [request]. */
-    private fun isSizeValid(
+    private fun isCacheValueValidForSize(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
         size: Size,
         scale: Scale,
     ): Boolean {
-        // The cached value must not be sampled if the image's original size is requested.
-        val isSampled = cacheValue.isSampled
-        if (size.isOriginal) {
-            if (isSampled) {
+        // Requests with a size in their cache key must match the requested size exactly.
+        val cacheKeySize = cacheKey.extras[EXTRA_SIZE]
+        if (cacheKeySize != null) {
+            if (cacheKeySize == size.toString()) {
+                return true
+            } else {
                 logger?.log(TAG, Logger.Level.Debug) {
-                    "${request.data}: Requested original size, but cached image is sampled."
+                    "${request.data}: Memory cached image's size " +
+                        "($cacheKeySize) does not exactly match the target size " +
+                        "($size)."
                 }
                 return false
-            } else {
-                return true
             }
         }
 
-        // The requested dimensions must match the transformation size exactly if it is present.
-        // Unlike standard, requests we can't assume transformed bitmaps for the same image have
-        // the same aspect ratio.
-        val transformationSize = cacheKey.extras[EXTRA_SIZE]
-        if (transformationSize != null) {
-            // 'Size.toString' is safe to use to determine equality.
-            return transformationSize == size.toString()
+        // Return early if the image is already decoded at full size.
+        if (!cacheValue.isSampled && (size.isOriginal || request.precision == Precision.INEXACT)) {
+            return true
         }
 
-        // Compute the scaling factor between the source dimensions and the requested dimensions.
         val srcWidth = cacheValue.image.width
         val srcHeight = cacheValue.image.height
-        val dstWidth = size.width.pxOrElse { Int.MAX_VALUE }
-        val dstHeight = size.height.pxOrElse { Int.MAX_VALUE }
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = srcWidth,
-            srcHeight = srcHeight,
-            dstWidth = dstWidth,
-            dstHeight = dstHeight,
-            scale = scale,
+        val maxSize = if (cacheValue.image is BitmapImage) {
+            request.maxBitmapSize
+        } else {
+            Size.ORIGINAL
+        }
+        val dstWidth = minOf(
+            size.width.pxOrElse { Int.MAX_VALUE },
+            maxSize.width.pxOrElse { Int.MAX_VALUE },
+        )
+        val dstHeight = minOf(
+            size.height.pxOrElse { Int.MAX_VALUE },
+            maxSize.height.pxOrElse { Int.MAX_VALUE },
         )
 
-        // Short circuit the size check if the size is at most 1 pixel off in either dimension.
-        // This accounts for the fact that downsampling can often produce images with dimensions
-        // at most one pixel off due to rounding.
-        val allowInexactSize = request.precision == Precision.INEXACT
-        if (allowInexactSize) {
-            val downsampleMultiplier = multiplier.coerceAtMost(1.0)
-            if (abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1 ||
-                abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1
-            ) {
+        val multiplier: Double
+        val difference: Int
+        val widthPercent = dstWidth / srcWidth.toDouble()
+        val heightPercent = dstHeight / srcHeight.toDouble()
+        when (
+            if (dstWidth != Int.MAX_VALUE && dstHeight != Int.MAX_VALUE) {
+                scale
+            } else {
+                Scale.FIT
+            }
+        ) {
+            Scale.FILL -> if (widthPercent > heightPercent) {
+                multiplier = widthPercent
+                difference = abs(dstWidth - srcWidth)
+            } else {
+                multiplier = heightPercent
+                difference = abs(dstHeight - srcHeight)
+            }
+            Scale.FIT -> if (widthPercent < heightPercent) {
+                multiplier = widthPercent
+                difference = abs(dstWidth - srcWidth)
+            } else {
+                multiplier = heightPercent
+                difference = abs(dstHeight - srcHeight)
+            }
+        }
+
+        // Allow one pixel of tolerance to account for downsampling rounding issues.
+        if (difference <= 1) {
+            return true
+        }
+
+        when (request.precision) {
+            Precision.EXACT -> if (multiplier == 1.0) {
                 return true
+            } else {
+                logger?.log(TAG, Logger.Level.Debug) {
+                    "${request.data}: Memory cached image's size " +
+                        "($srcWidth, $srcHeight) does not exactly match the target size " +
+                        "($dstWidth, $dstHeight)."
+                }
+                return false
             }
-        } else {
-            if ((dstWidth.isMinOrMax() || abs(dstWidth - srcWidth) <= 1) &&
-                (dstHeight.isMinOrMax() || abs(dstHeight - srcHeight) <= 1)
-            ) {
+            Precision.INEXACT -> if (multiplier <= 1.0) {
                 return true
+            } else {
+                logger?.log(TAG, Logger.Level.Debug) {
+                    "${request.data}: Memory cached image's size " +
+                        "($srcWidth, $srcHeight) is smaller than the target size " +
+                        "($dstWidth, $dstHeight)."
+                }
+                return false
             }
         }
-
-        // The cached value must be equal to the requested size if precision == exact.
-        if (multiplier != 1.0 && !allowInexactSize) {
-            logger?.log(TAG, Logger.Level.Debug) {
-                "${request.data}: Cached image's request size " +
-                    "($srcWidth, $srcHeight) does not exactly match the requested size " +
-                    "(${size.width}, ${size.height}, $scale)."
-            }
-            return false
-        }
-
-        // The cached value must be larger than the requested size if the cached value is sampled.
-        if (multiplier > 1.0 && isSampled) {
-            logger?.log(TAG, Logger.Level.Debug) {
-                "${request.data}: Cached image's request size " +
-                    "($srcWidth, $srcHeight) is smaller than the requested size " +
-                    "(${size.width}, ${size.height}, $scale)."
-            }
-            return false
-        }
-
-        return true
     }
 
     /** Write [result] to the memory cache. Return 'true' if it was added to the cache. */
