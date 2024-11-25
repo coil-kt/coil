@@ -35,6 +35,7 @@ internal expect fun extensionFromMimeTypeMap(extension: String): String?
 private val mimeTypeData = buildMap {
     put("bin", "application/octet-stream")
     put("gz", "application/gzip")
+    put("json", "application/json")
     put("pdf", "application/pdf")
     put("yaml", "application/yaml")
 
