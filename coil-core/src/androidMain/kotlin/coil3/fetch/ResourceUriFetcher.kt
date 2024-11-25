@@ -29,8 +29,7 @@ internal class ResourceUriFetcher(
 
     override suspend fun fetch(): FetchResult {
         // Expected format: android.resource://example.package.name/12345678
-        val packageName =
-            data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
+        val packageName = data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
         val resId = data.pathSegments.lastOrNull()?.toIntOrNull() ?: throwInvalidUriException(data)
 
         val context = options.context
@@ -40,8 +39,7 @@ internal class ResourceUriFetcher(
             context.packageManager.getResourcesForApplication(packageName)
         }
         val path = TypedValue().apply { resources.getValue(resId, this, true) }.string
-        val entryName = path.substring(path.lastIndexOf('/'))
-        val mimeType = MimeTypeMap.getMimeTypeFromUrl(entryName)
+        val mimeType = MimeTypeMap.getMimeTypeFromUrl(path.toString())
 
         return if (mimeType == MIME_TYPE_XML) {
             // getDrawableCompat can only load resources that are in the current package.
