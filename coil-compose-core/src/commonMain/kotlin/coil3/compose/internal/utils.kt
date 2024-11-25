@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -246,7 +247,13 @@ private fun CoroutineContext.resolveImmediateDispatcher(): CoroutineDispatcher {
 @Composable
 internal fun rememberImmediateCoroutineScope(): CoroutineScope {
     val scope = rememberCoroutineScope()
-    return remember(scope) {
-        CoroutineScope(scope.coroutineContext.run { this + resolveImmediateDispatcher() })
+    val isPreview = LocalInspectionMode.current
+    return remember(scope, isPreview) {
+        val context = if (isPreview) {
+            scope.coroutineContext + Dispatchers.Unconfined
+        } else {
+            scope.coroutineContext.run { this + resolveImmediateDispatcher() }
+        }
+        CoroutineScope(context)
     }
 }
