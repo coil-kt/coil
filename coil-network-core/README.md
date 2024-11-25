@@ -5,9 +5,9 @@ By default, Coil 3.x does not include support for loading images from the networ
 To add support for fetching images from the network import **only one of the following**:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.3") // Only available on Android/JVM.
-implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.3")
-implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.3")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4") // Only available on Android/JVM.
+implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.4")
+implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.4")
 ```
 
 If you use OkHttp, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).

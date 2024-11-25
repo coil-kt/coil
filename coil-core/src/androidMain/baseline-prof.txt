@@ -264,6 +264,8 @@ HSPLcoil3/decode/StaticImageDecoder;->access$configureImageDecoderProperties(Lco
 HSPLcoil3/decode/StaticImageDecoder;->access$getOptions$p(Lcoil3/decode/StaticImageDecoder;)Lcoil3/request/Options;
 HSPLcoil3/decode/StaticImageDecoder;->configureImageDecoderProperties(Landroid/graphics/ImageDecoder;)V
 HSPLcoil3/decode/StaticImageDecoder;->decode(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+Lcoil3/decode/StaticImageDecoder$$ExternalSyntheticLambda7;
+HSPLcoil3/decode/StaticImageDecoder$$ExternalSyntheticLambda7;-><init>()V
 Lcoil3/decode/StaticImageDecoder$Factory;
 HSPLcoil3/decode/StaticImageDecoder$Factory;-><init>(Lkotlinx/coroutines/sync/Semaphore;)V
 HSPLcoil3/decode/StaticImageDecoder$Factory;->create(Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
@@ -508,7 +510,7 @@ Lcoil3/memory/MemoryCacheService$Companion;
 HSPLcoil3/memory/MemoryCacheService$Companion;-><init>()V
 HSPLcoil3/memory/MemoryCacheService$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 Lcoil3/memory/MemoryCacheServiceKt;
-HSPLcoil3/memory/MemoryCacheServiceKt;->createComplexMemoryCacheKeyExtras(Lcoil3/request/ImageRequest;Lcoil3/request/Options;)Ljava/util/Map;
+HSPLcoil3/memory/MemoryCacheServiceKt;->needsSizeInCacheKey(Lcoil3/request/ImageRequest;)Z
 Lcoil3/memory/RealMemoryCache;
 HSPLcoil3/memory/RealMemoryCache;-><init>(Lcoil3/memory/StrongMemoryCache;Lcoil3/memory/WeakMemoryCache;)V
 HSPLcoil3/memory/RealMemoryCache;->get(Lcoil3/memory/MemoryCache$Key;)Lcoil3/memory/MemoryCache$Value;
@@ -716,6 +718,7 @@ HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/gra
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/graphics/ImageDecoder$Source;Landroid/graphics/ImageDecoder$OnHeaderDecodedListener;)Landroid/graphics/Bitmap;
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/graphics/ImageDecoder;I)V
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/graphics/ImageDecoder;II)V
+HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/graphics/ImageDecoder;Landroid/graphics/ImageDecoder$OnPartialImageListener;)V
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/graphics/ImageDecoder;Z)V
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Landroid/net/ConnectivityManager;)Landroid/net/Network;
 HSPLcoil3/size/ScaleDrawable$$ExternalSyntheticApiModelOutline0;->m(Ljava/io/File;)Landroid/graphics/ImageDecoder$Source;
@@ -740,6 +743,7 @@ HSPLcoil3/size/SizeResolver$Companion;-><clinit>()V
 HSPLcoil3/size/SizeResolver$Companion;-><init>()V
 Lcoil3/size/SizeResolverKt;
 HSPLcoil3/size/SizeResolverKt;->SizeResolver(Lcoil3/size/Size;)Lcoil3/size/SizeResolver;
+Lcoil3/size/ViewSizeResolver;
 Lcoil3/target/Target;
 Lcoil3/target/ViewTarget;
 Lcoil3/transition/CrossfadeTransition;
@@ -848,3 +852,4 @@ Lcoil3/util/Utils_androidKt;
 HSPLcoil3/util/Utils_androidKt;-><clinit>()V
 HSPLcoil3/util/Utils_androidKt;->getDEFAULT_BITMAP_CONFIG()Landroid/graphics/Bitmap$Config;
 HSPLcoil3/util/Utils_androidKt;->getNULL_COLOR_SPACE()Landroid/graphics/ColorSpace;
+HSPLcoil3/util/Utils_androidKt;->prepareToDraw(Lcoil3/Image;)V

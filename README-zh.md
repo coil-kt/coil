@@ -14,8 +14,8 @@ Coil 是 Co**routine **I**mage **L**oader 的缩写。
 导入 Compose 库和 [网络库](https://coil-kt.github.io/coil/network/)：
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.3")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.3")
+implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
 ```
 
 要加载图像，请使用 `AsyncImage`可组合：

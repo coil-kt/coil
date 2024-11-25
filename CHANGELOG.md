@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.4] - November 25, 2024
+
+- Fix vector drawables not rendering in the Android Studio preview.
+- Fix potential memory cache miss for requests whose size exceeds `maxBitmapSize`.
+- Fix `FakeImage` not rendering on Android.
+- Fix not launching a new image request when the request's `Transformation`s change when used with `AsyncImage`/`rememberAsyncImagePainter`/`SubcomposeAsyncImage`.
+- Fix `ScaleDrawable` and `CrossfadeDrawable` not respecting tint states.
+- Allow `ImageDecoder` to decode partial image sources. This matches the behavior in `BitmapFactory`.
+- Fix `Bitmap.prepareToDraw()` not being called after decoding.
+- `SvgDecoder` should not return `isSampled = true` for non-rasterized images.
+- Fall back to `Dispatchers.Unconfined` in Compose if an immediate main dispatcher is unavailable. This is only used in preview/test environments.
+- Update Ktor 2 to `2.3.13`.
+
 ## [3.0.3] - November 14, 2024
 
 - Fix setting `ImageRequest.scale` based on an `ImageView`'s `ScaleType`.

@@ -7,7 +7,7 @@ Unlike Glide, GIFs are not supported by default. However, Coil has an extension 
 To add GIF support, import the extension library:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-gif:3.0.3")
+implementation("io.coil-kt.coil3:coil-gif:3.0.4")
 ```
 
 And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
