@@ -12,6 +12,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.allowHardware
+import coil3.request.maxBitmapSize
 import coil3.request.transformations
 import coil3.size.Dimension
 import coil3.size.Precision
@@ -472,6 +473,21 @@ class MemoryCacheServiceTest : RobolectricTest() {
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
             size = Size(Dimension.Undefined, 250)
+        ))
+    }
+
+    @Test
+    fun `isCacheValueValid - maxBitmapSize is respected`() {
+        val service = newService()
+
+        assertTrue(service.isCacheValueValid(
+            request = createRequest(context) {
+                precision(Precision.INEXACT)
+                maxBitmapSize(Size(100, 150))
+            },
+            cached = createBitmap(width = 200, height = 200),
+            isSampled = true,
+            size = Size(400, 400),
         ))
     }
 
