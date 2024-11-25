@@ -102,7 +102,7 @@ class SvgDecoder(
 
         DecodeResult(
             image = image,
-            isSampled = true, // SVGs can always be re-decoded at a higher resolution.
+            isSampled = renderToBitmap, // Rasterized SVGs can always be re-decoded at a higher resolution.
         )
     }
 
