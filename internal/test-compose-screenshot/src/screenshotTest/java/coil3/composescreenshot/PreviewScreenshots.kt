@@ -2,10 +2,12 @@ package coil3.composescreenshot
 
 import android.graphics.Color
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -78,12 +80,16 @@ class PreviewScreenshots {
         val context = LocalContext.current
         val imageLoader = remember { ImageLoader(context) }
 
-        AsyncImage(
-            model = R.drawable.ic_tinted_vector,
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.None,
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize(),
-        )
+        ) {
+            AsyncImage(
+                model = R.drawable.ic_tinted_vector,
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier.fillMaxSize(0.5f),
+            )
+        }
     }
 }
