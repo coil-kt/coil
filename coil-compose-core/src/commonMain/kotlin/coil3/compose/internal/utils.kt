@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package coil3.compose.internal
 
 import androidx.compose.runtime.Composable
