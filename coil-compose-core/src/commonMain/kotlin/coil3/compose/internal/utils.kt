@@ -138,7 +138,7 @@ internal fun onStateOf(
 @Composable
 @NonRestartableComposable
 @ReadOnlyComposable
-internal fun AsyncImageState(
+internal inline fun AsyncImageState(
     model: Any?,
     imageLoader: ImageLoader,
 ) = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader)
