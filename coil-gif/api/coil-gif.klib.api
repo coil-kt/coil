@@ -1,0 +1,66 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.coil-kt.coil3:coil-gif>
+final enum class coil3.gif/PixelOpacity : kotlin/Enum<coil3.gif/PixelOpacity> { // coil3.gif/PixelOpacity|null[0]
+    enum entry OPAQUE // coil3.gif/PixelOpacity.OPAQUE|null[0]
+    enum entry TRANSLUCENT // coil3.gif/PixelOpacity.TRANSLUCENT|null[0]
+    enum entry UNCHANGED // coil3.gif/PixelOpacity.UNCHANGED|null[0]
+
+    final val entries // coil3.gif/PixelOpacity.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<coil3.gif/PixelOpacity> // coil3.gif/PixelOpacity.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): coil3.gif/PixelOpacity // coil3.gif/PixelOpacity.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<coil3.gif/PixelOpacity> // coil3.gif/PixelOpacity.values|values#static(){}[0]
+}
+
+abstract fun interface coil3.gif/AnimatedTransformation { // coil3.gif/AnimatedTransformation|null[0]
+    abstract fun transform(org.jetbrains.skia/Canvas): coil3.gif/PixelOpacity // coil3.gif/AnimatedTransformation.transform|transform(org.jetbrains.skia.Canvas){}[0]
+}
+
+final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int, kotlin.time/TimeSource) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int;kotlin.time.TimeSource){}[0]
+
+    final suspend fun decode(): coil3.decode/DecodeResult // coil3.gif/AnimatedSkiaImageDecoder.decode|decode(){}[0]
+
+    final class Factory : coil3.decode/Decoder.Factory { // coil3.gif/AnimatedSkiaImageDecoder.Factory|null[0]
+        constructor <init>(kotlin/Int = ..., kotlin.time/TimeSource = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Int;kotlin.time.TimeSource){}[0]
+
+        final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.gif/AnimatedSkiaImageDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+    }
+}
+
+final val coil3.gif.internal/initHook // coil3.gif.internal/initHook|{}initHook[0]
+    final fun <get-initHook>(): kotlin/Any // coil3.gif.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
+final val coil3.gif/animatedTransformation // coil3.gif/animatedTransformation|@coil3.Extras.Key.Companion{}animatedTransformation[0]
+    final fun (coil3/Extras.Key.Companion).<get-animatedTransformation>(): coil3/Extras.Key<coil3.gif/AnimatedTransformation?> // coil3.gif/animatedTransformation.<get-animatedTransformation>|<get-animatedTransformation>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.gif/animatedTransformation // coil3.gif/animatedTransformation|@coil3.request.ImageRequest{}animatedTransformation[0]
+    final fun (coil3.request/ImageRequest).<get-animatedTransformation>(): coil3.gif/AnimatedTransformation? // coil3.gif/animatedTransformation.<get-animatedTransformation>|<get-animatedTransformation>@coil3.request.ImageRequest(){}[0]
+final val coil3.gif/animatedTransformation // coil3.gif/animatedTransformation|@coil3.request.Options{}animatedTransformation[0]
+    final fun (coil3.request/Options).<get-animatedTransformation>(): coil3.gif/AnimatedTransformation? // coil3.gif/animatedTransformation.<get-animatedTransformation>|<get-animatedTransformation>@coil3.request.Options(){}[0]
+final val coil3.gif/animationEndCallback // coil3.gif/animationEndCallback|@coil3.Extras.Key.Companion{}animationEndCallback[0]
+    final fun (coil3/Extras.Key.Companion).<get-animationEndCallback>(): coil3/Extras.Key<kotlin/Function0<kotlin/Unit>?> // coil3.gif/animationEndCallback.<get-animationEndCallback>|<get-animationEndCallback>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.gif/animationEndCallback // coil3.gif/animationEndCallback|@coil3.request.ImageRequest{}animationEndCallback[0]
+    final fun (coil3.request/ImageRequest).<get-animationEndCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationEndCallback.<get-animationEndCallback>|<get-animationEndCallback>@coil3.request.ImageRequest(){}[0]
+final val coil3.gif/animationEndCallback // coil3.gif/animationEndCallback|@coil3.request.Options{}animationEndCallback[0]
+    final fun (coil3.request/Options).<get-animationEndCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationEndCallback.<get-animationEndCallback>|<get-animationEndCallback>@coil3.request.Options(){}[0]
+final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@coil3.Extras.Key.Companion{}animationStartCallback[0]
+    final fun (coil3/Extras.Key.Companion).<get-animationStartCallback>(): coil3/Extras.Key<kotlin/Function0<kotlin/Unit>?> // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@coil3.request.ImageRequest{}animationStartCallback[0]
+    final fun (coil3.request/ImageRequest).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.ImageRequest(){}[0]
+final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@coil3.request.Options{}animationStartCallback[0]
+    final fun (coil3.request/Options).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.Options(){}[0]
+
+final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedHeif|isAnimatedHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedWebP|isAnimatedWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isGif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isGif|isGif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isHeif|isHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.decode/DecodeUtils).coil3.gif/isWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isWebP|isWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
+final fun (coil3.request/ImageRequest.Builder).coil3.gif/animatedTransformation(coil3.gif/AnimatedTransformation?): coil3.request/ImageRequest.Builder // coil3.gif/animatedTransformation|animatedTransformation@coil3.request.ImageRequest.Builder(coil3.gif.AnimatedTransformation?){}[0]
+final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationEnd(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationEnd|onAnimationEnd@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
+final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationStart(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationStart|onAnimationStart@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
+final fun coil3.gif/AnimatedImageDecoderFactory(): coil3.decode/Decoder.Factory // coil3.gif/AnimatedImageDecoderFactory|AnimatedImageDecoderFactory(){}[0]
