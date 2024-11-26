@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package coil3.compose.internal
 
 import androidx.compose.runtime.Composable
@@ -138,7 +140,7 @@ internal fun onStateOf(
 @Composable
 @NonRestartableComposable
 @ReadOnlyComposable
-internal fun AsyncImageState(
+internal inline fun AsyncImageState(
     model: Any?,
     imageLoader: ImageLoader,
 ) = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader)
