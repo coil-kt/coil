@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 /**
@@ -30,6 +31,7 @@ import kotlin.time.TimeSource
  * @param end The [Painter] to crossfade to.
  * @param contentScale The scaling algorithm for [start] and [end].
  * @param duration The duration of the crossfade animation.
+ * @param timeSource The source for measuring time intervals.
  * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
  * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1
  *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
@@ -42,12 +44,13 @@ class CrossfadePainter(
     private val end: Painter?,
     private val contentScale: ContentScale = ContentScale.Fit,
     private val duration: Duration = 200.milliseconds,
+    private val timeSource: TimeSource = TimeSource.Monotonic,
     private val fadeStart: Boolean = true,
     private val preferExactIntrinsicSize: Boolean = false,
 ) : Painter() {
 
     private var invalidateTick by mutableIntStateOf(0)
-    private var startTime: TimeSource.Monotonic.ValueTimeMark? = null
+    private var startTime: TimeMark? = null
     private var isDone = false
 
     private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
@@ -62,7 +65,7 @@ class CrossfadePainter(
         }
 
         // Initialize startTime the first time we're drawn.
-        val startTime = startTime ?: TimeSource.Monotonic.markNow().also { startTime = it }
+        val startTime = startTime ?: timeSource.markNow().also { startTime = it }
         val percent = startTime.elapsedNow().inWholeMilliseconds / duration.inWholeMilliseconds.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
