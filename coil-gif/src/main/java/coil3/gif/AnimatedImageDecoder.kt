@@ -20,6 +20,7 @@ import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.gif.internal.squashToDirectByteBuffer
+import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
@@ -54,6 +55,7 @@ class AnimatedImageDecoder(
 
     override suspend fun decode(): DecodeResult {
         var isSampled = false
+
         val drawable = runInterruptible {
             maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay).use { source ->
                 val imageSource = source.toImageDecoderSourceOrNull(options, animated = true)
@@ -122,7 +124,9 @@ class AnimatedImageDecoder(
             return baseDrawable
         }
 
-        baseDrawable.repeatCount = options.repeatCount
+        if (options.repeatCount != ENCODED_LOOP_COUNT) {
+            baseDrawable.repeatCount = options.repeatCount
+        }
 
         // Set the start and end animation callbacks if any one is supplied through the request.
         val onStart = options.animationStartCallback
@@ -157,5 +161,10 @@ class AnimatedImageDecoder(
                 DecodeUtils.isAnimatedWebP(source) ||
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
+    }
+
+    companion object {
+        /** Pass this to [ImageRequest.Builder.repeatCount] to repeat according to encoded LoopCount metadata. */
+        const val ENCODED_LOOP_COUNT = -2
     }
 }
