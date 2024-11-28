@@ -5,7 +5,7 @@ androidx-lifecycle = "2.8.7"
 androidx-tracing-perfetto = "1.0.0"
 atomicfu = "0.26.0"
 coroutines = "1.9.0"
-jetbrains-compose = "1.6.11"
+jetbrains-compose = "1.7.1"
 kotlin = "2.1.0"
 ktlint = "1.3.1"
 ktor2 = "2.3.13"
@@ -14,7 +14,7 @@ okhttp = "4.12.0"
 okio = "3.9.1"
 paparazzi = "1.3.5"
 roborazzi = "1.34.0"
-skiko = "0.8.4"
+skiko = "0.8.18"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
