@@ -50,11 +50,13 @@ internal class MemoryCacheService(
         }
 
         // Else, create a memory cache key with all extras.
-        val extras = request.memoryCacheKeyExtras.toMutableMap()
         if (request.transformations.isNotEmpty()) {
+            val extras = request.memoryCacheKeyExtras.toMutableMap()
             extras[EXTRA_SIZE] = options.size.toString()
+            return MemoryCache.Key(key, extras)
+        } else {
+            return MemoryCache.Key(key, request.memoryCacheKeyExtras)
         }
-        return MemoryCache.Key(key, extras)
     }
 
     /** Get the [MemoryCache.Value] for this request. */
