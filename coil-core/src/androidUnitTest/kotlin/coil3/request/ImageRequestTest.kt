@@ -15,11 +15,11 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -61,8 +61,9 @@ class ImageRequestTest : RobolectricTest() {
 
     @Test
     fun `defaults fill unset values`() {
+        val element = TestCoroutineContextMarker()
         val defaults = ImageRequest.Defaults(
-            decoderCoroutineContext = Dispatchers.Unconfined,
+            decoderCoroutineContext = element,
             precision = Precision.EXACT,
             extras = Extras.Builder()
                 .set(Extras.Key.transitionFactory, CrossfadeTransition.Factory())
@@ -186,5 +187,10 @@ class ImageRequestTest : RobolectricTest() {
         assertEquals(extraValue1, request1.extras[extraKey])
         assertEquals(extraValue2, request2.extras[extraKey])
         assertNotEquals(request1.extras, request2.extras)
+    }
+
+    private class TestCoroutineContextMarker : CoroutineContext.Element {
+        override val key get() = Key
+        object Key : CoroutineContext.Key<TestCoroutineContextMarker>
     }
 }
