@@ -5,6 +5,7 @@ import coil3.request.ImageRequest
 import coil3.test.utils.FakeImage
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -12,8 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,12 +46,10 @@ class RealImageLoaderTest : RobolectricTest() {
     fun executeIsCancelledIfScopeIsCancelled() = runTest {
         val isCancelled = MutableStateFlow(false)
 
-        val dispatcher = Dispatchers.Unconfined
-        val scope = CoroutineScope(dispatcher)
-        scope.launch {
+        val job = backgroundScope.launch {
             val request = ImageRequest.Builder(context)
                 .data(Unit)
-                .coroutineContext(dispatcher)
+                .coroutineContext(EmptyCoroutineContext)
                 .fetcherFactory<Unit> { _, _, _ ->
                     // Use a custom fetcher that suspends until cancellation.
                     Fetcher { awaitCancellation() }
@@ -66,10 +63,12 @@ class RealImageLoaderTest : RobolectricTest() {
             imageLoader.execute(request)
         }
 
-        assertTrue(scope.isActive)
+        testScheduler.runCurrent()
+
+        assertTrue(job.isActive)
         assertFalse(isCancelled.value)
 
-        scope.cancel()
+        job.cancel()
 
         // Suspend until the request is cancelled.
         isCancelled.first { it }
