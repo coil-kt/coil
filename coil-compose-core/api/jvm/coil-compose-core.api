@@ -126,6 +126,13 @@ public final class coil3/compose/ConstraintsSizeResolverKt {
 	public static final fun rememberConstraintsSizeResolver (Landroidx/compose/runtime/Composer;I)Lcoil3/compose/ConstraintsSizeResolver;
 }
 
+public final class coil3/compose/CrossfadePainter : androidx/compose/ui/graphics/painter/Painter {
+	public static final field $stable I
+	public synthetic fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getIntrinsicSize-NH-jbRc ()J
+}
+
 public abstract interface class coil3/compose/DrawScopeSizeResolver : coil3/size/SizeResolver {
 	public abstract fun connect (Lkotlinx/coroutines/flow/Flow;)V
 }

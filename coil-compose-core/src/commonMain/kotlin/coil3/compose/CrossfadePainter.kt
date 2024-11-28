@@ -1,4 +1,4 @@
-package coil3.compose.internal
+package coil3.compose
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -16,22 +16,34 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 /**
  * A [Painter] that crossfades from [start] to [end].
  *
- * NOTE: The animation can only be executed once as the [start] painter is dereferenced at
- * the end of the transition.
+ * NOTE: The animation can only be executed once as the [start]
+ * painter is dereferenced at the end of the transition.
+ *
+ * @param start The [Painter] to crossfade from.
+ * @param end The [Painter] to crossfade to.
+ * @param contentScale The scaling algorithm for [start] and [end].
+ * @param duration The duration of the crossfade animation.
+ * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
+ * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1
+ *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
+ *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
+ *  require an exact intrinsic size to scale the drawable.
  */
 @Stable
-internal class CrossfadePainter(
+class CrossfadePainter(
     private var start: Painter?,
     private val end: Painter?,
-    private val contentScale: ContentScale,
-    private val durationMillis: Int,
-    private val fadeStart: Boolean,
-    private val preferExactIntrinsicSize: Boolean,
+    private val contentScale: ContentScale = ContentScale.Fit,
+    private val duration: Duration = 200.milliseconds,
+    private val fadeStart: Boolean = true,
+    private val preferExactIntrinsicSize: Boolean = false,
 ) : Painter() {
 
     private var invalidateTick by mutableIntStateOf(0)
@@ -51,7 +63,7 @@ internal class CrossfadePainter(
 
         // Initialize startTime the first time we're drawn.
         val startTime = startTime ?: TimeSource.Monotonic.markNow().also { startTime = it }
-        val percent = startTime.elapsedNow().inWholeMilliseconds / durationMillis.toFloat()
+        val percent = startTime.elapsedNow().inWholeMilliseconds / duration.inWholeMilliseconds.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
         isDone = percent >= 1f

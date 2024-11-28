@@ -2,13 +2,13 @@ package coil3.compose
 
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.layout.ContentScale
-import coil3.compose.internal.CrossfadePainter
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.lifecycle
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
 import coil3.transition.TransitionTarget
+import kotlin.time.Duration.Companion.milliseconds
 
 internal actual fun validateRequestProperties(request: ImageRequest) {
     require(request.target == null) { "request.target must be null." }
@@ -35,7 +35,7 @@ internal actual fun maybeNewCrossfadePainter(
             start = previous.painter.takeIf { previous is AsyncImagePainter.State.Loading },
             end = current.painter,
             contentScale = contentScale,
-            durationMillis = transition.durationMillis,
+            duration = transition.durationMillis.milliseconds,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = transition.preferExactIntrinsicSize,
         )
