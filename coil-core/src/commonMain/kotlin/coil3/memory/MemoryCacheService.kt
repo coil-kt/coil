@@ -12,6 +12,7 @@ import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.SuccessResult
 import coil3.request.maxBitmapSize
+import coil3.request.transformations
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
@@ -49,11 +50,13 @@ internal class MemoryCacheService(
         }
 
         // Else, create a memory cache key with all extras.
-        val extras = request.memoryCacheKeyExtras.toMutableMap()
-        if (request.needsSizeInCacheKey()) {
+        if (request.transformations.isNotEmpty()) {
+            val extras = request.memoryCacheKeyExtras.toMutableMap()
             extras[EXTRA_SIZE] = options.size.toString()
+            return MemoryCache.Key(key, extras)
+        } else {
+            return MemoryCache.Key(key, request.memoryCacheKeyExtras)
         }
-        return MemoryCache.Key(key, extras)
     }
 
     /** Get the [MemoryCache.Value] for this request. */
@@ -242,5 +245,3 @@ internal class MemoryCacheService(
         internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }
 }
-
-internal expect fun ImageRequest.needsSizeInCacheKey(): Boolean

@@ -13,6 +13,7 @@ import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
 import coil3.size.SizeResolver
+import coil3.transform.Transformation
 
 /**
  * A listener for tracking the progress of an image request. This class is useful for
@@ -108,6 +109,24 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param result The result of [Decoder.decode].
      */
     open fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?)
+
+    /**
+     * Called before any [Transformation]s are applied.
+     *
+     * This is skipped if `ImageRequest.transformations` is empty.
+     *
+     * @param input The [Image] that will be transformed.
+     */
+    open fun transformStart(request: ImageRequest, input: Bitmap)
+
+    /**
+     * Called after any [Transformation]s are applied.
+     *
+     * This is skipped if `ImageRequest.transformations` is empty.
+     *
+     * @param output The [Image] that was transformed.
+     */
+    open fun transformEnd(request: ImageRequest, output: Bitmap)
 
     /**
      * @see ImageRequest.Listener.onCancel
