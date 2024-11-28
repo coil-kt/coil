@@ -142,7 +142,9 @@ allprojects {
             featureFlags.addAll(
                 ComposeFeatureFlag.OptimizeNonSkippingGroups,
             )
-            stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
+            stabilityConfigurationFiles.add {
+                rootDir.resolve("coil-core/compose_compiler_config.conf")
+            }
 
             if (enableComposeMetrics && name in publicModules) {
                 val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile
