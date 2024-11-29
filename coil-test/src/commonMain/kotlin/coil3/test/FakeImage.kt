@@ -9,7 +9,7 @@ import coil3.test.ColorImage.Companion.Black
  */
 @Deprecated(
     message = "This use case is better fulfilled by ColorImage.",
-    replaceWith = ReplaceWith("ColorImage(color, width, height, size, shareable)", ["coil3.test.ColorImage"]),
+    replaceWith = ReplaceWith("ColorImage(color, width, height, size, shareable)", "coil3.test.ColorImage"),
     level = DeprecationLevel.WARNING,
 )
 expect class FakeImage(
