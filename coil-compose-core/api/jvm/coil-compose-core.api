@@ -130,7 +130,14 @@ public final class coil3/compose/CrossfadePainter : androidx/compose/ui/graphics
 	public static final field $stable I
 	public synthetic fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
+	public final fun getDuration-UwyO8pc ()J
+	public final fun getEnd ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun getFadeStart ()Z
 	public fun getIntrinsicSize-NH-jbRc ()J
+	public final fun getPreferExactIntrinsicSize ()Z
+	public final fun getStart ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun getTimeSource ()Lkotlin/time/TimeSource;
 }
 
 public abstract interface class coil3/compose/DrawScopeSizeResolver : coil3/size/SizeResolver {

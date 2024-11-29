@@ -40,13 +40,13 @@ import kotlin.time.TimeSource
  */
 @Stable
 class CrossfadePainter(
-    private var start: Painter?,
-    private val end: Painter?,
-    private val contentScale: ContentScale = ContentScale.Fit,
-    private val duration: Duration = 200.milliseconds,
-    private val timeSource: TimeSource = TimeSource.Monotonic,
-    private val fadeStart: Boolean = true,
-    private val preferExactIntrinsicSize: Boolean = false,
+    start: Painter?,
+    val end: Painter?,
+    val contentScale: ContentScale = ContentScale.Fit,
+    val duration: Duration = 200.milliseconds,
+    val timeSource: TimeSource = TimeSource.Monotonic,
+    val fadeStart: Boolean = true,
+    val preferExactIntrinsicSize: Boolean = false,
 ) : Painter() {
 
     private var invalidateTick by mutableIntStateOf(0)
@@ -55,6 +55,9 @@ class CrossfadePainter(
 
     private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
+
+    var start: Painter? = start
+        private set
 
     override val intrinsicSize get() = computeIntrinsicSize()
 

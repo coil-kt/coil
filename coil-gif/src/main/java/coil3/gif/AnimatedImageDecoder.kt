@@ -164,7 +164,10 @@ class AnimatedImageDecoder(
     }
 
     companion object {
-        /** Pass this to [ImageRequest.Builder.repeatCount] to repeat according to encoded LoopCount metadata. */
+        /**
+         * Pass this to [ImageRequest.Builder.repeatCount] to repeat according to encoded
+         * LoopCount metadata.
+         */
         const val ENCODED_LOOP_COUNT = -2
     }
 }

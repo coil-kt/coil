@@ -152,8 +152,23 @@ final class coil3.compose/ConstraintsSizeResolver : androidx.compose.ui.layout/L
 final class coil3.compose/CrossfadePainter : androidx.compose.ui.graphics.painter/Painter { // coil3.compose/CrossfadePainter|null[0]
     constructor <init>(androidx.compose.ui.graphics.painter/Painter?, androidx.compose.ui.graphics.painter/Painter?, androidx.compose.ui.layout/ContentScale = ..., kotlin.time/Duration = ..., kotlin.time/TimeSource = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.compose/CrossfadePainter.<init>|<init>(androidx.compose.ui.graphics.painter.Painter?;androidx.compose.ui.graphics.painter.Painter?;androidx.compose.ui.layout.ContentScale;kotlin.time.Duration;kotlin.time.TimeSource;kotlin.Boolean;kotlin.Boolean){}[0]
 
+    final val contentScale // coil3.compose/CrossfadePainter.contentScale|{}contentScale[0]
+        final fun <get-contentScale>(): androidx.compose.ui.layout/ContentScale // coil3.compose/CrossfadePainter.contentScale.<get-contentScale>|<get-contentScale>(){}[0]
+    final val duration // coil3.compose/CrossfadePainter.duration|{}duration[0]
+        final fun <get-duration>(): kotlin.time/Duration // coil3.compose/CrossfadePainter.duration.<get-duration>|<get-duration>(){}[0]
+    final val end // coil3.compose/CrossfadePainter.end|{}end[0]
+        final fun <get-end>(): androidx.compose.ui.graphics.painter/Painter? // coil3.compose/CrossfadePainter.end.<get-end>|<get-end>(){}[0]
+    final val fadeStart // coil3.compose/CrossfadePainter.fadeStart|{}fadeStart[0]
+        final fun <get-fadeStart>(): kotlin/Boolean // coil3.compose/CrossfadePainter.fadeStart.<get-fadeStart>|<get-fadeStart>(){}[0]
     final val intrinsicSize // coil3.compose/CrossfadePainter.intrinsicSize|{}intrinsicSize[0]
         final fun <get-intrinsicSize>(): androidx.compose.ui.geometry/Size // coil3.compose/CrossfadePainter.intrinsicSize.<get-intrinsicSize>|<get-intrinsicSize>(){}[0]
+    final val preferExactIntrinsicSize // coil3.compose/CrossfadePainter.preferExactIntrinsicSize|{}preferExactIntrinsicSize[0]
+        final fun <get-preferExactIntrinsicSize>(): kotlin/Boolean // coil3.compose/CrossfadePainter.preferExactIntrinsicSize.<get-preferExactIntrinsicSize>|<get-preferExactIntrinsicSize>(){}[0]
+    final val timeSource // coil3.compose/CrossfadePainter.timeSource|{}timeSource[0]
+        final fun <get-timeSource>(): kotlin.time/TimeSource // coil3.compose/CrossfadePainter.timeSource.<get-timeSource>|<get-timeSource>(){}[0]
+
+    final var start // coil3.compose/CrossfadePainter.start|{}start[0]
+        final fun <get-start>(): androidx.compose.ui.graphics.painter/Painter? // coil3.compose/CrossfadePainter.start.<get-start>|<get-start>(){}[0]
 }
 
 final class coil3.compose/ImagePainter : androidx.compose.ui.graphics.painter/Painter { // coil3.compose/ImagePainter|null[0]
