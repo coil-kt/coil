@@ -15,6 +15,7 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
+import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -189,8 +190,7 @@ class ImageRequestTest : RobolectricTest() {
         assertNotEquals(request1.extras, request2.extras)
     }
 
-    private class TestCoroutineContextMarker : CoroutineContext.Element {
-        override val key get() = Key
+    private class TestCoroutineContextMarker : AbstractCoroutineContextElement(Key) {
         object Key : CoroutineContext.Key<TestCoroutineContextMarker>
     }
 }
