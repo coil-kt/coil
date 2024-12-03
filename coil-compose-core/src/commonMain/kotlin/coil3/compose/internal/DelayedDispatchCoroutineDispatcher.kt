@@ -31,7 +31,7 @@ internal fun rememberDelayedDispatchCoroutineScope(): CoroutineScope {
  * A [CoroutineDispatcher] that delays dispatching to [delegate] until after the current
  * [CoroutineDispatcher] changes.
  */
-private class DelayedDispatchCoroutineDispatcher(
+internal class DelayedDispatchCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher() {
     private var dispatchEnabled = false
