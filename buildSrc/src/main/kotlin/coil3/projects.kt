@@ -30,7 +30,7 @@ fun Project.androidLibrary(
     sourceSets["main"].resources {
         srcDirs("src/commonMain/resources", "src/jvmCommonMain/resources")
     }
-    if (false && project.name in publicModules) {
+    if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
