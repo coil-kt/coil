@@ -1,3 +1,28 @@
+public final class coil3/test/ColorImage : coil3/Image {
+	public static final field Black I
+	public static final field Blue I
+	public static final field Companion Lcoil3/test/ColorImage$Companion;
+	public static final field Green I
+	public static final field Red I
+	public static final field Transparent I
+	public static final field White I
+	public fun <init> ()V
+	public fun <init> (IIIJZ)V
+	public synthetic fun <init> (IIIJZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun draw (Lorg/jetbrains/skia/Canvas;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor ()I
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil3/test/ColorImage$Companion {
+}
+
 public final class coil3/test/FakeImage : coil3/Image {
 	public fun <init> ()V
 	public fun <init> (IIJZI)V
