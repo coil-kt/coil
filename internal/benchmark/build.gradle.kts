@@ -29,9 +29,9 @@ androidTest(name = "coil3.benchmark", config = true) {
     testOptions {
         managedDevices {
             devices {
-                create<ManagedVirtualDevice>("pixel7Api34") {
-                    device = "Pixel 7"
-                    apiLevel = 34
+                create<ManagedVirtualDevice>("pixel9Api35") {
+                    device = "Pixel 9"
+                    apiLevel = 35
                     systemImageSource = "aosp"
                 }
             }
@@ -42,7 +42,7 @@ androidTest(name = "coil3.benchmark", config = true) {
 }
 
 baselineProfile {
-    managedDevices += "pixel7Api34"
+    managedDevices += "pixel9Api35"
     useConnectedDevices = false
     enableEmulatorDisplay = false
 }
