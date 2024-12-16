@@ -44,21 +44,54 @@ interface CacheStrategy {
             this.request = null
             this.response = response
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is ReadResult &&
+                request == other.request &&
+                response == other.response
+        }
+
+        override fun hashCode(): Int {
+            var result = request?.hashCode() ?: 0
+            result = 31 * result + (response?.hashCode() ?: 0)
+            return result
+        }
+
+        override fun toString(): String {
+            return "ReadResult(request=$request, response=$response)"
+        }
     }
 
     class WriteResult {
         val response: NetworkResponse?
 
         /**
-         * Write [response] to the disk cache. Set [NetworkResponse.body] to `null` to skip
-         * writing the response body.
+         * Write [response] to the disk cache.
+         * Set [NetworkResponse.body] to `null` to skip writing the response body.
          */
         constructor(response: NetworkResponse) {
             this.response = response
         }
 
-        internal constructor() {
+        /**
+         * Use [DISABLED] instead of this constructor.
+         */
+        private constructor() {
             this.response = null
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is WriteResult && response == other.response
+        }
+
+        override fun hashCode(): Int {
+            return response?.hashCode() ?: 0
+        }
+
+        override fun toString(): String {
+            return "WriteResult(response=$response)"
         }
 
         companion object {

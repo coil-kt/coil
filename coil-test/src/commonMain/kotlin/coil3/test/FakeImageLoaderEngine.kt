@@ -8,6 +8,7 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.size.Size
 import coil3.test.FakeImageLoaderEngine.RequestTransformer
+import coil3.test.internal.imageResultOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

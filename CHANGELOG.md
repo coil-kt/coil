@@ -1,5 +1,61 @@
 # Changelog
 
+## [3.0.4] - November 25, 2024
+
+- Fix vector drawables not rendering in the Android Studio preview.
+- Fix potential memory cache miss for requests whose size exceeds `maxBitmapSize`.
+- Fix `FakeImage` not rendering on Android.
+- Fix not launching a new image request when the request's `Transformation`s change when used with `AsyncImage`/`rememberAsyncImagePainter`/`SubcomposeAsyncImage`.
+- Fix `ScaleDrawable` and `CrossfadeDrawable` not respecting tint states.
+- Allow `ImageDecoder` to decode partial image sources. This matches the behavior in `BitmapFactory`.
+- Fix `Bitmap.prepareToDraw()` not being called after decoding.
+- `SvgDecoder` should not return `isSampled = true` for non-rasterized images.
+- Fall back to `Dispatchers.Unconfined` in Compose if an immediate main dispatcher is unavailable. This is only used in preview/test environments.
+- Update Ktor 2 to `2.3.13`.
+
+## [3.0.3] - November 14, 2024
+
+- Fix setting `ImageRequest.scale` based on an `ImageView`'s `ScaleType`.
+- Fix edge case where `DiskCache` would not track removal of an entry after deleting its files.
+- Pass throwable to `Logger` when logging errors.
+- Don't replace `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` with `kotlin-stdlib`.
+
+## [3.0.2] - November 9, 2024
+
+- Fix crash when invoking `OkHttpNetworkFetcherFactory` with a custom `CacheStrategy` on Android.
+- Fix `CacheControlCacheStrategy` computing the age of a cache entry incorrectly.
+- Fix case where `ImageRequest.bitmapConfig` would only be respected on >= API 28 if it was `ARGB_8888` or `HARDWARE`.
+
+## [3.0.1] - November 7, 2024
+
+- Fix crash when calling `Image.toBitmap` with a hardware bitmap-backed `BitmapImage`.
+- Fix `AsyncImageModelEqualityDelegate.Default` comparing equality incorrectly for non-`ImageRequest` models.
+
+## [3.0.0] - November 4, 2024
+
+Coil 3.0.0 is the next major release of Coil with full support for [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/).
+
+[For the full list of improvements and important changes in 3.0.0, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/).
+
+Changes since `3.0.0-rc02`:
+
+- Remove remaining deprecated methods.
+
+## [3.0.0-rc02] - October 28, 2024
+
+[For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-rc01`:
+
+- Add `BlackholeDecoder`. This simplifies [disk-cache only preloading](https://coil-kt.github.io/coil/faq/#how-do-i-preload-an-image).
+- Add `remember` functions for `ConstraintsSizeResolver` and `DrawScopeSizeResolver`.
+- Remove `EqualityDelegate` as a parameter to `AsyncImage`. Instead, it should be set through `LocalAsyncImageModelEqualityDelegate`.
+- Fix `AsyncImage` not rendering when parent composable uses `IntrinsicSize`.
+- Fix `AsyncImage` filling the available constraints when `AsyncImagePainter` has no child painter.
+- Fix `rememberAsyncImagePainter` recomposing infinitely when its state is observed due to `EqualityDelegate` being ignored.
+- Fix parsing `File`/`Path` paths with special characters.
+- Fix using custom `FileSystem` implementations with `VideoFrameDecoder`.
+- Update Ktor to `3.0.0`.
+- Update `androidx.annotation` to `1.9.0`.
+
 ## [3.0.0-rc01] - October 8, 2024
 
 [For the full list of improvements and important changes in 3.x, check out the upgrade guide](https://coil-kt.github.io/coil/upgrading_to_coil3/). Changes since `3.0.0-alpha10`:

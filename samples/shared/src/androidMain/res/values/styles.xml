@@ -4,7 +4,7 @@
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#FFF</item>
         <item name="colorAccent">#FFF</item>
-
+        <item name="android:background">#FFF</item>
         <item name="android:statusBarColor">#FFF</item>
     </style>
 

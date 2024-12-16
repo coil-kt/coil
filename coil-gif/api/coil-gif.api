@@ -1,7 +1,12 @@
 public final class coil3/gif/AnimatedImageDecoder : coil3/decode/Decoder {
+	public static final field Companion Lcoil3/gif/AnimatedImageDecoder$Companion;
+	public static final field ENCODED_LOOP_COUNT I
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Z)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/gif/AnimatedImageDecoder$Companion {
 }
 
 public final class coil3/gif/AnimatedImageDecoder$Factory : coil3/decode/Decoder$Factory {

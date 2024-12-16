@@ -13,7 +13,6 @@ import coil3.request.target
 import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.activity
 import coil3.test.utils.context
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -45,7 +44,7 @@ class AnimationCallbacksTest {
     }
 
     @Test
-    fun callbacksTest() = runTest(timeout = 30.seconds) {
+    fun callbacksTest() = runTest {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
@@ -68,7 +67,11 @@ class AnimationCallbacksTest {
             }
             .build()
         val result = imageLoader.execute(request)
-        if (result is ErrorResult) throw result.throwable
+
+        if (result is ErrorResult) {
+            throw result.throwable
+        }
+
         isStartCalled.first { it }
         isEndCalled.first { it }
     }

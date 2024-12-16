@@ -110,7 +110,7 @@ val drawable = Picasso.get()
     .resize(width, height)
     .get()
 
-// Coil (suspends the current coroutine; non-blocking and thread safe)
+// Coil (suspends, non-blocking, and thread safe)
 val request = ImageRequest.Builder(context)
     .data(url)
     .size(width, height)

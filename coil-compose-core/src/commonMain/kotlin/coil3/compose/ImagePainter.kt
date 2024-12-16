@@ -18,14 +18,12 @@ import coil3.PlatformContext
 class ImagePainter(
     val image: Image,
 ) : Painter() {
+
     override val intrinsicSize: Size
-        get() = Size(intrinsicWidth, intrinsicHeight)
-
-    private val intrinsicWidth: Float
-        get() = image.width.let { if (it > 0) it.toFloat() else Float.NaN }
-
-    private val intrinsicHeight: Float
-        get() = image.height.let { if (it > 0) it.toFloat() else Float.NaN }
+        get() = Size(
+            width = image.width.let { if (it > 0) it.toFloat() else Float.NaN },
+            height = image.height.let { if (it > 0) it.toFloat() else Float.NaN },
+        )
 
     override fun DrawScope.onDraw() {
         scale(

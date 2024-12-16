@@ -1,6 +1,7 @@
 package coil3
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.ColorFilter
 import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
@@ -12,6 +13,7 @@ import coil3.util.allocationByteCountCompat
 import coil3.util.height
 import coil3.util.width
 
+@Suppress("RemoveRedundantQualifierName")
 actual typealias Bitmap = android.graphics.Bitmap
 
 actual typealias Canvas = android.graphics.Canvas
@@ -25,12 +27,20 @@ actual fun Bitmap.asImage(shareable: Boolean): BitmapImage {
 actual fun Image.toBitmap(
     width: Int,
     height: Int,
-): Bitmap = toBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
+): Bitmap {
+    var bitmapConfig: Bitmap.Config? = null
+
+    if (this is BitmapImage) {
+        bitmapConfig = bitmap.config
+    }
+
+    return toBitmap(width, height, bitmapConfig ?: Bitmap.Config.ARGB_8888)
+}
 
 fun Image.toBitmap(
     width: Int,
     height: Int,
-    config: android.graphics.Bitmap.Config,
+    config: Bitmap.Config,
 ): Bitmap {
     if (this is BitmapImage &&
         bitmap.width == width &&

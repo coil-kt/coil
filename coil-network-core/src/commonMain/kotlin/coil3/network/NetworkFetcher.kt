@@ -28,9 +28,6 @@ import okio.IOException
 
 /**
  * A [Fetcher] that fetches and caches images from the network.
- *
- * NOTE: Prefer using `OkHttpNetworkFetcher` or `KtorNetworkFetcher` instead of this class
- * directly - unless you want to provide a custom [NetworkClient].
  */
 class NetworkFetcher(
     private val url: String,
@@ -78,7 +75,7 @@ class NetworkFetcher(
                 // Write the response to the disk cache then open a new snapshot.
                 snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, response)
                 if (snapshot != null) {
-                    val cacheResponse = snapshot!!.toNetworkResponseOrNull()
+                    cacheResponse = snapshot!!.toNetworkResponseOrNull()
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
@@ -243,10 +240,9 @@ class NetworkFetcher(
     }
 
     private suspend fun NetworkResponseBody.toImageSource(): ImageSource {
-        return ImageSource(
-            source = Buffer().apply { writeTo(this) },
-            fileSystem = fileSystem,
-        )
+        val buffer = Buffer()
+        writeTo(buffer)
+        return buffer.toImageSource()
     }
 
     private fun Buffer.toImageSource(): ImageSource {

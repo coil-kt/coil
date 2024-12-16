@@ -5,7 +5,6 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.NullRequestData
 import coil3.size.Size
-import coil3.size.SizeResolver
 
 internal class RealInterceptorChain(
     val initialRequest: ImageRequest,
@@ -13,7 +12,6 @@ internal class RealInterceptorChain(
     val index: Int,
     override val request: ImageRequest,
     override val size: Size,
-    val sizeResolver: SizeResolver,
     val eventListener: EventListener,
     val isPlaceholderCached: Boolean,
 ) : Interceptor.Chain {
@@ -61,7 +59,6 @@ internal class RealInterceptorChain(
         index = index,
         request = request,
         size = size,
-        sizeResolver = sizeResolver,
         eventListener = eventListener,
         isPlaceholderCached = isPlaceholderCached,
     )

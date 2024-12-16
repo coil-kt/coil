@@ -5,6 +5,7 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
+    id("dev.drewhamilton.poko")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)

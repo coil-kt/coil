@@ -27,6 +27,10 @@ abstract interface coil3.network/CacheStrategy { // coil3.network/CacheStrategy|
             final fun <get-request>(): coil3.network/NetworkRequest? // coil3.network/CacheStrategy.ReadResult.request.<get-request>|<get-request>(){}[0]
         final val response // coil3.network/CacheStrategy.ReadResult.response|{}response[0]
             final fun <get-response>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.ReadResult.response.<get-response>|<get-response>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/CacheStrategy.ReadResult.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.network/CacheStrategy.ReadResult.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.network/CacheStrategy.ReadResult.toString|toString(){}[0]
     }
 
     final class WriteResult { // coil3.network/CacheStrategy.WriteResult|null[0]
@@ -34,6 +38,10 @@ abstract interface coil3.network/CacheStrategy { // coil3.network/CacheStrategy|
 
         final val response // coil3.network/CacheStrategy.WriteResult.response|{}response[0]
             final fun <get-response>(): coil3.network/NetworkResponse? // coil3.network/CacheStrategy.WriteResult.response.<get-response>|<get-response>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/CacheStrategy.WriteResult.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.network/CacheStrategy.WriteResult.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.network/CacheStrategy.WriteResult.toString|toString(){}[0]
 
         final object Companion { // coil3.network/CacheStrategy.WriteResult.Companion|null[0]
             final val DISABLED // coil3.network/CacheStrategy.WriteResult.Companion.DISABLED|{}DISABLED[0]

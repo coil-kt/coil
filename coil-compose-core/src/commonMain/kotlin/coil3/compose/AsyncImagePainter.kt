@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
@@ -31,10 +30,9 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
-import coil3.compose.internal.CrossfadePainter
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.rememberImmediateCoroutineScope
 import coil3.compose.internal.requestOf
-import coil3.compose.internal.safeImmediateMainDispatcher
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
 import coil3.request.ErrorResult
@@ -45,7 +43,6 @@ import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -60,8 +57,6 @@ import kotlinx.coroutines.launch
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
- * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
- *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param placeholder A [Painter] that is displayed while the image is loading.
@@ -75,8 +70,6 @@ import kotlinx.coroutines.launch
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -91,9 +84,8 @@ fun rememberAsyncImagePainter(
     onError: ((State.Error) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     contentScale = contentScale,
@@ -102,8 +94,6 @@ fun rememberAsyncImagePainter(
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
- *
- * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
@@ -115,8 +105,6 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
- * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
- *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -127,9 +115,8 @@ fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
-    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    state = AsyncImageState(model, imageLoader),
     transform = transform,
     onState = onState,
     contentScale = contentScale,
@@ -147,9 +134,9 @@ private fun rememberAsyncImagePainter(
     val request = requestOf(state.model)
     validateRequest(request)
 
-    val input = Input(state.imageLoader, request)
+    val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberCoroutineScope()
+    painter.scope = rememberImmediateCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -226,24 +213,22 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        val inputs = restartSignal.flatMapLatest { _input }
-        val previewHandler = previewHandler
-        if (previewHandler != null) {
-            // If we're in inspection mode use the preview renderer.
-            rememberJob = scope.launch(Dispatchers.Unconfined) {
-                inputs.mapLatest {
-                    val request = updateRequest(it.request, isPreview = true)
-                    previewHandler.handle(it.imageLoader, request)
-                }.collect(::updateState)
-            }
-        } else {
-            // Else, execute the request as normal.
-            rememberJob = scope.launch(safeImmediateMainDispatcher) {
-                inputs.mapLatest {
-                    val request = updateRequest(it.request, isPreview = false)
-                    it.imageLoader.execute(request).toState()
-                }.collect(::updateState)
-            }
+        rememberJob = scope.launch {
+            restartSignal
+                .flatMapLatest { _input }
+                .mapLatest { input ->
+                    val previewHandler = previewHandler
+                    if (previewHandler != null) {
+                        // If we're in inspection mode use the preview renderer.
+                        val request = updateRequest(input.request, isPreview = true)
+                        previewHandler.handle(input.imageLoader, request)
+                    } else {
+                        // Else, execute the request as normal.
+                        val request = updateRequest(input.request, isPreview = false)
+                        input.imageLoader.execute(request).toState()
+                    }
+                }
+                .collect(::updateState)
         }
     }
 
@@ -298,7 +283,6 @@ class AsyncImagePainter internal constructor(
                     // The request must be executed synchronously in the preview environment.
                     coroutineContext(EmptyCoroutineContext)
                 }
-                applyGlobalLifecycle()
             }
             .build()
     }
@@ -337,7 +321,24 @@ class AsyncImagePainter internal constructor(
     class Input(
         val imageLoader: ImageLoader,
         val request: ImageRequest,
-    )
+        val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
+    ) {
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Input &&
+                imageLoader == other.imageLoader &&
+                modelEqualityDelegate == other.modelEqualityDelegate &&
+                modelEqualityDelegate.equals(request, other.request)
+        }
+
+        override fun hashCode(): Int {
+            var result = imageLoader.hashCode()
+            result = 31 * result + modelEqualityDelegate.hashCode()
+            result = 31 * result + modelEqualityDelegate.hashCode(request)
+            return result
+        }
+    }
 
     /**
      * The current state of the [AsyncImagePainter].
@@ -408,9 +409,6 @@ private fun unsupportedData(
 
 /** Validate platform-specific properties of an [ImageRequest]. */
 internal expect fun validateRequestProperties(request: ImageRequest)
-
-/** Set the request's lifecycle to `GlobalLifecycle` on Android to avoid dispatching. */
-internal expect fun ImageRequest.Builder.applyGlobalLifecycle()
 
 /** Create and return a [CrossfadePainter] if requested. */
 internal expect fun maybeNewCrossfadePainter(

@@ -7,8 +7,10 @@ import coil3.size.Size
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 expect val Bitmap.width: Int
 
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 expect val Bitmap.height: Int
 
 val Bitmap.size: Size

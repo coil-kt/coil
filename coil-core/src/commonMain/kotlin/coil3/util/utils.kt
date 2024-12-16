@@ -12,7 +12,6 @@ import coil3.intercept.RealInterceptorChain
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
-import coil3.size.SizeResolver
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
 import okio.Closeable
@@ -65,9 +64,6 @@ internal val Interceptor.Chain.isPlaceholderCached: Boolean
 internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
 
-internal val Interceptor.Chain.sizeResolver: SizeResolver
-    get() = if (this is RealInterceptorChain) sizeResolver else request.sizeResolver
-
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
 internal const val SCHEME_FILE = "file"
@@ -99,3 +95,5 @@ internal expect class WeakReference<T : Any>(referred: T) {
     fun get(): T?
     fun clear()
 }
+
+internal expect fun Image.prepareToDraw()

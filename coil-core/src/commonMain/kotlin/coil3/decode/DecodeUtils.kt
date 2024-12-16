@@ -1,6 +1,5 @@
 package coil3.decode
 
-import coil3.annotation.ExperimentalCoilApi
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
@@ -92,7 +91,6 @@ object DecodeUtils {
      * scaled into. The returned dimensions can be passed to [computeSizeMultiplier] to get the
      * final size multiplier.
      */
-    @ExperimentalCoilApi
     @JvmStatic
     fun computeDstSize(
         srcWidth: Int,

@@ -21,7 +21,23 @@ actual fun Bitmap.asImage(shareable: Boolean): BitmapImage {
 actual fun Image.toBitmap(
     width: Int,
     height: Int,
-): Bitmap = toBitmap(width, height, ColorType.N32, ColorAlphaType.PREMUL, null)
+): Bitmap {
+    val colorType: ColorType
+    val colorAlphaType: ColorAlphaType
+    val colorSpace: ColorSpace?
+
+    if (this is BitmapImage) {
+        colorType = bitmap.colorType
+        colorAlphaType = bitmap.imageInfo.colorAlphaType
+        colorSpace = bitmap.colorSpace
+    } else {
+        colorType = ColorType.N32
+        colorAlphaType = ColorAlphaType.PREMUL
+        colorSpace = null
+    }
+
+    return toBitmap(width, height, colorType, colorAlphaType, colorSpace)
+}
 
 fun Image.toBitmap(
     width: Int,

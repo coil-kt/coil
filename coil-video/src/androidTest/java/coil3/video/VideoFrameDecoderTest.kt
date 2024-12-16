@@ -15,17 +15,17 @@ import coil3.test.utils.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.buffer
+import okio.fakefilesystem.FakeFileSystem
 import okio.source
 import org.junit.Test
 
 class VideoFrameDecoderTest {
 
     @Test
-    fun noSetFrameTime() = runTest(timeout = 1.minutes) {
+    fun noSetFrameTime() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -34,7 +34,7 @@ class VideoFrameDecoderTest {
                 source = context.assets.open("video.mp4").source().buffer(),
                 fileSystem = FileSystem.SYSTEM,
             ),
-            options = Options(context)
+            options = Options(context),
         ).decode()
 
         val actual = result.image.bitmap
@@ -46,7 +46,35 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFrameTime() = runTest(timeout = 1.minutes) {
+    fun noSetFrameTime_FakeFileSystem() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val fileSystem = FakeFileSystem()
+        val path = fileSystem.workingDirectory / "video.mp4"
+
+        fileSystem.write(path) {
+            writeAll(context.assets.open("video.mp4").source().buffer())
+        }
+
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                file = path,
+                fileSystem = fileSystem,
+            ),
+            options = Options(context),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_1.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun specificFrameTime() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -59,8 +87,8 @@ class VideoFrameDecoderTest {
                 context = context,
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFrameMicros, 32600000L)
-                    .build()
-            )
+                    .build(),
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -72,7 +100,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFramePercent() = runTest(timeout = 1.minutes) {
+    fun specificFramePercent() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -86,7 +114,7 @@ class VideoFrameDecoderTest {
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFramePercent, 0.525)
                     .build(),
-            )
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -98,7 +126,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFrameIndex() = runTest(timeout = 1.minutes) {
+    fun specificFrameIndex() = runTest {
         // MediaMetadataRetriever#getFrameAtIndex does not work on the emulator pre-API 28.
         assumeTrue(SDK_INT >= 28)
 
@@ -112,7 +140,7 @@ class VideoFrameDecoderTest {
                 extras = Extras.Builder()
                     .set(Extras.Key.videoFrameIndex, 807)
                     .build(),
-            )
+            ),
         ).decode()
 
         val actual = result.image.bitmap
@@ -124,7 +152,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun rotation() = runTest(timeout = 1.minutes) {
+    fun rotation() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -133,7 +161,7 @@ class VideoFrameDecoderTest {
                 source = context.assets.open("video_rotated.mp4").source().buffer(),
                 fileSystem = FileSystem.SYSTEM,
             ),
-            options = Options(context, size = Size(150, 150))
+            options = Options(context, size = Size(150, 150)),
         ).decode()
 
         val actual = result.image.bitmap
@@ -146,7 +174,7 @@ class VideoFrameDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1482 */
     @Test
-    fun nestedAsset() = runTest(timeout = 1.minutes) {
+    fun nestedAsset() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -157,7 +185,7 @@ class VideoFrameDecoderTest {
                 fileSystem = FileSystem.SYSTEM,
                 metadata = AssetMetadata(path),
             ),
-            options = Options(context)
+            options = Options(context),
         ).decode()
 
         val actual = result.image.bitmap
@@ -169,7 +197,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun mediaDataSource() = runTest(timeout = 1.minutes) {
+    fun mediaDataSource() = runTest {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
         val file = context.copyAssetToFile("video.mp4")

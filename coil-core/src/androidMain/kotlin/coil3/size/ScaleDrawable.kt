@@ -81,9 +81,11 @@ class ScaleDrawable @JvmOverloads constructor(
         childScale = multiplier.toFloat()
     }
 
-    override fun onLevelChange(level: Int) = child.setLevel(level)
+    override fun isStateful() = child.isStateful
 
     override fun onStateChange(state: IntArray) = child.setState(state)
+
+    override fun onLevelChange(level: Int) = child.setLevel(level)
 
     override fun getIntrinsicWidth() = child.intrinsicWidth
 

@@ -9,7 +9,6 @@ import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
-import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
@@ -24,6 +23,7 @@ import coil3.util.VALID_TRANSFORMATION_CONFIGS
 import coil3.util.getLifecycle
 import coil3.util.isHardware
 import coil3.util.safeConfig
+import coil3.util.scale
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -44,30 +44,68 @@ internal class AndroidRequestService(
      * Wrap [request] to automatically dispose and/or restart the [ImageRequest]
      * based on its lifecycle.
      */
-    override fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate {
-        val lifecycle = request.lifecycle ?: request.findLifecycle()
+    override fun requestDelegate(
+        request: ImageRequest,
+        job: Job,
+        findLifecycle: Boolean,
+    ): RequestDelegate {
         val target = request.target
         if (target is ViewTarget<*>) {
+            val lifecycle = request.lifecycle ?: request.findLifecycle()
             return ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
-        } else if (lifecycle != GlobalLifecycle) {
-            return LifecycleRequestDelegate(lifecycle, job)
-        } else {
-            return BaseRequestDelegate(job)
         }
+
+        val lifecycle = request.lifecycle ?: if (findLifecycle) request.findLifecycle() else null
+        if (lifecycle != null) {
+            return LifecycleRequestDelegate(lifecycle, job)
+        }
+
+        return BaseRequestDelegate(job)
     }
 
-    private fun ImageRequest.findLifecycle(): Lifecycle {
+    private fun ImageRequest.findLifecycle(): Lifecycle? {
         val target = target
         val context = if (target is ViewTarget<*>) target.view.context else context
-        return context.getLifecycle() ?: GlobalLifecycle
+        return context.getLifecycle()
     }
 
-    override fun sizeResolver(request: ImageRequest): SizeResolver {
-        if (request.defined.sizeResolver != null) {
-            return request.defined.sizeResolver
+    override fun updateRequest(request: ImageRequest): ImageRequest {
+        val builder = request.newBuilder()
+            .defaults(imageLoader.defaults)
+
+        var sizeResolver = request.defined.sizeResolver
+        if (sizeResolver == null) {
+            sizeResolver = request.resolveSizeResolver()
+            builder.size(sizeResolver)
         }
 
-        val target = request.target
+        if (request.defined.scale == null) {
+            builder.scale(request.resolveScale())
+        }
+
+        if (request.defined.precision == null) {
+            builder.precision(request.resolvePrecision(sizeResolver))
+        }
+
+        return builder.build()
+    }
+
+    override fun options(request: ImageRequest, size: Size): Options {
+        return Options(
+            request.context,
+            size,
+            request.scale,
+            request.precision,
+            request.diskCacheKey,
+            request.fileSystem,
+            request.memoryCachePolicy,
+            request.diskCachePolicy,
+            request.networkCachePolicy,
+            request.resolveExtras(size),
+        )
+    }
+
+    private fun ImageRequest.resolveSizeResolver(): SizeResolver {
         if (target is ViewTarget<*>) {
             // CENTER and MATRIX scale types should be decoded at the image's original size.
             val view = target.view
@@ -82,35 +120,18 @@ internal class AndroidRequestService(
         }
     }
 
-    override fun options(request: ImageRequest, sizeResolver: SizeResolver, size: Size): Options {
-        return Options(
-            request.context,
-            size,
-            request.resolveScale(size),
-            request.resolvePrecision(sizeResolver),
-            request.diskCacheKey,
-            request.fileSystem,
-            request.memoryCachePolicy,
-            request.diskCachePolicy,
-            request.networkCachePolicy,
-            request.resolveExtras(size),
-        )
-    }
-
-    private fun ImageRequest.resolveScale(size: Size): Scale {
-        // Use `Scale.FIT` if either dimension is undefined.
-        if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
-            return Scale.FIT
-        } else {
-            return scale
+    private fun ImageRequest.resolveScale(): Scale {
+        // Autodetect the scale from the ImageView.
+        val imageView = (target as? ViewTarget<*>)?.view as? ImageView
+        if (imageView != null) {
+            return imageView.scale
         }
+
+        return scale
     }
 
     private fun ImageRequest.resolvePrecision(sizeResolver: SizeResolver): Precision {
-        if (defined.precision != null) {
-            return defined.precision
-        }
-
+        // Use inexact precision if we're falling back to the source dimensions.
         if (defined.sizeResolver == null && sizeResolver == SizeResolver.ORIGINAL) {
             return Precision.INEXACT
         }
@@ -155,7 +176,7 @@ internal class AndroidRequestService(
         return builder.build()
     }
 
-    override fun updateOptionsOnWorkerThread(options: Options): Options {
+    override fun updateOptions(options: Options): Options {
         var extras = options.extras
         var changed = false
 
@@ -215,7 +236,7 @@ internal class AndroidRequestService(
     }
 
     /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
-    fun isBitmapConfigValidMainThread(
+    private fun isBitmapConfigValidMainThread(
         request: ImageRequest,
         size: Size,
     ): Boolean {
@@ -228,7 +249,7 @@ internal class AndroidRequestService(
     }
 
     /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
-    fun isBitmapConfigValidWorkerThread(
+    private fun isBitmapConfigValidWorkerThread(
         options: Options,
     ): Boolean {
         return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()

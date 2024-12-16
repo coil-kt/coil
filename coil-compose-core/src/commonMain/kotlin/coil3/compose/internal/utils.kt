@@ -1,14 +1,19 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package coil3.compose.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -17,11 +22,12 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
-import coil3.compose.ConstraintsSizeResolver
-import coil3.compose.EqualityDelegate
+import coil3.compose.LocalAsyncImageModelEqualityDelegate
 import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.size.Dimension
@@ -31,7 +37,10 @@ import coil3.size.SizeResolver
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -63,7 +72,7 @@ internal fun requestOfWithSizeResolver(
     val sizeResolver = if (contentScale == ContentScale.None) {
         SizeResolver.ORIGINAL
     } else {
-        remember { ConstraintsSizeResolver() }
+        rememberConstraintsSizeResolver()
     }
 
     if (model is ImageRequest) {
@@ -128,23 +137,33 @@ internal fun onStateOf(
     }
 }
 
+@Composable
+@NonRestartableComposable
+@ReadOnlyComposable
+internal inline fun AsyncImageState(
+    model: Any?,
+    imageLoader: ImageLoader,
+) = AsyncImageState(model, LocalAsyncImageModelEqualityDelegate.current, imageLoader)
+
 /** Wrap [AsyncImage]'s unstable arguments to make them stable. */
 @Stable
 internal class AsyncImageState(
     val model: Any?,
-    val modelEqualityDelegate: EqualityDelegate,
+    val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
     val imageLoader: ImageLoader,
 ) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is AsyncImageState &&
+            modelEqualityDelegate == other.modelEqualityDelegate &&
             modelEqualityDelegate.equals(model, other.model) &&
             imageLoader == other.imageLoader
     }
 
     override fun hashCode(): Int {
-        var result = modelEqualityDelegate.hashCode(model)
+        var result = modelEqualityDelegate.hashCode()
+        result = 31 * result + modelEqualityDelegate.hashCode(model)
         result = 31 * result + imageLoader.hashCode()
         return result
     }
@@ -170,14 +189,22 @@ internal fun ContentScale.toScale() = when (this) {
 
 @Stable
 internal fun Constraints.toSize(): CoilSize {
-    val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
-    val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-    return CoilSize(width, height)
+    return CoilSize(maxWidth.toDimension(), maxHeight.toDimension())
 }
 
 @Stable
-internal fun Constraints.toSizeOrNull(): CoilSize? {
-    return if (isZero) null else toSize()
+internal fun Size.toSizeOrNull() = when {
+    isUnspecified -> CoilSize.ORIGINAL
+    isPositive -> CoilSize(width.toDimension(), height.toDimension())
+    else -> null
+}
+
+private fun Int.toDimension(): Dimension {
+    return if (this != Int.MAX_VALUE) Dimension(this) else Dimension.Undefined
+}
+
+private fun Float.toDimension(): Dimension {
+    return if (isFinite()) Dimension(roundToInt()) else Dimension.Undefined
 }
 
 internal fun Constraints.constrainWidth(width: Float) =
@@ -186,31 +213,49 @@ internal fun Constraints.constrainWidth(width: Float) =
 internal fun Constraints.constrainHeight(height: Float) =
     height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
 
-internal fun Size.toCoilSizeOrNull() = when {
-    isUnspecified -> CoilSize.ORIGINAL
-    isPositive -> CoilSize(
-        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
-    )
-    else -> null
-}
-
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so we
-// can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
-// The default main dispatcher provided with Compose always dispatches, which will often cause one
-// frame of delay. In the cases where we don't have the main dispatcher implicitly fall back to
-// Compose's built in main dispatcher.
-internal val safeImmediateMainDispatcher: CoroutineContext = try {
+// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so
+// we can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
+// The default main dispatcher provided with Compose always dispatches, which will often cause
+// one frame of delay. If `Dispatchers.Main.immediate` isn't available, fall back to
+// `Dispatchers.Unconfined`, which will execute immediately even if we're not on the main
+// thread. This will typically only occur in preview/test environments where image loading
+// should execute synchronously.
+private val immediateDispatcher: CoroutineDispatcher = try {
     Dispatchers.Main.immediate.also {
         // This will throw if the implementation is missing.
         it.isDispatchNeeded(EmptyCoroutineContext)
     }
 } catch (_: Throwable) {
-    EmptyCoroutineContext
+    Dispatchers.Unconfined
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+private fun CoroutineContext.resolveImmediateDispatcher(): CoroutineDispatcher {
+    val dispatcher = get(CoroutineDispatcher)
+    if (dispatcher is MainCoroutineDispatcher) {
+        try {
+            return dispatcher.immediate
+        } catch (_: UnsupportedOperationException) {}
+    }
+    return immediateDispatcher
+}
+
+@Composable
+internal fun rememberImmediateCoroutineScope(): CoroutineScope {
+    val scope = rememberCoroutineScope()
+    val isPreview = LocalInspectionMode.current
+    return remember(scope, isPreview) {
+        val context = if (isPreview) {
+            scope.coroutineContext + Dispatchers.Unconfined
+        } else {
+            scope.coroutineContext.run { this + resolveImmediateDispatcher() }
+        }
+        CoroutineScope(context)
+    }
 }

@@ -1,5 +1,6 @@
 package coil3.decode
 
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build.VERSION.SDK_INT
 import android.system.ErrnoException
@@ -74,7 +75,7 @@ class StaticImageDecoder(
                 // Configure any other attributes.
                 configureImageDecoderProperties()
             }
-            return@withPermit DecodeResult(
+            DecodeResult(
                 image = bitmap.asImage(),
                 isSampled = isSampled,
             )
@@ -82,6 +83,7 @@ class StaticImageDecoder(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
+        onPartialImageListener = ImageDecoder.OnPartialImageListener { true }
         allocator = if (options.bitmapConfig.isHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
@@ -107,15 +109,27 @@ class StaticImageDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val source = result.source.toImageDecoderSource(options, animated = false) ?: return null
+            if (!isApplicable(options)) return null
+            val source = result.source.toImageDecoderSourceOrNull(options, animated = false) ?: return null
             return StaticImageDecoder(source, result.source, options, parallelismLock)
+        }
+
+        private fun isApplicable(options: Options): Boolean {
+            // ImageDecoder doesn't let us control the bitmap config beyond software/hardware so
+            // fall back to BitmapFactory if we need a special config.
+            return options.bitmapConfig.let {
+                it == Bitmap.Config.ARGB_8888 || it == Bitmap.Config.HARDWARE
+            }
         }
     }
 }
 
 @InternalCoilApi
 @RequiresApi(28)
-fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): ImageDecoder.Source? {
+fun ImageSource.toImageDecoderSourceOrNull(
+    options: Options,
+    animated: Boolean,
+): ImageDecoder.Source? {
     if (fileSystem === FileSystem.SYSTEM) {
         val file = fileOrNull()
         if (file != null) {
@@ -128,6 +142,7 @@ fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): Image
         metadata is AssetMetadata -> {
             return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
+
         metadata is ContentMetadata && SDK_INT >= 29 -> {
             try {
                 // Ensure the file descriptor supports lseek.
@@ -137,9 +152,11 @@ fun ImageSource.toImageDecoderSource(options: Options, animated: Boolean): Image
                 return ImageDecoder.createSource { asset }
             } catch (_: ErrnoException) {}
         }
+
         metadata is ResourceMetadata && metadata.packageName == options.context.packageName -> {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)
         }
+
         metadata is ByteBufferMetadata && (SDK_INT >= 30 || !animated || metadata.byteBuffer.isDirect) -> {
             return ImageDecoder.createSource(metadata.byteBuffer)
         }

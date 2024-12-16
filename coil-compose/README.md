@@ -3,7 +3,7 @@
 To add support for [Compose UI](https://www.jetbrains.com/compose-multiplatform/), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+implementation("io.coil-kt.coil3:coil-compose:3.0.4")
 ```
 
 Then use the `AsyncImage` composable to load and display an image:
@@ -33,11 +33,11 @@ AsyncImage(
     placeholder = painterResource(R.drawable.placeholder),
     contentDescription = stringResource(R.string.description),
     contentScale = ContentScale.Crop,
-    modifier = Modifier.clip(CircleShape)
+    modifier = Modifier.clip(CircleShape),
 )
 ```
 
-#### When to use this function
+**When to use this function:**
 
 Prefer using `AsyncImage` in most cases. It correctly determines the size your image should be loaded at based on the constraints of the composable and the provided `ContentScale`.
 
@@ -51,19 +51,19 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 `rememberAsyncImagePainter` is more flexible than `AsyncImage` and `SubcomposeAsyncImage`, but has a couple drawbacks (see below).
 
-#### When to use this function
+**When to use this function:**
 
 Useful if you need a `Painter` instead of a composable - or if you need to observe the `AsyncImagePainter.state` and draw a different composable based on it - or if you need to manually restart the image request using `AsyncImagePainter.restart`.
 
-The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `ConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
+The main drawback of this function is it does not detect the size your image is loaded at on screen and always loads the image with its original dimensions. You can pass a custom `SizeResolver` or use `rememberConstraintsSizeResolver` (which is what `AsyncImage` uses internally) to resolve this. Example:
 
 ```kotlin
-val sizeResolver by remember { ConstraintsSizeResolver() }
+val sizeResolver = rememberConstraintsSizeResolver()
 val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalPlatformContext.current)
-        .data("https://www.example.com/image.jpg")
+        .data("https://example.com/image.jpg")
         .size(sizeResolver)
-        .build()
+        .build(),
 )
 
 Image(
@@ -73,7 +73,7 @@ Image(
 )
 ```
 
-Another drawback is `AsyncImagePainter.state` will always be `Loading` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
+Another drawback is `AsyncImagePainter.state` will always be `AsyncImagePainter.State.Empty` for the first composition when using `rememberAsyncImagePainter` - even if the image is present in the memory cache and it will be drawn in the first frame.
 
 ## SubcomposeAsyncImage
 
@@ -85,7 +85,7 @@ SubcomposeAsyncImage(
     loading = {
         CircularProgressIndicator()
     },
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
@@ -96,11 +96,11 @@ SubcomposeAsyncImage(
     model = "https://example.com/image.jpg",
     contentDescription = stringResource(R.string.description)
 ) {
-    val state = painter.state
-    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-        CircularProgressIndicator()
-    } else {
+    val state by painter.state.collectAsState()
+    if (state is AsyncImagePainter.State.Success) {
         SubcomposeAsyncImageContent()
+    } else {
+        CircularProgressIndicator()
     }
 }
 ```
@@ -108,20 +108,21 @@ SubcomposeAsyncImage(
 !!! Note
     Subcomposition is slower than regular composition so this composable may not be suitable for performance-critical parts of your UI (e.g. `LazyList`).
 
-#### When to use this function
+**When to use this function:**
 
 Generally prefer using `rememberAsyncImagePainter` instead of this function if you need to observe `AsyncImagePainter.state` as it does not use subcomposition.
 
-Specifically, this function is only useful if you need to observe `AsyncImagePainter.state` and you can't have it be `Loading` for the first composition and first frame like with `rememberAsyncImagePainter`. `SubcomposeAsyncImage` uses subcomposition to get the image's constraints so it's `AsyncImagePainter.state` is up to date immediately.
+Specifically, this function is only useful if you need to observe `AsyncImagePainter.state` and you can't have it be `Empty` for the first composition and first frame like with `rememberAsyncImagePainter`. `SubcomposeAsyncImage` uses subcomposition to get the image's constraints so it's `AsyncImagePainter.state` is up to date immediately.
 
 ## Observing AsyncImagePainter.state
 
 Example:
 
 ```kotlin
-val painter = rememberAsyncImagePainter("https://www.example.com/image.jpg")
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 when (painter.state) {
+    is AsyncImagePainter.State.Empty,
     is AsyncImagePainter.State.Loading -> {
         CircularProgressIndicator()
     }
@@ -133,9 +134,6 @@ when (painter.state) {
     }
     is AsyncImagePainter.State.Error -> {
         // Show some error UI.
-    }
-    is AsyncImagePainter.State.Empty -> {
-        // Render nothing. If the request is launched from the main thread this state will never be reached.
     }
 }
 ```
@@ -150,7 +148,7 @@ AsyncImage(
         .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 
@@ -161,14 +159,14 @@ That said, it's possible to create custom transitions in Compose by observing `A
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
-val state = painter.state
+val state by painter.state.collectAsState()
 if (state is AsyncImagePainter.State.Success && state.result.dataSource != DataSource.MEMORY_CACHE) {
     // Perform the transition animation.
 }
 
 Image(
     painter = painter,
-    contentDescription = stringResource(R.string.description)
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
@@ -185,7 +183,7 @@ val previewHandler = AsyncImagePreviewHandler {
 
 CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
     AsyncImage(
-        model = "https://www.example.com/image.jpg",
+        model = "https://example.com/image.jpg",
         contentDescription = null,
     )
 }
@@ -203,3 +201,6 @@ AsyncImage(
     contentDescription = null,
 )
 ```
+
+!!! Note
+    `Res.drawable.image` and other compile-safe references are not supported by Coil; you must use `Res.getUri("drawable/image")` instead. It's not possible for Coil to support this until Compose Multiplatform exposes APIs to support it. [Follow this ticket](https://youtrack.jetbrains.com/issue/CMP-4360).

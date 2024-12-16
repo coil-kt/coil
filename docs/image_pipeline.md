@@ -87,12 +87,74 @@ See [Keyers](/coil/api/coil-core/coil3.key/-keyer) for more information.
 
 ## Fetchers
 
-Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or a `Drawable`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
+Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or an `Image`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
 
 See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 
+!!! Note
+    If you add a `Fetcher` that uses a custom data type, you need to also need to provide a custom `Keyer` to ensure results from requests that use it are memory cacheable. For example, `Fetcher.Factory<MyDataType>` will need to add a `Keyer<MyDataType`.
+
 ## Decoders
 
-Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
+Decoders read an `ImageSource` and return an `Image`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
 See [Decoder](/coil/api/coil-core/coil3.decode/-decoder) for more information.
+
+## Chaining components
+
+A useful property of Coil's image loader components is that they can be chained internally. For example, say you need to perform a network request to get the image URL that will be loaded.
+
+First, let's create a custom data type that only our fetcher will handle:
+
+```kotlin
+data class PartialUrl(
+    val baseUrl: String,
+)
+```
+
+Then let's create our custom `Fetcher` that will get the image URL and delegate to the internal network fetcher:
+
+```kotlin
+class PartialUrlFetcher(
+    private val callFactory: Call.Factory,
+    private val partialUrl: PartialUrl,
+    private val options: Options,
+    private val imageLoader: ImageLoader,
+) : Fetcher {
+
+    override suspend fun fetch(): FetchResult? {
+        val request = Request.Builder()
+            .url(partialUrl.baseUrl)
+            .build()
+        val response = callFactory.newCall(request).await()
+
+        // Read the image URL.
+        val imageUrl: String = readImageUrl(response.body)
+
+        // This will delegate to the internal network fetcher.
+        val data = imageLoader.components.map(imageUrl, options)
+        val output = imageLoader.components.newFetcher(data, options, imageLoader)
+        val (fetcher) = checkNotNull(output) { "no supported fetcher" }
+        return fetcher.fetch()
+    }
+
+    class Factory(
+        private val callFactory: Call.Factory = OkHttpClient(),
+    ) : Fetcher.Factory<PartialUrl> {
+        override fun create(data: PartialUrl, options: Options, imageLoader: ImageLoader): Fetcher {
+            return PartialUrlFetcher(callFactory, data, options, imageLoader)
+        }
+    }
+}
+```
+
+Finally all we have to do is register the `Fetcher` in our `ComponentRegistry` and pass a `PartialUrl` as our `model`/`data`:
+
+```kotlin
+AsyncImage(
+    model = PartialUrl("https://example.com/image.jpg"),
+    contentDescription = null,
+)
+```
+
+This pattern can similarly be applied to `Mapper`s, `Keyer`s, and `Decoder`s.

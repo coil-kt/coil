@@ -25,72 +25,9 @@ imageView.load("https://example.com/image.jpg") {
 }
 ```
 
-## Using a custom OkHttpClient
-
-If you use `io.coil-kt.coil3:coil-network-okhttp` You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
-
-```kotlin
-val imageLoader = ImageLoader.Builder(context)
-    // Create the OkHttpClient inside a lambda so it will be initialized lazily on a background thread.
-    .components {
-        add(
-            OkHttpNetworkFetcherFactory(
-                callFactory = { 
-                    OkHttpClient.Builder()
-                        .addInterceptor(CustomInterceptor())
-                        .build()
-                }
-            )
-        )
-    }
-    .build()
-```
-
-!!! Note
-    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
-
-#### Headers
-
-Headers can be added to your image requests in one of two ways. You can set headers for a single request:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://example.com/image.jpg")
-    .setHeader("Cache-Control", "no-cache")
-    .target(imageView)
-    .build()
-imageLoader.execute(request)
-```
-
-Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
-
-```kotlin
-class RequestHeaderInterceptor(
-    private val name: String,
-    private val value: String
-) : Interceptor {
-
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request().newBuilder()
-            .header(name, value)
-            .build()
-        return chain.proceed(request)
-    }
-}
-
-val imageLoader = ImageLoader.Builder(context)
-    .okHttpClient {
-        OkHttpClient.Builder()
-            // This header will be added to every image request.
-            .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
-            .build()
-    }
-    .build()
-```
-
 ## Using a Memory Cache Key as a Placeholder
 
-Using a previous request's [`MemoryCache.Key`](getting_started.md#memory-cache) as a placeholder for a subsequent request can be useful if the two images are the same, though loaded at different sizes. For instance, if the first request loads the image at 100x100 and the second request loads the image at 500x500, we can use the first image as a synchronous placeholder for the second request.
+Using a previous request's `MemoryCache.Key` as a placeholder for a subsequent request can be useful if the two images are the same, though loaded at different sizes. For instance, if the first request loads the image at 100x100 and the second request loads the image at 500x500, we can use the first image as a synchronous placeholder for the second request.
 
 Here's what this effect looks like in the sample app:
 
@@ -114,9 +51,6 @@ detailImageView.load("https://example.com/image.jpg") {
 }
 ```
 
-!!! Note
-    Previous versions of Coil would attempt to set up this effect **automatically**. This required executing parts of the image pipeline synchronously on the main thread and it was ultimately removed in version `0.12.0`.
-
 ## Shared Element Transitions
 
 [Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activities` and `Fragments`. Here are some recommendations on how to get them to work with Coil:
@@ -126,6 +60,8 @@ detailImageView.load("https://example.com/image.jpg") {
 - Use the [`MemoryCache.Key`](getting_started.md#memory-cache) of the start image as the [`placeholderMemoryCacheKey`](/coil/api/coil-core/coil3.request/-image-request/-builder/placeholder-memory-cache-key) for the end image. This ensures that the start image is used as the placeholder for the end image, which results in a smooth transition with no white flashes if the image is in the memory cache.
 
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.
+
+Using Compose? [Check out this article for how to perform shared element transitions with `AsyncImage`](https://www.tunjid.com/articles/animating-contentscale-during-image-shared-element-transitions-65fba03537c67f8df0161c31).
 
 ## Remote Views
 
@@ -145,7 +81,7 @@ class RemoteViewsTarget(
 
     override fun onSuccess(result: Image) = setDrawable(result)
 
-    private fun setDrawable(drawable: Image?) {
+    private fun setDrawable(image: Image?) {
         remoteViews.setImageViewBitmap(imageViewResId, image?.toBitmap())
         AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews)
     }
@@ -173,8 +109,8 @@ AsyncImage(
     placeholder = forwardingPainter(
         painter = painterResource(R.drawable.placeholder),
         colorFilter = ColorFilter(Color.Red),
-        alpha = 0.5f
-    )
+        alpha = 0.5f,
+    ),
 )
 ```
 
@@ -190,6 +126,6 @@ AsyncImage(
                 draw(size, info.alpha, info.colorFilter)
             }
         }
-    }
+    },
 )
 ```

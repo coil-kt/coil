@@ -12,16 +12,6 @@ import coil3.util.removeAndAddObserver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
-/** A request delegate for a one-shot requests. */
-internal class BaseRequestDelegate(
-    private val job: Job,
-) : RequestDelegate {
-
-    override fun dispose() {
-        job.cancel()
-    }
-}
-
 /** A request delegate for a one-shot requests with no target or a non-[ViewTarget]. */
 internal class LifecycleRequestDelegate(
     private val lifecycle: Lifecycle,
@@ -30,6 +20,10 @@ internal class LifecycleRequestDelegate(
 
     override fun start() {
         lifecycle.addObserver(this)
+    }
+
+    override suspend fun awaitStarted() {
+        lifecycle.awaitStarted()
     }
 
     override fun complete() {
@@ -48,7 +42,7 @@ internal class ViewTargetRequestDelegate(
     private val imageLoader: ImageLoader,
     private val initialRequest: ImageRequest,
     private val target: ViewTarget<*>,
-    private val lifecycle: Lifecycle,
+    private val lifecycle: Lifecycle?,
     private val job: Job,
 ) : RequestDelegate, DefaultLifecycleObserver {
 
@@ -65,24 +59,24 @@ internal class ViewTargetRequestDelegate(
         }
     }
 
-    override suspend fun awaitStarted() {
-        lifecycle.awaitStarted()
-    }
-
     override fun start() {
-        lifecycle.addObserver(this)
+        lifecycle?.addObserver(this)
         if (target is LifecycleObserver) {
-            lifecycle.removeAndAddObserver(target)
+            lifecycle?.removeAndAddObserver(target)
         }
         target.view.requestManager.setRequest(this)
+    }
+
+    override suspend fun awaitStarted() {
+        lifecycle?.awaitStarted()
     }
 
     override fun dispose() {
         job.cancel()
         if (target is LifecycleObserver) {
-            lifecycle.removeObserver(target)
+            lifecycle?.removeObserver(target)
         }
-        lifecycle.removeObserver(this)
+        lifecycle?.removeObserver(this)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {

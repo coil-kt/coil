@@ -29,11 +29,11 @@ class RoborazziComposeTestJvm {
         val image = FakeImage(
             width = 100,
             height = 100,
-            color = 0xFFFF0000.toInt()
+            color = org.jetbrains.skia.Color.RED,
         )
 
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, image.toBitmap().asImage())
+            .intercept(url, image)
             .build()
 
         val imageLoader = ImageLoader.Builder(PlatformContext.INSTANCE)
@@ -63,7 +63,7 @@ class RoborazziComposeTestJvm {
         val image = FakeImage(
             width = 100,
             height = 100,
-            color = 0xFFFF0000.toInt()
+            color = org.jetbrains.skia.Color.RED,
         )
         val engine = FakeImageLoaderEngine.Builder()
             .intercept(url, image.toBitmap().asImage())

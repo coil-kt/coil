@@ -1,5 +1,6 @@
 package coil3.compose
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil3.Image
@@ -14,13 +15,16 @@ import coil3.request.SuccessResult
 import kotlin.jvm.JvmField
 
 @ExperimentalCoilApi
-val LocalAsyncImagePreviewHandler = staticCompositionLocalOf { AsyncImagePreviewHandler.Default }
+val LocalAsyncImagePreviewHandler = staticCompositionLocalOf {
+    AsyncImagePreviewHandler.Default
+}
 
 /**
  * Controls what [AsyncImage], [SubcomposeAsyncImage], and [AsyncImagePainter] render when
  * [LocalInspectionMode] is true.
  */
 @ExperimentalCoilApi
+@Stable
 fun interface AsyncImagePreviewHandler {
 
     suspend fun handle(

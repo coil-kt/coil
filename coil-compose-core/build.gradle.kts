@@ -22,6 +22,12 @@ kotlin {
                 api(compose.foundation)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(libs.kotlin.test)
+            }
+        }
         androidMain {
             dependencies {
                 implementation(libs.google.drawablepainter)

@@ -6,8 +6,7 @@ import androidx.lifecycle.LifecycleRegistry
 
 class FakeLifecycleRegistry(
     private val lifecycle: Lifecycle = FakeLifecycle(),
-) : LifecycleRegistry(
-    object : LifecycleOwner {
+    private val owner: LifecycleOwner = object : LifecycleOwner {
         override val lifecycle get() = lifecycle
     },
-)
+) : LifecycleRegistry(owner)

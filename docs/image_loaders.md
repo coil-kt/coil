@@ -35,8 +35,8 @@ SingletonImageLoader.setUnsafe {
 
 // On Android you can implement SingletonImageLoader.Factory on your
 // Application class to have it create the singleton image loader.
-MyApplication : SingletonImageLoader.Factory {
-    override fun newImageLoader(context: PlatformContext): ImageLoader {
+class CustomApplication : SingletonImageLoader.Factory {
+    override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
             .crossfade(true)
             .build()
@@ -44,13 +44,13 @@ MyApplication : SingletonImageLoader.Factory {
 }
 ```
 
-**In all cases ensure the above methods are invoked as soon as possible when your app starts (i.e. inside `Application.onCreate` or inside `MainActivity.onCreate` if your app is only a single `Activity`.)**
+**In all cases ensure the above methods should be invoked as soon as possible when your app starts (i.e. inside `Application.onCreate` or inside `MainActivity.onCreate` if your app is only a single `Activity`.)**
 
 ## Dependency injection
 
 If you have a larger app or want to manage your own `ImageLoaders` you can depend on `io.coil-kt.coil3:coil-core` instead of `io.coil-kt.coil3:coil`.
 
-This route makes scoping the lifecycle of a fake `ImageLoader` much easier and will overall make testing much easier.
+This route makes scoping the lifecycle of a fake `ImageLoader` much easier and will overall make testing easier.
 
 ## Caching
 

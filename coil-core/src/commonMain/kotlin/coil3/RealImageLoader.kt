@@ -2,6 +2,7 @@ package coil3
 
 import coil3.disk.DiskCache
 import coil3.fetch.ByteArrayFetcher
+import coil3.fetch.DataUriFetcher
 import coil3.fetch.FileUriFetcher
 import coil3.intercept.EngineInterceptor
 import coil3.intercept.RealInterceptorChain
@@ -63,11 +64,7 @@ internal class RealImageLoader(
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.async {
-            execute(request, REQUEST_TYPE_ENQUEUE).also { result ->
-                if (result is ErrorResult) {
-                    options.logger?.log(TAG, result.throwable)
-                }
-            }
+            execute(request, REQUEST_TYPE_ENQUEUE)
         }
 
         // Update the current request attached to the view and return a new disposable.
@@ -76,6 +73,7 @@ internal class RealImageLoader(
 
     override suspend fun execute(request: ImageRequest): ImageResult {
         if (needsExecuteOnMainDispatcher(request)) {
+            // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
                 val job = async(Dispatchers.Main.immediate) {
@@ -93,13 +91,14 @@ internal class RealImageLoader(
 
     private suspend fun execute(initialRequest: ImageRequest, type: Int): ImageResult {
         // Wrap the request to manage its lifecycle.
-        val requestDelegate = requestService.requestDelegate(initialRequest, coroutineContext.job)
-        requestDelegate.assertActive()
+        val requestDelegate = requestService.requestDelegate(
+            request = initialRequest,
+            job = coroutineContext.job,
+            findLifecycle = type == REQUEST_TYPE_ENQUEUE,
+        ).apply { assertActive() }
 
-        // Apply this image loader's defaults to this request.
-        val request = initialRequest.newBuilder()
-            .defaults(defaults)
-            .build()
+        // Apply this image loader's defaults and other configuration to this request.
+        val request = requestService.updateRequest(initialRequest)
 
         // Create a new event listener.
         val eventListener = options.eventListenerFactory.create(request)
@@ -125,7 +124,7 @@ internal class RealImageLoader(
             request.listener?.onStart(request)
 
             // Resolve the size.
-            val sizeResolver = requestService.sizeResolver(request)
+            val sizeResolver = request.sizeResolver
             eventListener.resolveSizeStart(request, sizeResolver)
             val size = sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
@@ -138,7 +137,6 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
-                    sizeResolver = sizeResolver,
                     eventListener = eventListener,
                     isPlaceholderCached = cachedPlaceholder != null,
                 ).proceed()
@@ -197,8 +195,8 @@ internal class RealImageLoader(
         eventListener: EventListener,
     ) {
         val request = result.request
-        options.logger?.log(TAG, Logger.Level.Info) {
-            "🚨 Failed - ${request.data} - ${result.throwable}"
+        options.logger?.log(TAG, result.throwable) {
+            "🚨 Failed - ${request.data}"
         }
         transition(result, target, eventListener) {
             target?.onError(result.image)
@@ -302,6 +300,7 @@ internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.
         // Fetchers
         .add(FileUriFetcher.Factory())
         .add(ByteArrayFetcher.Factory())
+        .add(DataUriFetcher.Factory())
 }
 
 private const val TAG = "RealImageLoader"

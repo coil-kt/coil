@@ -8,11 +8,33 @@ Yes! [Read here](java_compatibility.md).
 
 ## How do I preload an image?
 
-[Read here](getting_started.md#preloading).
+Launch an image request with no target:
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://example.com/image.jpg")
+    .build()
+imageLoader.enqueue(request)
+```
+
+That will preload the image and save it to the disk and memory caches.
+
+If you only want to preload to the disk cache you can skip decoding and saving to the memory cache like so:
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://example.com/image.jpg")
+    // Disables writing to the memory cache.
+    .memoryCachePolicy(CachePolicy.DISABLED)
+    // Skips the decode step so we don't waste time/memory decoding the image into memory.
+    .decoderFactory(BlackholeDecoder.Factory())
+    .build()
+imageLoader.enqueue(request)
+```
 
 ## How do I enable logging?
 
-Set `logger(DebugLogger())` when [constructing your `ImageLoader`](getting_started.md#image-loaders).
+Set `logger(DebugLogger())` when [constructing your `ImageLoader`](getting_started.md#configuring-the-singleton-imageloader).
 
 !!! Note
     `DebugLogger` should only be used in debug builds.

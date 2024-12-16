@@ -233,6 +233,8 @@ public final class coil3/Uri {
 }
 
 public final class coil3/UriKt {
+	public static final fun Uri (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcoil3/Uri;
+	public static synthetic fun Uri$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcoil3/Uri;
 	public static final fun getFilePath (Lcoil3/Uri;)Ljava/lang/String;
 	public static final fun getPathSegments (Lcoil3/Uri;)Ljava/util/List;
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;
@@ -270,6 +272,24 @@ public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Deco
 	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;)V
 	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/decode/BlackholeDecoder : coil3/decode/Decoder {
+	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/decode/BlackholeDecoder$Factory : coil3/decode/Decoder$Factory {
+	public static final field Companion Lcoil3/decode/BlackholeDecoder$Factory$Companion;
+	public static final field EMPTY_IMAGE Lcoil3/Image;
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/BlackholeDecoder;
+	public synthetic fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/decode/BlackholeDecoder$Factory$Companion {
 }
 
 public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Metadata {
@@ -645,8 +665,10 @@ public final class coil3/request/ImageRequest$Defaults {
 	public fun <init> ()V
 	public fun <init> (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;)V
 	public synthetic fun <init> (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
+	public final synthetic fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
+	public final fun copy (Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
 	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
+	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDecoderCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
@@ -701,21 +723,31 @@ public abstract interface class coil3/request/ImageRequest$Listener {
 public final class coil3/request/ImageRequestsKt {
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun addLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/Options;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
+	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
+	public static final fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
+	public static final fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
 	public static final fun maxBitmapSize (Lcoil3/ImageLoader$Builder;Lcoil3/size/Size;)Lcoil3/ImageLoader$Builder;
 	public static final fun maxBitmapSize (Lcoil3/request/ImageRequest$Builder;Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/request/ImageRequests_androidKt {
-	public static final fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
-	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun allowConversionToBitmap (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final synthetic fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowHardware (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun allowHardware (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowRgb565 (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
@@ -730,9 +762,9 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun error (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun fallback (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 	public static final fun fallback (Lcoil3/request/ImageRequest$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
-	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
+	public static final synthetic fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
 	public static final fun getAllowHardware (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAllowHardware (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAllowHardware (Lcoil3/request/Options;)Z
@@ -752,9 +784,9 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun getPremultipliedAlpha (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getPremultipliedAlpha (Lcoil3/request/ImageRequest;)Z
 	public static final fun getPremultipliedAlpha (Lcoil3/request/Options;)Z
-	public static final fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
-	public static final fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
+	public static final synthetic fun getTransformations (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final synthetic fun getTransformations (Lcoil3/request/ImageRequest;)Ljava/util/List;
+	public static final synthetic fun getTransformations (Lcoil3/request/Options;)Ljava/util/List;
 	public static final fun getTransitionFactory (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getTransitionFactory (Lcoil3/request/ImageRequest;)Lcoil3/transition/Transition$Factory;
 	public static final fun lifecycle (Lcoil3/request/ImageRequest$Builder;Landroidx/lifecycle/Lifecycle;)Lcoil3/request/ImageRequest$Builder;
@@ -764,8 +796,8 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun premultipliedAlpha (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun premultipliedAlpha (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun target (Lcoil3/request/ImageRequest$Builder;Landroid/widget/ImageView;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
-	public static final fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun transformations (Lcoil3/request/ImageRequest$Builder;Ljava/util/List;)Lcoil3/request/ImageRequest$Builder;
+	public static final synthetic fun transformations (Lcoil3/request/ImageRequest$Builder;[Lcoil3/transform/Transformation;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun transitionFactory (Lcoil3/ImageLoader$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/ImageLoader$Builder;
 	public static final fun transitionFactory (Lcoil3/request/ImageRequest$Builder;Lcoil3/transition/Transition$Factory;)Lcoil3/request/ImageRequest$Builder;
 }
@@ -882,6 +914,7 @@ public final class coil3/size/ScaleDrawable : android/graphics/drawable/Drawable
 	public final fun getScale ()Lcoil3/size/Scale;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
+	public fun isStateful ()Z
 	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
 	public fun setAlpha (I)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
@@ -1027,6 +1060,7 @@ public final class coil3/transition/CrossfadeDrawable : android/graphics/drawabl
 	public final fun getStart ()Landroid/graphics/drawable/Drawable;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
+	public fun isStateful ()Z
 	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
 	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
 	public fun setAlpha (I)V
@@ -1137,5 +1171,6 @@ public final class coil3/util/Logger$Level : java/lang/Enum {
 public final class coil3/util/LoggingKt {
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Lcoil3/util/Logger$Level;Lkotlin/jvm/functions/Function0;)V
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
 }
 

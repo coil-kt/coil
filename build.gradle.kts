@@ -111,7 +111,9 @@ allprojects {
             featureFlags.addAll(
                 ComposeFeatureFlag.OptimizeNonSkippingGroups,
             )
-            stabilityConfigurationFile = rootDir.resolve("coil-core/compose_compiler_config.conf")
+            stabilityConfigurationFiles.add {
+                rootDir.resolve("coil-core/compose_compiler_config.conf")
+            }
 
             if (enableComposeMetrics && name in publicModules) {
                 val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile
@@ -124,6 +126,15 @@ allprojects {
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
             pokoAnnotation = "coil3/annotation/Poko"
+        }
+    }
+
+    // https://youtrack.jetbrains.com/issue/CMP-5831
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlinx" && requested.name == "atomicfu") {
+                useVersion(libs.versions.atomicfu.get())
+            }
         }
     }
 

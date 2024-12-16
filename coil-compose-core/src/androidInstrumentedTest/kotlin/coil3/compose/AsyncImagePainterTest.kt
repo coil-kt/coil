@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.BitmapImage
 import coil3.EventListener
+import coil3.Extras
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.core.test.R
@@ -54,9 +56,12 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
@@ -129,7 +134,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://example.com/image")
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -188,7 +193,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(R.drawable.sample)
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -247,7 +252,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(resourceUri(R.drawable.sample))
-                        .size(DrawScopeSizeResolver())
+                        .size(rememberDrawScopeSizeResolver())
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -811,6 +816,142 @@ class AsyncImagePainterTest {
         assertEquals(1, compositionCount.get())
         assertSame(requestTracker.requests[0].data, requestTracker.requests[1].data)
         assertSame(requestTracker.requests[1].data, requestTracker.requests[2].data)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2574 */
+    @Test
+    fun recomposesOnlyWhenStateChanges() {
+        val key = Extras.Key(0)
+        val value = AtomicInteger()
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://example.com/image")
+                    .apply { extras[key] = value.getAndIncrement() }
+                    .build(),
+                imageLoader = imageLoader,
+            )
+
+            Image(
+                painter = painter,
+                contentDescription = null,
+            )
+
+            val state by painter.state.collectAsState()
+
+            when (compositionCount.incrementAndGet()) {
+                1 -> assertIs<State.Empty>(state)
+                2 -> assertIs<State.Loading>(state)
+                3 -> assertIs<State.Success>(state)
+                else -> error("too many compositions")
+            }
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(3, compositionCount.get())
+        assertEquals(1, requestTracker.startedRequests)
+        assertEquals(1, requestTracker.finishedRequests)
+    }
+
+    @Test
+    fun recomposesOnlyWhenFlowEmits_before() {
+        val key = Extras.Key(0)
+        val value = AtomicInteger()
+        val totalCompositions = 10
+        val compositionCount = AtomicInteger()
+
+        var flowEmissions = 0
+        val flow = flow {
+            while (flowEmissions < totalCompositions) {
+                emit(flowEmissions)
+                delay(20.milliseconds)
+                flowEmissions++
+            }
+        }
+
+        composeTestRule.setContent {
+            val observableValue by flow.collectAsState(0)
+
+            if (compositionCount.incrementAndGet() > totalCompositions) {
+                error("too many compositions")
+            }
+
+            // Need to observe the value.
+            observableValue.toString()
+
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://example.com/image")
+                        .apply { extras[key] = value.getAndIncrement() }
+                        .build(),
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.waitUntil(10_000) {
+            flowEmissions >= totalCompositions
+        }
+
+        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(1, requestTracker.startedRequests)
+        assertEquals(1, requestTracker.finishedRequests)
+    }
+
+    @Test
+    fun recomposesOnlyWhenFlowEmits_after() {
+        val key = Extras.Key(0)
+        val value = AtomicInteger()
+        val totalCompositions = 10
+        val compositionCount = AtomicInteger()
+
+        var flowEmissions = 0
+        val flow = flow {
+            while (flowEmissions < totalCompositions) {
+                emit(flowEmissions)
+                delay(20.milliseconds)
+                flowEmissions++
+            }
+        }
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://example.com/image")
+                        .apply { extras[key] = value.getAndIncrement() }
+                        .build(),
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
+            )
+
+            val observableValue by flow.collectAsState(0)
+
+            if (compositionCount.incrementAndGet() > totalCompositions) {
+                error("too many compositions")
+            }
+
+            // Need to observe the value.
+            observableValue.toString()
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.waitUntil(10_000) {
+            flowEmissions >= totalCompositions
+        }
+
+        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(1, requestTracker.startedRequests)
+        assertEquals(1, requestTracker.finishedRequests)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {

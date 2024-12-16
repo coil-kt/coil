@@ -17,6 +17,8 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil3.BitmapImage
+import coil3.Image
 import coil3.Uri
 import coil3.pathSegments
 import coil3.request.ImageRequest
@@ -105,3 +107,9 @@ internal val ImageView.scale: Scale
         FIT_START, FIT_CENTER, FIT_END, CENTER_INSIDE -> Scale.FIT
         else -> Scale.FILL
     }
+
+internal actual fun Image.prepareToDraw() {
+    if (this is BitmapImage) {
+        bitmap.prepareToDraw()
+    }
+}

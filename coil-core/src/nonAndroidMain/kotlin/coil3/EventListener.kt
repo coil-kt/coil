@@ -55,6 +55,10 @@ actual abstract class EventListener : ImageRequest.Listener {
         result: DecodeResult?,
     ) {}
 
+    actual open fun transformStart(request: ImageRequest, input: Bitmap) {}
+
+    actual open fun transformEnd(request: ImageRequest, output: Bitmap) {}
+
     actual override fun onCancel(request: ImageRequest) {}
 
     actual override fun onError(request: ImageRequest, result: ErrorResult) {}

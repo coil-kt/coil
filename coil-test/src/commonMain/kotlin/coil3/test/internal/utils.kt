@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.test.internal
 
 import coil3.Image
 import coil3.decode.DataSource
@@ -13,3 +13,6 @@ internal fun imageResultOf(
     request = request,
     dataSource = DataSource.MEMORY,
 )
+
+// Format: 0xALPHA_RED_GREEN_BLUE
+internal const val Black = 0xFF_00_00_00.toInt()

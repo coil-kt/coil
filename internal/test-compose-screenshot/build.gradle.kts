@@ -12,6 +12,11 @@ androidLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        screenshotTests {
+            imageDifferenceThreshold = 0.01f
+        }
+    }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 

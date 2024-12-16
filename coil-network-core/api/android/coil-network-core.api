@@ -11,15 +11,21 @@ public final class coil3/network/CacheStrategy$Companion {
 public final class coil3/network/CacheStrategy$ReadResult {
 	public fun <init> (Lcoil3/network/NetworkRequest;)V
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRequest ()Lcoil3/network/NetworkRequest;
 	public final fun getResponse ()Lcoil3/network/NetworkResponse;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/network/CacheStrategy$WriteResult {
 	public static final field Companion Lcoil3/network/CacheStrategy$WriteResult$Companion;
 	public static final field DISABLED Lcoil3/network/CacheStrategy$WriteResult;
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getResponse ()Lcoil3/network/NetworkResponse;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/network/CacheStrategy$WriteResult$Companion {

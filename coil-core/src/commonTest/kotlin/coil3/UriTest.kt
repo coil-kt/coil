@@ -243,4 +243,16 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun data() {
+        val uri = "data:image/png;base64,FAKE_DATA".toUri()
+        assertEquals("data", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("image/png;base64,FAKE_DATA", uri.path)
+        assertEquals("image/png;base64,FAKE_DATA", uri.filePath)
+        assertEquals(listOf("image", "png;base64,FAKE_DATA"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
 }

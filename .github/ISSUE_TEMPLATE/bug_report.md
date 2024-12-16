@@ -7,13 +7,10 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is. **Please [enable logging](https://coil-kt.github.io/coil/faq/#how-do-i-enable-logging) and attach any stack traces.** Bug reports without reproduction steps are likely to be closed.
+A clear description of what the bug is. [Enable logging](https://coil-kt.github.io/coil/faq/#how-do-i-enable-logging) and attach any stack traces. You can also check the `onError` parameter of `AsyncImage`/`SubcomposeAsyncImage`/`rememberAsyncImagePainter`.
 
 **To Reproduce**
-How can we reproduce this? Please attach a small project that reproduces the bug.
-
-**Logs/Screenshots**
-If applicable, [add logs](https://coil-kt.github.io/coil/faq/#how-do-i-enable-logging) or screenshots to help explain your problem.
+How can we reproduce this? Please attach a code snippet or small project that reproduces the bug. If possible, include any related image assets. Bug reports without reproduction steps are likely to be closed.
 
 **Version**
-What library version are you using? Does this occur on a specific API level or Android device?
+What Coil version are you using? Does this occur on a specific API level or Android emulator/device?
