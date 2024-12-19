@@ -33,7 +33,7 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
-import coil3.util.DelayedDispatchCoroutineDispatcher
+import coil3.util.ForwardingUnconfinedCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineDispatcher
@@ -167,15 +167,15 @@ internal class AsyncImageState(
     }
 }
 
-/** Create a [CoroutineScope] will contain a [DelayedDispatchCoroutineDispatcher] if necessary. */
+/** Create a [CoroutineScope] that will contain a [ForwardingUnconfinedCoroutineDispatcher] if necessary. */
 @Composable
-internal fun rememberDelayedDispatchCoroutineScope(): CoroutineScope {
+internal fun rememberForwardingUnconfinedCoroutineScope(): CoroutineScope {
     val scope = rememberCoroutineScope()
     return remember(scope) {
         val currentContext = scope.coroutineContext
         val currentDispatcher = scope.coroutineContext.dispatcher
         if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
-            CoroutineScope(currentContext + DelayedDispatchCoroutineDispatcher(currentDispatcher))
+            CoroutineScope(currentContext + ForwardingUnconfinedCoroutineDispatcher(currentDispatcher))
         } else {
             scope
         }

@@ -31,7 +31,7 @@ import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.onStateOf
-import coil3.compose.internal.rememberDelayedDispatchCoroutineScope
+import coil3.compose.internal.rememberForwardingUnconfinedCoroutineScope
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
@@ -136,7 +136,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberDelayedDispatchCoroutineScope()
+    painter.scope = rememberForwardingUnconfinedCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale

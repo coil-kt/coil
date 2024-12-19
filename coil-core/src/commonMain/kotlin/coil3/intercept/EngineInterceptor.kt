@@ -24,8 +24,8 @@ import coil3.request.SuccessResult
 import coil3.request.allowConversionToBitmap
 import coil3.request.transformations
 import coil3.transform.Transformation
-import coil3.util.DelayedDispatchCoroutineDispatcher
 import coil3.util.ErrorResult
+import coil3.util.ForwardingUnconfinedCoroutineDispatcher
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import coil3.util.addFirst
@@ -75,8 +75,8 @@ internal class EngineInterceptor(
 
             // Re-enable dispatching before starting to fetch.
             val dispatcher = coroutineContext.dispatcher
-            if (dispatcher is DelayedDispatchCoroutineDispatcher) {
-                dispatcher.dispatchEnabled = true
+            if (dispatcher is ForwardingUnconfinedCoroutineDispatcher) {
+                dispatcher.unconfined = false
             }
 
             // Slow path: fetch, decode, transform, and cache the image.
