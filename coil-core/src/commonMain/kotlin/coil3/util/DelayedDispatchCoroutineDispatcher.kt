@@ -1,40 +1,20 @@
-package coil3.compose.internal
+package coil3.util
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import coil3.annotation.InternalCoilApi
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
 
 /**
- * Create a [CoroutineScope] will contain a [DelayedDispatchCoroutineDispatcher] if necessary.
+ * A [CoroutineDispatcher] that does not dispatch to [delegate] while [dispatchEnabled] is false.
  */
-@Composable
-internal fun rememberDelayedDispatchCoroutineScope(): CoroutineScope {
-    val scope = rememberCoroutineScope()
-    return remember(scope) {
-        val currentContext = scope.coroutineContext
-        val currentDispatcher = scope.coroutineContext.dispatcher
-        if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
-            CoroutineScope(currentContext + DelayedDispatchCoroutineDispatcher(currentDispatcher))
-        } else {
-            scope
-        }
-    }
-}
-
-/**
- * A [CoroutineDispatcher] that delays dispatching to [delegate] until after the current
- * [CoroutineDispatcher] changes.
- */
-internal class DelayedDispatchCoroutineDispatcher(
+@InternalCoilApi
+class DelayedDispatchCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher() {
-    private var dispatchEnabled = false
+    var dispatchEnabled = false
 
     private val currentDispatcher: CoroutineDispatcher
         get() = if (dispatchEnabled) delegate else Dispatchers.Unconfined
