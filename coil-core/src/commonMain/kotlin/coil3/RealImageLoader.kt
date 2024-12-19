@@ -63,7 +63,7 @@ internal class RealImageLoader(
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
-        val job = scope.async {
+        val job = scope.async(Dispatchers.Main.immediate) {
             execute(request, REQUEST_TYPE_ENQUEUE)
         }
 
@@ -229,7 +229,6 @@ internal class RealImageLoader(
 
 private fun CoroutineScope(logger: Logger?): CoroutineScope {
     val context = SupervisorJob() +
-        Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }
