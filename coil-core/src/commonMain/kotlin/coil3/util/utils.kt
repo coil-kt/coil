@@ -12,8 +12,10 @@ import coil3.intercept.RealInterceptorChain
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
+import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineDispatcher
 import okio.Closeable
 
 internal expect fun println(level: Logger.Level, tag: String, message: String)
@@ -97,3 +99,7 @@ internal expect class WeakReference<T : Any>(referred: T) {
 }
 
 internal expect fun Image.prepareToDraw()
+
+@OptIn(ExperimentalStdlibApi::class)
+internal val CoroutineContext.dispatcher: CoroutineDispatcher?
+    get() = get(CoroutineDispatcher)
