@@ -173,7 +173,7 @@ internal fun rememberForwardingUnconfinedCoroutineScope(): CoroutineScope {
     val scope = rememberCoroutineScope()
     return remember(scope) {
         val currentContext = scope.coroutineContext
-        val currentDispatcher = scope.coroutineContext.dispatcher
+        val currentDispatcher = currentContext.dispatcher
         if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
             CoroutineScope(currentContext + ForwardingUnconfinedCoroutineDispatcher(currentDispatcher))
         } else {
