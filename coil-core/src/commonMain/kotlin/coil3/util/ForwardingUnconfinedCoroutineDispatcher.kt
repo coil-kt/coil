@@ -8,22 +8,21 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
 
 /**
- * A [CoroutineDispatcher] that does not dispatch to [delegate] while [dispatchEnabled] is false.
+ * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
+ * and [delegate] when [unconfined] is false.
  */
 @InternalCoilApi
-class DelayedDispatchCoroutineDispatcher(
+class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher() {
-    var dispatchEnabled = false
+
+    /** Delegates to [Dispatchers.Unconfined] while true. */
+    var unconfined = true
 
     private val currentDispatcher: CoroutineDispatcher
-        get() = if (dispatchEnabled) delegate else Dispatchers.Unconfined
+        get() = if (unconfined) Dispatchers.Unconfined else delegate
 
     override fun isDispatchNeeded(context: CoroutineContext): Boolean {
-        // Enable dispatching when the context's dispatcher changes and it's not Dispatchers.Unconfined.
-        dispatchEnabled = dispatchEnabled || context.dispatcher.let {
-            it != null && it != this && it != Dispatchers.Unconfined
-        }
         return currentDispatcher.isDispatchNeeded(context)
     }
 
@@ -41,6 +40,6 @@ class DelayedDispatchCoroutineDispatcher(
     }
 
     override fun toString(): String {
-        return "DelayedDispatchCoroutineDispatcher(delegate=$delegate)"
+        return "ForwardingUnconfinedCoroutineDispatcher(delegate=$delegate)"
     }
 }

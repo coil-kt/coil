@@ -13,33 +13,33 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
-class DelayedDispatchCoroutineDispatcherTest {
+class ForwardingUnconfinedCoroutineDispatcherTest {
     private val testDispatcher = TestCoroutineDispatcher()
-    private val delayedDispatcher = DelayedDispatchCoroutineDispatcher(testDispatcher)
+    private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun `does not dispatch when suspended by default`() = runTestWithDelayedDispatch {
+    fun `does not dispatch when suspended by default`() = test {
         delay(100.milliseconds)
         assertFalse { testDispatcher.dispatched }
     }
 
     @Test
-    fun `does not dispatch when dispatchEnabled=false`() = runTestWithDelayedDispatch {
-        delayedDispatcher.dispatchEnabled = false
+    fun `does not dispatch when unconfined=true`() = test {
+        forwardingDispatcher.unconfined = true
         withContext(Dispatchers.Default) {}
         assertFalse { testDispatcher.dispatched }
     }
 
     @Test
-    fun `does dispatch when dispatchEnabled=true`() = runTestWithDelayedDispatch {
-        delayedDispatcher.dispatchEnabled = true
+    fun `does dispatch when unconfined=false`() = test {
+        forwardingDispatcher.unconfined = false
         withContext(Dispatchers.Default) {}
         assertTrue { testDispatcher.dispatched }
     }
 
-    private fun runTestWithDelayedDispatch(
+    private fun test(
         testBody: suspend CoroutineScope.() -> Unit,
-    ) = runTest { withContext(delayedDispatcher, testBody) }
+    ) = runTest { withContext(forwardingDispatcher, testBody) }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
         var dispatched = false
