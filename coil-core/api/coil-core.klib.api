@@ -810,6 +810,20 @@ final class coil3.util/DebugLogger : coil3.util/Logger { // coil3.util/DebugLogg
     final fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/DebugLogger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
 }
 
+final class coil3.util/DelayedDispatchCoroutineDispatcher : kotlinx.coroutines/CoroutineDispatcher { // coil3.util/DelayedDispatchCoroutineDispatcher|null[0]
+    constructor <init>(kotlinx.coroutines/CoroutineDispatcher) // coil3.util/DelayedDispatchCoroutineDispatcher.<init>|<init>(kotlinx.coroutines.CoroutineDispatcher){}[0]
+
+    final var dispatchEnabled // coil3.util/DelayedDispatchCoroutineDispatcher.dispatchEnabled|{}dispatchEnabled[0]
+        final fun <get-dispatchEnabled>(): kotlin/Boolean // coil3.util/DelayedDispatchCoroutineDispatcher.dispatchEnabled.<get-dispatchEnabled>|<get-dispatchEnabled>(){}[0]
+        final fun <set-dispatchEnabled>(kotlin/Boolean) // coil3.util/DelayedDispatchCoroutineDispatcher.dispatchEnabled.<set-dispatchEnabled>|<set-dispatchEnabled>(kotlin.Boolean){}[0]
+
+    final fun dispatch(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/Runnable) // coil3.util/DelayedDispatchCoroutineDispatcher.dispatch|dispatch(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.Runnable){}[0]
+    final fun dispatchYield(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/Runnable) // coil3.util/DelayedDispatchCoroutineDispatcher.dispatchYield|dispatchYield(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.Runnable){}[0]
+    final fun isDispatchNeeded(kotlin.coroutines/CoroutineContext): kotlin/Boolean // coil3.util/DelayedDispatchCoroutineDispatcher.isDispatchNeeded|isDispatchNeeded(kotlin.coroutines.CoroutineContext){}[0]
+    final fun limitedParallelism(kotlin/Int, kotlin/String?): kotlinx.coroutines/CoroutineDispatcher // coil3.util/DelayedDispatchCoroutineDispatcher.limitedParallelism|limitedParallelism(kotlin.Int;kotlin.String?){}[0]
+    final fun toString(): kotlin/String // coil3.util/DelayedDispatchCoroutineDispatcher.toString|toString(){}[0]
+}
+
 final class coil3/BitmapImage : coil3/Image { // coil3/BitmapImage|null[0]
     final val bitmap // coil3/BitmapImage.bitmap|{}bitmap[0]
         final fun <get-bitmap>(): org.jetbrains.skia/Bitmap // coil3/BitmapImage.bitmap.<get-bitmap>|<get-bitmap>(){}[0]
