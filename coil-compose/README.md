@@ -17,9 +17,6 @@ AsyncImage(
 
 `model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself. `contentDescription` sets the text used by accessibility services to describe what this image represents.
 
-!!! Note
-    If you use Compose on JVM/desktop you should import `org.jetbrains.kotlinx:kotlinx-coroutines-swing:<coroutines-version>`. Coil relies on `Dispatchers.Main.immediate` to resolve images from the memory cache synchronously and `kotlinx-coroutines-swing` provides support for that on JVM (non-Android) platforms.
-
 ## AsyncImage
 
 `AsyncImage` is a composable that executes an image request asynchronously and renders the result. It supports the same arguments as the standard `Image` composable and additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads an image with a circle crop, crossfade, and sets a placeholder:
