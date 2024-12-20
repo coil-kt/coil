@@ -15,16 +15,22 @@ import kotlinx.coroutines.Runnable
  * Create a [CoroutineScope] that will contain a [ForwardingUnconfinedCoroutineDispatcher] if necessary.
  */
 @Composable
-internal fun rememberForwardingUnconfinedCoroutineScope(): CoroutineScope {
+internal fun rememberUnconfinedCoroutineScope(): CoroutineScope {
     val scope = rememberCoroutineScope()
     return remember(scope) {
         val currentContext = scope.coroutineContext
         val currentDispatcher = currentContext.dispatcher
-        if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
-            CoroutineScope(currentContext + ForwardingUnconfinedCoroutineDispatcher(currentDispatcher))
-        } else {
-            scope
+
+        if (currentDispatcher == Dispatchers.Unconfined) {
+            return@remember scope
         }
+
+        val newDispatcher = if (currentDispatcher != null) {
+            ForwardingUnconfinedCoroutineDispatcher(currentDispatcher)
+        } else {
+            Dispatchers.Unconfined
+        }
+        return@remember CoroutineScope(currentContext + newDispatcher)
     }
 }
 

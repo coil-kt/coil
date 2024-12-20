@@ -31,7 +31,7 @@ import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.onStateOf
-import coil3.compose.internal.rememberForwardingUnconfinedCoroutineScope
+import coil3.compose.internal.rememberUnconfinedCoroutineScope
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
@@ -51,8 +51,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.launch
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -136,7 +136,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberForwardingUnconfinedCoroutineScope()
+    painter.scope = rememberUnconfinedCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -213,23 +213,22 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        rememberJob = scope.launch {
-            restartSignal
-                .flatMapLatest { _input }
-                .mapLatest { input ->
-                    val previewHandler = previewHandler
-                    if (previewHandler != null) {
-                        // If we're in inspection mode use the preview renderer.
-                        val request = updateRequest(input.request, isPreview = true)
-                        previewHandler.handle(input.imageLoader, request)
-                    } else {
-                        // Else, execute the request as normal.
-                        val request = updateRequest(input.request, isPreview = false)
-                        input.imageLoader.execute(request).toState()
-                    }
+        rememberJob = restartSignal
+            .flatMapLatest { _input }
+            .mapLatest { input ->
+                val previewHandler = previewHandler
+                val state = if (previewHandler != null) {
+                    // If we're in inspection mode use the preview renderer.
+                    val request = updateRequest(input.request, isPreview = true)
+                    previewHandler.handle(input.imageLoader, request)
+                } else {
+                    // Else, execute the request as normal.
+                    val request = updateRequest(input.request, isPreview = false)
+                    input.imageLoader.execute(request).toState()
                 }
-                .collect(::updateState)
-        }
+                updateState(state)
+            }
+            .launchIn(scope)
     }
 
     override fun onForgotten() {
