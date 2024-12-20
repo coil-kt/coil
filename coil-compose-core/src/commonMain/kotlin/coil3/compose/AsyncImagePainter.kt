@@ -31,12 +31,12 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
+import coil3.compose.internal.ForwardingUnconfinedCoroutineDispatcher
 import coil3.compose.internal.dispatcher
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
-import coil3.compose.internal.withForwardingUnconfinedDispatcher
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -53,10 +53,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -217,22 +217,30 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        val dispatcher = scope.coroutineContext.dispatcher ?: Dispatchers.Unconfined
         rememberJob = restartSignal
-            .flatMapLatest { _input }
-            .mapLatest { input ->
-                withForwardingUnconfinedDispatcher(dispatcher) {
-                    val previewHandler = previewHandler
-                    val state = if (previewHandler != null) {
-                        // If we're in inspection mode use the preview renderer.
-                        val request = updateRequest(input.request, isPreview = true)
-                        previewHandler.handle(input.imageLoader, request)
-                    } else {
-                        // Else, execute the request as normal.
-                        val request = updateRequest(input.request, isPreview = false)
-                        input.imageLoader.execute(request).toState()
+            .transformLatest<Unit, Nothing> {
+                _input.collect { input ->
+                    val delegate = scope.coroutineContext.dispatcher ?: Dispatchers.Unconfined
+                    val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(delegate)
+
+                    try {
+                        forwardingDispatcher.unconfined = true
+                        withContext(ForwardingUnconfinedCoroutineDispatcher(delegate)) {
+                            val previewHandler = previewHandler
+                            val state = if (previewHandler != null) {
+                                // If we're in inspection mode use the preview renderer.
+                                val request = updateRequest(input.request, isPreview = true)
+                                previewHandler.handle(input.imageLoader, request)
+                            } else {
+                                // Else, execute the request as normal.
+                                val request = updateRequest(input.request, isPreview = false)
+                                input.imageLoader.execute(request).toState()
+                            }
+                            updateState(state)
+                        }
+                    } finally {
+                        forwardingDispatcher.unconfined = true
                     }
-                    updateState(state)
                 }
             }
             .launchIn(scope + Dispatchers.Unconfined)

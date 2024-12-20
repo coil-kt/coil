@@ -24,7 +24,6 @@ import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -37,58 +36,68 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun `does not dispatch when unconfined=true`() = runTestWithForwardingDispatcher {
+    fun `does not dispatch when unconfined=true`() = runTest {
         forwardingDispatcher.unconfined = true
-        delay(100.milliseconds)
-        assertEquals(0, testDispatcher.dispatchCount)
+
+        withContext(forwardingDispatcher) {
+            delay(100.milliseconds)
+            assertEquals(0, testDispatcher.dispatchCount)
+        }
     }
 
     @Test
-    fun `does dispatch when unconfined=false`() = runTestWithForwardingDispatcher {
+    fun `does dispatch when unconfined=false`() = runTest {
         forwardingDispatcher.unconfined = false
-        delay(100.milliseconds)
-        assertEquals(1, testDispatcher.dispatchCount)
+
+        withContext(forwardingDispatcher) {
+            delay(100.milliseconds)
+            assertEquals(2, testDispatcher.dispatchCount)
+        }
     }
 
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun `imageLoader does not dispatch if context does not change`() = runTestWithForwardingDispatcher {
-        assertIs<Unconfined>(coroutineContext.dispatcher)
+    fun `imageLoader does not dispatch if context does not change`() = runTest {
+        forwardingDispatcher.unconfined = true
 
-        val imageLoader = ImageLoader(context)
-        val request = ImageRequest.Builder(context)
-            .data(Unit)
-            .fetcherFactory(TestFetcher.Factory())
-            .decoderFactory(TestDecoder.Factory())
-            .coroutineContext(EmptyCoroutineContext)
-            .build()
-        val result = imageLoader.execute(request)
+        withContext(forwardingDispatcher) {
+            assertIs<Unconfined>(coroutineContext.dispatcher)
 
-        assertIs<SuccessResult>(result)
-        assertEquals(0, testDispatcher.dispatchCount)
+            val imageLoader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                .data(Unit)
+                .fetcherFactory(TestFetcher.Factory())
+                .decoderFactory(TestDecoder.Factory())
+                .coroutineContext(EmptyCoroutineContext)
+                .build()
+            val result = imageLoader.execute(request)
+
+            assertIs<SuccessResult>(result)
+            assertEquals(0, testDispatcher.dispatchCount)
+        }
     }
 
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun `imageLoader does dispatch if context changes`() = runTestWithForwardingDispatcher {
-        assertIs<Unconfined>(coroutineContext.dispatcher)
+    fun `imageLoader does dispatch if context changes`() = runTest {
+        forwardingDispatcher.unconfined = true
 
-        val imageLoader = ImageLoader(context)
-        val request = ImageRequest.Builder(context)
-            .data(Unit)
-            .fetcherFactory(TestFetcher.Factory())
-            .decoderFactory(TestDecoder.Factory())
-            .decoderCoroutineContext(Dispatchers.Default)
-            .build()
-        val result = imageLoader.execute(request)
+        withContext(forwardingDispatcher) {
+            assertIs<Unconfined>(coroutineContext.dispatcher)
 
-        assertIs<SuccessResult>(result)
-        assertEquals(1, testDispatcher.dispatchCount)
+            val imageLoader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                .data(Unit)
+                .fetcherFactory(TestFetcher.Factory())
+                .decoderFactory(TestDecoder.Factory())
+                .decoderCoroutineContext(Dispatchers.Default)
+                .build()
+            val result = imageLoader.execute(request)
+
+            assertIs<SuccessResult>(result)
+            assertEquals(1, testDispatcher.dispatchCount)
+        }
     }
-
-    private fun runTestWithForwardingDispatcher(
-        testBody: suspend CoroutineScope.() -> Unit,
-    ) = runTest { withContext(forwardingDispatcher, testBody) }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
         private var _dispatchCount by atomic(0)
