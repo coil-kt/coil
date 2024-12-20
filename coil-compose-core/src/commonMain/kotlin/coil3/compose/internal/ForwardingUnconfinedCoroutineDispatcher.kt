@@ -3,21 +3,9 @@ package coil3.compose.internal
 import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.withContext
-
-internal suspend inline fun <T> withForwardingUnconfinedDispatcher(
-    delegate: CoroutineDispatcher,
-    noinline block: suspend CoroutineScope.() -> T,
-) {
-    val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(delegate)
-    forwardingDispatcher.unconfined = true
-    withContext(forwardingDispatcher, block)
-    forwardingDispatcher.unconfined = true
-}
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
