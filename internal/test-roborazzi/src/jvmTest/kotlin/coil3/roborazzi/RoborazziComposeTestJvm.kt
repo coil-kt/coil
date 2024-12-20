@@ -14,7 +14,8 @@ import coil3.PlatformContext
 import coil3.asImage
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
-import coil3.test.FakeImage
+import coil3.test.ColorImage
+import coil3.test.ColorImage.Companion.Red
 import coil3.test.FakeImageLoaderEngine
 import coil3.toBitmap
 import io.github.takahirom.roborazzi.captureRoboImage
@@ -26,11 +27,7 @@ class RoborazziComposeTestJvm {
     @Test
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
-        val image = FakeImage(
-            width = 100,
-            height = 100,
-            color = org.jetbrains.skia.Color.RED,
-        )
+        val image = ColorImage(Red, width = 100, height = 100)
 
         val engine = FakeImageLoaderEngine.Builder()
             .intercept(url, image)
@@ -60,11 +57,7 @@ class RoborazziComposeTestJvm {
     @Test
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
-        val image = FakeImage(
-            width = 100,
-            height = 100,
-            color = org.jetbrains.skia.Color.RED,
-        )
+        val image = ColorImage(Red, width = 100, height = 100)
         val engine = FakeImageLoaderEngine.Builder()
             .intercept(url, image.toBitmap().asImage())
             .build()
