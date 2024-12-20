@@ -276,6 +276,12 @@ abstract interface coil3.util/Logger { // coil3.util/Logger|null[0]
     }
 }
 
+abstract interface coil3.util/Unconfined { // coil3.util/Unconfined|null[0]
+    abstract var unconfined // coil3.util/Unconfined.unconfined|{}unconfined[0]
+        abstract fun <get-unconfined>(): kotlin/Boolean // coil3.util/Unconfined.unconfined.<get-unconfined>|<get-unconfined>(){}[0]
+        abstract fun <set-unconfined>(kotlin/Boolean) // coil3.util/Unconfined.unconfined.<set-unconfined>|<set-unconfined>(kotlin.Boolean){}[0]
+}
+
 abstract interface coil3/Image { // coil3/Image|null[0]
     abstract val height // coil3/Image.height|{}height[0]
         abstract fun <get-height>(): kotlin/Int // coil3/Image.height.<get-height>|<get-height>(){}[0]
@@ -808,20 +814,6 @@ final class coil3.util/DebugLogger : coil3.util/Logger { // coil3.util/DebugLogg
         final fun <set-minLevel>(coil3.util/Logger.Level) // coil3.util/DebugLogger.minLevel.<set-minLevel>|<set-minLevel>(coil3.util.Logger.Level){}[0]
 
     final fun log(kotlin/String, coil3.util/Logger.Level, kotlin/String?, kotlin/Throwable?) // coil3.util/DebugLogger.log|log(kotlin.String;coil3.util.Logger.Level;kotlin.String?;kotlin.Throwable?){}[0]
-}
-
-final class coil3.util/ForwardingUnconfinedCoroutineDispatcher : kotlinx.coroutines/CoroutineDispatcher { // coil3.util/ForwardingUnconfinedCoroutineDispatcher|null[0]
-    constructor <init>(kotlinx.coroutines/CoroutineDispatcher) // coil3.util/ForwardingUnconfinedCoroutineDispatcher.<init>|<init>(kotlinx.coroutines.CoroutineDispatcher){}[0]
-
-    final var unconfined // coil3.util/ForwardingUnconfinedCoroutineDispatcher.unconfined|{}unconfined[0]
-        final fun <get-unconfined>(): kotlin/Boolean // coil3.util/ForwardingUnconfinedCoroutineDispatcher.unconfined.<get-unconfined>|<get-unconfined>(){}[0]
-        final fun <set-unconfined>(kotlin/Boolean) // coil3.util/ForwardingUnconfinedCoroutineDispatcher.unconfined.<set-unconfined>|<set-unconfined>(kotlin.Boolean){}[0]
-
-    final fun dispatch(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/Runnable) // coil3.util/ForwardingUnconfinedCoroutineDispatcher.dispatch|dispatch(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.Runnable){}[0]
-    final fun dispatchYield(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/Runnable) // coil3.util/ForwardingUnconfinedCoroutineDispatcher.dispatchYield|dispatchYield(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.Runnable){}[0]
-    final fun isDispatchNeeded(kotlin.coroutines/CoroutineContext): kotlin/Boolean // coil3.util/ForwardingUnconfinedCoroutineDispatcher.isDispatchNeeded|isDispatchNeeded(kotlin.coroutines.CoroutineContext){}[0]
-    final fun limitedParallelism(kotlin/Int, kotlin/String?): kotlinx.coroutines/CoroutineDispatcher // coil3.util/ForwardingUnconfinedCoroutineDispatcher.limitedParallelism|limitedParallelism(kotlin.Int;kotlin.String?){}[0]
-    final fun toString(): kotlin/String // coil3.util/ForwardingUnconfinedCoroutineDispatcher.toString|toString(){}[0]
 }
 
 final class coil3/BitmapImage : coil3/Image { // coil3/BitmapImage|null[0]
