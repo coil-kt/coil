@@ -41,7 +41,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
-import kotlinx.coroutines.withContext
 
 internal class RealImageLoader(
     val options: Options,
