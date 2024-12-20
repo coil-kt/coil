@@ -9,12 +9,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
 class ForwardingUnconfinedCoroutineDispatcherTest {
-    private val scheduler = TestCoroutineScheduler()
     private val testDispatcher = TestCoroutineDispatcher()
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
@@ -40,7 +38,7 @@ class ForwardingUnconfinedCoroutineDispatcherTest {
 
     private fun runTestWithForwardingDispatcher(
         testBody: suspend CoroutineScope.() -> Unit,
-    ) = runTest(forwardingDispatcher, testBody = testBody)
+    ) = runTest { withContext(forwardingDispatcher, testBody) }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
         var dispatchCount = 0
