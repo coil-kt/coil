@@ -22,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,22 +37,16 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun `does not dispatch when suspended by default`() = runTestWithForwardingDispatcher {
-        delay(100.milliseconds)
-        assertEquals(0, testDispatcher.dispatchCount)
-    }
-
-    @Test
     fun `does not dispatch when unconfined=true`() = runTestWithForwardingDispatcher {
         forwardingDispatcher.unconfined = true
-        withContext(Dispatchers.Default) {}
+        delay(100.milliseconds)
         assertEquals(0, testDispatcher.dispatchCount)
     }
 
     @Test
     fun `does dispatch when unconfined=false`() = runTestWithForwardingDispatcher {
         forwardingDispatcher.unconfined = false
-        withContext(Dispatchers.Default) {}
+        delay(100.milliseconds)
         assertEquals(1, testDispatcher.dispatchCount)
     }
 
@@ -96,11 +91,11 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     ) = runTest { withContext(forwardingDispatcher, testBody) }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
-        var dispatchCount = 0
-            private set
+        private var _dispatchCount by atomic(0)
+        val dispatchCount get() = _dispatchCount
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
-            dispatchCount++
+            _dispatchCount++
             block.run()
         }
     }
