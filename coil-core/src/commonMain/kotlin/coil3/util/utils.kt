@@ -13,9 +13,13 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okio.Closeable
 
 internal expect fun println(level: Logger.Level, tag: String, message: String)
@@ -103,3 +107,15 @@ internal expect fun Image.prepareToDraw()
 @OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
     get() = get(CoroutineDispatcher)
+
+internal suspend fun <T> withContextAndDisableUnconfined(
+    context: CoroutineContext,
+    block: suspend CoroutineScope.() -> T
+): T {
+    val dispatcher = coroutineContext.dispatcher
+    if (dispatcher is Unconfined) {
+        dispatcher.unconfined = dispatcher.unconfined && context.dispatcher
+            .let { it == null || it == Dispatchers.Unconfined }
+    }
+    return withContext(context, block)
+}

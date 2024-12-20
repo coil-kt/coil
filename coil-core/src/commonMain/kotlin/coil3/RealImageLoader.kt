@@ -28,6 +28,7 @@ import coil3.util.SystemCallbacks
 import coil3.util.emoji
 import coil3.util.log
 import coil3.util.mapNotNullIndices
+import coil3.util.withContextAndDisableUnconfined
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
@@ -130,7 +131,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = withContext(request.interceptorCoroutineContext) {
+            val result = withContextAndDisableUnconfined(request.interceptorCoroutineContext) {
                 RealInterceptorChain(
                     initialRequest = request,
                     interceptors = components.interceptors,
