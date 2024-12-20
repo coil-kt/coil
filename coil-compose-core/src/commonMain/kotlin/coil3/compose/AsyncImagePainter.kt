@@ -223,9 +223,8 @@ class AsyncImagePainter internal constructor(
                     val delegate = scope.coroutineContext.dispatcher ?: Dispatchers.Unconfined
                     val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(delegate)
 
-                    try {
-                        forwardingDispatcher.unconfined = true
-                        withContext(ForwardingUnconfinedCoroutineDispatcher(delegate)) {
+                    withContext(forwardingDispatcher) {
+                        try {
                             val previewHandler = previewHandler
                             val state = if (previewHandler != null) {
                                 // If we're in inspection mode use the preview renderer.
@@ -237,9 +236,10 @@ class AsyncImagePainter internal constructor(
                                 input.imageLoader.execute(request).toState()
                             }
                             updateState(state)
+                        } finally {
+                            // Optimization to avoid dispatching when there's nothing left to do.
+                            forwardingDispatcher.unconfined = true
                         }
-                    } finally {
-                        forwardingDispatcher.unconfined = true
                     }
                 }
             }

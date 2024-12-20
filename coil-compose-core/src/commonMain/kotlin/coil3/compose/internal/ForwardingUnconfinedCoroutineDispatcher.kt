@@ -15,13 +15,12 @@ internal class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher(), Unconfined {
 
-    override var unconfined = false
+    override var unconfined = true
 
     private val currentDispatcher: CoroutineDispatcher
         get() = if (unconfined) Dispatchers.Unconfined else delegate
 
     override fun isDispatchNeeded(context: CoroutineContext): Boolean {
-        println("isDispatchNeeded $currentDispatcher")
         return currentDispatcher.isDispatchNeeded(context)
     }
 
