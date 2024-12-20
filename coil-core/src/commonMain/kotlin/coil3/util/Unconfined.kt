@@ -5,10 +5,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /**
- * A [CoroutineDispatcher] feature that delegates to [Dispatchers.Unconfined] while [unconfined] is true.
+ * A [CoroutineDispatcher] feature that delegates to [Dispatchers.Unconfined] while
+ * [unconfined] is true.
  */
 @InternalCoilApi
 interface Unconfined {
-    /** Delegates to [Dispatchers.Unconfined] while true. */
     var unconfined: Boolean
 }
