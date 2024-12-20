@@ -15,8 +15,7 @@ import kotlinx.coroutines.Runnable
 internal class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher(), Unconfined {
-
-    private var _unconfined = atomic(true)
+    private val _unconfined = atomic(true)
     override var unconfined by _unconfined
 
     private val currentDispatcher: CoroutineDispatcher
