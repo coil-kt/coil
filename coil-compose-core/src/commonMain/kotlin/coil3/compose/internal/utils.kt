@@ -7,7 +7,6 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
@@ -33,12 +32,9 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
-import coil3.util.ForwardingUnconfinedCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -167,25 +163,6 @@ internal class AsyncImageState(
     }
 }
 
-/** Create a [CoroutineScope] that will contain a [ForwardingUnconfinedCoroutineDispatcher] if necessary. */
-@Composable
-internal fun rememberForwardingUnconfinedCoroutineScope(): CoroutineScope {
-    val scope = rememberCoroutineScope()
-    return remember(scope) {
-        val currentContext = scope.coroutineContext
-        val currentDispatcher = currentContext.dispatcher
-        if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
-            CoroutineScope(currentContext + ForwardingUnconfinedCoroutineDispatcher(currentDispatcher))
-        } else {
-            scope
-        }
-    }
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-internal val CoroutineContext.dispatcher: CoroutineDispatcher?
-    get() = get(CoroutineDispatcher)
-
 @Stable
 internal fun Modifier.contentDescription(contentDescription: String?): Modifier {
     if (contentDescription != null) {
@@ -235,3 +212,7 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
+
+@OptIn(ExperimentalStdlibApi::class)
+internal val CoroutineContext.dispatcher: CoroutineDispatcher?
+    get() = get(CoroutineDispatcher)

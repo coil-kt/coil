@@ -1,23 +1,42 @@
-package coil3.util
+package coil3.compose.internal
 
-import coil3.annotation.InternalCoilApi
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
 
 /**
+ * Create a [CoroutineScope] that will contain a [ForwardingUnconfinedCoroutineDispatcher] if necessary.
+ */
+@Composable
+internal fun rememberForwardingUnconfinedCoroutineScope(): CoroutineScope {
+    val scope = rememberCoroutineScope()
+    return remember(scope) {
+        val currentContext = scope.coroutineContext
+        val currentDispatcher = currentContext.dispatcher
+        if (currentDispatcher != null && currentDispatcher != Dispatchers.Unconfined) {
+            CoroutineScope(currentContext + ForwardingUnconfinedCoroutineDispatcher(currentDispatcher))
+        } else {
+            scope
+        }
+    }
+}
+
+/**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
  * and [delegate] when [unconfined] is false.
  */
-@InternalCoilApi
-class ForwardingUnconfinedCoroutineDispatcher(
+internal class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
-) : CoroutineDispatcher() {
+) : CoroutineDispatcher(), Unconfined {
 
-    /** Delegates to [Dispatchers.Unconfined] while true. */
-    var unconfined = true
+    override var unconfined = true
 
     private val currentDispatcher: CoroutineDispatcher
         get() = if (unconfined) Dispatchers.Unconfined else delegate

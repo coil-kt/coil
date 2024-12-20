@@ -1,52 +1,53 @@
-package coil3.util
+package coil3.compose.internal
 
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
 class ForwardingUnconfinedCoroutineDispatcherTest {
+    private val scheduler = TestCoroutineScheduler()
     private val testDispatcher = TestCoroutineDispatcher()
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun `does not dispatch when suspended by default`() = test {
+    fun `does not dispatch when suspended by default`() = runTestWithForwardingDispatcher {
         delay(100.milliseconds)
-        assertFalse { testDispatcher.dispatched }
+        assertEquals(0, testDispatcher.dispatchCount)
     }
 
     @Test
-    fun `does not dispatch when unconfined=true`() = test {
+    fun `does not dispatch when unconfined=true`() = runTestWithForwardingDispatcher {
         forwardingDispatcher.unconfined = true
         withContext(Dispatchers.Default) {}
-        assertFalse { testDispatcher.dispatched }
+        assertEquals(0, testDispatcher.dispatchCount)
     }
 
     @Test
-    fun `does dispatch when unconfined=false`() = test {
+    fun `does dispatch when unconfined=false`() = runTestWithForwardingDispatcher {
         forwardingDispatcher.unconfined = false
         withContext(Dispatchers.Default) {}
-        assertTrue { testDispatcher.dispatched }
+        assertEquals(1, testDispatcher.dispatchCount)
     }
 
-    private fun test(
+    private fun runTestWithForwardingDispatcher(
         testBody: suspend CoroutineScope.() -> Unit,
-    ) = runTest { withContext(forwardingDispatcher, testBody) }
+    ) = runTest(forwardingDispatcher, testBody = testBody)
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
-        var dispatched = false
+        var dispatchCount = 0
             private set
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
-            dispatched = true
+            dispatchCount++
             block.run()
         }
     }
