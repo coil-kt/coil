@@ -13,6 +13,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.test.utils.FakeImage
+import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
@@ -30,7 +31,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
-class ForwardingUnconfinedCoroutineDispatcherTest {
+class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
