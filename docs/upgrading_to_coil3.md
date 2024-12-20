@@ -47,9 +47,6 @@ The `coil-compose` artifact's APIs are mostly unchanged. You can continue using 
 - `AsyncImagePainter`'s default `SizeResolver` no longer waits for the first `onDraw` call to get the size of the canvas. Instead, `AsyncImagePainter` defaults to `Size.ORIGINAL`.
 - The Compose `modelEqualityDelegate` delegate is now set via a composition local, `LocalAsyncImageModelEqualityDelegate`, instead of as a parameter to `AsyncImage`/`SubcomposeAsyncImage`/`rememberAsyncImagePainter`.
 
-!!! Note
-    If you use Coil on a JVM (non-Android) platform, you should add a dependency on a [coroutines main dispatcher](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html). On desktop you likely want to import `org.jetbrains.kotlinx:kotlinx-coroutines-swing`. If it's not imported then `ImageRequest`s won't be dispatched immediately and will have one frame of delay before setting the `ImageRequest.placeholder` or resolving from the memory cache.
-
 ## General
 
 Other important behavior changes include:
