@@ -2,6 +2,7 @@ package coil3.compose.internal
 
 import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -15,10 +16,11 @@ internal class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher(), Unconfined {
 
-    override var unconfined = true
+    private var _unconfined = atomic(true)
+    override var unconfined by _unconfined
 
     private val currentDispatcher: CoroutineDispatcher
-        get() = if (unconfined) Dispatchers.Unconfined else delegate
+        get() = if (_unconfined.value) Dispatchers.Unconfined else delegate
 
     override fun isDispatchNeeded(context: CoroutineContext): Boolean {
         return currentDispatcher.isDispatchNeeded(context)
