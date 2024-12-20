@@ -74,7 +74,7 @@ internal class EngineInterceptor(
             }
 
             // Re-enable dispatching before starting to fetch.
-            (coroutineContext.dispatcher as? Unconfined)?.unconfined = true
+            (coroutineContext.dispatcher as? Unconfined)?.unconfined = false
 
             // Slow path: fetch, decode, transform, and cache the image.
             return withContext(request.fetcherCoroutineContext) {

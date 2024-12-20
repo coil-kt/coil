@@ -1,8 +1,25 @@
 package coil3.compose.internal
 
+import coil3.ImageLoader
+import coil3.compose.AsyncImagePainter
+import coil3.decode.DataSource
+import coil3.decode.DecodeResult
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
+import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
+import coil3.fetch.SourceFetchResult
+import coil3.request.ImageRequest
+import coil3.request.Options
+import coil3.request.SuccessResult
+import coil3.test.utils.FakeImage
+import coil3.test.utils.context
+import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -11,6 +28,7 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import okio.Buffer
 
 class ForwardingUnconfinedCoroutineDispatcherTest {
     private val testDispatcher = TestCoroutineDispatcher()
@@ -36,6 +54,42 @@ class ForwardingUnconfinedCoroutineDispatcherTest {
         assertEquals(1, testDispatcher.dispatchCount)
     }
 
+    /** This test emulates the context that [AsyncImagePainter] launches its request into. */
+    @Test
+    fun `imageLoader does not dispatch if context does not change`() = runTestWithForwardingDispatcher {
+        assertIs<Unconfined>(coroutineContext.dispatcher)
+
+        val imageLoader = ImageLoader(context)
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .fetcherFactory(TestFetcher.Factory())
+            .decoderFactory(TestDecoder.Factory())
+            .coroutineContext(EmptyCoroutineContext)
+            .build()
+        val result = imageLoader.execute(request)
+
+        assertIs<SuccessResult>(result)
+        assertEquals(0, testDispatcher.dispatchCount)
+    }
+
+    /** This test emulates the context that [AsyncImagePainter] launches its request into. */
+    @Test
+    fun `imageLoader does dispatch if context changes`() = runTestWithForwardingDispatcher {
+        assertIs<Unconfined>(coroutineContext.dispatcher)
+
+        val imageLoader = ImageLoader(context)
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .fetcherFactory(TestFetcher.Factory())
+            .decoderFactory(TestDecoder.Factory())
+            .decoderCoroutineContext(Dispatchers.Default)
+            .build()
+        val result = imageLoader.execute(request)
+
+        assertIs<SuccessResult>(result)
+        assertEquals(1, testDispatcher.dispatchCount)
+    }
+
     private fun runTestWithForwardingDispatcher(
         testBody: suspend CoroutineScope.() -> Unit,
     ) = runTest { withContext(forwardingDispatcher, testBody) }
@@ -47,6 +101,47 @@ class ForwardingUnconfinedCoroutineDispatcherTest {
         override fun dispatch(context: CoroutineContext, block: Runnable) {
             dispatchCount++
             block.run()
+        }
+    }
+
+    private class TestFetcher(
+        private val options: Options,
+    ) : Fetcher {
+
+        override suspend fun fetch(): FetchResult {
+            return SourceFetchResult(
+                source = ImageSource(Buffer(), options.fileSystem),
+                mimeType = null,
+                dataSource = DataSource.MEMORY,
+            )
+        }
+
+        class Factory : Fetcher.Factory<Unit> {
+            override fun create(
+                data: Unit,
+                options: Options,
+                imageLoader: ImageLoader,
+            ): Fetcher = TestFetcher(options)
+        }
+    }
+
+    private class TestDecoder(
+        private val options: Options,
+    ) : Decoder {
+
+        override suspend fun decode(): DecodeResult {
+            return DecodeResult(
+                image = FakeImage(),
+                isSampled = false,
+            )
+        }
+
+        class Factory : Decoder.Factory {
+            override fun create(
+                result: SourceFetchResult,
+                options: Options,
+                imageLoader: ImageLoader,
+            ): Decoder = TestDecoder(options)
         }
     }
 }
