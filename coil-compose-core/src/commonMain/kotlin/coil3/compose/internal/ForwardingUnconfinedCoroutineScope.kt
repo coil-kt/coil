@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.withContext
 
 /**
  * A [CoroutineScope] with a special [CoroutineContext] that enables [ForwardingUnconfinedCoroutineDispatcher]
@@ -25,24 +24,6 @@ internal fun ForwardingUnconfinedCoroutineScope(
         }
     }
 )
-
-/**
- * Calls [block] with a [ForwardingUnconfinedCoroutineDispatcher] replacing the current dispatcher.
- */
-internal suspend inline fun <T> withForwardingUnconfinedCoroutineDispatcher(
-    originalDispatcher: CoroutineDispatcher,
-    crossinline block: suspend CoroutineScope.() -> T
-): T {
-    val unconfinedDispatcher = ForwardingUnconfinedCoroutineDispatcher(originalDispatcher)
-    return withContext(unconfinedDispatcher) {
-        try {
-            block()
-        } finally {
-            // Optimization to avoid dispatching when there's nothing left to do.
-            unconfinedDispatcher.unconfined = true
-        }
-    }
-}
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
