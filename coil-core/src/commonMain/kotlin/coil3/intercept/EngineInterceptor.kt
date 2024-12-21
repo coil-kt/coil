@@ -34,10 +34,10 @@ import coil3.util.foldIndices
 import coil3.util.isPlaceholderCached
 import coil3.util.log
 import coil3.util.prepareToDraw
-import coil3.util.withContextAndDisableUnconfined
 import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
@@ -72,7 +72,7 @@ internal class EngineInterceptor(
             }
 
             // Slow path: fetch, decode, transform, and cache the image.
-            return withContextAndDisableUnconfined(request.fetcherCoroutineContext) {
+            return withContext(request.fetcherCoroutineContext) {
                 // Fetch and decode the image.
                 val result = execute(request, mappedData, options, eventListener)
 
@@ -127,7 +127,7 @@ internal class EngineInterceptor(
 
             // Decode the data.
             when (fetchResult) {
-                is SourceFetchResult -> withContextAndDisableUnconfined(request.decoderCoroutineContext) {
+                is SourceFetchResult -> withContext(request.decoderCoroutineContext) {
                     decode(fetchResult, components, request, mappedData, options, eventListener)
                 }
                 is ImageFetchResult -> {
