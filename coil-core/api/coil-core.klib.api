@@ -276,12 +276,6 @@ abstract interface coil3.util/Logger { // coil3.util/Logger|null[0]
     }
 }
 
-abstract interface coil3.util/Unconfined { // coil3.util/Unconfined|null[0]
-    abstract var unconfined // coil3.util/Unconfined.unconfined|{}unconfined[0]
-        abstract fun <get-unconfined>(): kotlin/Boolean // coil3.util/Unconfined.unconfined.<get-unconfined>|<get-unconfined>(){}[0]
-        abstract fun <set-unconfined>(kotlin/Boolean) // coil3.util/Unconfined.unconfined.<set-unconfined>|<set-unconfined>(kotlin.Boolean){}[0]
-}
-
 abstract interface coil3/Image { // coil3/Image|null[0]
     abstract val height // coil3/Image.height|{}height[0]
         abstract fun <get-height>(): kotlin/Int // coil3/Image.height.<get-height>|<get-height>(){}[0]

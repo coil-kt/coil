@@ -15,7 +15,6 @@ import coil3.request.SuccessResult
 import coil3.test.utils.FakeImage
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
-import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
@@ -27,11 +26,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
-class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
+class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
     private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
 
@@ -60,9 +60,7 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     fun `imageLoader does not dispatch if context does not change`() = runTest {
         forwardingDispatcher.unconfined = true
 
-        withContext(forwardingDispatcher) {
-            assertIs<Unconfined>(coroutineContext.dispatcher)
-
+        ForwardingUnconfinedCoroutineScope(forwardingDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)
@@ -74,7 +72,7 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
 
             assertIs<SuccessResult>(result)
             assertEquals(0, testDispatcher.dispatchCount)
-        }
+        }.join()
     }
 
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
@@ -82,9 +80,7 @@ class ForwardingUnconfinedCoroutineDispatcherTest : RobolectricTest() {
     fun `imageLoader does dispatch if context changes`() = runTest {
         forwardingDispatcher.unconfined = true
 
-        withContext(forwardingDispatcher) {
-            assertIs<Unconfined>(coroutineContext.dispatcher)
-
+        ForwardingUnconfinedCoroutineScope(forwardingDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)

@@ -1,12 +1,26 @@
 package coil3.compose.internal
 
-import coil3.util.Unconfined
 import kotlin.coroutines.CoroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.withContext
+
+internal fun ForwardingUnconfinedCoroutineScope(
+    context: CoroutineContext,
+) = CoroutineScope(
+    context = ForwardingCoroutineContext(context) { old, new ->
+        val oldDispatcher = old.dispatcher
+        val newDispatcher = new.dispatcher
+        if (oldDispatcher is ForwardingUnconfinedCoroutineDispatcher && oldDispatcher != newDispatcher) {
+            oldDispatcher.unconfined = oldDispatcher.unconfined &&
+                    (newDispatcher == null || newDispatcher == Dispatchers.Unconfined)
+        }
+    }
+)
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
@@ -14,9 +28,9 @@ import kotlinx.coroutines.Runnable
  */
 internal class ForwardingUnconfinedCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
-) : CoroutineDispatcher(), Unconfined {
+) : CoroutineDispatcher() {
     private val _unconfined = atomic(true)
-    override var unconfined by _unconfined
+    var unconfined by _unconfined
 
     private val currentDispatcher: CoroutineDispatcher
         get() = if (_unconfined.value) Dispatchers.Unconfined else delegate
@@ -40,5 +54,20 @@ internal class ForwardingUnconfinedCoroutineDispatcher(
 
     override fun toString(): String {
         return "ForwardingUnconfinedCoroutineDispatcher(delegate=$delegate)"
+    }
+}
+
+internal suspend inline fun <T> withForwardingUnconfinedCoroutineDispatcher(
+    originalDispatcher: CoroutineDispatcher,
+    crossinline block: suspend CoroutineScope.() -> T
+): T {
+    val unconfinedDispatcher = ForwardingUnconfinedCoroutineDispatcher(originalDispatcher)
+    return withContext(unconfinedDispatcher) {
+        try {
+            block()
+        } finally {
+            // Optimization to avoid dispatching when there's nothing left to do.
+            unconfinedDispatcher.unconfined = true
+        }
     }
 }
