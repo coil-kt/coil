@@ -11,7 +11,6 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runDesktopComposeUiTest
 import coil3.ColorImage
-import coil3.ColorImage.Companion.Red
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.asImage
