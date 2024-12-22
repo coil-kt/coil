@@ -6,41 +6,6 @@
 // - Show declarations: true
 
 // Library unique name: <io.coil-kt.coil3:coil-test>
-final class coil3.test/ColorImage : coil3/Image { // coil3.test/ColorImage|null[0]
-    constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Boolean = ...) // coil3.test/ColorImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean){}[0]
-
-    final val color // coil3.test/ColorImage.color|{}color[0]
-        final fun <get-color>(): kotlin/Int // coil3.test/ColorImage.color.<get-color>|<get-color>(){}[0]
-    final val height // coil3.test/ColorImage.height|{}height[0]
-        final fun <get-height>(): kotlin/Int // coil3.test/ColorImage.height.<get-height>|<get-height>(){}[0]
-    final val shareable // coil3.test/ColorImage.shareable|{}shareable[0]
-        final fun <get-shareable>(): kotlin/Boolean // coil3.test/ColorImage.shareable.<get-shareable>|<get-shareable>(){}[0]
-    final val size // coil3.test/ColorImage.size|{}size[0]
-        final fun <get-size>(): kotlin/Long // coil3.test/ColorImage.size.<get-size>|<get-size>(){}[0]
-    final val width // coil3.test/ColorImage.width|{}width[0]
-        final fun <get-width>(): kotlin/Int // coil3.test/ColorImage.width.<get-width>|<get-width>(){}[0]
-
-    final fun draw(org.jetbrains.skia/Canvas) // coil3.test/ColorImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // coil3.test/ColorImage.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // coil3.test/ColorImage.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // coil3.test/ColorImage.toString|toString(){}[0]
-
-    final object Companion { // coil3.test/ColorImage.Companion|null[0]
-        final const val Black // coil3.test/ColorImage.Companion.Black|{}Black[0]
-            final fun <get-Black>(): kotlin/Int // coil3.test/ColorImage.Companion.Black.<get-Black>|<get-Black>(){}[0]
-        final const val Blue // coil3.test/ColorImage.Companion.Blue|{}Blue[0]
-            final fun <get-Blue>(): kotlin/Int // coil3.test/ColorImage.Companion.Blue.<get-Blue>|<get-Blue>(){}[0]
-        final const val Green // coil3.test/ColorImage.Companion.Green|{}Green[0]
-            final fun <get-Green>(): kotlin/Int // coil3.test/ColorImage.Companion.Green.<get-Green>|<get-Green>(){}[0]
-        final const val Red // coil3.test/ColorImage.Companion.Red|{}Red[0]
-            final fun <get-Red>(): kotlin/Int // coil3.test/ColorImage.Companion.Red.<get-Red>|<get-Red>(){}[0]
-        final const val Transparent // coil3.test/ColorImage.Companion.Transparent|{}Transparent[0]
-            final fun <get-Transparent>(): kotlin/Int // coil3.test/ColorImage.Companion.Transparent.<get-Transparent>|<get-Transparent>(){}[0]
-        final const val White // coil3.test/ColorImage.Companion.White|{}White[0]
-            final fun <get-White>(): kotlin/Int // coil3.test/ColorImage.Companion.White.<get-White>|<get-White>(){}[0]
-    }
-}
-
 final class coil3.test/FakeImage : coil3/Image { // coil3.test/FakeImage|null[0]
     constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Long = ..., kotlin/Boolean = ..., kotlin/Int = ...) // coil3.test/FakeImage.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Long;kotlin.Boolean;kotlin.Int){}[0]
 

@@ -1,5 +1,6 @@
 package coil3.test
 
+import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.request.ErrorResult
