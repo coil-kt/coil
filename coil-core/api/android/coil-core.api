@@ -969,7 +969,6 @@ public abstract interface class coil3/size/ViewSizeResolver : coil3/size/SizeRes
 	public fun getSubtractPadding ()Z
 	public abstract fun getView ()Landroid/view/View;
 	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun size$suspendImpl (Lcoil3/size/ViewSizeResolver;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/size/ViewSizeResolverKt {

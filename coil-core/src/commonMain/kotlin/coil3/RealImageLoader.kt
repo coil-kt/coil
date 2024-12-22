@@ -63,7 +63,7 @@ internal class RealImageLoader(
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
-        val job = scope.async {
+        val job = scope.async(Dispatchers.Main.immediate) {
             execute(request, REQUEST_TYPE_ENQUEUE)
         }
 
@@ -72,7 +72,10 @@ internal class RealImageLoader(
     }
 
     override suspend fun execute(request: ImageRequest): ImageResult {
-        if (needsExecuteOnMainDispatcher(request)) {
+        if (!needsExecuteOnMainDispatcher(request)) {
+            // Fast path: skip dispatching.
+            return execute(request, REQUEST_TYPE_EXECUTE)
+        } else {
             // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
@@ -83,9 +86,6 @@ internal class RealImageLoader(
                 // Update the current request attached to the view and await the result.
                 getDisposable(request, job).job.await()
             }
-        } else {
-            // Fast path: skip dispatching.
-            return execute(request, REQUEST_TYPE_EXECUTE)
         }
     }
 
@@ -229,7 +229,6 @@ internal class RealImageLoader(
 
 private fun CoroutineScope(logger: Logger?): CoroutineScope {
     val context = SupervisorJob() +
-        Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }
