@@ -2,6 +2,9 @@ package coil3.compose.internal
 
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * A special [CoroutineContext] implementation that lets us observe changes to its elements.
+ */
 internal class ForwardingCoroutineContext(
     private val delegate: CoroutineContext,
     private val onNewContext: (old: CoroutineContext, new: CoroutineContext) -> Unit,
