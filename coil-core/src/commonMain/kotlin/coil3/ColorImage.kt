@@ -10,8 +10,8 @@ import coil3.annotation.ExperimentalCoilApi
  *
  * [color] can be set either:
  *
- * - with a custom hex value following the `0xAARRGGBB.toInt()` format (alpha is required)
- * - or it can be set with `androidx.compose.ui.graphics.Color`: `ColorImage(Color.Black.toArgb())`.
+ * - with a custom hex value (alpha is required): `0xAARRGGBB.toInt()`
+ * - or with `androidx.compose.ui.graphics.Color`: `ColorImage(Color.Black.toArgb())`
  */
 @ExperimentalCoilApi
 expect class ColorImage(
