@@ -1,9 +1,11 @@
 package coil3
 
+import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 import org.jetbrains.skia.Paint
 import org.jetbrains.skia.Rect
 
+@ExperimentalCoilApi
 @Poko
 actual class ColorImage actual constructor(
     actual val color: Int,
