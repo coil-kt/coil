@@ -60,7 +60,7 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
     fun `imageLoader does not dispatch if context does not change`() = runTest {
         forwardingDispatcher.unconfined = true
 
-        ForwardingUnconfinedCoroutineScope(forwardingDispatcher).launch {
+        ForwardingUnconfinedCoroutineScope(coroutineContext + forwardingDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)
@@ -80,7 +80,7 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
     fun `imageLoader does dispatch if context changes`() = runTest {
         forwardingDispatcher.unconfined = true
 
-        ForwardingUnconfinedCoroutineScope(forwardingDispatcher).launch {
+        ForwardingUnconfinedCoroutineScope(coroutineContext + forwardingDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)
