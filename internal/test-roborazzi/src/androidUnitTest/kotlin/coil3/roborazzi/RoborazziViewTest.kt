@@ -7,7 +7,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ColorImage
-import coil3.ColorImage.Companion.Red
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.target

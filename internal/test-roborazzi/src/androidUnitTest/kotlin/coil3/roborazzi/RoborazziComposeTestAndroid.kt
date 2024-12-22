@@ -9,7 +9,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import coil3.ColorImage
-import coil3.ColorImage.Companion.Red
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
