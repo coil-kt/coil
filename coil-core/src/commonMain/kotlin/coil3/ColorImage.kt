@@ -1,16 +1,21 @@
-package coil3.test
+package coil3
 
-import coil3.Canvas
-import coil3.Image
+import coil3.annotation.ExperimentalCoilApi
 
 /**
  * An image that draws a [color].
  *
  * By default the image has no intrinsic size and will fill its canvas. Set [width] and [height]
  * to a positive value to draw a square with those dimensions.
+ *
+ * [color] can be set either:
+ *
+ * - with a custom hex value following the `0xAARRGGBB.toInt()` format (alpha is required)
+ * - or it can be set with `androidx.compose.ui.graphics.Color`: `ColorImage(Color.Black.toArgb())`.
  */
+@ExperimentalCoilApi
 expect class ColorImage(
-    color: Int = Black,
+    color: Int = 0xFF000000.toInt(),
     width: Int = -1,
     height: Int = -1,
     size: Long = 0,
@@ -22,13 +27,4 @@ expect class ColorImage(
     override val height: Int
     override val shareable: Boolean
     override fun draw(canvas: Canvas)
-
-    companion object {
-        val Black: Int
-        val White: Int
-        val Transparent: Int
-        val Red: Int
-        val Green: Int
-        val Blue: Int
-    }
 }

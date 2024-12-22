@@ -3,14 +3,16 @@ package coil3.roborazzi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import coil3.ColorImage
+import coil3.ColorImage.Companion.Red
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
-import coil3.test.ColorImage
-import coil3.test.ColorImage.Companion.Red
 import coil3.test.FakeImageLoaderEngine
 import coil3.test.utils.ComposeTestActivity
 import coil3.test.utils.RobolectricTest
@@ -39,7 +41,7 @@ class RoborazziComposeTestAndroid : RobolectricTest() {
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, ColorImage(Red, width = 100, height = 100))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .components { add(engine) }
@@ -60,7 +62,7 @@ class RoborazziComposeTestAndroid : RobolectricTest() {
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, ColorImage(Red, width = 100, height = 100))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .components { add(engine) }

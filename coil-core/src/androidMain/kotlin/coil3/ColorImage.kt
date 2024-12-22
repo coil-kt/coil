@@ -1,8 +1,6 @@
-package coil3.test
+package coil3
 
 import android.graphics.Paint
-import coil3.Canvas
-import coil3.Image
 import coil3.annotation.Poko
 
 @Poko
@@ -26,14 +24,5 @@ actual class ColorImage actual constructor(
         } else {
             canvas.drawPaint(paint)
         }
-    }
-
-    actual companion object {
-        actual const val Black = 0xFF000000.toInt()
-        actual const val White = 0xFFFFFFFF.toInt()
-        actual const val Transparent = 0x00000000.toInt()
-        actual const val Red = 0xFFFF0000.toInt()
-        actual const val Green = 0xFF00FF00.toInt()
-        actual const val Blue = 0xFF0000FF.toInt()
     }
 }
