@@ -8,10 +8,12 @@ import coil3.annotation.ExperimentalCoilApi
  * By default the image has no intrinsic size and will fill its canvas. Set [width] and [height]
  * to a positive value to draw a square with those dimensions.
  *
- * [color] can be set either:
- *
- * - with a custom hex value (alpha is required): `0xAARRGGBB.toInt()`
- * - or with `androidx.compose.ui.graphics.Color`: `ColorImage(Color.Black.toArgb())`
+ * @param color The ARGB hex color to draw with the format `0xAARRGGBB.toInt()`.
+ *  Tip: Use Compose's color class, e.g. `ColorImage(Color.Black.toArgb())`.
+ * @param width See [Image.width].
+ * @param height See [Image.height].
+ * @param size See [Image.size].
+ * @param shareable See [Image.shareable].
  */
 @ExperimentalCoilApi
 expect class ColorImage(
