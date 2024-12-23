@@ -92,7 +92,7 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
 
             assertIs<SuccessResult>(result)
             assertEquals(1, testDispatcher.dispatchCount)
-        }
+        }.join()
     }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
