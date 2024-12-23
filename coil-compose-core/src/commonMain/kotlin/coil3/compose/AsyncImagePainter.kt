@@ -46,6 +46,7 @@ import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -54,8 +55,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -218,8 +220,9 @@ class AsyncImagePainter internal constructor(
 
         // Observe the latest request and execute any emissions.
         val originalDispatcher = scope.coroutineContext.dispatcher ?: Dispatchers.Unconfined
-        rememberJob = restartSignal
-            .transformLatest<Unit, Nothing> {
+        val scope = ForwardingUnconfinedCoroutineScope(scope.coroutineContext)
+        rememberJob = scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
+            restartSignal.transformLatest<Unit, Nothing> {
                 _input.collect { input ->
                     withContext(ForwardingUnconfinedCoroutineDispatcher(originalDispatcher)) {
                         val previewHandler = previewHandler
@@ -235,8 +238,8 @@ class AsyncImagePainter internal constructor(
                         updateState(state)
                     }
                 }
-            }
-            .launchIn(ForwardingUnconfinedCoroutineScope(scope.coroutineContext + Dispatchers.Unconfined))
+            }.collect()
+        }
     }
 
     override fun onForgotten() {
