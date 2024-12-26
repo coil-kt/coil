@@ -38,7 +38,7 @@ class BlackholeDecoder(
         ) = BlackholeDecoder(imageFactory)
 
         companion object {
-            @JvmField val EMPTY_IMAGE: Image = ColorImage(color = 0x00000000)
+            @JvmField val EMPTY_IMAGE: Image = ColorImage(0x00000000)
         }
     }
 }
