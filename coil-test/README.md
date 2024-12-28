@@ -10,9 +10,9 @@ testImplementation("io.coil-kt.coil3:coil-test:3.0.4")
 
 ```kotlin
 val engine = FakeImageLoaderEngine.Builder()
-    .intercept("https://example.com/image.jpg", FakeImage(color = 0xF00)) // Red
-    .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
-    .default(FakeImage(color = 0x00F)) // Blue
+    .intercept("https://example.com/image.jpg", ColorImage(Color.Red.toArgb()))
+    .intercept({ it is String && it.endsWith("test.png") }, ColorImage(Color.Green.toArgb()))
+    .default(ColorImage(Color.Blue.toArgb()))
     .build()
 val imageLoader = ImageLoader.Builder(context)
     .components { add(engine) }
@@ -31,9 +31,9 @@ class PaparazziTest {
     @Before
     fun before() {
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("https://example.com/image.jpg", FakeImage(color = 0xF00)) // Red
-            .intercept({ it is String && it.endsWith("test.png") }, FakeImage(color = 0x0F0)) // Green
-            .default(FakeImage(color = 0x00F)) // Blue
+            .intercept("https://example.com/image.jpg", ColorImage(Color.Red.toArgb()))
+            .intercept({ it is String && it.endsWith("test.png") }, ColorImage(Color.Green.toArgb()))
+            .default(ColorImage(Color.Blue.toArgb()))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }

@@ -1,14 +1,15 @@
 package coil3.roborazzi
 
-import android.graphics.Color
 import android.widget.ImageView
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.rules.activityScenarioRule
+import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.target
-import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.ViewTestActivity
@@ -37,7 +38,7 @@ class RoborazziViewTest : RobolectricTest() {
     fun imageView() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val activity = activityRule.scenario.activity
         val imageLoader = ImageLoader.Builder(activity)

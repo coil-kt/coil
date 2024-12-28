@@ -1,6 +1,6 @@
 package coil3.decode
 
-import coil3.Canvas
+import coil3.ColorImage
 import coil3.Image
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
@@ -38,13 +38,7 @@ class BlackholeDecoder(
         ) = BlackholeDecoder(imageFactory)
 
         companion object {
-            @JvmField val EMPTY_IMAGE = object : Image {
-                override val size get() = 0L
-                override val width get() = -1
-                override val height get() = -1
-                override val shareable get() = true
-                override fun draw(canvas: Canvas) { /* Draw nothing. */ }
-            }
+            @JvmField val EMPTY_IMAGE: Image = ColorImage(0x00000000)
         }
     }
 }
