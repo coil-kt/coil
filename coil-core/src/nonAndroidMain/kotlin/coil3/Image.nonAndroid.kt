@@ -64,9 +64,6 @@ fun Image.toBitmap(
     return bitmap
 }
 
-/**
- * An [Image] backed by a Skia [Bitmap].
- */
 @Poko
 actual class BitmapImage internal constructor(
     actual val bitmap: Bitmap,
