@@ -9,7 +9,7 @@ import coil3.annotation.ExperimentalCoilApi
  * to a positive value to draw a square with those dimensions.
  *
  * @param color The ARGB hex color to draw with the format `0xAARRGGBB.toInt()`.
- *  Tip: Use Compose's color class, e.g. `ColorImage(Color.Black.toArgb())`.
+ *  Tip: Use Compose's color class: `ColorImage(Color.Black.toArgb())`.
  * @param width See [Image.width].
  * @param height See [Image.height].
  * @param size See [Image.size].
