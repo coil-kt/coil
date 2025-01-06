@@ -374,6 +374,37 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
     }
 
     @Test
+    fun expired0IsNotReturnedFromCache() = runTestAsync {
+        now = Instant.fromEpochMilliseconds(1723436400000L)
+
+        val url = FAKE_URL
+        val expectedSize = FAKE_DATA.size.toLong()
+
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "public")
+            .set("Expires", "0") // otherwise identical to the test with the date format
+            .build()
+        var response = FakeNetworkResponse(headers = headers)
+        networkClient.enqueue(url, response)
+        var result = newFetcher(url).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache.openSnapshot(url).use(::assertNotNull)
+
+        response = FakeNetworkResponse(headers = headers)
+        networkClient.enqueue(url, response)
+        result = newFetcher(url).fetch()
+
+        assertEquals(2, networkClient.requests.size)
+        assertIs<SourceFetchResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+    @Test
     fun unexpiredHeaderIsReturnedFromCache() = runTestAsync {
         now = Instant.fromEpochMilliseconds(1623436400000L)
 

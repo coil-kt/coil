@@ -118,7 +118,10 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
                         servedDateString = value
                     }
                     name.equals("Expires", ignoreCase = true) -> {
-                        expires = Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
+                        expires = when (value) {
+                            "0" -> Instant.DISTANT_PAST
+                            else -> Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
+                        }
                     }
                     name.equals("Last-Modified", ignoreCase = true) -> {
                         lastModified = Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
