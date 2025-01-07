@@ -22,7 +22,7 @@ binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.17
 dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.18.2"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha08"
-spotless = "com.diffplug.spotless:6.25.0"
+spotless = "com.diffplug.spotless:7.0.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.7.3"
