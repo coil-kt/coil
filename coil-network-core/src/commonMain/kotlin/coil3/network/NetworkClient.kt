@@ -1,5 +1,6 @@
 package coil3.network
 
+import coil3.Extras
 import coil3.annotation.Poko
 import coil3.network.internal.HTTP_METHOD_GET
 import coil3.network.internal.HTTP_RESPONSE_OK
@@ -34,17 +35,20 @@ class NetworkRequest(
     val method: String = HTTP_METHOD_GET,
     val headers: NetworkHeaders = NetworkHeaders.EMPTY,
     val body: NetworkRequestBody? = null,
+    val extras: Extras,
 ) {
     fun copy(
         url: String = this.url,
         method: String = this.method,
         headers: NetworkHeaders = this.headers,
         body: NetworkRequestBody? = this.body,
+        extras: Extras = this.extras,
     ) = NetworkRequest(
         url = url,
         method = method,
         headers = headers,
         body = body,
+        extras = extras,
     )
 }
 
