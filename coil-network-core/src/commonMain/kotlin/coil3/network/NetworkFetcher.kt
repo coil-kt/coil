@@ -184,6 +184,7 @@ class NetworkFetcher(
             method = options.httpMethod,
             headers = headers.build(),
             body = options.httpBody,
+            extras = options.extras,
         )
     }
 
