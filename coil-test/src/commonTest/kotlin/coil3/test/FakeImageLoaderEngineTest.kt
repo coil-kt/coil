@@ -1,5 +1,6 @@
 package coil3.test
 
+import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.request.ErrorResult
@@ -18,7 +19,7 @@ class FakeImageLoaderEngineTest : RobolectricTest() {
     @Test
     fun extraData() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val image = FakeImage()
+        val image = ColorImage()
         val engine = FakeImageLoaderEngine.Builder()
             .intercept(url, image)
             .build()
@@ -39,9 +40,9 @@ class FakeImageLoaderEngineTest : RobolectricTest() {
     @Test
     fun predicateData() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val image = FakeImage()
+        val image = ColorImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", FakeImage())
+            .intercept("different_string", ColorImage())
             .intercept({ it is String && it == url }, image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
@@ -61,9 +62,9 @@ class FakeImageLoaderEngineTest : RobolectricTest() {
     @Test
     fun defaultDrawable() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val image = FakeImage()
+        val image = ColorImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", FakeImage())
+            .intercept("different_string", ColorImage())
             .default(image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
@@ -84,7 +85,7 @@ class FakeImageLoaderEngineTest : RobolectricTest() {
     fun optionalInterceptor() = runTest {
         var currentIndex = -1
         val url = "https://www.example.com/image.jpg"
-        val images = listOf(FakeImage(), FakeImage(), FakeImage())
+        val images = listOf(ColorImage(), ColorImage(), ColorImage())
         fun testInterceptor(index: Int) = OptionalInterceptor { chain ->
             if (currentIndex == index) {
                 SuccessResult(images[index], chain.request, DataSource.MEMORY)
@@ -119,7 +120,7 @@ class FakeImageLoaderEngineTest : RobolectricTest() {
     fun requestTransformerEnforcesInvariants() = runTest {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage())
+            .intercept(url, ColorImage())
             .requestTransformer { request ->
                 request.newBuilder()
                     .data(null)

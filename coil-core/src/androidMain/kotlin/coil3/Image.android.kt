@@ -53,9 +53,6 @@ fun Image.toBitmap(
     return createBitmap(width, height, config).applyCanvas(::draw)
 }
 
-/**
- * An [Image] backed by an Android [Bitmap].
- */
 @Poko
 actual class BitmapImage internal constructor(
     actual val bitmap: Bitmap,

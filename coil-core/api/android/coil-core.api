@@ -10,6 +10,21 @@ public final class coil3/BitmapImage : coil3/Image {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class coil3/ColorImage : coil3/Image {
+	public fun <init> ()V
+	public fun <init> (IIIJZ)V
+	public synthetic fun <init> (IIIJZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor ()I
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil3/ComponentRegistry {
 	public fun <init> ()V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
