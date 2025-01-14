@@ -80,7 +80,7 @@ fun Project.androidApplication(
         applicationId = name
         versionCode = project.versionCode
         versionName = project.versionName
-        resourceConfigurations += "en"
+        androidResources.localeFilters += "en"
         vectorDrawables.useSupportLibrary = true
     }
     action()
@@ -95,7 +95,6 @@ fun Project.androidTest(
         buildConfig = config
     }
     defaultConfig {
-        resourceConfigurations += "en"
         vectorDrawables.useSupportLibrary = true
     }
     action()
