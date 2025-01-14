@@ -125,7 +125,7 @@ allprojects {
             target("**/*.kt", "**/*.kts")
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(ktlintRules)
             endWithNewline()
-            indentWithSpaces()
+            leadingTabsToSpaces()
             trimTrailingWhitespace()
         }
     }
