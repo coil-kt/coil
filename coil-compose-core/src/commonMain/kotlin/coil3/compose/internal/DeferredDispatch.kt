@@ -20,7 +20,10 @@ import kotlinx.coroutines.withContext
  */
 internal fun DeferredDispatchCoroutineScope(
     context: CoroutineContext,
-) = CoroutineScope(DeferredDispatchCoroutineContext(context))
+): CoroutineScope {
+    val originalDispatcher = context.dispatcher ?: Dispatchers.Unconfined
+    return CoroutineScope(DeferredDispatchCoroutineContext(context, originalDispatcher))
+}
 
 /**
  * A special [CoroutineContext] implementation that automatically enables
@@ -28,7 +31,7 @@ internal fun DeferredDispatchCoroutineScope(
  */
 internal class DeferredDispatchCoroutineContext(
     context: CoroutineContext,
-    val originalDispatcher: CoroutineDispatcher = context.dispatcher ?: Dispatchers.Unconfined,
+    val originalDispatcher: CoroutineDispatcher,
 ) : ForwardingCoroutineContext(context) {
 
     override fun newContext(
