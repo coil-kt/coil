@@ -28,6 +28,7 @@ interface NetworkClient {
  * @param method The HTTP method.
  * @param headers The HTTP headers.
  * @param body The HTTP request body.
+ * @param extras Extras to support extension.
  */
 @Poko
 class NetworkRequest(
