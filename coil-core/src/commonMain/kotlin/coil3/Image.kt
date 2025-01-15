@@ -38,7 +38,7 @@ interface Image {
 }
 
 /**
- * A special implementation of [Image] that's backed by a [Bitmap].
+ * An [Image] that's backed by a [Bitmap].
  */
 expect class BitmapImage : Image {
     val bitmap: Bitmap

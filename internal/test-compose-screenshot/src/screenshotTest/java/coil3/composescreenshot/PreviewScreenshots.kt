@@ -1,6 +1,5 @@
 package coil3.composescreenshot
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,23 +8,25 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
-import coil3.test.FakeImage
 import coil3.test.composescreenshot.R
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
     private val previewHandler = AsyncImagePreviewHandler {
-        FakeImage(color = Color.RED)
+        ColorImage(Color.Red.toArgb(), width = 100, height = 100)
     }
 
     @Preview(

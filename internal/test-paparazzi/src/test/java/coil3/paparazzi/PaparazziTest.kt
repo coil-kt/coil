@@ -1,20 +1,21 @@
 package coil3.paparazzi
 
-import android.graphics.Color
 import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
+import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.decode.ImageSource
 import coil3.request.ImageRequest
 import coil3.request.target
-import coil3.test.FakeImage
 import coil3.test.FakeImageLoaderEngine
 import kotlin.test.assertTrue
 import okio.Buffer
@@ -38,7 +39,7 @@ class PaparazziTest {
     fun imageView() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -60,7 +61,7 @@ class PaparazziTest {
     fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
@@ -81,7 +82,7 @@ class PaparazziTest {
     fun rememberAsyncImagePainter() {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, FakeImage(color = Color.RED))
+            .intercept(url, ColorImage(Color.Red.toArgb(), width = 100, height = 100))
             .build()
         val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }

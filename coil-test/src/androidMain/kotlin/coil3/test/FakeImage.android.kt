@@ -5,6 +5,12 @@ import coil3.Canvas
 import coil3.Image
 import coil3.annotation.Poko
 
+@Deprecated(
+    message = "ColorImage supports the same functionality, has `color` as the first argument, " +
+        "and is more easily accessible in coil-core instead of coil-test.",
+    replaceWith = ReplaceWith("ColorImage", "coil3.ColorImage"),
+    level = DeprecationLevel.WARNING,
+)
 @Poko
 actual class FakeImage actual constructor(
     actual override val width: Int,
@@ -21,7 +27,6 @@ actual class FakeImage actual constructor(
                 .apply { color = this@FakeImage.color }
                 .also { lazyPaint = it }
         }
-
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
     }
 }

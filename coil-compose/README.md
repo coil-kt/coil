@@ -175,7 +175,7 @@ You can override the preview behaviour like so:
 
 ```kotlin
 val previewHandler = AsyncImagePreviewHandler {
-    FakeImage(color = 0xFFFF0000) // Available in `io.coil-kt.coil3:coil-test`.
+    ColorImage(Color.Red.toArgb())
 }
 
 CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
