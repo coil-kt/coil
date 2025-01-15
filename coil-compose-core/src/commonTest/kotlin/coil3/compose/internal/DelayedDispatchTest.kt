@@ -31,7 +31,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
-class DelayedDispatchCoroutineScopeTest : RobolectricTest() {
+class DelayedDispatchTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
     private val delayedDispatcher = DelayedDispatchCoroutineDispatcher(testDispatcher)
 
