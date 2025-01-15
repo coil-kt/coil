@@ -3,6 +3,7 @@ package coil3.fetch
 import coil3.Image
 import coil3.ImageLoader
 import coil3.decode.ImageSource
+import coil3.key.Keyer
 import coil3.request.Options
 
 /**
@@ -13,6 +14,9 @@ import coil3.request.Options
  * - Uses the data as a key to fetch bytes from a remote source (e.g. network, disk)
  *   and exposes it as an [ImageSource].
  * - Reads the data directly and translates it into an [Image].
+ *
+ * NOTE: [Fetcher]s that use a custom data type need to register a [Keyer] for the same data type
+ * to have its results cached by the memory cache.
  */
 fun interface Fetcher {
 
