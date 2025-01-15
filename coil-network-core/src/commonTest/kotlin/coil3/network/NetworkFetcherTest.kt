@@ -49,7 +49,7 @@ class NetworkFetcherTest : RobolectricTest() {
 
         assertIs<SourceFetchResult>(result)
 
-        val expected = NetworkRequest(url, method, headers, body)
+        val expected = NetworkRequest(url, method, headers, body, options.extras)
 
         assertEquals(expected, networkClient.requests.single())
     }

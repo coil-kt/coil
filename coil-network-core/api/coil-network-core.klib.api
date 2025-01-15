@@ -115,9 +115,12 @@ final class coil3.network/NetworkHeaders { // coil3.network/NetworkHeaders|null[
 
 final class coil3.network/NetworkRequest { // coil3.network/NetworkRequest|null[0]
     constructor <init>(kotlin/String, kotlin/String = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkRequestBody? = ...) // coil3.network/NetworkRequest.<init>|<init>(kotlin.String;kotlin.String;coil3.network.NetworkHeaders;coil3.network.NetworkRequestBody?){}[0]
+    constructor <init>(kotlin/String, kotlin/String = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkRequestBody? = ..., coil3/Extras = ...) // coil3.network/NetworkRequest.<init>|<init>(kotlin.String;kotlin.String;coil3.network.NetworkHeaders;coil3.network.NetworkRequestBody?;coil3.Extras){}[0]
 
     final val body // coil3.network/NetworkRequest.body|{}body[0]
         final fun <get-body>(): coil3.network/NetworkRequestBody? // coil3.network/NetworkRequest.body.<get-body>|<get-body>(){}[0]
+    final val extras // coil3.network/NetworkRequest.extras|{}extras[0]
+        final fun <get-extras>(): coil3/Extras // coil3.network/NetworkRequest.extras.<get-extras>|<get-extras>(){}[0]
     final val headers // coil3.network/NetworkRequest.headers|{}headers[0]
         final fun <get-headers>(): coil3.network/NetworkHeaders // coil3.network/NetworkRequest.headers.<get-headers>|<get-headers>(){}[0]
     final val method // coil3.network/NetworkRequest.method|{}method[0]
@@ -126,6 +129,7 @@ final class coil3.network/NetworkRequest { // coil3.network/NetworkRequest|null[
         final fun <get-url>(): kotlin/String // coil3.network/NetworkRequest.url.<get-url>|<get-url>(){}[0]
 
     final fun copy(kotlin/String = ..., kotlin/String = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkRequestBody? = ...): coil3.network/NetworkRequest // coil3.network/NetworkRequest.copy|copy(kotlin.String;kotlin.String;coil3.network.NetworkHeaders;coil3.network.NetworkRequestBody?){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., coil3.network/NetworkHeaders = ..., coil3.network/NetworkRequestBody? = ..., coil3/Extras = ...): coil3.network/NetworkRequest // coil3.network/NetworkRequest.copy|copy(kotlin.String;kotlin.String;coil3.network.NetworkHeaders;coil3.network.NetworkRequestBody?;coil3.Extras){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/NetworkRequest.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.network/NetworkRequest.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.network/NetworkRequest.toString|toString(){}[0]
