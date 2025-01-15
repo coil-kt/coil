@@ -29,9 +29,9 @@ fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {
  *
  * ```
  * val engine = FakeImageLoaderEngine.Builder()
- *     .intercept("https://www.example.com/image.jpg", ColorImage(Color.Red))
- *     .intercept({ it is String && it.endsWith("test.png") }, ColorImage(Color.Green))
- *     .default(ColorImage(Color.Blue))
+ *     .intercept("https://www.example.com/image.jpg", ColorImage(Color.Red.toArgb()))
+ *     .intercept({ it is String && it.endsWith("test.png") }, ColorImage(Color.Green.toArgb()))
+ *     .default(ColorImage(Color.Blue.toArgb()))
  *     .build()
  * val imageLoader = ImageLoader.Builder(context)
  *     .components { add(engine) }
