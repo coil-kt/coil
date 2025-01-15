@@ -31,15 +31,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
-class DelayedDispatchTest : RobolectricTest() {
+class DeferredDispatchTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
-    private val delayedDispatcher = DelayedDispatchCoroutineDispatcher(testDispatcher)
+    private val deferredDispatcher = DeferredDispatchCoroutineDispatcher(testDispatcher)
 
     @Test
     fun `does not dispatch when unconfined=true`() = runTest {
-        delayedDispatcher.unconfined = true
+        deferredDispatcher.unconfined = true
 
-        withContext(delayedDispatcher) {
+        withContext(deferredDispatcher) {
             delay(100.milliseconds)
             assertEquals(0, testDispatcher.dispatchCount)
         }
@@ -47,9 +47,9 @@ class DelayedDispatchTest : RobolectricTest() {
 
     @Test
     fun `does dispatch when unconfined=false`() = runTest {
-        delayedDispatcher.unconfined = false
+        deferredDispatcher.unconfined = false
 
-        withContext(delayedDispatcher) {
+        withContext(deferredDispatcher) {
             delay(100.milliseconds)
             assertEquals(2, testDispatcher.dispatchCount)
         }
@@ -58,9 +58,9 @@ class DelayedDispatchTest : RobolectricTest() {
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
     fun `imageLoader does not dispatch if context does not change`() = runTest {
-        delayedDispatcher.unconfined = true
+        deferredDispatcher.unconfined = true
 
-        DelayedDispatchCoroutineScope(coroutineContext + delayedDispatcher).launch {
+        DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)
@@ -78,9 +78,9 @@ class DelayedDispatchTest : RobolectricTest() {
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
     fun `imageLoader does dispatch if context changes`() = runTest {
-        delayedDispatcher.unconfined = true
+        deferredDispatcher.unconfined = true
 
-        DelayedDispatchCoroutineScope(coroutineContext + delayedDispatcher).launch {
+        DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)

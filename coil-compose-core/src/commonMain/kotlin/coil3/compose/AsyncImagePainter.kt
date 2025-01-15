@@ -31,13 +31,13 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
-import coil3.compose.internal.DelayedDispatchCoroutineScope
+import coil3.compose.internal.DeferredDispatchCoroutineScope
 import coil3.compose.internal.launchUndispatched
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
-import coil3.compose.internal.withDelayedDispatch
+import coil3.compose.internal.withDeferredDispatch
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -215,10 +215,10 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        rememberJob = DelayedDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
+        rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
             restartSignal.transformLatest<Unit, Nothing> {
                 _input.collect { input ->
-                    withDelayedDispatch {
+                    withDeferredDispatch {
                         val previewHandler = previewHandler
                         val state = if (previewHandler != null) {
                             // If we're in inspection mode use the preview renderer.

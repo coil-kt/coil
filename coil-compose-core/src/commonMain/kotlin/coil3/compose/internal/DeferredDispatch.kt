@@ -18,15 +18,15 @@ import kotlinx.coroutines.withContext
  * A [CoroutineScope] that does not dispatch until the [CoroutineDispatcher] in its
  * [CoroutineContext] changes.
  */
-internal fun DelayedDispatchCoroutineScope(
+internal fun DeferredDispatchCoroutineScope(
     context: CoroutineContext,
-) = CoroutineScope(DelayedDispatchCoroutineContext(context))
+) = CoroutineScope(DeferredDispatchCoroutineContext(context))
 
 /**
  * A special [CoroutineContext] implementation that automatically enables
- * [DelayedDispatchCoroutineDispatcher] dispatching if the context's [CoroutineDispatcher] changes.
+ * [DeferredDispatchCoroutineDispatcher] dispatching if the context's [CoroutineDispatcher] changes.
  */
-internal class DelayedDispatchCoroutineContext(
+internal class DeferredDispatchCoroutineContext(
     context: CoroutineContext,
     val originalDispatcher: CoroutineDispatcher = context.dispatcher ?: Dispatchers.Unconfined,
 ) : ForwardingCoroutineContext(context) {
@@ -37,12 +37,12 @@ internal class DelayedDispatchCoroutineContext(
     ): ForwardingCoroutineContext {
         val oldDispatcher = old.dispatcher
         val newDispatcher = new.dispatcher
-        if (oldDispatcher is DelayedDispatchCoroutineDispatcher && oldDispatcher != newDispatcher) {
+        if (oldDispatcher is DeferredDispatchCoroutineDispatcher && oldDispatcher != newDispatcher) {
             oldDispatcher.unconfined = oldDispatcher.unconfined &&
                 (newDispatcher == null || newDispatcher == Dispatchers.Unconfined)
         }
 
-        return DelayedDispatchCoroutineContext(new, originalDispatcher)
+        return DeferredDispatchCoroutineContext(new, originalDispatcher)
     }
 }
 
@@ -53,20 +53,20 @@ internal inline fun CoroutineScope.launchUndispatched(
 
 /**
  * Execute [block] without dispatching until the scope's [CoroutineDispatcher] changes.
- * Must be called from inside a [DelayedDispatchCoroutineScope].
+ * Must be called from inside a [DeferredDispatchCoroutineScope].
  */
-internal suspend inline fun <T> withDelayedDispatch(
+internal suspend inline fun <T> withDeferredDispatch(
     noinline block: suspend CoroutineScope.() -> T,
 ): T {
-    val originalDispatcher = (coroutineContext as DelayedDispatchCoroutineContext).originalDispatcher
-    return withContext(DelayedDispatchCoroutineDispatcher(originalDispatcher), block)
+    val originalDispatcher = (coroutineContext as DeferredDispatchCoroutineContext).originalDispatcher
+    return withContext(DeferredDispatchCoroutineDispatcher(originalDispatcher), block)
 }
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
  * and [delegate] when [unconfined] is false.
  */
-internal class DelayedDispatchCoroutineDispatcher(
+internal class DeferredDispatchCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher() {
     private val _unconfined = atomic(true)
@@ -93,6 +93,6 @@ internal class DelayedDispatchCoroutineDispatcher(
     }
 
     override fun toString(): String {
-        return "DelayedDispatchCoroutineDispatcher(delegate=$delegate)"
+        return "DeferredDispatchCoroutineDispatcher(delegate=$delegate)"
     }
 }
