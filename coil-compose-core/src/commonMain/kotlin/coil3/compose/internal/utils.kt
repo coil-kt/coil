@@ -7,13 +7,11 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -35,12 +33,8 @@ import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -219,43 +213,6 @@ internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-// We need `Dispatchers.Main.immediate` to be able to execute immediately on the main thread so
-// we can reach the loading state, set the placeholder, and maybe resolve from the memory cache.
-// The default main dispatcher provided with Compose always dispatches, which will often cause
-// one frame of delay. If `Dispatchers.Main.immediate` isn't available, fall back to
-// `Dispatchers.Unconfined`, which will execute immediately even if we're not on the main
-// thread. This will typically only occur in preview/test environments where image loading
-// should execute synchronously.
-private val immediateDispatcher: CoroutineDispatcher = try {
-    Dispatchers.Main.immediate.also {
-        // This will throw if the implementation is missing.
-        it.isDispatchNeeded(EmptyCoroutineContext)
-    }
-} catch (_: Throwable) {
-    Dispatchers.Unconfined
-}
-
 @OptIn(ExperimentalStdlibApi::class)
-private fun CoroutineContext.resolveImmediateDispatcher(): CoroutineDispatcher {
-    val dispatcher = get(CoroutineDispatcher)
-    if (dispatcher is MainCoroutineDispatcher) {
-        try {
-            return dispatcher.immediate
-        } catch (_: UnsupportedOperationException) {}
-    }
-    return immediateDispatcher
-}
-
-@Composable
-internal fun rememberImmediateCoroutineScope(): CoroutineScope {
-    val scope = rememberCoroutineScope()
-    val isPreview = LocalInspectionMode.current
-    return remember(scope, isPreview) {
-        val context = if (isPreview) {
-            scope.coroutineContext + Dispatchers.Unconfined
-        } else {
-            scope.coroutineContext.run { this + resolveImmediateDispatcher() }
-        }
-        CoroutineScope(context)
-    }
-}
+internal val CoroutineContext.dispatcher: CoroutineDispatcher?
+    get() = get(CoroutineDispatcher)

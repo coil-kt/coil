@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
@@ -30,11 +31,13 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
+import coil3.compose.internal.DeferredDispatchCoroutineScope
+import coil3.compose.internal.launchUndispatched
 import coil3.compose.internal.onStateOf
-import coil3.compose.internal.rememberImmediateCoroutineScope
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
+import coil3.compose.internal.withDeferredDispatch
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -50,9 +53,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.transformLatest
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -136,7 +138,7 @@ private fun rememberAsyncImagePainter(
 
     val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
     val painter = remember { AsyncImagePainter(input) }
-    painter.scope = rememberImmediateCoroutineScope()
+    painter.scope = rememberCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
@@ -213,22 +215,24 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        rememberJob = scope.launch {
-            restartSignal
-                .flatMapLatest { _input }
-                .mapLatest { input ->
-                    val previewHandler = previewHandler
-                    if (previewHandler != null) {
-                        // If we're in inspection mode use the preview renderer.
-                        val request = updateRequest(input.request, isPreview = true)
-                        previewHandler.handle(input.imageLoader, request)
-                    } else {
-                        // Else, execute the request as normal.
-                        val request = updateRequest(input.request, isPreview = false)
-                        input.imageLoader.execute(request).toState()
+        rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
+            restartSignal.transformLatest<Unit, Nothing> {
+                _input.collect { input ->
+                    withDeferredDispatch {
+                        val previewHandler = previewHandler
+                        val state = if (previewHandler != null) {
+                            // If we're in inspection mode use the preview renderer.
+                            val request = updateRequest(input.request, isPreview = true)
+                            previewHandler.handle(input.imageLoader, request)
+                        } else {
+                            // Else, execute the request as normal.
+                            val request = updateRequest(input.request, isPreview = false)
+                            input.imageLoader.execute(request).toState()
+                        }
+                        updateState(state)
                     }
                 }
-                .collect(::updateState)
+            }.collect()
         }
     }
 
