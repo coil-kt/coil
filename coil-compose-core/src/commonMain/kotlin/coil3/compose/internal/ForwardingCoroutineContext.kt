@@ -3,23 +3,25 @@ package coil3.compose.internal
 import kotlin.coroutines.CoroutineContext
 
 /**
- * A special [CoroutineContext] implementation that lets us observe changes to its elements.
+ * A special [CoroutineContext] implementation that observes changes to its elements.
  */
-internal class ForwardingCoroutineContext(
+internal abstract class ForwardingCoroutineContext(
     private val delegate: CoroutineContext,
-    private val onNewContext: (old: CoroutineContext, new: CoroutineContext) -> Unit,
 ) : CoroutineContext by delegate {
+
+    abstract fun newContext(
+        old: CoroutineContext,
+        new: CoroutineContext,
+    ): ForwardingCoroutineContext
 
     override fun minusKey(key: CoroutineContext.Key<*>): CoroutineContext {
         val new = delegate.minusKey(key)
-        onNewContext(this, new)
-        return ForwardingCoroutineContext(new, onNewContext)
+        return newContext(this, new)
     }
 
     override operator fun plus(context: CoroutineContext): CoroutineContext {
         val new = delegate + context
-        onNewContext(this, new)
-        return ForwardingCoroutineContext(new, onNewContext)
+        return newContext(this, new)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -31,6 +33,6 @@ internal class ForwardingCoroutineContext(
     }
 
     override fun toString(): String {
-        return delegate.toString()
+        return "ForwardingCoroutineContext(delegate=$delegate)"
     }
 }

@@ -31,15 +31,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
-class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
+class DelayedDispatchCoroutineScopeTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
-    private val forwardingDispatcher = ForwardingUnconfinedCoroutineDispatcher(testDispatcher)
+    private val delayedDispatcher = DelayedDispatchCoroutineDispatcher(testDispatcher)
 
     @Test
     fun `does not dispatch when unconfined=true`() = runTest {
-        forwardingDispatcher.unconfined = true
+        delayedDispatcher.unconfined = true
 
-        withContext(forwardingDispatcher) {
+        withContext(delayedDispatcher) {
             delay(100.milliseconds)
             assertEquals(0, testDispatcher.dispatchCount)
         }
@@ -47,9 +47,9 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
 
     @Test
     fun `does dispatch when unconfined=false`() = runTest {
-        forwardingDispatcher.unconfined = false
+        delayedDispatcher.unconfined = false
 
-        withContext(forwardingDispatcher) {
+        withContext(delayedDispatcher) {
             delay(100.milliseconds)
             assertEquals(2, testDispatcher.dispatchCount)
         }
@@ -58,9 +58,9 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
     fun `imageLoader does not dispatch if context does not change`() = runTest {
-        forwardingDispatcher.unconfined = true
+        delayedDispatcher.unconfined = true
 
-        ForwardingUnconfinedCoroutineScope(coroutineContext + forwardingDispatcher).launch {
+        DelayedDispatchCoroutineScope(coroutineContext + delayedDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)
@@ -78,9 +78,9 @@ class ForwardingUnconfinedCoroutineScopeTest : RobolectricTest() {
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
     fun `imageLoader does dispatch if context changes`() = runTest {
-        forwardingDispatcher.unconfined = true
+        delayedDispatcher.unconfined = true
 
-        ForwardingUnconfinedCoroutineScope(coroutineContext + forwardingDispatcher).launch {
+        DelayedDispatchCoroutineScope(coroutineContext + delayedDispatcher).launch {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
                 .data(Unit)

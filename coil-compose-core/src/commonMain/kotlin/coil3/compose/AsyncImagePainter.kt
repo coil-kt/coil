@@ -31,13 +31,13 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
-import coil3.compose.internal.ForwardingUnconfinedCoroutineDispatcher
-import coil3.compose.internal.ForwardingUnconfinedCoroutineScope
-import coil3.compose.internal.dispatcher
+import coil3.compose.internal.DelayedDispatchCoroutineScope
+import coil3.compose.internal.launchUndispatched
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
+import coil3.compose.internal.withDelayedDispatch
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -46,8 +46,6 @@ import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -57,8 +55,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -219,12 +215,10 @@ class AsyncImagePainter internal constructor(
         (painter as? RememberObserver)?.onRemembered()
 
         // Observe the latest request and execute any emissions.
-        val originalDispatcher = scope.coroutineContext.dispatcher ?: Dispatchers.Unconfined
-        val scope = ForwardingUnconfinedCoroutineScope(scope.coroutineContext)
-        rememberJob = scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
+        rememberJob = DelayedDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
             restartSignal.transformLatest<Unit, Nothing> {
                 _input.collect { input ->
-                    withContext(ForwardingUnconfinedCoroutineDispatcher(originalDispatcher)) {
+                    withDelayedDispatch {
                         val previewHandler = previewHandler
                         val state = if (previewHandler != null) {
                             // If we're in inspection mode use the preview renderer.
