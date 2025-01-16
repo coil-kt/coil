@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.1.0] - January XX, 2025
+
+- Add `ColorImage` and deprecate `FakeImage`.
+    - `ColorImage` is useful for returning a fake value in tests and previews. It solves the same use case as `FakeImage`, but is more easily available in `coil-core` instead of `coil-test`.
+- Remove `coil-compose-core`'s dependency on `Dispatchers.Main.immedate`.
+    - This also fixes a case where `AsyncImagePainter` would not execute `ImageRequest`s synchronously in Paparazzi and Roborazzi screenshot tests.
+- Add support for [data URIs](https://www.ietf.org/rfc/rfc2397.txt) with the format: `data:[<mediatype>][;base64],<data>`
+- Add `AnimatedImageDecoder.ENCODED_LOOP_COUNT` to support using the encoded repeat count in a GIF's metadata.
+- Add `Extras` to `NetworkRequest` to support custom extensions.
+- Make `CrossfadePainter` public.
+- Support `Transformation`s on all multiplatform targets.
+- Support 0 as `Expires` header value in `CacheControlCacheStrategy`.
+- Update to Kotlin 2.1.0. NOTE: This release requires Kotlin 2.1.0 or greater if you use Kotlin native.
+- Update to Compose 1.7.3.
+
 ## [3.0.4] - November 25, 2024
 
 - Fix vector drawables not rendering in the Android Studio preview.
