@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.Constraints
 import coil3.compose.internal.toSize
 import coil3.size.Size
 import coil3.size.SizeResolver
-import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Create a [ConstraintsSizeResolver] and remember it.
@@ -29,21 +29,23 @@ fun rememberConstraintsSizeResolver(): ConstraintsSizeResolver {
  */
 @Stable
 class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-    private val latestConstraints = MutableSharedFlow<Constraints>(
-        replay = 1,
-        onBufferOverflow = DROP_OLDEST,
-    )
+    private var latestConstraints: Constraints = Constraints(maxWidth = 0, maxHeight = 0)
+    private var continuation: Continuation<Unit>? = null
 
     override suspend fun size(): Size {
-        return latestConstraints.first { !it.isZero }.toSize()
+        if (latestConstraints.isZero) {
+            val oldContinuation = continuation
+            suspendCoroutine { continuation = it }
+            oldContinuation?.resume(Unit)
+        }
+        return latestConstraints.toSize()
     }
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
-        // Cache the latest constraints.
-        latestConstraints.tryEmit(constraints)
+        setConstraints(constraints)
 
         // Measure and layout the content.
         val placeable = measurable.measure(constraints)
@@ -53,6 +55,11 @@ class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     }
 
     fun setConstraints(constraints: Constraints) {
-        latestConstraints.tryEmit(constraints)
+        // Cache the latest constraints.
+        latestConstraints = constraints
+        if (!constraints.isZero) {
+            continuation?.resume(Unit)
+            continuation = null
+        }
     }
 }

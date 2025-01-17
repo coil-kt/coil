@@ -7,8 +7,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.IntrinsicMeasurable
@@ -20,40 +21,199 @@ import androidx.compose.ui.layout.times
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.SemanticsModifierNode
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidateMeasurement
+import androidx.compose.ui.node.invalidateSemantics
 import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter
-import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.AsyncImagePainter.Input
+import coil3.compose.AsyncImagePainter.State
+import coil3.compose.AsyncImagePreviewHandler
+import coil3.compose.ConstraintsSizeResolver
+import coil3.request.ImageRequest
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier used by [AsyncImage] and [SubcomposeAsyncImage].
+ * A custom [paint] modifier used by [AsyncImage].
  */
-internal data class ContentPainterElement(
+internal data class ManagingPainterLifecycleContentPainterElement(
+    private val request: ImageRequest,
+    private val imageLoader: ImageLoader,
+    private val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
+    private val transform: (State) -> State,
+    private val onState: ((State) -> Unit)?,
+    private val filterQuality: FilterQuality,
+    private val alignment: Alignment,
+    private val contentScale: ContentScale,
+    private val alpha: Float,
+    private val colorFilter: ColorFilter?,
+    private val clipToBounds: Boolean,
+    private val previewHandler: AsyncImagePreviewHandler?,
+    private val contentDescription: String?,
+) : ModifierNodeElement<ManagingPainterLifecycleContentPainterNode>() {
+
+    override fun create(): ManagingPainterLifecycleContentPainterNode {
+        val input = Input(imageLoader, request, modelEqualityDelegate)
+        val constraintSizeResolver = request.sizeResolver as? ConstraintsSizeResolver
+
+        // we are creating painter during the modifier creation. as a result we reuse the same
+        // painter object when the modifier is being reused as part of lazy layouts reuse flow.
+        // it allows us to save on quite a lot of allocations during the reuse.
+        val painter = AsyncImagePainter(input)
+        painter.transform = transform
+        painter.onState = onState
+        painter.contentScale = contentScale
+        painter.filterQuality = filterQuality
+        painter.previewHandler = previewHandler
+        painter._input = input
+
+        return ManagingPainterLifecycleContentPainterNode(
+            painter = painter,
+            constraintSizeResolver = constraintSizeResolver,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter,
+            clipToBounds = clipToBounds,
+            contentDescription = contentDescription,
+        )
+    }
+
+    override fun update(node: ManagingPainterLifecycleContentPainterNode) {
+        val previousIntrinsics = node.painter.intrinsicSize
+        val previousConstraintSizeResolver = node.constraintSizeResolver
+        val input = Input(imageLoader, request, modelEqualityDelegate)
+        val painter = node.painter
+        painter.transform = transform
+        painter.onState = onState
+        painter.contentScale = contentScale
+        painter.filterQuality = filterQuality
+        painter.previewHandler = previewHandler
+        painter._input = input
+
+        val intrinsicsChanged = previousIntrinsics != painter.intrinsicSize
+
+        node.alignment = alignment
+        node.constraintSizeResolver = request.sizeResolver as? ConstraintsSizeResolver
+        node.contentScale = contentScale
+        node.alpha = alpha
+        node.colorFilter = colorFilter
+        node.clipToBounds = clipToBounds
+
+        if (node.contentDescription != contentDescription) {
+            node.contentDescription = contentDescription
+            node.invalidateSemantics()
+        }
+
+        val constraintSizeResolverChanged =
+            previousConstraintSizeResolver != node.constraintSizeResolver
+
+        // Only remeasure if intrinsics have changed.
+        if (intrinsicsChanged || constraintSizeResolverChanged) {
+            node.invalidateMeasurement()
+        }
+
+        // Redraw because one of the node properties has changed.
+        node.invalidateDraw()
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "content"
+        properties["request"] = request
+        properties["imageLoader"] = imageLoader
+        properties["modelEqualityDelegate"] = modelEqualityDelegate
+        properties["transform"] = transform
+        properties["onState"] = onState
+        properties["filterQuality"] = filterQuality
+        properties["alignment"] = alignment
+        properties["contentScale"] = contentScale
+        properties["alpha"] = alpha
+        properties["colorFilter"] = colorFilter
+        properties["clipToBounds"] = clipToBounds
+        properties["previewHandler"] = previewHandler
+        properties["contentDescription"] = contentDescription
+    }
+}
+
+internal class ManagingPainterLifecycleContentPainterNode(
+    override val painter: AsyncImagePainter,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?,
+    clipToBounds: Boolean,
+    contentDescription: String?,
+    constraintSizeResolver: ConstraintsSizeResolver?,
+) : AbstractContentPainterNode(
+    alignment,
+    contentScale,
+    alpha,
+    colorFilter,
+    clipToBounds,
+    contentDescription,
+    constraintSizeResolver,
+) {
+
+    override fun onAttach() {
+        painter.scope = coroutineScope
+        painter.onRemembered()
+    }
+
+    override fun onDetach() {
+        painter.onForgotten()
+    }
+
+    override fun onReset() {
+        // we reset the current input as once the modifier will be reused we will have a new
+        // modifier element update call, which is going to provide us a new up-to-date input.
+        // without doing so we might restart the request for the old input, as onAttach() is
+        // called before modifier element update.
+        painter._input = null
+    }
+}
+
+/**
+ * A custom [paint] modifier used by [SubcomposeAsyncImage].
+ *
+ * Ideally [SubcomposeAsyncImage] should use ManagingPainterLifecycleContentPainterElement as well,
+ * however, [SubcomposeAsyncImageContent] exposing the fact we have to create a Painter during the
+ * composition as part of its api.
+ */
+internal data class SubcomposeContentPainterElement(
     private val painter: Painter,
     private val alignment: Alignment,
     private val contentScale: ContentScale,
     private val alpha: Float,
     private val colorFilter: ColorFilter?,
-) : ModifierNodeElement<ContentPainterNode>() {
+    private val clipToBounds: Boolean,
+    private val contentDescription: String?,
+) : ModifierNodeElement<SubcomposeContentPainterNode>() {
 
-    override fun create(): ContentPainterNode {
-        return ContentPainterNode(
+    override fun create(): SubcomposeContentPainterNode {
+        return SubcomposeContentPainterNode(
             painter = painter,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
             colorFilter = colorFilter,
+            clipToBounds = clipToBounds,
+            contentDescription = contentDescription,
         )
     }
 
-    override fun update(node: ContentPainterNode) {
+    override fun update(node: SubcomposeContentPainterNode) {
         val intrinsicsChanged = node.painter.intrinsicSize != painter.intrinsicSize
 
         node.painter = painter
@@ -61,6 +221,12 @@ internal data class ContentPainterElement(
         node.contentScale = contentScale
         node.alpha = alpha
         node.colorFilter = colorFilter
+        node.clipToBounds = clipToBounds
+
+        if (node.contentDescription != contentDescription) {
+            node.contentDescription = contentDescription
+            node.invalidateSemantics()
+        }
 
         // Only remeasure if intrinsics have changed.
         if (intrinsicsChanged) {
@@ -78,16 +244,39 @@ internal data class ContentPainterElement(
         properties["contentScale"] = contentScale
         properties["alpha"] = alpha
         properties["colorFilter"] = colorFilter
+        properties["clipToBounds"] = clipToBounds
+        properties["contentDescription"] = contentDescription
     }
 }
 
-internal class ContentPainterNode(
-    var painter: Painter,
+internal class SubcomposeContentPainterNode(
+    override var painter: Painter,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?,
+    clipToBounds: Boolean,
+    contentDescription: String?,
+) : AbstractContentPainterNode(
+    alignment,
+    contentScale,
+    alpha,
+    colorFilter,
+    clipToBounds,
+    contentDescription,
+)
+
+internal abstract class AbstractContentPainterNode(
     var alignment: Alignment,
     var contentScale: ContentScale,
     var alpha: Float,
     var colorFilter: ColorFilter?,
-) : Modifier.Node(), DrawModifierNode, LayoutModifierNode {
+    var clipToBounds: Boolean,
+    var contentDescription: String?,
+    var constraintSizeResolver: ConstraintsSizeResolver? = null,
+) : Modifier.Node(), DrawModifierNode, LayoutModifierNode, SemanticsModifierNode {
+
+    abstract val painter: Painter
 
     override val shouldAutoInvalidate get() = false
 
@@ -95,6 +284,7 @@ internal class ContentPainterNode(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
+        constraintSizeResolver?.setConstraints(constraints)
         val placeable = measurable.measure(modifyConstraints(constraints))
         return layout(placeable.width, placeable.height) {
             placeable.placeRelative(0, 0)
@@ -105,8 +295,10 @@ internal class ContentPainterNode(
         measurable: IntrinsicMeasurable,
         height: Int,
     ): Int {
+        val constraints = Constraints(maxHeight = height)
+        constraintSizeResolver?.setConstraints(constraints)
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(Constraints(maxHeight = height))
+            val constraints = modifyConstraints(constraints)
             val layoutWidth = measurable.minIntrinsicWidth(height)
             max(constraints.minWidth, layoutWidth)
         } else {
@@ -118,8 +310,10 @@ internal class ContentPainterNode(
         measurable: IntrinsicMeasurable,
         height: Int,
     ): Int {
+        val constraints = Constraints(maxHeight = height)
+        constraintSizeResolver?.setConstraints(constraints)
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(Constraints(maxHeight = height))
+            val constraints = modifyConstraints(constraints)
             val layoutWidth = measurable.maxIntrinsicWidth(height)
             max(constraints.minWidth, layoutWidth)
         } else {
@@ -131,8 +325,10 @@ internal class ContentPainterNode(
         measurable: IntrinsicMeasurable,
         width: Int,
     ): Int {
+        val constraints = Constraints(maxWidth = width)
+        constraintSizeResolver?.setConstraints(constraints)
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(Constraints(maxWidth = width))
+            val constraints = modifyConstraints(constraints)
             val layoutHeight = measurable.minIntrinsicHeight(width)
             max(constraints.minHeight, layoutHeight)
         } else {
@@ -144,8 +340,10 @@ internal class ContentPainterNode(
         measurable: IntrinsicMeasurable,
         width: Int,
     ): Int {
+        val constraints = Constraints(maxWidth = width)
+        constraintSizeResolver?.setConstraints(constraints)
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(Constraints(maxWidth = width))
+            val constraints = modifyConstraints(constraints)
             val layoutHeight = measurable.maxIntrinsicHeight(width)
             max(constraints.minHeight, layoutHeight)
         } else {
@@ -238,8 +436,13 @@ internal class ContentPainterNode(
             layoutDirection = layoutDirection,
         )
 
-        // Draw the painter.
-        translate(dx.toFloat(), dy.toFloat()) {
+        withTransform({
+            if (clipToBounds) {
+                clipRect()
+            }
+            translate(dx.toFloat(), dy.toFloat())
+        }) {
+            // Draw the painter.
             with(painter) {
                 draw(scaledSize, alpha, colorFilter)
             }
@@ -247,5 +450,13 @@ internal class ContentPainterNode(
 
         // Draw any child content on top of the painter.
         drawContent()
+    }
+
+    override fun SemanticsPropertyReceiver.applySemantics() {
+        val contentDescription = this@AbstractContentPainterNode.contentDescription
+        if (contentDescription != null) {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
     }
 }
