@@ -48,7 +48,7 @@ import kotlin.math.roundToInt
 /**
  * A custom [paint] modifier used by [AsyncImage].
  */
-internal data class ManagingPainterLifecycleContentPainterElement(
+internal data class ContentPainterElement(
     private val request: ImageRequest,
     private val imageLoader: ImageLoader,
     private val modelEqualityDelegate: AsyncImageModelEqualityDelegate,
@@ -62,9 +62,9 @@ internal data class ManagingPainterLifecycleContentPainterElement(
     private val clipToBounds: Boolean,
     private val previewHandler: AsyncImagePreviewHandler?,
     private val contentDescription: String?,
-) : ModifierNodeElement<ManagingPainterLifecycleContentPainterNode>() {
+) : ModifierNodeElement<ContentPainterNode>() {
 
-    override fun create(): ManagingPainterLifecycleContentPainterNode {
+    override fun create(): ContentPainterNode {
         val input = Input(imageLoader, request, modelEqualityDelegate)
         val constraintSizeResolver = request.sizeResolver as? ConstraintsSizeResolver
 
@@ -79,7 +79,7 @@ internal data class ManagingPainterLifecycleContentPainterElement(
         painter.previewHandler = previewHandler
         painter._input = input
 
-        return ManagingPainterLifecycleContentPainterNode(
+        return ContentPainterNode(
             painter = painter,
             constraintSizeResolver = constraintSizeResolver,
             alignment = alignment,
@@ -91,7 +91,7 @@ internal data class ManagingPainterLifecycleContentPainterElement(
         )
     }
 
-    override fun update(node: ManagingPainterLifecycleContentPainterNode) {
+    override fun update(node: ContentPainterNode) {
         val previousIntrinsics = node.painter.intrinsicSize
         val previousConstraintSizeResolver = node.constraintSizeResolver
         val input = Input(imageLoader, request, modelEqualityDelegate)
@@ -147,7 +147,7 @@ internal data class ManagingPainterLifecycleContentPainterElement(
     }
 }
 
-internal class ManagingPainterLifecycleContentPainterNode(
+internal class ContentPainterNode(
     override val painter: AsyncImagePainter,
     alignment: Alignment,
     contentScale: ContentScale,
@@ -187,8 +187,8 @@ internal class ManagingPainterLifecycleContentPainterNode(
 /**
  * A custom [paint] modifier used by [SubcomposeAsyncImage].
  *
- * Ideally [SubcomposeAsyncImage] should use ManagingPainterLifecycleContentPainterElement as well,
- * however, [SubcomposeAsyncImageContent] exposing the fact we have to create a Painter during the
+ * Ideally [SubcomposeAsyncImage] should use [ContentPainterElement] as well, however,
+ * [SubcomposeAsyncImageContent] exposing the fact we have to create a Painter during the
  * composition as part of its api.
  */
 internal data class SubcomposeContentPainterElement(

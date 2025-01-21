@@ -16,7 +16,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
-import coil3.compose.internal.ManagingPainterLifecycleContentPainterElement
+import coil3.compose.internal.ContentPainterElement
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.compose.internal.transformOf
@@ -159,7 +159,7 @@ private fun AsyncImage(
     Layout(
         modifier = modifier
             .then(
-                ManagingPainterLifecycleContentPainterElement(
+                ContentPainterElement(
                     request = request,
                     imageLoader = state.imageLoader,
                     modelEqualityDelegate = state.modelEqualityDelegate,
