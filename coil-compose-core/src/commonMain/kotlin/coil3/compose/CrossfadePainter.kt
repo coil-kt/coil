@@ -53,8 +53,8 @@ class CrossfadePainter(
     private var startTime: TimeMark? = null
     private var isDone = false
 
-    private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
-    private var colorFilter: ColorFilter? by mutableStateOf(null)
+    private var maxAlpha: Float = DefaultAlpha
+    private var colorFilter: ColorFilter? = null
 
     var start: Painter? = start
         private set
