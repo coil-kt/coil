@@ -1,9 +1,9 @@
 package coil3.disk
 
 import coil3.util.defaultFileSystem
-import coil3.util.ioCoroutineDispatcher
 import coil3.util.remainingFreeSpaceBytes
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.FileSystem
 import okio.Path
@@ -116,7 +116,7 @@ interface DiskCache {
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var maxSizeBytes = 0L
-        private var cleanupCoroutineContext: CoroutineContext = ioCoroutineDispatcher()
+        private var cleanupCoroutineContext: CoroutineContext = EmptyCoroutineContext
 
         /**
          * Set the [directory] where the cache stores its data.

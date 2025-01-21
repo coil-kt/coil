@@ -21,11 +21,11 @@ import coil3.util.createFile
 import coil3.util.deleteContents
 import coil3.util.dispatcher
 import coil3.util.forEachIndices
+import coil3.util.ioCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -144,7 +144,7 @@ internal class DiskLruCache(
     private val cleanupScope = CoroutineScope(
         cleanupCoroutineContext +
             SupervisorJob() +
-            (cleanupCoroutineContext.dispatcher ?: Dispatchers.Default).limitedParallelism(1),
+            (cleanupCoroutineContext.dispatcher ?: ioCoroutineDispatcher()).limitedParallelism(1),
     )
     private val lock = SynchronizedObject()
     private var size = 0L
