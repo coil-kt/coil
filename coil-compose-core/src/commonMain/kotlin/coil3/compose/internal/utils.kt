@@ -2,7 +2,6 @@
 
 package coil3.compose.internal
 
-import coil3.size.Size as CoilSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -26,6 +25,7 @@ import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.size.Dimension
 import coil3.size.Scale
+import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
