@@ -170,6 +170,7 @@ abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
         constructor <init>() // coil3.disk/DiskCache.Builder.<init>|<init>(){}[0]
 
         final fun build(): coil3.disk/DiskCache // coil3.disk/DiskCache.Builder.build|build(){}[0]
+        final fun cleanupCoroutineContext(kotlin.coroutines/CoroutineContext): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.cleanupCoroutineContext|cleanupCoroutineContext(kotlin.coroutines.CoroutineContext){}[0]
         final fun cleanupDispatcher(kotlinx.coroutines/CoroutineDispatcher): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.cleanupDispatcher|cleanupDispatcher(kotlinx.coroutines.CoroutineDispatcher){}[0]
         final fun directory(okio/Path): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.directory|directory(okio.Path){}[0]
         final fun fileSystem(okio/FileSystem): coil3.disk/DiskCache.Builder // coil3.disk/DiskCache.Builder.fileSystem|fileSystem(okio.FileSystem){}[0]

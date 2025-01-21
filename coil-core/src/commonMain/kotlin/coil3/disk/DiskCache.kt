@@ -3,6 +3,7 @@ package coil3.disk
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
 import coil3.util.remainingFreeSpaceBytes
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.FileSystem
 import okio.Path
@@ -115,7 +116,7 @@ interface DiskCache {
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var maxSizeBytes = 0L
-        private var cleanupDispatcher = ioCoroutineDispatcher()
+        private var cleanupCoroutineContext: CoroutineContext = ioCoroutineDispatcher()
 
         /**
          * Set the [directory] where the cache stores its data.
@@ -171,11 +172,18 @@ interface DiskCache {
         }
 
         /**
-         * Set the [CoroutineDispatcher] that cache size trim operations will be executed on.
+         * Set the [CoroutineContext] that cache size trim operations will be executed in.
          */
-        fun cleanupDispatcher(dispatcher: CoroutineDispatcher) = apply {
-            this.cleanupDispatcher = dispatcher
+        fun cleanupCoroutineContext(context: CoroutineContext) = apply {
+            cleanupCoroutineContext = context
         }
+
+        @Deprecated(
+            message = "Replaced by cleanupCoroutineContext.",
+            replaceWith = ReplaceWith("cleanupCoroutineContext(dispatcher)"),
+        )
+        fun cleanupDispatcher(dispatcher: CoroutineDispatcher) =
+            cleanupCoroutineContext(dispatcher)
 
         /**
          * Create a new [DiskCache] instance.
@@ -196,7 +204,7 @@ interface DiskCache {
                 maxSize = maxSize,
                 directory = directory,
                 fileSystem = fileSystem,
-                cleanupDispatcher = cleanupDispatcher,
+                cleanupCoroutineContext = cleanupCoroutineContext,
             )
         }
     }
