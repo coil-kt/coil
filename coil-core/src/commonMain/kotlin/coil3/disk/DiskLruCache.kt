@@ -19,10 +19,12 @@ import coil3.annotation.VisibleForTesting
 import coil3.util.LruMutableMap
 import coil3.util.createFile
 import coil3.util.deleteContents
+import coil3.util.dispatcher
 import coil3.util.forEachIndices
+import coil3.util.ioCoroutineDispatcher
+import kotlin.coroutines.CoroutineContext
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -77,14 +79,14 @@ import okio.buffer
  * @constructor Create a cache which will reside in [directory]. This cache is lazily initialized on
  *  first access and will be created if it does not exist.
  * @param directory a writable directory.
- * @param cleanupDispatcher the dispatcher to run cache size trim operations on.
+ * @param cleanupCoroutineContext the context to run cache size trim operations in.
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
 internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
-    cleanupDispatcher: CoroutineDispatcher,
+    cleanupCoroutineContext: CoroutineContext,
     private val maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int,
@@ -139,8 +141,11 @@ internal class DiskLruCache(
     private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LruMutableMap<String, Entry>()
-    private val cleanupScope =
-        CoroutineScope(SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
+    private val cleanupScope = CoroutineScope(
+        cleanupCoroutineContext +
+            SupervisorJob() +
+            (cleanupCoroutineContext.dispatcher ?: ioCoroutineDispatcher()).limitedParallelism(1),
+    )
     private val lock = SynchronizedObject()
     private var size = 0L
     private var operationsSinceRewrite = 0

@@ -3,7 +3,7 @@ package coil3.disk
 import coil3.disk.DiskCache.Editor
 import coil3.disk.DiskCache.Snapshot
 import coil3.util.closeQuietly
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlin.coroutines.CoroutineContext
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
 import okio.Path
@@ -12,13 +12,13 @@ internal class RealDiskCache(
     override val maxSize: Long,
     override val directory: Path,
     override val fileSystem: FileSystem,
-    cleanupDispatcher: CoroutineDispatcher,
+    cleanupCoroutineContext: CoroutineContext,
 ) : DiskCache {
 
     private val cache = DiskLruCache(
         fileSystem = fileSystem,
         directory = directory,
-        cleanupDispatcher = cleanupDispatcher,
+        cleanupCoroutineContext = cleanupCoroutineContext,
         maxSize = maxSize,
         appVersion = 3,
         valueCount = 2,
