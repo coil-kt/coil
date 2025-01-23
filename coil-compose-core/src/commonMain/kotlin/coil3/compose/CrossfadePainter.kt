@@ -2,9 +2,7 @@ package coil3.compose
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
@@ -53,8 +51,8 @@ class CrossfadePainter(
     private var startTime: TimeMark? = null
     private var isDone = false
 
-    private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
-    private var colorFilter: ColorFilter? by mutableStateOf(null)
+    private var maxAlpha: Float = DefaultAlpha
+    private var colorFilter: ColorFilter? = null
 
     var start: Painter? = start
         private set

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
@@ -12,12 +11,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.ContentPainterElement
-import coil3.compose.internal.contentDescription
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.compose.internal.transformOf
@@ -155,59 +154,35 @@ private fun AsyncImage(
         model = state.model,
         contentScale = contentScale,
     )
-    val painter = rememberAsyncImagePainter(
-        model = request,
-        imageLoader = state.imageLoader,
-        transform = transform,
-        onState = onState,
-        contentScale = contentScale,
-        filterQuality = filterQuality,
-    )
+    validateRequest(request)
 
-    // Draw the content.
-    val sizeResolver = request.sizeResolver
-    Content(
-        modifier = if (sizeResolver is ConstraintsSizeResolver) {
-            modifier.then(sizeResolver)
-        } else {
-            modifier
-        },
-        painter = painter,
-        contentDescription = contentDescription,
-        alignment = alignment,
-        contentScale = contentScale,
-        alpha = alpha,
-        colorFilter = colorFilter,
-        clipToBounds = clipToBounds,
+    Layout(
+        modifier = modifier
+            .then(
+                ContentPainterElement(
+                    request = request,
+                    imageLoader = state.imageLoader,
+                    modelEqualityDelegate = state.modelEqualityDelegate,
+                    transform = transform,
+                    onState = onState,
+                    contentScale = contentScale,
+                    filterQuality = filterQuality,
+                    alignment = alignment,
+                    alpha = alpha,
+                    colorFilter = colorFilter,
+                    clipToBounds = clipToBounds,
+                    previewHandler = previewHandler(),
+                    contentDescription = contentDescription,
+                ),
+            ),
+        measurePolicy = UseMinConstraintsMeasurePolicy
     )
 }
 
-/** Draws the current image content. */
-@Composable
-private fun Content(
-    modifier: Modifier,
-    // Require AsyncImagePainter so Content is skippable.
-    painter: AsyncImagePainter,
-    contentDescription: String?,
-    alignment: Alignment,
-    contentScale: ContentScale,
-    alpha: Float,
-    colorFilter: ColorFilter?,
-    clipToBounds: Boolean,
-) = Layout(
-    modifier = modifier
-        .contentDescription(contentDescription)
-        .run { if (clipToBounds) clipToBounds() else this }
-        .then(
-            ContentPainterElement(
-                painter = painter,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter,
-            ),
-        ),
-    measurePolicy = { _, constraints ->
-        layout(constraints.minWidth, constraints.minHeight) {}
-    },
-)
+// Saving it into a field allows us to
+// - not allocate it again for each usage of AsyncImage
+// - have the same object when the AsyncImage is reused, which allows us to skip unnecessary
+//   remeasure as the policy didn't change
+internal val UseMinConstraintsMeasurePolicy = MeasurePolicy { _, constraints ->
+    layout(constraints.minWidth, constraints.minHeight) {}
+}

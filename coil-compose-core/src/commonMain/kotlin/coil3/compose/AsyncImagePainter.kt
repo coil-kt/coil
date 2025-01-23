@@ -7,7 +7,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,7 +36,6 @@ import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
-import coil3.compose.internal.withDeferredDispatch
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -46,15 +44,12 @@ import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.transformLatest
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -144,7 +139,7 @@ private fun rememberAsyncImagePainter(
     painter.contentScale = contentScale
     painter.filterQuality = filterQuality
     painter.previewHandler = previewHandler()
-    painter._input.value = input
+    painter._input = input
     return painter
 }
 
@@ -159,14 +154,9 @@ class AsyncImagePainter internal constructor(
         replay = 1,
         onBufferOverflow = DROP_OLDEST,
     )
-    private val restartSignal = MutableSharedFlow<Unit>(
-        replay = 1,
-        onBufferOverflow = DROP_OLDEST,
-    ).apply { tryEmit(Unit) }
-
     private var painter: Painter? by mutableStateOf(null)
-    private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
-    private var colorFilter: ColorFilter? by mutableStateOf(null)
+    private var alpha: Float = DefaultAlpha
+    private var colorFilter: ColorFilter? = null
 
     private var rememberJob: Job? = null
         set(value) {
@@ -180,10 +170,22 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
+    private var isRemembered = false
+
+    internal var _input: Input? = input
+        set(value) {
+            if (field != value) {
+                field = value
+                restart()
+                if (value != null) {
+                    inputFlow.value = value
+                }
+            }
+        }
 
     /** The latest [AsyncImagePainter.Input]. */
-    internal val _input: MutableStateFlow<Input> = MutableStateFlow(input)
-    val input: StateFlow<Input> = _input.asStateFlow()
+    private val inputFlow: MutableStateFlow<Input> = MutableStateFlow(input)
+    val input: StateFlow<Input> = inputFlow.asStateFlow()
 
     /** The latest [AsyncImagePainter.State]. */
     private val _state: MutableStateFlow<State> = MutableStateFlow(State.Empty)
@@ -210,47 +212,51 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
+        launchJob()
+        isRemembered = true
+    }
 
+    private fun launchJob() {
+        val input = _input ?: return
         // Observe the latest request and execute any emissions.
         rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
-            restartSignal.transformLatest<Unit, Nothing> {
-                _input.collect { input ->
-                    withDeferredDispatch {
-                        val previewHandler = previewHandler
-                        val state = if (previewHandler != null) {
-                            // If we're in inspection mode use the preview renderer.
-                            val request = updateRequest(input.request, isPreview = true)
-                            previewHandler.handle(input.imageLoader, request)
-                        } else {
-                            // Else, execute the request as normal.
-                            val request = updateRequest(input.request, isPreview = false)
-                            input.imageLoader.execute(request).toState()
-                        }
-                        updateState(state)
-                    }
-                }
-            }.collect()
+            val previewHandler = previewHandler
+            val state = if (previewHandler != null) {
+                // If we're in inspection mode use the preview renderer.
+                val request = updateRequest(input.request, isPreview = true)
+                previewHandler.handle(input.imageLoader, request)
+            } else {
+                // Else, execute the request as normal.
+                val request = updateRequest(input.request, isPreview = false)
+                input.imageLoader.execute(request).toState()
+            }
+            updateState(state)
         }
     }
 
     override fun onForgotten() {
         rememberJob = null
         (painter as? RememberObserver)?.onForgotten()
+        isRemembered = false
     }
 
     override fun onAbandoned() {
         rememberJob = null
         (painter as? RememberObserver)?.onAbandoned()
+        isRemembered = false
     }
 
     /**
      * Launch a new image request with the current [Input]s.
      */
     fun restart() {
-        restartSignal.tryEmit(Unit)
+        if (_input == null) {
+            rememberJob = null
+        } else if (isRemembered) {
+            launchJob()
+        }
     }
 
     /**
@@ -385,7 +391,7 @@ class AsyncImagePainter internal constructor(
 
 @ReadOnlyComposable
 @Composable
-private fun previewHandler(): AsyncImagePreviewHandler? {
+internal fun previewHandler(): AsyncImagePreviewHandler? {
     return if (LocalInspectionMode.current) {
         LocalAsyncImagePreviewHandler.current
     } else {
@@ -393,7 +399,7 @@ private fun previewHandler(): AsyncImagePreviewHandler? {
     }
 }
 
-private fun validateRequest(request: ImageRequest) {
+internal fun validateRequest(request: ImageRequest) {
     when (request.data) {
         is ImageRequest.Builder -> unsupportedData(
             name = "ImageRequest.Builder",

@@ -7,15 +7,10 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil3.ImageLoader
@@ -23,9 +18,9 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.ConstraintsSizeResolver
 import coil3.compose.LocalAsyncImageModelEqualityDelegate
 import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.size.Dimension
@@ -59,25 +54,29 @@ internal fun requestOfWithSizeResolver(
     model: Any?,
     contentScale: ContentScale,
 ): ImageRequest {
-    if (model is ImageRequest && model.defined.sizeResolver != null) {
-        return model
-    }
-
-    val sizeResolver = if (contentScale == ContentScale.None) {
-        SizeResolver.ORIGINAL
-    } else {
-        rememberConstraintsSizeResolver()
-    }
-
     if (model is ImageRequest) {
-        return remember(model, sizeResolver) {
-            model.newBuilder()
-                .size(sizeResolver)
-                .build()
+        if (model.defined.sizeResolver != null) {
+            return model
+        } else {
+            return remember(model) {
+                val sizeResolver = if (contentScale == ContentScale.None) {
+                    SizeResolver.ORIGINAL
+                } else {
+                    ConstraintsSizeResolver()
+                }
+                model.newBuilder()
+                    .size(sizeResolver)
+                    .build()
+            }
         }
     } else {
         val context = LocalPlatformContext.current
-        return remember(context, model, sizeResolver) {
+        return remember(context, model) {
+            val sizeResolver = if (contentScale == ContentScale.None) {
+                SizeResolver.ORIGINAL
+            } else {
+                ConstraintsSizeResolver()
+            }
             ImageRequest.Builder(context)
                 .data(model)
                 .size(sizeResolver)
@@ -160,18 +159,6 @@ internal class AsyncImageState(
         result = 31 * result + modelEqualityDelegate.hashCode(model)
         result = 31 * result + imageLoader.hashCode()
         return result
-    }
-}
-
-@Stable
-internal fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    if (contentDescription != null) {
-        return semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        return this
     }
 }
 
