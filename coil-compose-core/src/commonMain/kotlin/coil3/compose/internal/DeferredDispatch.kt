@@ -3,7 +3,6 @@
 package coil3.compose.internal
 
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -12,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A [CoroutineScope] that does not dispatch until the [CoroutineDispatcher] in its
@@ -52,18 +50,7 @@ internal class DeferredDispatchCoroutineContext(
 /** Launch [block] without dispatching. */
 internal inline fun CoroutineScope.launchUndispatched(
     noinline block: suspend CoroutineScope.() -> Unit,
-) = launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED, block)
-
-/**
- * Execute [block] without dispatching until the scope's [CoroutineDispatcher] changes.
- * Must be called from inside a [DeferredDispatchCoroutineScope].
- */
-internal suspend inline fun <T> withDeferredDispatch(
-    noinline block: suspend CoroutineScope.() -> T,
-): T {
-    val originalDispatcher = (coroutineContext as DeferredDispatchCoroutineContext).originalDispatcher
-    return withContext(DeferredDispatchCoroutineDispatcher(originalDispatcher), block)
-}
+) = launch(DeferredDispatchCoroutineDispatcher(Dispatchers.Unconfined), CoroutineStart.UNDISPATCHED, block)
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true

@@ -36,7 +36,6 @@ import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
-import coil3.compose.internal.withDeferredDispatch
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -223,19 +222,17 @@ class AsyncImagePainter internal constructor(
         val input = _input ?: return
         // Observe the latest request and execute any emissions.
         rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
-            withDeferredDispatch {
-                val previewHandler = previewHandler
-                val state = if (previewHandler != null) {
-                    // If we're in inspection mode use the preview renderer.
-                    val request = updateRequest(input.request, isPreview = true)
-                    previewHandler.handle(input.imageLoader, request)
-                } else {
-                    // Else, execute the request as normal.
-                    val request = updateRequest(input.request, isPreview = false)
-                    input.imageLoader.execute(request).toState()
-                }
-                updateState(state)
+            val previewHandler = previewHandler
+            val state = if (previewHandler != null) {
+                // If we're in inspection mode use the preview renderer.
+                val request = updateRequest(input.request, isPreview = true)
+                previewHandler.handle(input.imageLoader, request)
+            } else {
+                // Else, execute the request as normal.
+                val request = updateRequest(input.request, isPreview = false)
+                input.imageLoader.execute(request).toState()
             }
+            updateState(state)
         }
     }
 
