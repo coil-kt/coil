@@ -21,6 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.update
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
@@ -103,11 +104,11 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
-        private var _dispatchCount = atomic(0)
-        val dispatchCount by _dispatchCount
+        private val _dispatchCount = atomic(0)
+        val dispatchCount: Int by _dispatchCount
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
-            _dispatchCount.value++
+            _dispatchCount.update { it + 1 }
             block.run()
         }
     }
