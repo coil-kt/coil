@@ -103,11 +103,11 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
-        private var _dispatchCount by atomic(0)
-        val dispatchCount get() = _dispatchCount
+        private var _dispatchCount = atomic(0)
+        val dispatchCount by _dispatchCount
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
-            _dispatchCount++
+            _dispatchCount.value++
             block.run()
         }
     }
