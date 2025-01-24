@@ -64,12 +64,8 @@ internal fun requestOfWithSizeResolver(
         if (model.defined.sizeResolver != null) {
             return model
         } else {
-            return remember(model) {
-                val sizeResolver = if (contentScale == ContentScale.None) {
-                    SizeResolver.ORIGINAL
-                } else {
-                    ConstraintsSizeResolver()
-                }
+            val sizeResolver = rememberSizeResolver(contentScale)
+            return remember(model, sizeResolver) {
                 model.newBuilder()
                     .size(sizeResolver)
                     .build()
@@ -77,16 +73,24 @@ internal fun requestOfWithSizeResolver(
         }
     } else {
         val context = LocalPlatformContext.current
-        return remember(context, model) {
-            val sizeResolver = if (contentScale == ContentScale.None) {
-                SizeResolver.ORIGINAL
-            } else {
-                ConstraintsSizeResolver()
-            }
+        val sizeResolver = rememberSizeResolver(contentScale)
+        return remember(context, model, sizeResolver) {
             ImageRequest.Builder(context)
                 .data(model)
                 .size(sizeResolver)
                 .build()
+        }
+    }
+}
+
+@Composable
+private fun rememberSizeResolver(contentScale: ContentScale): SizeResolver {
+    val isNone = contentScale == ContentScale.None
+    return remember(isNone) {
+        if (isNone) {
+            SizeResolver.ORIGINAL
+        } else {
+            ConstraintsSizeResolver()
         }
     }
 }
