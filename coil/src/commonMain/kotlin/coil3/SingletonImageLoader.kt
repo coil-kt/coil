@@ -38,11 +38,10 @@ object SingletonImageLoader {
         if (value is ImageLoader) {
             if (value.isDefault) {
                 error(
-                    """The singleton image loader has already been created. This indicates that
-                    'setSafe' is being called after the first 'get' call. Ensure that 'setSafe' is
-                    called before any Coil API usages (e.g. `load`, `AsyncImage`,
-                    `rememberAsyncImagePainter`, etc.).
-                    """.trimIndent(),
+                    "The singleton image loader has already been created. This indicates that " +
+                        "'setSafe' is being called after the first 'get' call. Ensure that " +
+                        "'setSafe' is called before any Coil API usages (e.g. `load`, " +
+                        "`AsyncImage`, `rememberAsyncImagePainter`, etc.).",
                 )
             }
             return
