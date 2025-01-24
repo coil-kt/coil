@@ -169,7 +169,6 @@ private fun SubcomposeAsyncImage(
     clipToBounds: Boolean,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
-    // Create and execute the image request.
     val request = requestOfWithSizeResolver(
         model = state.model,
         contentScale = contentScale,
