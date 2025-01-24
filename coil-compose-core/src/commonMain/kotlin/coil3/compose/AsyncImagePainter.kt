@@ -3,7 +3,6 @@ package coil3.compose
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -15,13 +14,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.util.trace
 import coil3.Image
 import coil3.ImageLoader
@@ -33,9 +29,11 @@ import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.DeferredDispatchCoroutineScope
 import coil3.compose.internal.launchUndispatched
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.previewHandler
 import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
+import coil3.compose.internal.validateRequest
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -388,37 +386,6 @@ class AsyncImagePainter internal constructor(
         val DefaultTransform: (State) -> State = { it }
     }
 }
-
-@ReadOnlyComposable
-@Composable
-internal fun previewHandler(): AsyncImagePreviewHandler? {
-    return if (LocalInspectionMode.current) {
-        LocalAsyncImagePreviewHandler.current
-    } else {
-        null
-    }
-}
-
-internal fun validateRequest(request: ImageRequest) {
-    when (request.data) {
-        is ImageRequest.Builder -> unsupportedData(
-            name = "ImageRequest.Builder",
-            description = "Did you forget to call ImageRequest.Builder.build()?",
-        )
-        is ImageBitmap -> unsupportedData("ImageBitmap")
-        is ImageVector -> unsupportedData("ImageVector")
-        is Painter -> unsupportedData("Painter")
-    }
-    validateRequestProperties(request)
-}
-
-private fun unsupportedData(
-    name: String,
-    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
-): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
-
-/** Validate platform-specific properties of an [ImageRequest]. */
-internal expect fun validateRequestProperties(request: ImageRequest)
 
 /** Create and return a [CrossfadePainter] if requested. */
 internal expect fun maybeNewCrossfadePainter(

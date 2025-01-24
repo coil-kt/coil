@@ -57,7 +57,8 @@ class CrossfadePainter(
     var start: Painter? = start
         private set
 
-    override val intrinsicSize get() = computeIntrinsicSize()
+    override val intrinsicSize: Size
+        get() = computeIntrinsicSize()
 
     override fun DrawScope.onDraw() {
         if (isDone) {

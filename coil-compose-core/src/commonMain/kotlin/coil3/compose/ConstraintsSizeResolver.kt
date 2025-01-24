@@ -8,6 +8,7 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
+import coil3.compose.internal.ZeroConstraints
 import coil3.compose.internal.toSize
 import coil3.size.Size
 import coil3.size.SizeResolver
@@ -29,7 +30,7 @@ fun rememberConstraintsSizeResolver(): ConstraintsSizeResolver {
  */
 @Stable
 class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-    private var latestConstraints: Constraints = Constraints(maxWidth = 0, maxHeight = 0)
+    private var latestConstraints = ZeroConstraints
     private var continuation: Continuation<Unit>? = null
 
     override suspend fun size(): Size {

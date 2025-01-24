@@ -25,6 +25,7 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.SubcomposeContentPainterElement
+import coil3.compose.internal.UseMinConstraintsMeasurePolicy
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.request.ImageRequest
@@ -275,18 +276,17 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     colorFilter: ColorFilter? = this.colorFilter,
     clipToBounds: Boolean = this.clipToBounds,
 ) = Layout(
-    modifier = modifier
-        .then(
-            SubcomposeContentPainterElement(
-                painter = painter,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter,
-                clipToBounds = clipToBounds,
-                contentDescription = contentDescription,
-            ),
+    modifier = modifier.then(
+        SubcomposeContentPainterElement(
+            painter = painter,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter,
+            clipToBounds = clipToBounds,
+            contentDescription = contentDescription,
         ),
+    ),
     measurePolicy = UseMinConstraintsMeasurePolicy,
 )
 

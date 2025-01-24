@@ -2,18 +2,11 @@ package coil3.compose
 
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.layout.ContentScale
-import coil3.request.ImageRequest
 import coil3.request.SuccessResult
-import coil3.request.lifecycle
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
 import coil3.transition.TransitionTarget
 import kotlin.time.Duration.Companion.milliseconds
-
-internal actual fun validateRequestProperties(request: ImageRequest) {
-    require(request.target == null) { "request.target must be null." }
-    require(request.lifecycle == null) { "request.lifecycle must be null." }
-}
 
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
@@ -29,7 +22,7 @@ internal actual fun maybeNewCrossfadePainter(
 
     // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
     // a `CrossfadeTransformation`.
-    val transition = result.request.transitionFactory.create(fakeTransitionTarget, result)
+    val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
     if (transition is CrossfadeTransition) {
         return CrossfadePainter(
             start = previous.painter.takeIf { previous is AsyncImagePainter.State.Loading },
@@ -44,7 +37,7 @@ internal actual fun maybeNewCrossfadePainter(
     }
 }
 
-private val fakeTransitionTarget = object : TransitionTarget {
+private val FakeTransitionTarget = object : TransitionTarget {
     override val view get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }

@@ -11,15 +11,17 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.MeasurePolicy
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
 import coil3.compose.internal.ContentPainterElement
+import coil3.compose.internal.UseMinConstraintsMeasurePolicy
 import coil3.compose.internal.onStateOf
+import coil3.compose.internal.previewHandler
 import coil3.compose.internal.requestOfWithSizeResolver
 import coil3.compose.internal.transformOf
+import coil3.compose.internal.validateRequest
 import coil3.request.ImageRequest
 
 /**
@@ -157,32 +159,23 @@ private fun AsyncImage(
     validateRequest(request)
 
     Layout(
-        modifier = modifier
-            .then(
-                ContentPainterElement(
-                    request = request,
-                    imageLoader = state.imageLoader,
-                    modelEqualityDelegate = state.modelEqualityDelegate,
-                    transform = transform,
-                    onState = onState,
-                    contentScale = contentScale,
-                    filterQuality = filterQuality,
-                    alignment = alignment,
-                    alpha = alpha,
-                    colorFilter = colorFilter,
-                    clipToBounds = clipToBounds,
-                    previewHandler = previewHandler(),
-                    contentDescription = contentDescription,
-                ),
+        modifier = modifier.then(
+            ContentPainterElement(
+                request = request,
+                imageLoader = state.imageLoader,
+                modelEqualityDelegate = state.modelEqualityDelegate,
+                transform = transform,
+                onState = onState,
+                contentScale = contentScale,
+                filterQuality = filterQuality,
+                alignment = alignment,
+                alpha = alpha,
+                colorFilter = colorFilter,
+                clipToBounds = clipToBounds,
+                previewHandler = previewHandler(),
+                contentDescription = contentDescription,
             ),
-        measurePolicy = UseMinConstraintsMeasurePolicy
+        ),
+        measurePolicy = UseMinConstraintsMeasurePolicy,
     )
-}
-
-// Saving it into a field allows us to
-// - not allocate it again for each usage of AsyncImage
-// - have the same object when the AsyncImage is reused, which allows us to skip unnecessary
-//   remeasure as the policy didn't change
-internal val UseMinConstraintsMeasurePolicy = MeasurePolicy { _, constraints ->
-    layout(constraints.minWidth, constraints.minHeight) {}
 }
