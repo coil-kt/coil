@@ -19,7 +19,7 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-`FakeImage` is useful as it draws a colored box and is supported on all platforms, but you can also use any `Drawable` on Android.
+`ColorImage` is useful for testing as it can draw a colored box or fill the canvas with a color depending on its width/height and it is supported on all platforms.
 
 This strategy works great with [Paparazzi](https://github.com/cashapp/paparazzi) to screenshot test UIs without a physical device or emulator:
 
