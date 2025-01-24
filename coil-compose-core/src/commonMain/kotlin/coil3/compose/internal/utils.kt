@@ -85,9 +85,9 @@ internal fun requestOfWithSizeResolver(
 
 @Composable
 private fun rememberSizeResolver(contentScale: ContentScale): SizeResolver {
-    val isNoneContentScale = contentScale == ContentScale.None
-    return remember(isNoneContentScale) {
-        if (isNoneContentScale) {
+    val isNone = contentScale == ContentScale.None
+    return remember(isNone) {
+        if (isNone) {
             SizeResolver.ORIGINAL
         } else {
             ConstraintsSizeResolver()
