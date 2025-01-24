@@ -41,6 +41,8 @@ import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.ConstraintsSizeResolver
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.ImageRequest
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -66,11 +68,9 @@ internal data class ContentPainterElement(
 
     override fun create(): ContentPainterNode {
         val input = Input(imageLoader, request, modelEqualityDelegate)
-        val constraintSizeResolver = request.sizeResolver as? ConstraintsSizeResolver
 
-        // we are creating painter during the modifier creation. as a result we reuse the same
-        // painter object when the modifier is being reused as part of lazy layouts reuse flow.
-        // it allows us to save on quite a lot of allocations during the reuse.
+        // Create the painter during modifier creation so we reuse the same painter object when the
+        // modifier is being reused as part of the lazy layouts reuse flow.
         val painter = AsyncImagePainter(input)
         painter.transform = transform
         painter.onState = onState
@@ -81,7 +81,7 @@ internal data class ContentPainterElement(
 
         return ContentPainterNode(
             painter = painter,
-            constraintSizeResolver = constraintSizeResolver,
+            constraintSizeResolver = request.sizeResolver as? ConstraintsSizeResolver,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
@@ -157,13 +157,13 @@ internal class ContentPainterNode(
     contentDescription: String?,
     constraintSizeResolver: ConstraintsSizeResolver?,
 ) : AbstractContentPainterNode(
-    alignment,
-    contentScale,
-    alpha,
-    colorFilter,
-    clipToBounds,
-    contentDescription,
-    constraintSizeResolver,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    clipToBounds = clipToBounds,
+    contentDescription = contentDescription,
+    constraintSizeResolver = constraintSizeResolver,
 ) {
 
     override fun onAttach() {
@@ -176,10 +176,9 @@ internal class ContentPainterNode(
     }
 
     override fun onReset() {
-        // we reset the current input as once the modifier will be reused we will have a new
-        // modifier element update call, which is going to provide us a new up-to-date input.
-        // without doing so we might restart the request for the old input, as onAttach() is
-        // called before modifier element update.
+        // Clear the current input here as `ModifierNodeElement.update` will be called with the
+        // new input when it's reused. If we don't clear it here, we might restart the request for
+        // the old input, as `Modifier.Node.onAttach()` is called before modifier element update.
         painter._input = null
     }
 }
@@ -187,9 +186,9 @@ internal class ContentPainterNode(
 /**
  * A custom [paint] modifier used by [SubcomposeAsyncImage].
  *
- * Ideally [SubcomposeAsyncImage] should use [ContentPainterElement] as well, however,
- * [SubcomposeAsyncImageContent] exposing the fact we have to create a Painter during the
- * composition as part of its api.
+ * Ideally [SubcomposeAsyncImage] should use [ContentPainterElement] as well, however
+ * [SubcomposeAsyncImageContent] exposes the fact that we have to create a painter during the
+ * composition as part of its API.
  */
 internal data class SubcomposeContentPainterElement(
     private val painter: Painter,
@@ -258,12 +257,13 @@ internal class SubcomposeContentPainterNode(
     clipToBounds: Boolean,
     contentDescription: String?,
 ) : AbstractContentPainterNode(
-    alignment,
-    contentScale,
-    alpha,
-    colorFilter,
-    clipToBounds,
-    contentDescription,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    clipToBounds = clipToBounds,
+    contentDescription = contentDescription,
+    constraintSizeResolver = null,
 )
 
 internal abstract class AbstractContentPainterNode(
@@ -273,7 +273,7 @@ internal abstract class AbstractContentPainterNode(
     var colorFilter: ColorFilter?,
     var clipToBounds: Boolean,
     var contentDescription: String?,
-    var constraintSizeResolver: ConstraintsSizeResolver? = null,
+    var constraintSizeResolver: ConstraintsSizeResolver?,
 ) : Modifier.Node(), DrawModifierNode, LayoutModifierNode, SemanticsModifierNode {
 
     abstract val painter: Painter
@@ -285,6 +285,7 @@ internal abstract class AbstractContentPainterNode(
         constraints: Constraints,
     ): MeasureResult {
         constraintSizeResolver?.setConstraints(constraints)
+
         val placeable = measurable.measure(modifyConstraints(constraints))
         return layout(placeable.width, placeable.height) {
             placeable.placeRelative(0, 0)
@@ -297,10 +298,11 @@ internal abstract class AbstractContentPainterNode(
     ): Int {
         val constraints = Constraints(maxHeight = height)
         constraintSizeResolver?.setConstraints(constraints)
+
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(constraints)
+            val modifiedConstraints = modifyConstraints(constraints)
             val layoutWidth = measurable.minIntrinsicWidth(height)
-            max(constraints.minWidth, layoutWidth)
+            max(modifiedConstraints.minWidth, layoutWidth)
         } else {
             measurable.minIntrinsicWidth(height)
         }
@@ -312,10 +314,11 @@ internal abstract class AbstractContentPainterNode(
     ): Int {
         val constraints = Constraints(maxHeight = height)
         constraintSizeResolver?.setConstraints(constraints)
+
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(constraints)
+            val modifiedConstraints = modifyConstraints(constraints)
             val layoutWidth = measurable.maxIntrinsicWidth(height)
-            max(constraints.minWidth, layoutWidth)
+            max(modifiedConstraints.minWidth, layoutWidth)
         } else {
             measurable.maxIntrinsicWidth(height)
         }
@@ -327,10 +330,11 @@ internal abstract class AbstractContentPainterNode(
     ): Int {
         val constraints = Constraints(maxWidth = width)
         constraintSizeResolver?.setConstraints(constraints)
+
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(constraints)
+            val modifiedConstraints = modifyConstraints(constraints)
             val layoutHeight = measurable.minIntrinsicHeight(width)
-            max(constraints.minHeight, layoutHeight)
+            max(modifiedConstraints.minHeight, layoutHeight)
         } else {
             measurable.minIntrinsicHeight(width)
         }
@@ -342,10 +346,11 @@ internal abstract class AbstractContentPainterNode(
     ): Int {
         val constraints = Constraints(maxWidth = width)
         constraintSizeResolver?.setConstraints(constraints)
+
         return if (painter.intrinsicSize.isSpecified) {
-            val constraints = modifyConstraints(constraints)
+            val modifiedConstraints = modifyConstraints(constraints)
             val layoutHeight = measurable.maxIntrinsicHeight(width)
-            max(constraints.minHeight, layoutHeight)
+            max(modifiedConstraints.minHeight, layoutHeight)
         } else {
             measurable.maxIntrinsicHeight(width)
         }
@@ -442,7 +447,6 @@ internal abstract class AbstractContentPainterNode(
             }
             translate(dx.toFloat(), dy.toFloat())
         }) {
-            // Draw the painter.
             with(painter) {
                 draw(scaledSize, alpha, colorFilter)
             }

@@ -9,8 +9,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil3.ImageLoader
@@ -18,8 +22,10 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImageModelEqualityDelegate
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.ConstraintsSizeResolver
 import coil3.compose.LocalAsyncImageModelEqualityDelegate
+import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
@@ -203,3 +209,40 @@ internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 @OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
     get() = get(CoroutineDispatcher)
+
+@ReadOnlyComposable
+@Composable
+internal fun previewHandler(): AsyncImagePreviewHandler? {
+    return if (LocalInspectionMode.current) {
+        LocalAsyncImagePreviewHandler.current
+    } else {
+        null
+    }
+}
+
+internal val UseMinConstraintsMeasurePolicy = MeasurePolicy { _, constraints ->
+    layout(constraints.minWidth, constraints.minHeight) {}
+}
+
+internal val ZeroConstraints = Constraints(maxWidth = 0, maxHeight = 0)
+
+internal fun validateRequest(request: ImageRequest) {
+    when (request.data) {
+        is ImageRequest.Builder -> unsupportedData(
+            name = "ImageRequest.Builder",
+            description = "Did you forget to call ImageRequest.Builder.build()?",
+        )
+        is ImageBitmap -> unsupportedData("ImageBitmap")
+        is ImageVector -> unsupportedData("ImageVector")
+        is Painter -> unsupportedData("Painter")
+    }
+    validateRequestProperties(request)
+}
+
+private fun unsupportedData(
+    name: String,
+    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
+): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
+
+/** Validate platform-specific properties of an [ImageRequest]. */
+internal expect fun validateRequestProperties(request: ImageRequest)

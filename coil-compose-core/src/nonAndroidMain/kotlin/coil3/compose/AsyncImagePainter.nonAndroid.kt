@@ -2,14 +2,9 @@ package coil3.compose
 
 import androidx.compose.ui.layout.ContentScale
 import coil3.decode.DataSource
-import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.crossfadeMillis
 import kotlin.time.Duration.Companion.milliseconds
-
-internal actual fun validateRequestProperties(request: ImageRequest) {
-    require(request.target == null) { "request.target must be null." }
-}
 
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
