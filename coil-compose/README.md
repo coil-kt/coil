@@ -200,4 +200,4 @@ AsyncImage(
 ```
 
 !!! Note
-    `Res.drawable.image` and other compile-safe references are not supported by Coil; you must use `Res.getUri("drawable/image")` instead. It's not possible for Coil to support this until Compose Multiplatform exposes APIs to support it. [Follow this ticket](https://youtrack.jetbrains.com/issue/CMP-4360).
+    `Res.drawable.image` and other compile-safe references are not supported by Coil. You must use `Res.getUri("drawable/image")` instead. [Follow this issue for updates](https://github.com/coil-kt/coil/issues/2812).
