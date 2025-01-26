@@ -38,6 +38,12 @@ kotlin {
                 implementation(libs.google.drawablepainter)
             }
         }
+        androidUnitTest {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(libs.bundles.test.jvm)
+            }
+        }
         androidInstrumentedTest {
             dependencies {
                 implementation(projects.internal.testUtils)
