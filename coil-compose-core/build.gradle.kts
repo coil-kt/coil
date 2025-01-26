@@ -1,8 +1,6 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     id("com.android.library")
@@ -18,11 +16,6 @@ addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.compose.core")
 
 kotlin {
-    androidTarget {
-        // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-    }
     sourceSets {
         commonMain {
             dependencies {
