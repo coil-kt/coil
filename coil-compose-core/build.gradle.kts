@@ -45,7 +45,9 @@ kotlin {
         }
         androidInstrumentedTest {
             dependencies {
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
+                implementation(compose.desktop.uiTestJUnit4)
             }
         }
     }

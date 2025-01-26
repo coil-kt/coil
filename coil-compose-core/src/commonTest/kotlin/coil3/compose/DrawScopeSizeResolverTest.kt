@@ -15,13 +15,14 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.size.Size as CoilSize
+import coil3.test.utils.RobolectricTest
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalTestApi::class)
-class DrawScopeSizeResolverTest {
+class DrawScopeSizeResolverTest : RobolectricTest() {
 
     @Test
     fun imageIsLoadedWithDrawScopeSize() = runComposeUiTest {

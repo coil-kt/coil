@@ -32,12 +32,12 @@ kotlin {
             implementation(libs.roborazzi.junit)
         }
         named("jvmCommonTest").dependencies {
-            implementation(compose.desktop.uiTestJUnit4)
             implementation(libs.bundles.test.jvm)
+            implementation(compose.desktop.uiTestJUnit4)
         }
         jvmTest.dependencies {
-            implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.compose.desktop)
+            implementation(compose.desktop.currentOs)
         }
     }
 }
