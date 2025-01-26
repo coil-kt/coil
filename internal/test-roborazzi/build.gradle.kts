@@ -1,6 +1,5 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     id("com.android.library")
@@ -15,7 +14,6 @@ androidLibrary(name = "coil3.test.roborazzi")
 
 kotlin {
     jvm {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             freeCompilerArgs.add("-Xcontext-receivers")
         }

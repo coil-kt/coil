@@ -1,5 +1,8 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
+import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     id("com.android.library")
@@ -15,6 +18,11 @@ addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.compose.core")
 
 kotlin {
+    androidTarget {
+        // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
     sourceSets {
         commonMain {
             dependencies {
@@ -26,24 +34,25 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.kotlin.test)
+                @OptIn(ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
             }
+        }
+        named("jvmCommonTest").dependencies {
+            implementation(libs.bundles.test.jvm)
+            implementation(compose.desktop.uiTestJUnit4)
+        }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
         androidMain {
             dependencies {
                 implementation(libs.google.drawablepainter)
             }
         }
-        androidUnitTest {
-            dependencies {
-                implementation(projects.internal.testUtils)
-                implementation(libs.bundles.test.jvm)
-            }
-        }
         androidInstrumentedTest {
             dependencies {
-                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
-                implementation(compose.desktop.uiTestJUnit4)
             }
         }
     }
