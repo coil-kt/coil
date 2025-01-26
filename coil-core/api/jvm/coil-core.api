@@ -202,11 +202,10 @@ public final class coil3/Image_nonAndroidKt {
 }
 
 public abstract class coil3/PlatformContext {
-	public static final field Companion Lcoil3/PlatformContext$Companion;
-	public static final field INSTANCE Lcoil3/PlatformContext;
+	public static final field Default Lcoil3/PlatformContext$Default;
 }
 
-public final class coil3/PlatformContext$Companion {
+public final class coil3/PlatformContext$Default : coil3/PlatformContext {
 }
 
 public final class coil3/Uri {

@@ -431,10 +431,7 @@ abstract class coil3/EventListener : coil3.request/ImageRequest.Listener { // co
 }
 
 abstract class coil3/PlatformContext { // coil3/PlatformContext|null[0]
-    final object Companion { // coil3/PlatformContext.Companion|null[0]
-        final val INSTANCE // coil3/PlatformContext.Companion.INSTANCE|{}INSTANCE[0]
-            final fun <get-INSTANCE>(): coil3/PlatformContext // coil3/PlatformContext.Companion.INSTANCE.<get-INSTANCE>|<get-INSTANCE>(){}[0]
-    }
+    final object Default : coil3/PlatformContext // coil3/PlatformContext.Default|null[0]
 }
 
 final class coil3.decode/BlackholeDecoder : coil3.decode/Decoder { // coil3.decode/BlackholeDecoder|null[0]
