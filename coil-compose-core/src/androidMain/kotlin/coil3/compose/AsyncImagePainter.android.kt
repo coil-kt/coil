@@ -1,6 +1,7 @@
 package coil3.compose
 
 import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.compose.ui.layout.ContentScale
 import coil3.request.SuccessResult
 import coil3.request.transitionFactory
@@ -38,6 +39,6 @@ internal actual fun maybeNewCrossfadePainter(
 }
 
 private val FakeTransitionTarget = object : TransitionTarget {
-    override val view get() = throw UnsupportedOperationException()
+    override val view: View get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }
