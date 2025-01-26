@@ -1,6 +1,5 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
-import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
     id("com.android.library")
@@ -13,11 +12,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.compose.core") {
-    dependencies {
-        debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.6")
-    }
-}
+androidLibrary(name = "coil3.compose.core")
 
 kotlin {
     sourceSets {
@@ -31,16 +26,7 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.kotlin.test)
-                @OptIn(ExperimentalComposeLibrary::class)
-                implementation(compose.uiTest)
             }
-        }
-        named("jvmCommonTest").dependencies {
-            implementation(libs.bundles.test.jvm)
-            implementation(compose.desktop.uiTestJUnit4)
-        }
-        jvmTest.dependencies {
-            implementation(compose.desktop.currentOs)
         }
         androidMain {
             dependencies {
