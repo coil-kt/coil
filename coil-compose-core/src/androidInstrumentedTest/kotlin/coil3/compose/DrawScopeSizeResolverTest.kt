@@ -16,6 +16,7 @@ import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.size.Size as CoilSize
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -31,7 +32,7 @@ class DrawScopeSizeResolverTest {
 
         setContent {
             expectedSizePx = with(LocalDensity.current) {
-                expectedSizeDp.toPx().let { Size(it, it) }
+                expectedSizeDp.toPx().roundToInt().toFloat().let { Size(it, it) }
             }
 
             val context = LocalPlatformContext.current
