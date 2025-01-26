@@ -23,9 +23,12 @@ import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalTestApi::class)
 class DrawScopeSizeResolverTest {
+    private val idlingResource = ImageLoaderIdlingResource()
 
     @Test
     fun imageIsLoadedWithDrawScopeSize() = runComposeUiTest {
+        registerIdlingResource(idlingResource)
+
         val expectedSizeDp = 100.dp
         var expectedSizePx = Size.Unspecified
         var actualSizePx = Size.Unspecified
@@ -48,6 +51,7 @@ class DrawScopeSizeResolverTest {
                         }
                     }
                     .coroutineContext(EmptyCoroutineContext)
+                    .eventListener(idlingResource)
                     .build()
             }
             val request = remember(context) {
@@ -64,6 +68,8 @@ class DrawScopeSizeResolverTest {
                 modifier = Modifier.size(expectedSizeDp),
             )
         }
+
+        waitForIdle()
 
         assertNotEquals(Size.Unspecified, actualSizePx)
         assertEquals(expectedSizePx, actualSizePx)
