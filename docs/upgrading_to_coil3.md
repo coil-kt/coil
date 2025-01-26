@@ -33,7 +33,7 @@ As part of decoupling from the Android SDK, a number of API changes were made. N
 
 - `Drawable` was replaced with a custom `Image` interface. Use `Drawable.asImage()` and `Image.asDrawable(resources)` to convert between the classes on Android. On non-Android platforms use `Bitmap.asImage()` and `Image.toBitmap()`.
 - Usages of Android's `android.net.Uri` class were replaced a multiplatform `coil3.Uri` class. Any call sites that pass `android.net.Uri` as `ImageRequest.data` are unaffected. Custom `Fetcher`s that rely on receiving an `android.net.Uri` will need to be updated to use `coil3.Uri`.
-- Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms. Use `LocalPlatformContext.current` to get a reference in Compose Multiplatform.
+- Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.Default` on non-Android platforms. Use `LocalPlatformContext.current` to get a reference in Compose Multiplatform.
 - The `Coil` class was renamed to `SingletonImageLoader`.
 - If you're implementing `ImageLoaderFactory` in your custom Android `Application` class, you'll need to switch to implementing `SingletonImageLoader.Factory` as a replacement for `ImageLoaderFactory`. Once you implement `SingletonImageLoader.Factory`, you'll be able to override `newImageLoader()` if you need or want to override it.
 

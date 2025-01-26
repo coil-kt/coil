@@ -6,5 +6,5 @@ actual abstract class AndroidJUnit4Test
 
 actual abstract class RobolectricTest
 
-actual val context: PlatformContext
-    get() = PlatformContext.INSTANCE
+actual inline val context: PlatformContext
+    get() = PlatformContext

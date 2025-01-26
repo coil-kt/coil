@@ -33,7 +33,7 @@ class RoborazziComposeTestJvm {
             .intercept(url, image)
             .build()
 
-        val imageLoader = ImageLoader.Builder(PlatformContext.INSTANCE)
+        val imageLoader = ImageLoader.Builder(PlatformContext)
             .components { add(engine) }
             .build()
 
@@ -61,7 +61,7 @@ class RoborazziComposeTestJvm {
         val engine = FakeImageLoaderEngine.Builder()
             .intercept(url, image.toBitmap().asImage())
             .build()
-        val imageLoader = ImageLoader.Builder(PlatformContext.INSTANCE)
+        val imageLoader = ImageLoader.Builder(PlatformContext)
             .components { add(engine) }
             .build()
 

@@ -18,7 +18,7 @@ class NSURLMapperTest {
         val components = ComponentRegistry.Builder()
             .add(NSURLMapper())
             .build()
-        val uri = components.map(url, Options(PlatformContext.INSTANCE))
+        val uri = components.map(url, Options(PlatformContext))
 
         assertIs<Uri>(uri)
         assertEquals("https", uri.scheme)
@@ -31,7 +31,7 @@ class NSURLMapperTest {
     @Test
     fun https() {
         val url = NSURL(string = "https://www.example.com/image.jpg?auth=12345")
-        val uri = NSURLMapper().map(url, Options(PlatformContext.INSTANCE))
+        val uri = NSURLMapper().map(url, Options(PlatformContext))
 
         assertIs<Uri>(uri)
         assertEquals("https", uri.scheme)
@@ -44,7 +44,7 @@ class NSURLMapperTest {
     @Test
     fun file() {
         val url = NSURL(string = "file:///path/to/a/file.jpg")
-        val uri = NSURLMapper().map(url, Options(PlatformContext.INSTANCE))
+        val uri = NSURLMapper().map(url, Options(PlatformContext))
 
         assertIs<Uri>(uri)
         assertEquals("file", uri.scheme)
