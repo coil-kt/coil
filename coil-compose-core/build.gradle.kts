@@ -12,7 +12,12 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.compose.core")
+androidLibrary(name = "coil3.compose.core") {
+    dependencies {
+        // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+        debugImplementation(libs.androidx.compose.ui.test.manifest)
+    }
+}
 
 kotlin {
     sourceSets {

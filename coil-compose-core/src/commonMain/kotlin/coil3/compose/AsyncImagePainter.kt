@@ -44,6 +44,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -148,18 +149,24 @@ private fun rememberAsyncImagePainter(
 class AsyncImagePainter internal constructor(
     input: Input,
 ) : Painter(), RememberObserver {
-    private val drawSize = MutableSharedFlow<Size>(
-        replay = 1,
-        onBufferOverflow = DROP_OLDEST,
-    )
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float = DefaultAlpha
     private var colorFilter: ColorFilter? = null
 
+    private var isRemembered = false
     private var rememberJob: Job? = null
         set(value) {
             field?.cancel()
             field = value
+        }
+
+    private var drawSizeFlow: MutableSharedFlow<Size>? = null
+    private var drawSize = Size.Unspecified
+        set(value) {
+            if (field != value) {
+                field = value
+                drawSizeFlow?.tryEmit(value)
+            }
         }
 
     internal lateinit var scope: CoroutineScope
@@ -168,7 +175,6 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
-    private var isRemembered = false
 
     internal var _input: Input? = input
         set(value) {
@@ -181,11 +187,9 @@ class AsyncImagePainter internal constructor(
             }
         }
 
-    /** The latest [AsyncImagePainter.Input]. */
     private val inputFlow: MutableStateFlow<Input> = MutableStateFlow(input)
     val input: StateFlow<Input> = inputFlow.asStateFlow()
 
-    /** The latest [AsyncImagePainter.State]. */
     private val _state: MutableStateFlow<State> = MutableStateFlow(State.Empty)
     val state: StateFlow<State> = _state.asStateFlow()
 
@@ -193,10 +197,7 @@ class AsyncImagePainter internal constructor(
         get() = painter?.intrinsicSize ?: Size.Unspecified
 
     override fun DrawScope.onDraw() {
-        // Cache the draw scope's current size.
-        drawSize.tryEmit(size)
-
-        // Draw the current painter.
+        drawSize = size
         painter?.apply { draw(size, alpha, colorFilter) }
     }
 
@@ -218,7 +219,7 @@ class AsyncImagePainter internal constructor(
 
     private fun launchJob() {
         val input = _input ?: return
-        // Observe the latest request and execute any emissions.
+
         rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
             val previewHandler = previewHandler
             val state = if (previewHandler != null) {
@@ -264,7 +265,7 @@ class AsyncImagePainter internal constructor(
         // Connect the size resolver to the draw scope if necessary.
         val sizeResolver = request.sizeResolver
         if (sizeResolver is DrawScopeSizeResolver) {
-            sizeResolver.connect(drawSize)
+            sizeResolver.connect(lazyDrawSizeFlow())
         }
 
         return request.newBuilder()
@@ -320,6 +321,22 @@ class AsyncImagePainter internal constructor(
             painter = image?.asPainter(request.context, filterQuality),
             result = this,
         )
+    }
+
+    private fun lazyDrawSizeFlow(): Flow<Size> {
+        var drawSizeFlow = drawSizeFlow
+        if (drawSizeFlow == null) {
+            drawSizeFlow = MutableSharedFlow(
+                replay = 1,
+                onBufferOverflow = DROP_OLDEST,
+            )
+            val drawSize = drawSize
+            if (drawSize != Size.Unspecified) {
+                drawSizeFlow.tryEmit(drawSize)
+            }
+            this.drawSizeFlow = drawSizeFlow
+        }
+        return drawSizeFlow
     }
 
     /**

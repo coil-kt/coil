@@ -36,7 +36,7 @@ class DeferredDispatchTest : RobolectricTest() {
     private val deferredDispatcher = DeferredDispatchCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun `does not dispatch when unconfined=true`() = runTest {
+    fun doesNotDispatchWhen_unconfined_true() = runTest {
         deferredDispatcher.unconfined = true
 
         withContext(deferredDispatcher) {
@@ -46,7 +46,7 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     @Test
-    fun `does dispatch when unconfined=false`() = runTest {
+    fun doesDispatchWhen_unconfined_false() = runTest {
         deferredDispatcher.unconfined = false
 
         withContext(deferredDispatcher) {
@@ -57,7 +57,7 @@ class DeferredDispatchTest : RobolectricTest() {
 
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun `imageLoader does not dispatch if context does not change`() = runTest {
+    fun imageLoaderDoesNotDispatchIfContextDoesNotChange() = runTest {
         deferredDispatcher.unconfined = true
 
         DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
@@ -77,7 +77,7 @@ class DeferredDispatchTest : RobolectricTest() {
 
     /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun `imageLoader does dispatch if context changes`() = runTest {
+    fun imageLoaderDoesDispatchIfContextChanges() = runTest {
         deferredDispatcher.unconfined = true
 
         DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
