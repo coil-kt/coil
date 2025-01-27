@@ -16,13 +16,22 @@ import kotlinx.coroutines.launch
  */
 internal fun CoroutineScope.launchWithDeferredDispatch(
     block: suspend CoroutineScope.() -> Unit,
-): Job = CoroutineScope(DeferredDispatchCoroutineContext(coroutineContext)).launch(
-    context = DeferredDispatchCoroutineDispatcher(
-        delegate = coroutineContext.dispatcher ?: Dispatchers.Unconfined,
-    ),
-    start = CoroutineStart.UNDISPATCHED,
-    block = block,
-)
+): Job {
+    val originalDispatcher = coroutineContext.dispatcher
+    if (originalDispatcher == null || originalDispatcher == Dispatchers.Unconfined) {
+        return launch(
+            context = Dispatchers.Unconfined,
+            start = CoroutineStart.UNDISPATCHED,
+            block = block,
+        )
+    } else {
+        return CoroutineScope(DeferredDispatchCoroutineContext(coroutineContext)).launch(
+            context = DeferredDispatchCoroutineDispatcher(originalDispatcher),
+            start = CoroutineStart.UNDISPATCHED,
+            block = block,
+        )
+    }
+}
 
 /**
  * A special [CoroutineContext] implementation that automatically enables
@@ -39,8 +48,7 @@ private class DeferredDispatchCoroutineContext(
         val oldDispatcher = old.dispatcher
         val newDispatcher = new.dispatcher
         if (oldDispatcher is DeferredDispatchCoroutineDispatcher && oldDispatcher != newDispatcher) {
-            oldDispatcher.unconfined = oldDispatcher.unconfined &&
-                (newDispatcher == null || newDispatcher == Dispatchers.Unconfined)
+            oldDispatcher.unconfined = false
         }
 
         return DeferredDispatchCoroutineContext(new)
