@@ -38,8 +38,9 @@ class DeferredDispatchTest : RobolectricTest() {
             launchWithDeferredDispatch {
                 assertEquals(1, testDispatcher.dispatchCount)
 
-                delay(10.milliseconds)
-                withContext(EmptyCoroutineContext) {}
+                withContext(EmptyCoroutineContext) {
+                    delay(10.milliseconds)
+                }
 
                 assertEquals(1, testDispatcher.dispatchCount)
             }.join()
@@ -52,8 +53,9 @@ class DeferredDispatchTest : RobolectricTest() {
             launchWithDeferredDispatch {
                 assertEquals(1, testDispatcher.dispatchCount)
 
-                delay(10.milliseconds)
-                withContext(Dispatchers.Default) {}
+                withContext(Dispatchers.Default) {
+                    delay(10.milliseconds)
+                }
 
                 assertEquals(2, testDispatcher.dispatchCount)
             }.join()
