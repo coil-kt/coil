@@ -26,8 +26,7 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.Input
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.internal.AsyncImageState
-import coil3.compose.internal.DeferredDispatchCoroutineScope
-import coil3.compose.internal.launchUndispatched
+import coil3.compose.internal.launchWithDeferredDispatch
 import coil3.compose.internal.onStateOf
 import coil3.compose.internal.previewHandler
 import coil3.compose.internal.requestOf
@@ -190,8 +189,8 @@ class AsyncImagePainter internal constructor(
     private val inputFlow: MutableStateFlow<Input> = MutableStateFlow(input)
     val input: StateFlow<Input> = inputFlow.asStateFlow()
 
-    private val _state: MutableStateFlow<State> = MutableStateFlow(State.Empty)
-    val state: StateFlow<State> = _state.asStateFlow()
+    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(State.Empty)
+    val state: StateFlow<State> = stateFlow.asStateFlow()
 
     override val intrinsicSize: Size
         get() = painter?.intrinsicSize ?: Size.Unspecified
@@ -220,7 +219,7 @@ class AsyncImagePainter internal constructor(
     private fun launchJob() {
         val input = _input ?: return
 
-        rememberJob = DeferredDispatchCoroutineScope(scope.coroutineContext).launchUndispatched {
+        rememberJob = scope.launchWithDeferredDispatch {
             val previewHandler = previewHandler
             val state = if (previewHandler != null) {
                 // If we're in inspection mode use the preview renderer.
@@ -297,9 +296,9 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun updateState(state: State) {
-        val previous = _state.value
+        val previous = stateFlow.value
         val current = transform(state)
-        _state.value = current
+        stateFlow.value = current
         painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
         // Manually forget and remember the old/new painters.

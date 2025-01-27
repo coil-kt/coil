@@ -151,7 +151,6 @@ private fun AsyncImage(
     filterQuality: FilterQuality,
     clipToBounds: Boolean,
 ) {
-    // Create and execute the image request.
     val request = requestOfWithSizeResolver(
         model = state.model,
         contentScale = contentScale,

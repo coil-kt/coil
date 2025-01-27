@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package coil3.compose.internal
 
 import kotlin.coroutines.CoroutineContext
@@ -9,27 +7,38 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
 /**
- * A [CoroutineScope] that does not dispatch until the [CoroutineDispatcher] in its
- * [CoroutineContext] changes.
+ * Launch [block] and defer dispatching until the context's [CoroutineDispatcher] changes.
  */
-internal fun DeferredDispatchCoroutineScope(
-    context: CoroutineContext,
-): CoroutineScope {
-    val originalDispatcher = context.dispatcher ?: Dispatchers.Unconfined
-    return CoroutineScope(DeferredDispatchCoroutineContext(context, originalDispatcher))
+internal fun CoroutineScope.launchWithDeferredDispatch(
+    block: suspend CoroutineScope.() -> Unit,
+): Job {
+    val originalDispatcher = coroutineContext.dispatcher
+    if (originalDispatcher == null || originalDispatcher == Dispatchers.Unconfined) {
+        return launch(
+            context = Dispatchers.Unconfined,
+            start = CoroutineStart.UNDISPATCHED,
+            block = block,
+        )
+    } else {
+        return CoroutineScope(DeferredDispatchCoroutineContext(coroutineContext)).launch(
+            context = DeferredDispatchCoroutineDispatcher(originalDispatcher),
+            start = CoroutineStart.UNDISPATCHED,
+            block = block,
+        )
+    }
 }
 
 /**
  * A special [CoroutineContext] implementation that automatically enables
  * [DeferredDispatchCoroutineDispatcher] dispatching if the context's [CoroutineDispatcher] changes.
  */
-internal class DeferredDispatchCoroutineContext(
+private class DeferredDispatchCoroutineContext(
     context: CoroutineContext,
-    val originalDispatcher: CoroutineDispatcher,
 ) : ForwardingCoroutineContext(context) {
 
     override fun newContext(
@@ -39,24 +48,18 @@ internal class DeferredDispatchCoroutineContext(
         val oldDispatcher = old.dispatcher
         val newDispatcher = new.dispatcher
         if (oldDispatcher is DeferredDispatchCoroutineDispatcher && oldDispatcher != newDispatcher) {
-            oldDispatcher.unconfined = oldDispatcher.unconfined &&
-                (newDispatcher == null || newDispatcher == Dispatchers.Unconfined)
+            oldDispatcher.unconfined = false
         }
 
-        return DeferredDispatchCoroutineContext(new, originalDispatcher)
+        return DeferredDispatchCoroutineContext(new)
     }
 }
-
-/** Launch [block] without dispatching. */
-internal inline fun CoroutineScope.launchUndispatched(
-    noinline block: suspend CoroutineScope.() -> Unit,
-) = launch(DeferredDispatchCoroutineDispatcher(Dispatchers.Unconfined), CoroutineStart.UNDISPATCHED, block)
 
 /**
  * A [CoroutineDispatcher] that delegates to [Dispatchers.Unconfined] while [unconfined] is true
  * and [delegate] when [unconfined] is false.
  */
-internal class DeferredDispatchCoroutineDispatcher(
+private class DeferredDispatchCoroutineDispatcher(
     private val delegate: CoroutineDispatcher,
 ) : CoroutineDispatcher() {
     private val _unconfined = atomic(true)

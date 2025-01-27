@@ -24,10 +24,10 @@ class SimpleTestDispatcher : CoroutineDispatcher() {
     fun runNextTask() {
         val task = synchronized(lock) { tasks.removeFirst() }
         try {
-            inProgressTasks.getAndIncrement()
+            inProgressTasks.incrementAndGet()
             task.run()
         } finally {
-            inProgressTasks.getAndDecrement()
+            inProgressTasks.decrementAndGet()
         }
     }
 

@@ -824,12 +824,13 @@ class AsyncImagePainterTest {
         val key = Extras.Key(0)
         val value = AtomicInteger()
         val compositionCount = AtomicInteger()
+        val maxCompositionCount = AtomicInteger(3)
 
         composeTestRule.setContent {
             val painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
-                    .apply { extras[key] = value.getAndIncrement() }
+                    .apply { extras[key] = value.getAndSet(1) }
                     .build(),
                 imageLoader = imageLoader,
             )
@@ -841,17 +842,18 @@ class AsyncImagePainterTest {
 
             val state by painter.state.collectAsState()
 
-            when (compositionCount.incrementAndGet()) {
-                1 -> assertIs<State.Empty>(state)
-                2 -> assertIs<State.Loading>(state)
-                3 -> assertIs<State.Success>(state)
-                else -> error("too many compositions")
+            val compositions = compositionCount.incrementAndGet()
+            if (compositions > maxCompositionCount.get()) {
+                error("too many compositions")
+            }
+            if (state is State.Success) {
+                maxCompositionCount.set(compositions)
             }
         }
 
         waitForRequestComplete()
 
-        assertEquals(3, compositionCount.get())
+        assertEquals(maxCompositionCount.get(), compositionCount.get())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }

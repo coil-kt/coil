@@ -1,7 +1,6 @@
 package coil3.compose.internal
 
 import coil3.ImageLoader
-import coil3.compose.AsyncImagePainter
 import coil3.decode.DataSource
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
@@ -26,81 +25,91 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.Buffer
 
 class DeferredDispatchTest : RobolectricTest() {
     private val testDispatcher = TestCoroutineDispatcher()
-    private val deferredDispatcher = DeferredDispatchCoroutineDispatcher(testDispatcher)
 
     @Test
-    fun doesNotDispatchWhen_unconfined_true() = runTest {
-        deferredDispatcher.unconfined = true
+    fun `does not dispatch if dispatcher does not change`() = runTest {
+        withContext(testDispatcher) {
+            launchWithDeferredDispatch {
+                assertEquals(1, testDispatcher.dispatchCount)
 
-        withContext(deferredDispatcher) {
-            delay(100.milliseconds)
-            assertEquals(0, testDispatcher.dispatchCount)
+                withContext(EmptyCoroutineContext) {
+                    delay(10.milliseconds)
+                }
+
+                assertEquals(1, testDispatcher.dispatchCount)
+            }.join()
         }
     }
 
     @Test
-    fun doesDispatchWhen_unconfined_false() = runTest {
-        deferredDispatcher.unconfined = false
+    fun `does dispatch if dispatcher changes`() = runTest {
+        withContext(testDispatcher) {
+            launchWithDeferredDispatch {
+                assertEquals(1, testDispatcher.dispatchCount)
 
-        withContext(deferredDispatcher) {
-            delay(100.milliseconds)
-            assertEquals(2, testDispatcher.dispatchCount)
+                withContext(Dispatchers.Default) {
+                    delay(10.milliseconds)
+                }
+
+                assertEquals(2, testDispatcher.dispatchCount)
+            }.join()
         }
     }
 
-    /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun imageLoaderDoesNotDispatchIfContextDoesNotChange() = runTest {
-        deferredDispatcher.unconfined = true
+    fun `image loader does not dispatch if dispatcher does not change`() = runTest {
+        withContext(testDispatcher) {
+            launchWithDeferredDispatch {
+                assertEquals(1, testDispatcher.dispatchCount)
 
-        DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
-            val imageLoader = ImageLoader(context)
-            val request = ImageRequest.Builder(context)
-                .data(Unit)
-                .fetcherFactory(TestFetcher.Factory())
-                .decoderFactory(TestDecoder.Factory())
-                .coroutineContext(EmptyCoroutineContext)
-                .build()
-            val result = imageLoader.execute(request)
+                val imageLoader = ImageLoader(context)
+                val request = ImageRequest.Builder(context)
+                    .data(Unit)
+                    .fetcherFactory(TestFetcher.Factory())
+                    .decoderFactory(TestDecoder.Factory())
+                    .coroutineContext(EmptyCoroutineContext)
+                    .build()
+                val result = imageLoader.execute(request)
 
-            assertIs<SuccessResult>(result)
-            assertEquals(0, testDispatcher.dispatchCount)
-        }.join()
+                assertIs<SuccessResult>(result)
+                assertEquals(1, testDispatcher.dispatchCount)
+            }.join()
+        }
     }
 
-    /** This test emulates the context that [AsyncImagePainter] launches its request into. */
     @Test
-    fun imageLoaderDoesDispatchIfContextChanges() = runTest {
-        deferredDispatcher.unconfined = true
+    fun `image loader does dispatch if dispatcher changes`() = runTest {
+        withContext(testDispatcher) {
+            launchWithDeferredDispatch {
+                assertEquals(1, testDispatcher.dispatchCount)
 
-        DeferredDispatchCoroutineScope(coroutineContext + deferredDispatcher).launch {
-            val imageLoader = ImageLoader(context)
-            val request = ImageRequest.Builder(context)
-                .data(Unit)
-                .fetcherFactory(TestFetcher.Factory())
-                .decoderFactory(TestDecoder.Factory())
-                .decoderCoroutineContext(Dispatchers.Default)
-                .build()
-            val result = imageLoader.execute(request)
+                val imageLoader = ImageLoader(context)
+                val request = ImageRequest.Builder(context)
+                    .data(Unit)
+                    .fetcherFactory(TestFetcher.Factory())
+                    .decoderFactory(TestDecoder.Factory())
+                    .decoderCoroutineContext(Dispatchers.Default)
+                    .build()
+                val result = imageLoader.execute(request)
 
-            assertIs<SuccessResult>(result)
-            assertEquals(1, testDispatcher.dispatchCount)
-        }.join()
+                assertIs<SuccessResult>(result)
+                assertEquals(2, testDispatcher.dispatchCount)
+            }.join()
+        }
     }
 
     private class TestCoroutineDispatcher : CoroutineDispatcher() {
-        private var _dispatchCount by atomic(0)
-        val dispatchCount get() = _dispatchCount
+        private val _dispatchCount = atomic(0)
+        val dispatchCount: Int by _dispatchCount
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
-            _dispatchCount++
+            _dispatchCount.incrementAndGet()
             block.run()
         }
     }
