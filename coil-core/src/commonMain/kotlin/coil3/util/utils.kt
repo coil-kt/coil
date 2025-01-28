@@ -9,9 +9,11 @@ import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.intercept.Interceptor
 import coil3.intercept.RealInterceptorChain
+import coil3.key.Keyer
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
+import coil3.request.Options
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
@@ -45,6 +47,31 @@ internal fun AutoCloseable.closeQuietly() {
 }
 
 internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
+
+/** Same as [ComponentRegistry.key], but with extra logging. */
+@Suppress("UNCHECKED_CAST")
+internal fun ComponentRegistry.key(
+    data: Any,
+    options: Options,
+    logger: Logger?,
+    tag: String,
+): String? {
+    var hasKeyerForType = false
+    keyers.forEachIndices { (keyer, type) ->
+        if (type.isInstance(data)) {
+            hasKeyerForType = true
+            (keyer as Keyer<Any>).key(data, options)?.let { return it }
+        }
+    }
+    if (!hasKeyerForType) {
+        logger?.log(tag, Logger.Level.Warn) {
+            "No keyer is registered for data with type '${data::class.simpleName}'. " +
+                "Register Keyer<${data::class.simpleName}> in the component registry to " +
+                "cache the output image in the memory cache."
+        }
+    }
+    return null
+}
 
 internal fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?

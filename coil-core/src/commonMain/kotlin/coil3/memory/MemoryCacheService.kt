@@ -20,6 +20,7 @@ import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import coil3.util.Logger
 import coil3.util.isPlaceholderCached
+import coil3.util.key
 import coil3.util.log
 import kotlin.math.abs
 
@@ -43,7 +44,7 @@ internal class MemoryCacheService(
 
         // Slow path: create a new memory cache key.
         eventListener.keyStart(request, mappedData)
-        val key = imageLoader.components.key(mappedData, options)
+        val key = imageLoader.components.key(mappedData, options, logger, TAG)
         eventListener.keyEnd(request, key)
         if (key == null) {
             return null

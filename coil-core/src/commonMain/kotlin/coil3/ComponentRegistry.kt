@@ -118,7 +118,6 @@ class ComponentRegistry private constructor(
     fun newBuilder() = Builder(this)
 
     class Builder {
-
         internal val interceptors: MutableList<Interceptor>
         internal val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
         internal val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
