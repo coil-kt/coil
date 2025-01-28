@@ -113,12 +113,11 @@ Specifically, this function is only useful if you need to observe `AsyncImagePai
 
 ## Observing AsyncImagePainter.state
 
-Example:
-
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
+val state by painter.state.collectAsState()
 
-when (painter.state) {
+when (state) {
     is AsyncImagePainter.State.Empty,
     is AsyncImagePainter.State.Loading -> {
         CircularProgressIndicator()
