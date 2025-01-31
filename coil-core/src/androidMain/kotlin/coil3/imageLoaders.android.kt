@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
+import coil3.decode.Decoder
 import coil3.decode.ExifOrientationStrategy
 import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 
@@ -45,7 +46,7 @@ private val bitmapFactoryExifOrientationStrategyKey = Extras.Key(default = RESPE
 // region imageDecoderEnabled
 
 /**
- * Enables using [ImageDecoder] as this image loader's main decoder on API 29 and above.
+ * Enables using [ImageDecoder] as this image loader's main [Decoder] on API 29 and above.
  * If false, [BitmapFactory] is used on all API levels.
  */
 fun ImageLoader.Builder.imageDecoderEnabled(enabled: Boolean) = apply {
