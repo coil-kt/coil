@@ -215,6 +215,7 @@ public final class coil3/ImageLoadersKt {
 public final class coil3/ImageLoaders_androidKt {
 	public static final fun bitmapFactoryExifOrientationStrategy (Lcoil3/ImageLoader$Builder;Lcoil3/decode/ExifOrientationStrategy;)Lcoil3/ImageLoader$Builder;
 	public static final fun bitmapFactoryMaxParallelism (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
+	public static final fun imageDecoderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 }
 
 public final class coil3/ImageLoaders_nonJsCommonKt {

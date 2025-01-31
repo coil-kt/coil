@@ -42,3 +42,19 @@ internal val RealImageLoader.Options.bitmapFactoryExifOrientationStrategy: ExifO
 private val bitmapFactoryExifOrientationStrategyKey = Extras.Key(default = RESPECT_PERFORMANCE)
 
 // endregion
+// region imageDecoderEnabled
+
+/**
+ * Enables using [ImageDecoder] as this image loader's main decoder on API 29 and above.
+ * If false, [BitmapFactory] is used on all API levels.
+ */
+fun ImageLoader.Builder.imageDecoderEnabled(enabled: Boolean) = apply {
+    extras[imageDecoderEnabledKey] = enabled
+}
+
+internal val RealImageLoader.Options.imageDecoderEnabled: Boolean
+    get() = defaults.extras.getOrDefault(imageDecoderEnabledKey)
+
+private val imageDecoderEnabledKey = Extras.Key(default = true)
+
+// endregion
