@@ -5,8 +5,8 @@
 A typical Compose UI project will want to import:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 ```
 
 After that's imported you can load images from the network using `AsyncImage`:
@@ -26,8 +26,8 @@ AsyncImage(
 If you use Android Views instead of Compose UI import:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil:3.0.4")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+implementation("io.coil-kt.coil3:coil:3.1.0")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 ```
 
 After that's imported you can load images from the network using the `ImageView.load` extension function:

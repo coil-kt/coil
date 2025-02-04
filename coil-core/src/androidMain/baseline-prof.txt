@@ -3,8 +3,8 @@ SPLcoil3/BitmapImage;-><init>(Landroid/graphics/Bitmap;Z)V
 SPLcoil3/BitmapImage;->getBitmap()Landroid/graphics/Bitmap;
 SPLcoil3/BitmapImage;->getShareable()Z
 SPLcoil3/BitmapImage;->getSize()J
-Lcoil3/BitmapImage$$ExternalSyntheticBackport0;
-SPLcoil3/BitmapImage$$ExternalSyntheticBackport0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
+Lcoil3/ColorImage$$ExternalSyntheticBackport0;
+SPLcoil3/ColorImage$$ExternalSyntheticBackport0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 Lcoil3/ComponentRegistry;
 SPLcoil3/ComponentRegistry;->$r8$lambda$AOMzzwdb7Qz38tc6_CIWPIRh5vs(Lcoil3/ComponentRegistry;)Ljava/util/List;
 SPLcoil3/ComponentRegistry;->$r8$lambda$dJAwMCH26B_eSz_vzGP6LqaRwks(Lcoil3/ComponentRegistry;)Ljava/util/List;
@@ -18,7 +18,6 @@ SPLcoil3/ComponentRegistry;->getFetcherFactories()Ljava/util/List;
 SPLcoil3/ComponentRegistry;->getInterceptors()Ljava/util/List;
 SPLcoil3/ComponentRegistry;->getKeyers()Ljava/util/List;
 SPLcoil3/ComponentRegistry;->getMappers()Ljava/util/List;
-SPLcoil3/ComponentRegistry;->key(Ljava/lang/Object;Lcoil3/request/Options;)Ljava/lang/String;
 SPLcoil3/ComponentRegistry;->map(Ljava/lang/Object;Lcoil3/request/Options;)Ljava/lang/Object;
 SPLcoil3/ComponentRegistry;->newBuilder()Lcoil3/ComponentRegistry$Builder;
 SPLcoil3/ComponentRegistry;->newDecoder(Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;I)Lkotlin/Pair;
@@ -60,6 +59,7 @@ SPLcoil3/EventListener;->keyEnd(Lcoil3/request/ImageRequest;Ljava/lang/String;)V
 SPLcoil3/EventListener;->keyStart(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
 SPLcoil3/EventListener;->mapEnd(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
 SPLcoil3/EventListener;->mapStart(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
+SPLcoil3/EventListener;->onCancel(Lcoil3/request/ImageRequest;)V
 SPLcoil3/EventListener;->onStart(Lcoil3/request/ImageRequest;)V
 SPLcoil3/EventListener;->onSuccess(Lcoil3/request/ImageRequest;Lcoil3/request/SuccessResult;)V
 SPLcoil3/EventListener;->resolveSizeEnd(Lcoil3/request/ImageRequest;Lcoil3/size/Size;)V
@@ -125,6 +125,7 @@ Lcoil3/ImageLoaders_androidKt;
 SPLcoil3/ImageLoaders_androidKt;-><clinit>()V
 SPLcoil3/ImageLoaders_androidKt;->getBitmapFactoryExifOrientationStrategy(Lcoil3/RealImageLoader$Options;)Lcoil3/decode/ExifOrientationStrategy;
 SPLcoil3/ImageLoaders_androidKt;->getBitmapFactoryMaxParallelism(Lcoil3/RealImageLoader$Options;)I
+SPLcoil3/ImageLoaders_androidKt;->getImageDecoderEnabled(Lcoil3/RealImageLoader$Options;)Z
 Lcoil3/Image_androidKt;
 SPLcoil3/Image_androidKt;->asImage$default(Landroid/graphics/Bitmap;ZILjava/lang/Object;)Lcoil3/BitmapImage;
 SPLcoil3/Image_androidKt;->asImage(Landroid/graphics/Bitmap;Z)Lcoil3/BitmapImage;
@@ -139,6 +140,7 @@ SPLcoil3/RealImageLoader;->getDefaults()Lcoil3/request/ImageRequest$Defaults;
 SPLcoil3/RealImageLoader;->getDiskCache()Lcoil3/disk/DiskCache;
 SPLcoil3/RealImageLoader;->getMemoryCache()Lcoil3/memory/MemoryCache;
 SPLcoil3/RealImageLoader;->getOptions()Lcoil3/RealImageLoader$Options;
+SPLcoil3/RealImageLoader;->onCancel(Lcoil3/request/ImageRequest;Lcoil3/EventListener;)V
 SPLcoil3/RealImageLoader;->onSuccess(Lcoil3/request/SuccessResult;Lcoil3/target/Target;Lcoil3/EventListener;)V
 Lcoil3/RealImageLoader$Options;
 SPLcoil3/RealImageLoader$Options;-><init>(Landroid/content/Context;Lcoil3/request/ImageRequest$Defaults;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/EventListener$Factory;Lcoil3/ComponentRegistry;Lcoil3/util/Logger;)V
@@ -282,7 +284,7 @@ Lcoil3/disk/DiskCache$Editor;
 Lcoil3/disk/DiskCache$Snapshot;
 Lcoil3/disk/DiskLruCache;
 SPLcoil3/disk/DiskLruCache;-><clinit>()V
-SPLcoil3/disk/DiskLruCache;-><init>(Lokio/FileSystem;Lokio/Path;Lkotlinx/coroutines/CoroutineDispatcher;JII)V
+SPLcoil3/disk/DiskLruCache;-><init>(Lokio/FileSystem;Lokio/Path;Lkotlin/coroutines/CoroutineContext;JII)V
 SPLcoil3/disk/DiskLruCache;->access$completeEdit(Lcoil3/disk/DiskLruCache;Lcoil3/disk/DiskLruCache$Editor;Z)V
 SPLcoil3/disk/DiskLruCache;->access$getDirectory$p(Lcoil3/disk/DiskLruCache;)Lokio/Path;
 SPLcoil3/disk/DiskLruCache;->access$getFileSystem$p(Lcoil3/disk/DiskLruCache;)Lcoil3/disk/DiskLruCache$fileSystem$1;
@@ -341,7 +343,7 @@ SPLcoil3/disk/FaultHidingSink;->flush()V
 SPLcoil3/disk/FaultHidingSink;->write(Lokio/Buffer;J)V
 Lcoil3/disk/RealDiskCache;
 SPLcoil3/disk/RealDiskCache;-><clinit>()V
-SPLcoil3/disk/RealDiskCache;-><init>(JLokio/Path;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;)V
+SPLcoil3/disk/RealDiskCache;-><init>(JLokio/Path;Lokio/FileSystem;Lkotlin/coroutines/CoroutineContext;)V
 SPLcoil3/disk/RealDiskCache;->getDirectory()Lokio/Path;
 SPLcoil3/disk/RealDiskCache;->getFileSystem()Lokio/FileSystem;
 SPLcoil3/disk/RealDiskCache;->getMaxSize()J
@@ -557,6 +559,7 @@ Lcoil3/request/ErrorResult;
 Lcoil3/request/ImageRequest;
 HSPLcoil3/request/ImageRequest;-><init>(Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;)V
 SPLcoil3/request/ImageRequest;-><init>(Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+SPLcoil3/request/ImageRequest;->equals(Ljava/lang/Object;)Z
 SPLcoil3/request/ImageRequest;->getContext()Landroid/content/Context;
 SPLcoil3/request/ImageRequest;->getData()Ljava/lang/Object;
 SPLcoil3/request/ImageRequest;->getDecoderCoroutineContext()Lkotlin/coroutines/CoroutineContext;
@@ -832,11 +835,13 @@ Lcoil3/util/UtilsKt;
 SPLcoil3/util/UtilsKt;-><clinit>()V
 SPLcoil3/util/UtilsKt;->closeQuietly(Ljava/io/Closeable;)V
 SPLcoil3/util/UtilsKt;->closeQuietly(Ljava/lang/AutoCloseable;)V
+SPLcoil3/util/UtilsKt;->getDispatcher(Lkotlin/coroutines/CoroutineContext;)Lkotlinx/coroutines/CoroutineDispatcher;
 SPLcoil3/util/UtilsKt;->getEMPTY_IMAGE_FACTORY()Lkotlin/jvm/functions/Function1;
 SPLcoil3/util/UtilsKt;->getEventListener(Lcoil3/intercept/Interceptor$Chain;)Lcoil3/EventListener;
 SPLcoil3/util/UtilsKt;->isFileUri(Lcoil3/Uri;)Z
 SPLcoil3/util/UtilsKt;->isMinOrMax(I)Z
 SPLcoil3/util/UtilsKt;->isPlaceholderCached(Lcoil3/intercept/Interceptor$Chain;)Z
+SPLcoil3/util/UtilsKt;->key(Lcoil3/ComponentRegistry;Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/util/Logger;Ljava/lang/String;)Ljava/lang/String;
 Lcoil3/util/UtilsKt$EMPTY_IMAGE_FACTORY$1;
 SPLcoil3/util/UtilsKt$EMPTY_IMAGE_FACTORY$1;-><clinit>()V
 SPLcoil3/util/UtilsKt$EMPTY_IMAGE_FACTORY$1;-><init>()V
