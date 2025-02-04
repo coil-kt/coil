@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1.0] - February XX, 2025
+## [3.1.0] - February 4, 2025
 
 - Improve `AsyncImage` performance.
     - Runtime performance is improved by 25% to 40% depending on if the composable is being instantiated or reused. Allocations are also reduced by 35% to 48%. More info [here](https://github.com/coil-kt/coil/pull/2795).
