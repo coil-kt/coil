@@ -10,6 +10,7 @@ class CacheNetworkResponseTest {
     @Test
     fun canSerializeAndDeserializeCacheResponse() = runTestAsync {
         val expected = NetworkResponse(
+            code = 301,
             requestMillis = 1701673257L,
             responseMillis = 1701674491L,
             headers = NetworkHeaders.Builder()
@@ -22,9 +23,7 @@ class CacheNetworkResponseTest {
         CacheNetworkResponse.writeTo(expected, buffer)
         val actual = CacheNetworkResponse.readFrom(buffer)
 
-        assertEquals(expected.requestMillis, actual.requestMillis)
-        assertEquals(expected.responseMillis, actual.responseMillis)
-        assertEquals(expected.headers, actual.headers)
+        assertEquals(expected, actual)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1467 */
@@ -33,6 +32,7 @@ class CacheNetworkResponseTest {
         val headerName = "name"
         val headerValue = "微信图片"
         val expected = NetworkResponse(
+            code = 500,
             requestMillis = 1701673257L,
             responseMillis = 1701674491L,
             headers = NetworkHeaders.Builder()
