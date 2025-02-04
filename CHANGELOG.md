@@ -5,7 +5,7 @@
 - Improve `AsyncImage` performance.
     - Runtime performance is improved by 25% to 40% depending on if the composable is being instantiated or reused. Allocations are also reduced by 35% to 48%. More info [here](https://github.com/coil-kt/coil/pull/2795).
 - Add `ColorImage` and deprecate `FakeImage`.
-    - `ColorImage` is useful for returning a fake value in tests and previews. It solves the same use case as `FakeImage`, but is more easily available in `coil-core` instead of `coil-test`.
+    - `ColorImage` is useful for returning a fake value in tests and previews. It solves the same use case as `FakeImage`, but is more easily accessible in `coil-core` instead of `coil-test`.
 - Remove `coil-compose-core`'s dependency on `Dispatchers.Main.immedate`.
     - This also fixes a case where `AsyncImagePainter` would not execute `ImageRequest`s synchronously in Paparazzi and Roborazzi screenshot tests.
 - Add support for [data URIs](https://www.ietf.org/rfc/rfc2397.txt) with the format: `data:[<mediatype>][;base64],<data>`
