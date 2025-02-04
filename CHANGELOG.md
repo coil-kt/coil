@@ -1,7 +1,9 @@
 # Changelog
 
-## [3.1.0] - January XX, 2025
+## [3.1.0] - February XX, 2025
 
+- Improve `AsyncImage` performance.
+    - Runtime performance is improved by 25% to 40% depending on if the composable is being instantiated or reused. Allocations are also reduced by 35% to 48%. More info [here](https://github.com/coil-kt/coil/pull/2795).
 - Add `ColorImage` and deprecate `FakeImage`.
     - `ColorImage` is useful for returning a fake value in tests and previews. It solves the same use case as `FakeImage`, but is more easily available in `coil-core` instead of `coil-test`.
 - Remove `coil-compose-core`'s dependency on `Dispatchers.Main.immedate`.
@@ -9,10 +11,13 @@
 - Add support for [data URIs](https://www.ietf.org/rfc/rfc2397.txt) with the format: `data:[<mediatype>][;base64],<data>`
 - Add `AnimatedImageDecoder.ENCODED_LOOP_COUNT` to support using the encoded repeat count in a GIF's metadata.
 - Add `Extras` to `NetworkRequest` to support custom extensions.
+- Add `DiskCache.Builder.cleanupCoroutineContext` and deprecate `DiskCache.Builder.cleanupDispatcher`.
+- Log a warning if there is no registered `Keyer` for an `ImageRequest`'s data type.
 - Make `CrossfadePainter` public.
 - Support `Transformation`s on all multiplatform targets.
 - Support 0 as `Expires` header value in `CacheControlCacheStrategy`.
-- Update to Kotlin 2.1.0. NOTE: This release requires Kotlin 2.1.0 or greater if you use Kotlin native.
+- Fix `AsyncImage`/`SubcomposeAsyncImage`/`rememberAsyncImage` not launching a new `ImageRequest` if its `ContentScale` changes to/from `None`.
+- Update to Kotlin 2.1.0. NOTE: This release requires Kotlin 2.1.0 or greater if you use Kotlin native due to an LLVM update.
 - Update to Compose 1.7.3.
 
 ## [3.0.4] - November 25, 2024
