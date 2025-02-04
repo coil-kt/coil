@@ -5,7 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import okio.Buffer
 
-class CacheResponseTest {
+class CacheNetworkResponseTest {
 
     @Test
     fun canSerializeAndDeserializeCacheResponse() = runTestAsync {
