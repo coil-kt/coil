@@ -12,12 +12,13 @@
 - Add `AnimatedImageDecoder.ENCODED_LOOP_COUNT` to support using the encoded repeat count in a GIF's metadata.
 - Add `Extras` to `NetworkRequest` to support custom extensions.
 - Add `DiskCache.Builder.cleanupCoroutineContext` and deprecate `DiskCache.Builder.cleanupDispatcher`.
+- Add `ImageLoader.Builder.imageDecoderEnabled` to optionally disable using `android.graphics.ImageDecoder` on API 29 and above.
 - Log a warning if there is no registered `Keyer` for an `ImageRequest`'s data type.
 - Make `CrossfadePainter` public.
 - Support `Transformation`s on all multiplatform targets.
 - Support 0 as `Expires` header value in `CacheControlCacheStrategy`.
 - Fix `AsyncImage`/`SubcomposeAsyncImage`/`rememberAsyncImage` not launching a new `ImageRequest` if its `ContentScale` changes to/from `None`.
-- Update to Kotlin 2.1.0.
+- Update to Kotlin 2.1.10.
     - NOTE: This release requires compiling with Kotlin 2.1.0 or greater if you use Kotlin native due to an [LLVM update](https://kotlinlang.org/docs/whatsnew21.html#llvm-update-from-11-1-0-to-16-0-0).
 - Update to Compose 1.7.3.
 
