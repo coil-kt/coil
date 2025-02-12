@@ -110,11 +110,17 @@ class RequestHeaderInterceptor(
 }
 
 val imageLoader = ImageLoader.Builder(context)
-    .okHttpClient {
-        OkHttpClient.Builder()
-            // This header will be added to every image request.
-            .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
-            .build()
+    .components {
+        add(
+            OkHttpNetworkFetcher(
+                callFactory = {
+                    OkHttpClient.Builder()
+                        // This header will be added to every image request.
+                        .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
+                        .build()
+                },
+            )
+        )
     }
     .build()
 ```
