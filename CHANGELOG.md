@@ -21,6 +21,7 @@
 - Update to Kotlin 2.1.10.
     - NOTE: This release requires compiling with Kotlin 2.1.0 or greater if you use Kotlin native due to an [LLVM update](https://kotlinlang.org/docs/whatsnew21.html#llvm-update-from-11-1-0-to-16-0-0).
 - Update to Compose 1.7.3.
+- Update `androidx.core` to 1.15.0.
 
 ## [3.0.4] - November 25, 2024
 
