@@ -148,7 +148,7 @@ AsyncImage(
 )
 ```
 
-Custom [`Transition`](transitions.md)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
+Custom [`Transition`](/coil/api/coil-core/coil3.transition/-transition)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
 
 That said, it's possible to create custom transitions in Compose by observing `AsyncImagePainter.state`:
 
