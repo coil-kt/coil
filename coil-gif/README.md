@@ -29,4 +29,4 @@ val imageLoader = ImageLoader.Builder(context)
 To transform the pixel data of each frame of a GIF, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
 
 !!! Note
-    Coil includes two separate decoders to support decoding GIFs. `GifDecoder` supports all API levels, but is slower. `ImageDecoderDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API which is only available on API 28 and above. `ImageDecoderDecoder` is faster than `GifDecoder` and supports decoding animated WebP images and animated HEIF image sequences.
+    Coil includes two separate decoders to support decoding GIFs. `GifDecoder` supports all API levels, but is slower. `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API which is only available on API 28 and above. `AnimatedImageDecoder` is faster than `GifDecoder` and supports decoding animated WebP images and animated HEIF image sequences.
