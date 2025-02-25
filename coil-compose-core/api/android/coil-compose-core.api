@@ -167,7 +167,7 @@ public final class coil3/compose/LocalAsyncImageModelEqualityDelegateKt {
 
 public final class coil3/compose/LocalAsyncImagePreviewHandlerKt {
 	public static final fun AsyncImagePreviewHandler (Lkotlin/jvm/functions/Function2;)Lcoil3/compose/AsyncImagePreviewHandler;
-	public static final fun AsyncImagePreviewHandlerNullable (Lkotlin/jvm/functions/Function2;)Lcoil3/compose/AsyncImagePreviewHandler;
+	public static final fun AsyncImagePreviewHandlerNotNull (Lkotlin/jvm/functions/Function2;)Lcoil3/compose/AsyncImagePreviewHandler;
 	public static final fun getLocalAsyncImagePreviewHandler ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
