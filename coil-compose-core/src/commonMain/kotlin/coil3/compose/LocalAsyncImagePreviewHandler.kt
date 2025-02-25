@@ -47,6 +47,7 @@ fun interface AsyncImagePreviewHandler {
  * Convenience function that creates an [AsyncImagePreviewHandler] that returns an [Image].
  */
 @ExperimentalCoilApi
+@JvmName("AsyncImagePreviewHandlerNotNull")
 inline fun AsyncImagePreviewHandler(
     crossinline image: suspend (request: ImageRequest) -> Image,
 ) = AsyncImagePreviewHandler { _, request ->
@@ -63,7 +64,6 @@ inline fun AsyncImagePreviewHandler(
     ),
     level = DeprecationLevel.ERROR,
 )
-@JvmName("AsyncImagePreviewHandlerNullable")
 @ExperimentalCoilApi
 inline fun AsyncImagePreviewHandler(
     crossinline image: suspend (request: ImageRequest) -> Image?,
