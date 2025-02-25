@@ -13,6 +13,7 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmName
 
 @ExperimentalCoilApi
 val LocalAsyncImagePreviewHandler = staticCompositionLocalOf {
@@ -45,6 +46,24 @@ fun interface AsyncImagePreviewHandler {
 /**
  * Convenience function that creates an [AsyncImagePreviewHandler] that returns an [Image].
  */
+@ExperimentalCoilApi
+inline fun AsyncImagePreviewHandler(
+    crossinline image: suspend (request: ImageRequest) -> Image,
+) = AsyncImagePreviewHandler { _, request ->
+    image(request).let { Success(it.asPainter(request.context), SuccessResult(it, request)) }
+}
+
+@Deprecated(
+    message = "Migrate to the AsyncImagePreviewHandler constructor that returns a not null Image. " +
+        "Alternatively, if you need to return a nullable Image, inline this code into your call site.",
+    replaceWith = ReplaceWith(
+        expression = "AsyncImagePreviewHandler { _, request -> " +
+            "AsyncImagePainter.State.Loading(image(request)?.asPainter(request.context)) }",
+        imports = ["coil3.compose.AsyncImagePainter"],
+    ),
+    level = DeprecationLevel.ERROR,
+)
+@JvmName("AsyncImagePreviewHandlerNullable")
 @ExperimentalCoilApi
 inline fun AsyncImagePreviewHandler(
     crossinline image: suspend (request: ImageRequest) -> Image?,

@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.0] - Unreleased
+
+- Change `AsyncImagePreviewHandler`'s functional constructor to return `AsyncImagePainter.State.Success` instead of `AsyncImagePainter.State.Loading`.
+
 ## [3.1.0] - February 4, 2025
 
 - Improve `AsyncImage` performance.

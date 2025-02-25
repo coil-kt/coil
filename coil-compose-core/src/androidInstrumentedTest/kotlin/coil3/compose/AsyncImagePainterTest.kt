@@ -40,6 +40,7 @@ import coil3.EventListener
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.State
+import coil3.compose.AsyncImagePainter.State.Loading
 import coil3.compose.core.test.R
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
@@ -484,7 +485,9 @@ class AsyncImagePainterTest {
     fun previewPlaceholder() {
         assumeSupportsCaptureToImage()
 
-        val previewHandler = AsyncImagePreviewHandler(ImageRequest::placeholder)
+        val previewHandler = AsyncImagePreviewHandler { _, request ->
+            Loading(request.placeholder()?.asPainter(request.context))
+        }
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
