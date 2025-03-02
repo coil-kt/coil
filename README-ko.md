@@ -31,7 +31,7 @@ Coil의 [전체 문서는 여기에서](https://coil-kt.github.io/coil/getting_s
 
 ## 라이선스
 
-    Copyright 2024 Coil Contributors
+    Copyright 2025 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
