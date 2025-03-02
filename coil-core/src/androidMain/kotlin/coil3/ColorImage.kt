@@ -1,10 +1,8 @@
 package coil3
 
 import android.graphics.Paint
-import coil3.annotation.ExperimentalCoilApi
 import coil3.annotation.Poko
 
-@ExperimentalCoilApi
 @Poko
 actual class ColorImage actual constructor(
     actual val color: Int,

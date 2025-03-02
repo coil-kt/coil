@@ -1,7 +1,5 @@
 package coil3
 
-import coil3.annotation.ExperimentalCoilApi
-
 /**
  * An image that draws a [color].
  *
@@ -11,7 +9,6 @@ import coil3.annotation.ExperimentalCoilApi
  * @param color The ARGB hex color to draw with the format `0xAARRGGBB.toInt()`.
  *  Tip: Use Compose's color class: `ColorImage(Color.Black.toArgb())`.
  */
-@ExperimentalCoilApi
 expect class ColorImage(
     color: Int = 0xFF000000.toInt(),
     width: Int = -1,
