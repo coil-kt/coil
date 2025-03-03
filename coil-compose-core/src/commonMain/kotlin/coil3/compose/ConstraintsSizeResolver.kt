@@ -14,7 +14,7 @@ import coil3.size.Size
 import coil3.size.SizeResolver
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Create a [ConstraintsSizeResolver] and remember it.
@@ -31,13 +31,19 @@ fun rememberConstraintsSizeResolver(): ConstraintsSizeResolver {
 @Stable
 class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     private var latestConstraints = ZeroConstraints
-    private var continuation: Continuation<Unit>? = null
+    private var continuations = mutableListOf<Continuation<Unit>>()
 
     override suspend fun size(): Size {
         if (latestConstraints.isZero) {
-            val oldContinuation = continuation
-            suspendCoroutine { continuation = it }
-            oldContinuation?.resume(Unit)
+            var continuation: Continuation<Unit>? = null
+            try {
+                suspendCancellableCoroutine<Unit> {
+                    continuation = it
+                    continuations.add(it)
+                }
+            } finally {
+                continuations.remove(continuation)
+            }
         }
         return latestConstraints.toSize()
     }
@@ -59,8 +65,11 @@ class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
         // Cache the latest constraints.
         latestConstraints = constraints
         if (!constraints.isZero) {
-            continuation?.resume(Unit)
-            continuation = null
+            val c = continuations
+            if (c.isNotEmpty()) {
+                continuations = mutableListOf()
+                c.forEach { it.resume(Unit) }
+            }
         }
     }
 }
