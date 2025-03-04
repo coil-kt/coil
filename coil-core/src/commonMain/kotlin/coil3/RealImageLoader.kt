@@ -6,6 +6,7 @@ import coil3.fetch.DataUriFetcher
 import coil3.fetch.FileUriFetcher
 import coil3.intercept.EngineInterceptor
 import coil3.intercept.RealInterceptorChain
+import coil3.key.CacheEnabledKeyer
 import coil3.key.FileUriKeyer
 import coil3.key.UriKeyer
 import coil3.map.PathMapper
@@ -56,7 +57,7 @@ internal class RealImageLoader(
         .addAndroidComponents(options)
         .addJvmComponents(options)
         .addAppleComponents(options)
-        .addCommonComponents()
+        .addCommonComponents(options)
         .add(EngineInterceptor(this, systemCallbacks, requestService, options.logger))
         .build()
     private val shutdown = atomic(false)
@@ -288,18 +289,24 @@ internal expect fun ComponentRegistry.Builder.addAppleComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
-internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.Builder {
-    return this
-        // Mappers
-        .add(StringMapper())
-        .add(PathMapper())
-        // Keyers
-        .add(FileUriKeyer())
-        .add(UriKeyer())
-        // Fetchers
-        .add(FileUriFetcher.Factory())
-        .add(ByteArrayFetcher.Factory())
-        .add(DataUriFetcher.Factory())
+internal fun ComponentRegistry.Builder.addCommonComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder = apply {
+    // Mappers
+    add(StringMapper())
+    add(PathMapper())
+
+    // Keyers
+    add(FileUriKeyer())
+    add(UriKeyer())
+    if (options.defaultKeyerEnabled) {
+        add(CacheEnabledKeyer())
+    }
+
+    // Fetchers
+    add(FileUriFetcher.Factory())
+    add(ByteArrayFetcher.Factory())
+    add(DataUriFetcher.Factory())
 }
 
 private const val TAG = "RealImageLoader"

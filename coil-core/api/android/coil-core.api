@@ -209,6 +209,7 @@ public final class coil3/ImageLoader$Builder {
 
 public final class coil3/ImageLoadersKt {
 	public static final fun ImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
+	public static final fun defaultKeyerEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun serviceLoaderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 }
 
