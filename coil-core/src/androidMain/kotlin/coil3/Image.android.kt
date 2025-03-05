@@ -12,6 +12,7 @@ import coil3.annotation.Poko
 import coil3.util.allocationByteCountCompat
 import coil3.util.height
 import coil3.util.width
+import androidx.core.graphics.drawable.toDrawable
 
 @Suppress("RemoveRedundantQualifierName")
 actual typealias Bitmap = android.graphics.Bitmap
@@ -92,7 +93,7 @@ fun Drawable.asImage(shareable: Boolean): Image {
 fun Image.asDrawable(resources: Resources): Drawable {
     return when (this) {
         is DrawableImage -> drawable
-        is BitmapImage -> BitmapDrawable(resources, bitmap)
+        is BitmapImage -> bitmap.toDrawable(resources)
         else -> ImageDrawable(this)
     }
 }

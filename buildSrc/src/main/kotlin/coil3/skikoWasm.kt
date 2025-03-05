@@ -7,6 +7,7 @@ package coil3
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import org.gradle.kotlin.dsl.task
 import org.jetbrains.compose.web.tasks.UnpackSkikoWasmRuntimeTask
@@ -47,7 +48,7 @@ private fun Collection<KotlinJsIrTarget>.configureExperimentalWebApplication(pro
         testCompilation.defaultSourceSet.resources.srcDir(unpackedRuntimeDir)
 
         val taskName = "unpackSkikoWasmRuntime${it.targetName.uppercaseFirstChar()}"
-        val unpackRuntime = project.task<UnpackSkikoWasmRuntimeTask>(taskName) {
+        val unpackRuntime = project.tasks.register<UnpackSkikoWasmRuntimeTask>(taskName) {
             skikoRuntimeFiles = skikoJsWasmRuntimeConfiguration
             outputDir.set(unpackedRuntimeDir)
         }
