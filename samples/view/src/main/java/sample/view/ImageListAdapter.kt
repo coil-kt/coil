@@ -2,10 +2,10 @@ package sample.view
 
 import android.content.res.Resources as AndroidResources
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -23,7 +23,7 @@ import sample.view.ImageListAdapter.ViewHolder
 
 class ImageListAdapter(
     private val resources: AndroidResources,
-    private val setScreen: (Screen) -> Unit
+    private val setScreen: (Screen) -> Unit,
 ) : ListAdapter<Image, ViewHolder>(Callback.asConfig()) {
 
     private val displayWidth = resources.displayMetrics.widthPixels
@@ -45,8 +45,8 @@ class ImageListAdapter(
             var placeholder: MemoryCache.Key? = null
 
             load(item.uri) {
-                placeholder(ColorDrawable(item.color))
-                error(ColorDrawable(Color.RED))
+                placeholder(item.color.toDrawable())
+                error(Color.RED.toDrawable())
                 extras.setAll(item.extras)
                 listener { _, result -> placeholder = result.memoryCacheKey }
             }

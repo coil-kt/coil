@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toDrawable
 import coil3.annotation.Poko
 import coil3.util.allocationByteCountCompat
 import coil3.util.height
@@ -92,7 +93,7 @@ fun Drawable.asImage(shareable: Boolean): Image {
 fun Image.asDrawable(resources: Resources): Drawable {
     return when (this) {
         is DrawableImage -> drawable
-        is BitmapImage -> BitmapDrawable(resources, bitmap)
+        is BitmapImage -> bitmap.toDrawable(resources)
         else -> ImageDrawable(this)
     }
 }

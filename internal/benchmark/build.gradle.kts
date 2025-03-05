@@ -28,7 +28,7 @@ androidTest(name = "coil3.benchmark", config = true) {
     }
     testOptions {
         managedDevices {
-            devices {
+            allDevices {
                 create<ManagedVirtualDevice>("pixel9Api35") {
                     device = "Pixel 9"
                     apiLevel = 35
