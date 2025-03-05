@@ -8,11 +8,11 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toDrawable
 import coil3.annotation.Poko
 import coil3.util.allocationByteCountCompat
 import coil3.util.height
 import coil3.util.width
-import androidx.core.graphics.drawable.toDrawable
 
 @Suppress("RemoveRedundantQualifierName")
 actual typealias Bitmap = android.graphics.Bitmap

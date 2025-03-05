@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -19,7 +20,6 @@ import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
 import sample.view.ImageListAdapter.ViewHolder
-import androidx.core.graphics.drawable.toDrawable
 
 class ImageListAdapter(
     private val resources: AndroidResources,
