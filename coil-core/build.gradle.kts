@@ -10,7 +10,11 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.core")
+androidLibrary(name = "coil3.core") {
+    defaultConfig {
+        consumerProguardFiles("shrinker-rules.pro")
+    }
+}
 
 kotlin {
     sourceSets {
