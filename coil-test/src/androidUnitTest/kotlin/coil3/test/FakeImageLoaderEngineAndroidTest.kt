@@ -54,5 +54,4 @@ class FakeImageLoaderEngineAndroidTest : RobolectricTest() {
         assertIs<SuccessResult>(result)
         assertSame(Transition.Factory.NONE, result.request.transitionFactory)
     }
-
 }
