@@ -55,17 +55,17 @@ class FakeImageLoaderEngine private constructor(
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = requestTransformer.transform(chain.request)
-        val requestValue = RequestValue(request, chain.size)
+        val newChain = chain.withRequest(request)
+        val requestValue = RequestValue(request, newChain.size)
         _requests.emit(requestValue)
 
         var result: ImageResult? = null
         for (interceptor in interceptors) {
-            val newChain = chain.withRequest(request)
             result = interceptor.intercept(newChain)
             if (result != null) break
         }
         if (result == null) {
-            result = defaultInterceptor.intercept(chain)
+            result = defaultInterceptor.intercept(newChain)
         }
 
         _results.emit(ResultValue(requestValue, result))

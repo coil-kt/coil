@@ -35,4 +35,23 @@ class FakeImageLoaderEngineAndroidTest : RobolectricTest() {
         assertIs<SuccessResult>(result)
         assertSame(Transition.Factory.NONE, result.request.transitionFactory)
     }
+
+    @Test
+    fun `removes transition factory with default response`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val engine = FakeImageLoaderEngine.Builder()
+            .default(ColorDrawable(Color.RED))
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .crossfade(true)
+            .build()
+
+        val result = imageLoader.execute(request)
+        assertIs<SuccessResult>(result)
+        assertSame(Transition.Factory.NONE, result.request.transitionFactory)
+    }
 }
