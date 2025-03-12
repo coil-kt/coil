@@ -118,11 +118,11 @@ class ComponentRegistry private constructor(
     fun newBuilder() = Builder(this)
 
     class Builder {
-        internal val interceptors: MutableList<Interceptor>
-        internal val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
-        internal val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
-        internal val lazyFetcherFactories: MutableList<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>
-        internal val lazyDecoderFactories: MutableList<() -> List<Decoder.Factory>>
+        private val interceptors: MutableList<Interceptor>
+        private val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
+        private val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
+        private val lazyFetcherFactories: MutableList<() -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>>
+        private val lazyDecoderFactories: MutableList<() -> List<Decoder.Factory>>
 
         constructor() {
             interceptors = mutableListOf()
@@ -145,43 +145,83 @@ class ComponentRegistry private constructor(
             interceptors += interceptor
         }
 
-        /** Register a [Mapper]. */
+        /** Add an [Interceptor] at [index] in the list. */
+        fun add(index: Int, interceptor: Interceptor) = apply {
+            interceptors.add(index, interceptor)
+        }
+
+        /** Append a [Mapper] to the end of the list. */
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class)
 
-        /** Register a [Mapper]. */
+        /** Append a [Mapper] to the end of the list. */
         fun <T : Any> add(mapper: Mapper<T, *>, type: KClass<T>) = apply {
             mappers += mapper to type
         }
 
-        /** Register a [Keyer]. */
+        /** Add a [Mapper] at [index] in the list. */
+        inline fun <reified T : Any> add(index: Int, mapper: Mapper<T, *>) = add(index, mapper, T::class)
+
+        /** Add a [Mapper] at [index] in the list. */
+        fun <T : Any> add(index: Int, mapper: Mapper<T, *>, type: KClass<T>) = apply {
+            mappers.add(index, mapper to type)
+        }
+
+        /** Append a [Keyer] to the end of the list. */
         inline fun <reified T : Any> add(keyer: Keyer<T>) = add(keyer, T::class)
 
-        /** Register a [Keyer]. */
+        /** Append a [Keyer] to the end of the list. */
         fun <T : Any> add(keyer: Keyer<T>, type: KClass<T>) = apply {
             keyers += keyer to type
         }
 
-        /** Register a [Fetcher.Factory]. */
-        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class)
+        /** Add a [Keyer] at [index] in the list. */
+        inline fun <reified T : Any> add(index: Int, keyer: Keyer<T>) = add(index, keyer, T::class)
 
-        /** Register a [Fetcher.Factory]. */
-        fun <T : Any> add(factory: Fetcher.Factory<T>, type: KClass<T>) = apply {
-            lazyFetcherFactories += { listOf(factory to type) }
+        /** Add a [Keyer] at [index] in the list. */
+        fun <T : Any> add(index: Int, keyer: Keyer<T>, type: KClass<T>) = apply {
+            keyers.add(index, keyer to type)
         }
 
-        /** Register a factory of [Fetcher.Factory]s. */
+        /** Append a [Fetcher.Factory] to the end of the list. */
+        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class)
+
+        /** Append a [Fetcher.Factory] to the end of the list. */
+        fun <T : Any> add(factory: Fetcher.Factory<T>, type: KClass<T>) =
+            addFetcherFactories { listOf(factory to type) }
+
+        /** Add a [Fetcher.Factory] at [index] in the list. */
+        inline fun <reified T : Any> add(index: Int, factory: Fetcher.Factory<T>) = add(index, factory, T::class)
+
+        /** Add a [Fetcher.Factory] at [index] in the list. */
+        fun <T : Any> add(index: Int, factory: Fetcher.Factory<T>, type: KClass<T>) =
+            addFetcherFactories(index) { listOf(factory to type) }
+
+        /** Append a factory of [Fetcher.Factory]s to the end of the list. */
         fun addFetcherFactories(factory: () -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>) = apply {
             lazyFetcherFactories += factory
         }
 
-        /** Register a [Decoder.Factory]. */
-        fun add(factory: Decoder.Factory) = apply {
-            lazyDecoderFactories += { listOf(factory) }
+        /** Add a factory of [Fetcher.Factory]s at [index] in the list. */
+        fun addFetcherFactories(index: Int, factory: () -> List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>) = apply {
+            lazyFetcherFactories.add(index, factory)
         }
 
-        /** Register a factory of [Decoder.Factory]s. */
+        /** Append a [Decoder.Factory] to the end of the list. */
+        fun add(factory: Decoder.Factory) =
+            addDecoderFactories { listOf(factory) }
+
+        /** Add a [Decoder.Factory] at [index] in the list. */
+        fun add(index: Int, factory: Decoder.Factory) =
+            addDecoderFactories(index) { listOf(factory) }
+
+        /** Append a factory of [Decoder.Factory]s to the end of the list. */
         fun addDecoderFactories(factory: () -> List<Decoder.Factory>) = apply {
             lazyDecoderFactories += factory
+        }
+
+        /** Add a factory of [Decoder.Factory]s at [index] in the list. */
+        fun addDecoderFactories(index: Int, factory: () -> List<Decoder.Factory>) = apply {
+            lazyDecoderFactories.add(index, factory)
         }
 
         fun build(): ComponentRegistry {

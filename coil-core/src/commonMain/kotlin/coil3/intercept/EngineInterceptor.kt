@@ -11,6 +11,7 @@ import coil3.decode.DataSource
 import coil3.decode.DecodeResult
 import coil3.decode.FileImageSource
 import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.fetch.SourceFetchResult
 import coil3.intercept.EngineInterceptor.Companion.TAG
@@ -27,7 +28,6 @@ import coil3.transform.Transformation
 import coil3.util.ErrorResult
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
-import coil3.util.addFirst
 import coil3.util.closeQuietly
 import coil3.util.eventListener
 import coil3.util.foldIndices
@@ -35,6 +35,7 @@ import coil3.util.isPlaceholderCached
 import coil3.util.log
 import coil3.util.prepareToDraw
 import kotlin.coroutines.coroutineContext
+import kotlin.reflect.KClass
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -110,20 +111,25 @@ internal class EngineInterceptor(
     ): ExecuteResult {
         @Suppress("NAME_SHADOWING")
         var options = options
-        var components = imageLoader.components
+        val components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
             options = requestService.updateOptions(options)
 
-            if (request.fetcherFactory != null || request.decoderFactory != null) {
-                components = components.newBuilder()
-                    .addFirst(request.fetcherFactory)
-                    .addFirst(request.decoderFactory)
-                    .build()
+            var newComponents: ComponentRegistry.Builder? = null
+            if (request.fetcherFactory != null) {
+                @Suppress("UNCHECKED_CAST")
+                request.fetcherFactory as Pair<Fetcher.Factory<Any>, KClass<Any>>
+                newComponents = (newComponents ?: components.newBuilder())
+                    .add(0, request.fetcherFactory.first, request.fetcherFactory.second)
+            }
+            if (request.decoderFactory != null) {
+                newComponents = (newComponents ?: components.newBuilder())
+                    .add(0, request.decoderFactory)
             }
 
             // Fetch the data.
-            fetchResult = fetch(components, request, mappedData, options, eventListener)
+            fetchResult = fetch(newComponents?.build() ?: components, request, mappedData, options, eventListener)
 
             // Decode the data.
             when (fetchResult) {

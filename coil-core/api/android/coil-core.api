@@ -47,12 +47,19 @@ public final class coil3/ComponentRegistry {
 public final class coil3/ComponentRegistry$Builder {
 	public fun <init> ()V
 	public fun <init> (Lcoil3/ComponentRegistry;)V
+	public final fun add (ILcoil3/decode/Decoder$Factory;)Lcoil3/ComponentRegistry$Builder;
+	public final fun add (ILcoil3/fetch/Fetcher$Factory;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
+	public final fun add (ILcoil3/intercept/Interceptor;)Lcoil3/ComponentRegistry$Builder;
+	public final fun add (ILcoil3/key/Keyer;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
+	public final fun add (ILcoil3/map/Mapper;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/decode/Decoder$Factory;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/fetch/Fetcher$Factory;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/intercept/Interceptor;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/key/Keyer;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/map/Mapper;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
+	public final fun addDecoderFactories (ILkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun addDecoderFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
+	public final fun addFetcherFactories (ILkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun addFetcherFactories (Lkotlin/jvm/functions/Function0;)Lcoil3/ComponentRegistry$Builder;
 	public final fun build ()Lcoil3/ComponentRegistry;
 }
