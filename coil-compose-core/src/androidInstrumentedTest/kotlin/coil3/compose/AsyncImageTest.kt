@@ -61,7 +61,10 @@ import coil3.size.Size
 import coil3.test.utils.ComposeTestActivity
 import coil3.test.utils.context
 import coil3.transform.Transformation
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.fetchAndIncrement
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -77,6 +80,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalAtomicApi::class)
 class AsyncImageTest {
 
     @get:Rule
@@ -555,10 +559,10 @@ class AsyncImageTest {
 
     @Test
     fun doesNotRecompose() {
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         composeTestRule.setContent {
-            compositionCount.getAndIncrement()
+            compositionCount.fetchAndIncrement()
             AsyncImage(
                 model = "https://example.com/image",
                 contentDescription = null,
@@ -568,16 +572,16 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        assertEquals(1, compositionCount.get())
+        assertEquals(1, compositionCount.load())
     }
 
     @Test
     fun painterState_notMemoryCached() {
-        val outerCompositionCount = AtomicInteger()
-        val innerCompositionCount = AtomicInteger()
+        val outerCompositionCount = AtomicInt(0)
+        val innerCompositionCount = AtomicInt(0)
 
         composeTestRule.setContent {
-            outerCompositionCount.getAndIncrement()
+            outerCompositionCount.fetchAndIncrement()
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
@@ -587,7 +591,7 @@ class AsyncImageTest {
                 contentDescription = null,
                 imageLoader = imageLoader,
             ) {
-                innerCompositionCount.getAndIncrement()
+                innerCompositionCount.fetchAndIncrement()
                 assertIs<State.Success>(painter.state.collectAsState().value)
                 SubcomposeAsyncImageContent()
             }
@@ -595,8 +599,8 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        assertEquals(1, outerCompositionCount.get())
-        assertEquals(1, innerCompositionCount.get())
+        assertEquals(1, outerCompositionCount.load())
+        assertEquals(1, innerCompositionCount.load())
     }
 
     @Test
@@ -608,11 +612,11 @@ class AsyncImageTest {
             .asImage()
         imageLoader.memoryCache!![MemoryCache.Key(url)] = MemoryCache.Value(bitmap)
 
-        val outerCompositionCount = AtomicInteger()
-        val innerCompositionCount = AtomicInteger()
+        val outerCompositionCount = AtomicInt(0)
+        val innerCompositionCount = AtomicInt(0)
 
         composeTestRule.setContent {
-            outerCompositionCount.getAndIncrement()
+            outerCompositionCount.fetchAndIncrement()
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(url)
@@ -621,7 +625,7 @@ class AsyncImageTest {
                 contentDescription = null,
                 imageLoader = imageLoader,
             ) {
-                innerCompositionCount.getAndIncrement()
+                innerCompositionCount.fetchAndIncrement()
                 assertIs<State.Success>(painter.state.collectAsState().value)
                 SubcomposeAsyncImageContent()
             }
@@ -629,8 +633,8 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        assertEquals(1, outerCompositionCount.get())
-        assertEquals(1, innerCompositionCount.get())
+        assertEquals(1, outerCompositionCount.load())
+        assertEquals(1, innerCompositionCount.load())
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1133 */
@@ -732,20 +736,20 @@ class AsyncImageTest {
                 delay(50.milliseconds)
             }
         }
-        val compositionCount = AtomicInteger()
-        val onStartCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
+        val onStartCount = AtomicInt(0)
 
         composeTestRule.setContent {
             val count by tickerFlow.collectAsState(0)
 
-            compositionCount.getAndIncrement()
+            compositionCount.fetchAndIncrement()
 
             AsyncImage(
                 model = ImageRequest.Builder(context)
                     .data("https://example.com/image")
                     .listener(
                         onStart = {
-                            onStartCount.getAndIncrement()
+                            onStartCount.fetchAndIncrement()
                         },
                     )
                     .crossfade(true)
@@ -757,9 +761,9 @@ class AsyncImageTest {
             BasicText("Count: $count")
         }
 
-        waitUntil { compositionCount.get() >= 10 }
+        waitUntil { compositionCount.load() >= 10 }
 
-        assertEquals(1, onStartCount.get())
+        assertEquals(1, onStartCount.load())
     }
 
     @Test
@@ -771,20 +775,20 @@ class AsyncImageTest {
                 delay(100.milliseconds)
             }
         }
-        val compositionCount = AtomicInteger()
-        val onStartCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
+        val onStartCount = AtomicInt(0)
 
         composeTestRule.setContent {
             val count by tickerFlow.collectAsState(0)
 
-            compositionCount.getAndIncrement()
+            compositionCount.fetchAndIncrement()
 
             AsyncImage(
                 model = ImageRequest.Builder(context)
                     .data("https://example.com/image${count.coerceAtMost(1)}")
                     .listener(
                         onStart = {
-                            onStartCount.getAndIncrement()
+                            onStartCount.fetchAndIncrement()
                         },
                     )
                     .crossfade(true)
@@ -796,9 +800,9 @@ class AsyncImageTest {
             BasicText("Count: $count")
         }
 
-        waitUntil { compositionCount.get() >= 3 }
+        waitUntil { compositionCount.load() >= 3 }
 
-        assertEquals(2, onStartCount.get())
+        assertEquals(2, onStartCount.load())
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2573 */
@@ -933,9 +937,9 @@ class AsyncImageTest {
     @Test
     fun recomposesOnlyWhenFlowEmits_before() {
         val key = Extras.Key(0)
-        val value = AtomicInteger()
+        val value = AtomicInt(0)
         val totalCompositions = 10
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         var flowEmissions = 0
         val flow = flow {
@@ -949,7 +953,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             val observableValue by flow.collectAsState(0)
 
-            if (compositionCount.incrementAndGet() > totalCompositions) {
+            if (compositionCount.incrementAndFetch() > totalCompositions) {
                 error("too many compositions")
             }
 
@@ -959,7 +963,7 @@ class AsyncImageTest {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
-                    .apply { extras[key] = value.getAndIncrement() }
+                    .apply { extras[key] = value.fetchAndIncrement() }
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader,
@@ -972,7 +976,7 @@ class AsyncImageTest {
             flowEmissions >= totalCompositions
         }
 
-        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(totalCompositions, compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }
@@ -980,9 +984,9 @@ class AsyncImageTest {
     @Test
     fun recomposesOnlyWhenFlowEmits_after() {
         val key = Extras.Key(0)
-        val value = AtomicInteger()
+        val value = AtomicInt(0)
         val totalCompositions = 10
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         var flowEmissions = 0
         val flow = flow {
@@ -997,7 +1001,7 @@ class AsyncImageTest {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
-                    .apply { extras[key] = value.getAndIncrement() }
+                    .apply { extras[key] = value.fetchAndIncrement() }
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader,
@@ -1005,7 +1009,7 @@ class AsyncImageTest {
 
             val observableValue by flow.collectAsState(0)
 
-            if (compositionCount.incrementAndGet() > totalCompositions) {
+            if (compositionCount.incrementAndFetch() > totalCompositions) {
                 error("too many compositions")
             }
 
@@ -1019,7 +1023,7 @@ class AsyncImageTest {
             flowEmissions >= totalCompositions
         }
 
-        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(totalCompositions, compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }
@@ -1055,7 +1059,7 @@ class AsyncImageTest {
     @Test
     fun recomposesWhenTransformationsChange() {
         val totalCompositions = 2
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         val fakeTransformation = object : Transformation() {
             override val cacheKey: String
@@ -1066,7 +1070,7 @@ class AsyncImageTest {
         val flow = MutableStateFlow(listOf(fakeTransformation))
 
         composeTestRule.setContent {
-            if (compositionCount.incrementAndGet() > totalCompositions) {
+            if (compositionCount.incrementAndFetch() > totalCompositions) {
                 error("too many compositions")
             }
 
@@ -1086,7 +1090,7 @@ class AsyncImageTest {
 
         waitForRequestComplete(finishedRequests = 2)
 
-        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(totalCompositions, compositionCount.load())
         assertEquals(2, requestTracker.startedRequests)
         assertEquals(2, requestTracker.finishedRequests)
     }
