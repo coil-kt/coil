@@ -15,6 +15,7 @@
                 "dev.drewhamilton.poko",
                 "org.jetbrains.kotlin:kotlin",
                 "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable",
+                "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin",
                 "org.jetbrains.kotlinx:atomicfu-gradle-plugin",
                 "org.jetbrains.kotlinx.binary-compatibility-validator"
             ]
