@@ -50,7 +50,10 @@ import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
 import coil3.test.utils.ComposeTestActivity
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.fetchAndIncrement
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -71,6 +74,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalAtomicApi::class)
 class AsyncImagePainterTest {
 
     @get:Rule
@@ -713,9 +717,9 @@ class AsyncImagePainterTest {
 
     @Test
     fun successCallbackIsCalled() {
-        val loadingCount = AtomicInteger()
-        val successCount = AtomicInteger()
-        val errorCount = AtomicInteger()
+        val loadingCount = AtomicInt(0)
+        val successCount = AtomicInt(0)
+        val errorCount = AtomicInt(0)
 
         composeTestRule.setContent {
             Image(
@@ -725,9 +729,9 @@ class AsyncImagePainterTest {
                         .size(100, 100)
                         .build(),
                     imageLoader = imageLoader,
-                    onLoading = { loadingCount.getAndIncrement() },
-                    onSuccess = { successCount.getAndIncrement() },
-                    onError = { errorCount.getAndIncrement() },
+                    onLoading = { loadingCount.fetchAndIncrement() },
+                    onSuccess = { successCount.fetchAndIncrement() },
+                    onError = { errorCount.fetchAndIncrement() },
                 ),
                 contentDescription = null,
             )
@@ -735,16 +739,16 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        assertEquals(1, loadingCount.get())
-        assertEquals(1, successCount.get())
-        assertEquals(0, errorCount.get())
+        assertEquals(1, loadingCount.load())
+        assertEquals(1, successCount.load())
+        assertEquals(0, errorCount.load())
     }
 
     @Test
     fun errorCallbackIsCalled() {
-        val loadingCount = AtomicInteger()
-        val successCount = AtomicInteger()
-        val errorCount = AtomicInteger()
+        val loadingCount = AtomicInt(0)
+        val successCount = AtomicInt(0)
+        val errorCount = AtomicInt(0)
 
         composeTestRule.setContent {
             Image(
@@ -754,9 +758,9 @@ class AsyncImagePainterTest {
                         .size(100, 100)
                         .build(),
                     imageLoader = imageLoader,
-                    onLoading = { loadingCount.getAndIncrement() },
-                    onSuccess = { successCount.getAndIncrement() },
-                    onError = { errorCount.getAndIncrement() },
+                    onLoading = { loadingCount.fetchAndIncrement() },
+                    onSuccess = { successCount.fetchAndIncrement() },
+                    onError = { errorCount.fetchAndIncrement() },
                 ),
                 contentDescription = null,
             )
@@ -764,14 +768,14 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        assertEquals(1, loadingCount.get())
-        assertEquals(0, successCount.get())
-        assertEquals(1, errorCount.get())
+        assertEquals(1, loadingCount.load())
+        assertEquals(0, successCount.load())
+        assertEquals(1, errorCount.load())
     }
 
     @Test
     fun doesNotRecompose() {
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         composeTestRule.setContent {
             Image(
@@ -781,18 +785,18 @@ class AsyncImagePainterTest {
                 ),
                 contentDescription = null,
             )
-            compositionCount.getAndIncrement()
+            compositionCount.fetchAndIncrement()
         }
 
         waitForRequestComplete()
 
-        assertEquals(1, compositionCount.get())
+        assertEquals(1, compositionCount.load())
     }
 
     @Test
     fun restartStartsANewRequestWithSameInputsAndDoesNotRecompose() {
-        val compositionCount = AtomicInteger()
-        val requestCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
+        val requestCount = AtomicInt(0)
 
         composeTestRule.setContent {
             val painter = rememberAsyncImagePainter(
@@ -802,7 +806,7 @@ class AsyncImagePainterTest {
             LaunchedEffect(Unit) {
                 painter.state.collectLatest { state ->
                     // Launch 3 requests sequentially.
-                    if (state is State.Success && requestCount.incrementAndGet() < 3) {
+                    if (state is State.Success && requestCount.incrementAndFetch() < 3) {
                         painter.restart()
                     }
                 }
@@ -811,12 +815,12 @@ class AsyncImagePainterTest {
                 painter = painter,
                 contentDescription = null,
             )
-            compositionCount.getAndIncrement()
+            compositionCount.fetchAndIncrement()
         }
 
         waitForRequestComplete(finishedRequests = 3)
 
-        assertEquals(1, compositionCount.get())
+        assertEquals(1, compositionCount.load())
         assertSame(requestTracker.requests[0].data, requestTracker.requests[1].data)
         assertSame(requestTracker.requests[1].data, requestTracker.requests[2].data)
     }
@@ -825,15 +829,15 @@ class AsyncImagePainterTest {
     @Test
     fun recomposesOnlyWhenStateChanges() {
         val key = Extras.Key(0)
-        val value = AtomicInteger()
-        val compositionCount = AtomicInteger()
-        val maxCompositionCount = AtomicInteger(3)
+        val value = AtomicInt(0)
+        val compositionCount = AtomicInt(0)
+        val maxCompositionCount = AtomicInt(3)
 
         composeTestRule.setContent {
             val painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
-                    .apply { extras[key] = value.getAndSet(1) }
+                    .apply { extras[key] = value.compareAndExchange(0, 1) }
                     .build(),
                 imageLoader = imageLoader,
             )
@@ -845,18 +849,18 @@ class AsyncImagePainterTest {
 
             val state by painter.state.collectAsState()
 
-            val compositions = compositionCount.incrementAndGet()
-            if (compositions > maxCompositionCount.get()) {
+            val compositions = compositionCount.incrementAndFetch()
+            if (compositions > maxCompositionCount.load()) {
                 error("too many compositions")
             }
             if (state is State.Success) {
-                maxCompositionCount.set(compositions)
+                maxCompositionCount.store(compositions)
             }
         }
 
         waitForRequestComplete()
 
-        assertEquals(maxCompositionCount.get(), compositionCount.get())
+        assertEquals(maxCompositionCount.load(), compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }
@@ -864,9 +868,9 @@ class AsyncImagePainterTest {
     @Test
     fun recomposesOnlyWhenFlowEmits_before() {
         val key = Extras.Key(0)
-        val value = AtomicInteger()
+        val value = AtomicInt(0)
         val totalCompositions = 10
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         var flowEmissions = 0
         val flow = flow {
@@ -880,7 +884,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             val observableValue by flow.collectAsState(0)
 
-            if (compositionCount.incrementAndGet() > totalCompositions) {
+            if (compositionCount.incrementAndFetch() > totalCompositions) {
                 error("too many compositions")
             }
 
@@ -891,7 +895,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://example.com/image")
-                        .apply { extras[key] = value.getAndIncrement() }
+                        .apply { extras[key] = value.fetchAndIncrement() }
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -905,7 +909,7 @@ class AsyncImagePainterTest {
             flowEmissions >= totalCompositions
         }
 
-        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(totalCompositions, compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }
@@ -913,9 +917,9 @@ class AsyncImagePainterTest {
     @Test
     fun recomposesOnlyWhenFlowEmits_after() {
         val key = Extras.Key(0)
-        val value = AtomicInteger()
+        val value = AtomicInt(0)
         val totalCompositions = 10
-        val compositionCount = AtomicInteger()
+        val compositionCount = AtomicInt(0)
 
         var flowEmissions = 0
         val flow = flow {
@@ -931,7 +935,7 @@ class AsyncImagePainterTest {
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://example.com/image")
-                        .apply { extras[key] = value.getAndIncrement() }
+                        .apply { extras[key] = value.fetchAndIncrement() }
                         .build(),
                     imageLoader = imageLoader,
                 ),
@@ -940,7 +944,7 @@ class AsyncImagePainterTest {
 
             val observableValue by flow.collectAsState(0)
 
-            if (compositionCount.incrementAndGet() > totalCompositions) {
+            if (compositionCount.incrementAndFetch() > totalCompositions) {
                 error("too many compositions")
             }
 
@@ -954,7 +958,7 @@ class AsyncImagePainterTest {
             flowEmissions >= totalCompositions
         }
 
-        assertEquals(totalCompositions, compositionCount.get())
+        assertEquals(totalCompositions, compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
     }

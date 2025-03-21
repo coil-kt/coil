@@ -24,6 +24,6 @@ class ContentMetadata(
  */
 class ResourceMetadata(
     val packageName: String,
-    @DrawableRes val resId: Int,
+    @get:DrawableRes @param:DrawableRes val resId: Int,
     val density: Int,
 ) : ImageSource.Metadata()

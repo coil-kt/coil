@@ -111,7 +111,7 @@ public final class coil3/compose/AsyncImagePreviewHandler$Companion {
 public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
 	public static final field INSTANCE Lcoil3/compose/ComposableSingletons$SubcomposeAsyncImageKt;
 	public fun <init> ()V
-	public final fun getLambda-1$coil_compose_core_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1938077476$coil_compose_core_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class coil3/compose/ConstraintsSizeResolver : androidx/compose/ui/layout/LayoutModifier, coil3/size/SizeResolver {

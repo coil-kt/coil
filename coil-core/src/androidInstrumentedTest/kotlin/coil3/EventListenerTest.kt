@@ -23,7 +23,9 @@ import coil3.test.utils.activity
 import coil3.test.utils.context
 import coil3.transform.Transformation
 import coil3.transition.Transition
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.fetchAndIncrement
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertTrue
@@ -34,6 +36,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalAtomicApi::class)
 class EventListenerTest {
 
     @get:Rule
@@ -210,14 +213,14 @@ class EventListenerTest {
 
     private class MethodChecker(private val callExpected: Boolean) {
 
-        private val callCount = AtomicInteger(0)
+        private val callCount = AtomicInt(0)
 
         fun call() {
-            callCount.getAndIncrement()
+            callCount.fetchAndIncrement()
         }
 
         fun complete(eventName: String) {
-            val count = callCount.get()
+            val count = callCount.load()
             require(count in 0..1) { "$eventName was called $count times." }
 
             if (callExpected) {

@@ -37,10 +37,10 @@ import kotlin.math.roundToInt
  * @param bottomRight The radius for the bottom right corner.
  */
 class RoundedCornersTransformation(
-    @Px private val topLeft: Float = 0f,
-    @Px private val topRight: Float = 0f,
-    @Px private val bottomLeft: Float = 0f,
-    @Px private val bottomRight: Float = 0f,
+    @param:Px private val topLeft: Float = 0f,
+    @param:Px private val topRight: Float = 0f,
+    @param:Px private val bottomLeft: Float = 0f,
+    @param:Px private val bottomRight: Float = 0f,
 ) : Transformation() {
 
     constructor(@Px radius: Float) : this(radius, radius, radius, radius)
