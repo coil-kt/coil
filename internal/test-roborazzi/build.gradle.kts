@@ -13,12 +13,6 @@ addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.test.roborazzi")
 
 kotlin {
-    jvm {
-        compilerOptions {
-            freeCompilerArgs.add("-Xcontext-receivers")
-        }
-    }
-
     sourceSets {
         commonTest.dependencies {
             implementation(projects.coilCore)
