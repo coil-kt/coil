@@ -21,23 +21,22 @@ kotlin {
             implementation(projects.internal.testUtils)
         }
         androidUnitTest.dependencies {
+            implementation(libs.bundles.test.jvm)
             implementation(libs.roborazzi.compose)
             implementation(libs.roborazzi.core)
             implementation(libs.roborazzi.junit)
-        }
-        named("jvmCommonTest").dependencies {
-            implementation(libs.bundles.test.jvm)
             implementation(compose.desktop.uiTestJUnit4)
         }
         jvmTest.dependencies {
             implementation(libs.roborazzi.compose.desktop)
             implementation(compose.desktop.currentOs)
+            implementation(compose.desktop.uiTestJUnit4)
         }
     }
 }
 
 roborazzi {
-    // RoborazziOptions.RecordOptions.outputDirectoryPath and roborazzi.output.dir seems to be ignored on desktop.
-    // To workaround that this is used.
+    // RoborazziOptions.RecordOptions.outputDirectoryPath and roborazzi.output.dir seems to be
+    // ignored on desktop. To workaround that this is used.
     outputDir = layout.projectDirectory.dir("src/jvmTest/snapshots/images")
 }
