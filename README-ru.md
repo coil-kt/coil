@@ -27,7 +27,7 @@ AsyncImage(
 )
 ```
 
-Ознакомьтесь с [полной документацией Coil] здесь (https://coil-kt.github.io/coil/getting_started/).
+Ознакомьтесь с [полной документацией Coil здесь](https://coil-kt.github.io/coil/getting_started/).
 
 ## Лицензия
 
