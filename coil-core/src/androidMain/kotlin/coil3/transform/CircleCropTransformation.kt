@@ -19,7 +19,7 @@ class CircleCropTransformation : Transformation() {
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val outputSize = minOf(input.width, input.height)
         return createBitmap(outputSize, outputSize, input.safeConfig).applyCanvas {
-            val paint = newBitmapShaderPaint(input, outputSize, outputSize)
+            val paint = newScaledShaderPaint(input, outputSize, outputSize)
             val radius = outputSize / 2f
             drawCircle(radius, radius, radius, paint)
         }

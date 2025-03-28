@@ -11,7 +11,7 @@ import coil3.size.Scale
 /**
  * Create a [Paint] that draws [input] centered and scaled to fit inside the output dimensions.
  */
-internal fun newBitmapShaderPaint(
+internal fun newScaledShaderPaint(
     input: Bitmap,
     outputWidth: Int,
     outputHeight: Int,

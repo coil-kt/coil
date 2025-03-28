@@ -50,7 +50,7 @@ class RoundedCornersTransformation(
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val (outputWidth, outputHeight) = calculateOutputSize(input, size)
         return createBitmap(outputWidth, outputHeight, input.safeConfig).applyCanvas {
-            val paint = newBitmapShaderPaint(input, outputWidth, outputHeight)
+            val paint = newScaledShaderPaint(input, outputWidth, outputHeight)
             if (topLeft == topRight && topRight == bottomLeft && bottomLeft == bottomRight) {
                 drawRoundRect(0f, 0f, outputWidth.toFloat(), outputHeight.toFloat(), topLeft, topLeft, paint)
             } else {
