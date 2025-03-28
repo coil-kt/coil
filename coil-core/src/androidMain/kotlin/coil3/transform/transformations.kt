@@ -9,7 +9,7 @@ import coil3.decode.DecodeUtils
 import coil3.size.Scale
 
 /**
- * Create a [Paint] that draws [input] centered and scaled inside the output dimensions.
+ * Create a [Paint] that draws [input] centered and scaled to fit inside the output dimensions.
  */
 internal fun newBitmapShaderPaint(
     input: Bitmap,
