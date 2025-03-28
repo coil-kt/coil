@@ -32,6 +32,9 @@ AsyncImage(
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
 ## License
+sqkklw
+
+sang
 
     Copyright 2025 Coil Contributors
 
