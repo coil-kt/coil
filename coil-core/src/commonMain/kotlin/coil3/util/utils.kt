@@ -5,8 +5,6 @@ import coil3.EventListener
 import coil3.Image
 import coil3.Uri
 import coil3.decode.DataSource
-import coil3.decode.Decoder
-import coil3.fetch.Fetcher
 import coil3.intercept.Interceptor
 import coil3.intercept.RealInterceptorChain
 import coil3.key.Keyer
@@ -16,7 +14,6 @@ import coil3.request.NullRequestDataException
 import coil3.request.Options
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.Closeable
 
@@ -72,14 +69,6 @@ internal fun ComponentRegistry.key(
     }
     return null
 }
-
-internal fun ComponentRegistry.Builder.addFirst(
-    pair: Pair<Fetcher.Factory<*>, KClass<*>>?
-) = apply { if (pair != null) lazyFetcherFactories.add(0) { listOf(pair) } }
-
-internal fun ComponentRegistry.Builder.addFirst(
-    factory: Decoder.Factory?
-) = apply { if (factory != null) lazyDecoderFactories.add(0) { listOf(factory) } }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"
 internal const val MIME_TYPE_WEBP = "image/webp"
