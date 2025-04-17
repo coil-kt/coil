@@ -1,5 +1,7 @@
 package coil3
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_ALL
@@ -11,6 +13,7 @@ import coil3.fetch.ContentUriFetcher
 import coil3.fetch.DrawableFetcher
 import coil3.fetch.ResourceUriFetcher
 import coil3.key.AndroidResourceUriKeyer
+import coil3.key.CacheDisabledKeyer
 import coil3.map.AndroidUriMapper
 import coil3.map.ResourceIntMapper
 import coil3.request.Disposable
@@ -79,6 +82,10 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
 
     // Keyers
     add(AndroidResourceUriKeyer())
+    if (options.defaultKeyerEnabled) {
+        add(CacheDisabledKeyer<Bitmap>())
+        add(CacheDisabledKeyer<Drawable>())
+    }
 
     // Fetchers
     add(AssetUriFetcher.Factory())
