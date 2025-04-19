@@ -447,6 +447,7 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         val headers = NetworkHeaders.Builder()
             .set("Cache-Control", "max-age=2592000, s-maxage=2592000, public")
             .set("Date", "Thu, 10 Apr 2025 13:15:20 GMT")
+            // Intentionally incorrect to fail validation. 1 Jan 2000 is a Saturday.
             .set("Last-Modified", "Thu, 1 Jan 2000 00:00:00 GMT")
             .build()
         val response = FakeNetworkResponse(headers = headers)
