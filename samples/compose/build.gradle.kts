@@ -57,7 +57,7 @@ kotlin {
     jvm("desktop")
 
     js {
-        moduleName = "coilSample"
+        outputModuleName = "coilSample"
         browser {
             commonWebpackConfig {
                 outputFileName = "coilSample.js"
@@ -68,7 +68,7 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "coilSample"
+        outputModuleName = "coilSample"
         browser {
             commonWebpackConfig {
                 outputFileName = "coilSample.js"
