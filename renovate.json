@@ -6,10 +6,6 @@
     "dependencyDashboard": false,
     "packageRules": [
         {
-            "matchUpdateTypes": ["minor", "patch"],
-            "automerge": true
-        },
-        {
             "groupName": "Kotlin compiler plugins",
             "matchPackagePrefixes": [
                 "dev.drewhamilton.poko",
