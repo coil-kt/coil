@@ -1,7 +1,10 @@
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.application")
@@ -126,4 +129,13 @@ afterEvaluate {
         named("jsBrowserProductionWebpack").configure(configureJs)
         named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
+}
+
+// Compose 1.8.0 requires JVM 11.
+tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
+}
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions.jvmTarget = JvmTarget.JVM_11
 }
