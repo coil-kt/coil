@@ -6,6 +6,7 @@ import coil3.disk.DiskCache
 import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
 import coil3.network.CacheNetworkResponse
+import coil3.network.CacheStrategy
 import coil3.network.ConnectivityChecker
 import coil3.network.NetworkClient
 import coil3.network.NetworkFetcher
@@ -439,6 +440,27 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/2935 */
+    @Test
+    fun headersAreParsedLazily() = runTestAsync {
+        val url = FAKE_URL
+        val headers = NetworkHeaders.Builder()
+            .set("Cache-Control", "max-age=2592000, s-maxage=2592000, public")
+            .set("Date", "Thu, 10 Apr 2025 13:15:20 GMT")
+            // Intentionally incorrect to fail validation. 1 Jan 2000 is a Saturday.
+            .set("Last-Modified", "Thu, 1 Jan 2000 00:00:00 GMT")
+            .build()
+        val response = FakeNetworkResponse(headers = headers)
+
+        val result = cacheStrategy.read(
+            cacheResponse = response,
+            networkRequest = NetworkRequest(url),
+            options = Options(context),
+        )
+
+        assertEquals(CacheStrategy.ReadResult(response), result)
+    }
+
     private fun newFetcher(
         url: String,
         networkClient: NetworkClient = this.networkClient,
@@ -473,13 +495,13 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
     )
 
     class FakeNetworkClient : NetworkClient {
-        private val queue = mutableMapOf<String, ArrayDeque<NetworkResponse>>()
+        private val queues = mutableMapOf<String, ArrayDeque<NetworkResponse>>()
 
         val requests = mutableListOf<NetworkRequest>()
         val responses = mutableListOf<NetworkResponse>()
 
         fun enqueue(url: String, response: NetworkResponse) {
-            queue.getOrPut(url, ::ArrayDeque) += response
+            queues.getOrPut(url, ::ArrayDeque) += response
         }
 
         override suspend fun <T> executeRequest(
@@ -487,7 +509,7 @@ class CacheControlCacheStrategyTest : RobolectricTest() {
             block: suspend (response: NetworkResponse) -> T,
         ): T {
             requests += request
-            val response = queue.getValue(request.url).removeFirst()
+            val response = queues.getValue(request.url).removeFirst()
             responses += response
             return block(response)
         }

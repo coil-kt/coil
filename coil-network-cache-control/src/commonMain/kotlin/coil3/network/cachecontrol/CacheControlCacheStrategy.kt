@@ -77,18 +77,33 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
         private val requestCaching = CacheControl.parse(networkRequest.headers)
 
         /** The server's time when the cached response was served, if known. */
-        private var servedDate: Instant? = null
         private var servedDateString: String? = null
+        private var servedDate: Instant? = null
+            get() = field ?: servedDateString?.let { servedDateString ->
+                Instant.parse(servedDateString, BROWSER_DATE_TIME_FORMAT)
+                    .also { field = it }
+            }
 
         /** The last modified date of the cached response, if known. */
-        private var lastModified: Instant? = null
         private var lastModifiedString: String? = null
+        private var lastModified: Instant? = null
+            get() = field ?: lastModifiedString?.let { lastModifiedString ->
+                Instant.parse(lastModifiedString, BROWSER_DATE_TIME_FORMAT)
+                    .also { field = it }
+            }
 
         /**
          * The expiration date of the cached response, if known. If both this field and the max age
          * are set, the max age is preferred.
          */
+        private var expiresString: String? = null
         private var expires: Instant? = null
+            get() = field ?: expiresString?.let { expiresString ->
+                when (expiresString) {
+                    "0" -> Instant.DISTANT_PAST
+                    else -> Instant.parse(expiresString, BROWSER_DATE_TIME_FORMAT)
+                }.also { field = it }
+            }
 
         /**
          * The timestamp when the cached HTTP request was first initiated.
@@ -114,17 +129,12 @@ class CacheControlCacheStrategy @JvmOverloads constructor(
                 val value = values.firstOrNull() ?: continue
                 when {
                     name.equals("Date", ignoreCase = true) -> {
-                        servedDate = Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
                         servedDateString = value
                     }
                     name.equals("Expires", ignoreCase = true) -> {
-                        expires = when (value) {
-                            "0" -> Instant.DISTANT_PAST
-                            else -> Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
-                        }
+                        expiresString = value
                     }
                     name.equals("Last-Modified", ignoreCase = true) -> {
-                        lastModified = Instant.parse(value, BROWSER_DATE_TIME_FORMAT)
                         lastModifiedString = value
                     }
                     name.equals("ETag", ignoreCase = true) -> {
