@@ -1,8 +1,21 @@
 # Changelog
 
-## [3.2.0] - Unreleased
+## [3.2.0-rc01] - April 24, 2025
 
+- **Important**: `coil-compose` and `coil-compose-core` now require Java 11 bytecode due to Compose `1.8.0` requiring it. See [here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8-or-java-11) for how to enable it.
 - Change `AsyncImagePreviewHandler`'s functional constructor to return `AsyncImagePainter.State.Success` instead of `AsyncImagePainter.State.Loading`.
+- Fix cancellation in `ConstraintsSizeResolver#size()`.
+- Fix warning for missing `PlatformContext` when building with R8.
+- Fix `FakeImageLoaderEngine` not setting `Transition.Factory.NONE` when the default `FakeImageLoaderEngine` response is returned.
+- Remove experimental annotation from `ColorImage`.
+- Parse network headers lazily in `CacheControlCacheStrategy`.
+- Refactor `CircleCropTransformation` and `RoundedCornersTransformation` to share common code.
+- Use `kotlinx.io`'s Okio interop module in `coil-network-ktor2` and `coil-network-ktor3`.
+- Update Kotlin to 2.1.20.
+- Update Compose to 1.8.0-rc01.
+- Update Okio to 3.11.0.
+- Update Skiko to 0.9.4.
+- Update Coroutines to 1.10.2.
 
 ## [3.1.0] - February 4, 2025
 
@@ -22,9 +35,9 @@
 - Support `Transformation`s on all multiplatform targets.
 - Support 0 as `Expires` header value in `CacheControlCacheStrategy`.
 - Fix `AsyncImage`/`SubcomposeAsyncImage`/`rememberAsyncImage` not launching a new `ImageRequest` if its `ContentScale` changes to/from `None`.
-- Update to Kotlin 2.1.10.
+- Update Kotlin to 2.1.10.
     - NOTE: This release requires compiling with Kotlin 2.1.0 or greater if you use Kotlin native due to an [LLVM update](https://kotlinlang.org/docs/whatsnew21.html#llvm-update-from-11-1-0-to-16-0-0).
-- Update to Compose 1.7.3.
+- Update Compose to 1.7.3.
 - Update `androidx.core` to 1.15.0.
 
 ## [3.0.4] - November 25, 2024

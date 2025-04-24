@@ -59,7 +59,6 @@ SPLcoil3/EventListener;->keyEnd(Lcoil3/request/ImageRequest;Ljava/lang/String;)V
 SPLcoil3/EventListener;->keyStart(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
 SPLcoil3/EventListener;->mapEnd(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
 SPLcoil3/EventListener;->mapStart(Lcoil3/request/ImageRequest;Ljava/lang/Object;)V
-SPLcoil3/EventListener;->onCancel(Lcoil3/request/ImageRequest;)V
 SPLcoil3/EventListener;->onStart(Lcoil3/request/ImageRequest;)V
 SPLcoil3/EventListener;->onSuccess(Lcoil3/request/ImageRequest;Lcoil3/request/SuccessResult;)V
 SPLcoil3/EventListener;->resolveSizeEnd(Lcoil3/request/ImageRequest;Lcoil3/size/Size;)V
@@ -140,7 +139,6 @@ SPLcoil3/RealImageLoader;->getDefaults()Lcoil3/request/ImageRequest$Defaults;
 SPLcoil3/RealImageLoader;->getDiskCache()Lcoil3/disk/DiskCache;
 SPLcoil3/RealImageLoader;->getMemoryCache()Lcoil3/memory/MemoryCache;
 SPLcoil3/RealImageLoader;->getOptions()Lcoil3/RealImageLoader$Options;
-SPLcoil3/RealImageLoader;->onCancel(Lcoil3/request/ImageRequest;Lcoil3/EventListener;)V
 SPLcoil3/RealImageLoader;->onSuccess(Lcoil3/request/SuccessResult;Lcoil3/target/Target;Lcoil3/EventListener;)V
 Lcoil3/RealImageLoader$Options;
 SPLcoil3/RealImageLoader$Options;-><init>(Landroid/content/Context;Lcoil3/request/ImageRequest$Defaults;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/EventListener$Factory;Lcoil3/ComponentRegistry;Lcoil3/util/Logger;)V
