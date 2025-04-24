@@ -10,6 +10,7 @@ kotlin = "2.1.20"
 ktlint = "1.4.1"
 ktor2 = "2.3.13"
 ktor3 = "3.1.0"
+material-icons-core = "1.6.11"
 okhttp = "4.12.0"
 okio = "3.11.0"
 paparazzi = "1.3.5"
@@ -58,6 +59,8 @@ androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing-perfetto" }
 androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing-perfetto" }
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
+
+compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons-core" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
