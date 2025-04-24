@@ -98,6 +98,7 @@ kotlin {
                 implementation(projects.coilCompose)
                 implementation(compose.components.resources)
                 implementation(compose.material3)
+                implementation(libs.compose.material.icons.core)
             }
         }
         androidMain {
