@@ -89,7 +89,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
 
     // Decoders
     val parallelismLock = Semaphore(options.bitmapFactoryMaxParallelism)
-    if (enableStaticImageDecoder(options)) {
+    if (options.enableStaticImageDecoder()) {
         add(
             StaticImageDecoder.Factory(
                 parallelismLock = parallelismLock,
@@ -104,11 +104,8 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     )
 }
 
-private fun enableStaticImageDecoder(options: RealImageLoader.Options): Boolean {
+private fun RealImageLoader.Options.enableStaticImageDecoder(): Boolean {
     // Require API 29 for ImageDecoder support as API 28 has framework bugs:
     // https://github.com/element-hq/element-android/pull/7184
-    return SDK_INT >= 29 &&
-        options.imageDecoderEnabled &&
-        // ImageDecoder always rotates the image according to its EXIF data.
-        options.bitmapFactoryExifOrientationStrategy.let { it == RESPECT_PERFORMANCE || it == RESPECT_ALL }
+    return SDK_INT >= 29 && imageDecoderEnabled && bitmapFactoryExifOrientationStrategy == RESPECT_PERFORMANCE
 }
