@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.0-rc02] - April 26, 2025
+
+- Fix image requests failing with `ClosedByteChannelException` when loading an image with `KtorNetworkFetcherFactory` (Ktor 3) on non-JVM targets.
+
 ## [3.2.0-rc01] - April 24, 2025
 
 - **Important**: `coil-compose` and `coil-compose-core` now require Java 11 bytecode due to Compose `1.8.0` requiring it. See [here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8-or-java-11) for how to enable it.
