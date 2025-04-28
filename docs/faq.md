@@ -97,3 +97,17 @@ Then depend on the same artifacts with [the latest snapshot version](https://git
 
 !!! Note
     Snapshots are deployed for each new commit on `main` that passes CI. They can potentially contain breaking changes or may be unstable. Use at your own risk.
+
+## How to I use Proguard with Coil?
+
+To use Proguard with Coil, add the following rules to your config:
+
+```
+-keep class * extends coil3.util.DecoderServiceLoaderTarget { *; }
+-keep class * extends coil3.util.FetcherServiceLoaderTarget { *; }
+```
+
+You may also need to add custom rules for Ktor, OkHttp, and Coroutines.
+
+!!! Note
+    **You do not need to add any custom rules for Coil if you use R8**, which is the default code shrinker on Android. The rules are added automatically.
