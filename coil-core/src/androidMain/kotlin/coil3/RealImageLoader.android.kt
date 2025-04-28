@@ -2,7 +2,6 @@ package coil3
 
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
-import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_ALL
 import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 import coil3.decode.StaticImageDecoder
 import coil3.fetch.AssetUriFetcher
