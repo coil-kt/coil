@@ -1,0 +1,10 @@
+{
+    $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+    extends: [
+        'config:recommended',
+    ],
+    ignorePresets: [
+        // Ensure we get the latest version and are not pinned to old versions.
+        'workarounds:javaLTSVersions',
+    ]
+}
