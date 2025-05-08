@@ -35,7 +35,7 @@ fun Project.androidLibrary(
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
             val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-                KotlinMultiplatform(Dokka("dokkaHtml"))
+                KotlinMultiplatform(Dokka("dokkaGenerate"))
             } else {
                 AndroidSingleVariantLibrary()
             }
