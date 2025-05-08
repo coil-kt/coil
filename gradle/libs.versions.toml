@@ -5,7 +5,7 @@ androidx-lifecycle = "2.8.7"
 androidx-tracing-perfetto = "1.0.0"
 atomicfu = "0.26.1"
 coroutines = "1.10.2"
-jetbrains-compose = "1.8.0-rc01"
+jetbrains-compose = "1.8.0"
 kotlin = "2.1.20"
 ktlint = "1.4.1"
 ktor2 = "2.3.13"
@@ -25,7 +25,7 @@ screenshot = "com.android.compose.screenshot:0.0.1-alpha09"
 spotless = "com.diffplug.spotless:7.0.3"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.9.2"
+gradlePlugin-android = "com.android.tools.build:gradle:8.10.0"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.27.0"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
