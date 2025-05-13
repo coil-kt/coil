@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.2.0] - May 13, 2025
+
+Changes since `3.1.0`:
+
+- **Important**: `coil-compose` and `coil-compose-core` now require Java 11 bytecode due to Compose `1.8.0` requiring it. See [here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8-or-java-11) for how to enable it.
+- Change `AsyncImagePreviewHandler`'s functional constructor to return `AsyncImagePainter.State.Success` instead of `AsyncImagePainter.State.Loading`.
+- Fix cancellation in `ConstraintsSizeResolver#size()`.
+- Fix warning for missing `PlatformContext` when building with R8.
+- Fix `FakeImageLoaderEngine` not setting `Transition.Factory.NONE` when the default `FakeImageLoaderEngine` response is returned.
+- Remove experimental annotation from `ColorImage`.
+- Parse network headers lazily in `CacheControlCacheStrategy`.
+- Refactor `CircleCropTransformation` and `RoundedCornersTransformation` to share common code.
+- Fall back to using `BitmapFactory` internally if `ExifOrientationStrategy` is not `RESPECT_PERFORMANCE`.
+- Update Kotlin to 2.1.20.
+- Update Compose to 1.8.0.
+- Update Okio to 3.11.0.
+- Update Skiko to 0.9.4.
+- Update Coroutines to 1.10.2.
+- Update `accompanist-drawablepainter` to 0.37.3.
+
+Changes since `3.2.0-rc02`:
+
+- Fall back to using `BitmapFactory` internally if `ExifOrientationStrategy` is not `RESPECT_PERFORMANCE`.
+- Update Compose to 1.8.0.
+- Update `accompanist-drawablepainter` to 0.37.3.
+
 ## [3.2.0-rc02] - April 26, 2025
 
 - Fix image requests failing with `ClosedByteChannelException` when loading an image with `KtorNetworkFetcherFactory` (Ktor 3) on non-JVM targets.
