@@ -8,10 +8,12 @@ plugins {
 repositories {
     google()
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
     implementation(libs.gradlePlugin.android)
+    implementation(libs.gradlePlugin.dokka)
     implementation(libs.gradlePlugin.jetbrainsCompose)
     implementation(libs.gradlePlugin.composeCompiler)
     implementation(libs.gradlePlugin.kotlin)
