@@ -35,10 +35,17 @@ class NetworkFetcher(
     private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
+    private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
     private val connectivityChecker: ConnectivityChecker,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
+        return inFlightRequestStrategy.value.apply(diskCacheKey) {
+            doFetch()
+        }
+    }
+
+    private suspend fun doFetch(): FetchResult {
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
@@ -264,10 +271,12 @@ class NetworkFetcher(
     class Factory(
         networkClient: () -> NetworkClient,
         cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
+        inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
     ) : Fetcher.Factory<Uri> {
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
+        private val inFlightRequestStrategyLazy = lazy(inFlightRequestStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
 
         override fun create(
@@ -282,6 +291,7 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
+                inFlightRequestStrategy = inFlightRequestStrategyLazy,
                 connectivityChecker = connectivityCheckerLazy.get(options.context),
             )
         }
