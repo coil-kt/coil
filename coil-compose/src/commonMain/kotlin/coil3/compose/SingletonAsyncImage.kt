@@ -40,6 +40,7 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  */
 @Composable
 @NonRestartableComposable
@@ -59,6 +60,7 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -76,6 +78,7 @@ fun AsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
 )
 
 /**
@@ -100,6 +103,7 @@ fun AsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  */
 @Composable
 @NonRestartableComposable
@@ -115,6 +119,7 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -128,4 +133,5 @@ fun AsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
 )

@@ -59,6 +59,7 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  */
 @Composable
 @NonRestartableComposable
@@ -80,6 +81,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
 ) = SubcomposeAsyncImage(
     state = AsyncImageState(model, imageLoader),
     contentDescription = contentDescription,
@@ -92,6 +94,7 @@ fun SubcomposeAsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
     content = contentOf(loading, success, error),
 )
 
@@ -121,6 +124,7 @@ fun SubcomposeAsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
 @Composable
@@ -138,6 +142,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
     state = AsyncImageState(model, imageLoader),
@@ -151,6 +156,7 @@ fun SubcomposeAsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
     content = content,
 )
 
@@ -167,6 +173,7 @@ private fun SubcomposeAsyncImage(
     colorFilter: ColorFilter?,
     filterQuality: FilterQuality,
     clipToBounds: Boolean,
+    keepContentNoneStartOnDraw: Boolean,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
     val request = requestOfWithSizeResolver(
@@ -200,6 +207,7 @@ private fun SubcomposeAsyncImage(
                 alpha = alpha,
                 colorFilter = colorFilter,
                 clipToBounds = clipToBounds,
+                keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
             ).content()
         }
     } else {
@@ -224,6 +232,7 @@ private fun SubcomposeAsyncImage(
                 alpha = alpha,
                 colorFilter = colorFilter,
                 clipToBounds = clipToBounds,
+                keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
             ).content()
         }
     }
@@ -256,6 +265,9 @@ interface SubcomposeAsyncImageScope : BoxScope {
 
     /** If true, applies [clipToBounds] to [SubcomposeAsyncImageContent]. */
     val clipToBounds: Boolean
+
+    /** If true, applies [clipToBounds] to [SubcomposeAsyncImageContent]. */
+    val keepContentNoneStartOnDraw: Boolean
 }
 
 /**
@@ -274,6 +286,7 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
     clipToBounds: Boolean = this.clipToBounds,
+    keepContentNoneStartOnDraw: Boolean = this.keepContentNoneStartOnDraw,
 ) = Layout(
     modifier = modifier.then(
         SubcomposeContentPainterElement(
@@ -283,6 +296,7 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
             alpha = alpha,
             colorFilter = colorFilter,
             clipToBounds = clipToBounds,
+            keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
             contentDescription = contentDescription,
         ),
     ),
@@ -321,4 +335,5 @@ private class RealSubcomposeAsyncImageScope(
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
     override val clipToBounds: Boolean,
+    override val keepContentNoneStartOnDraw: Boolean,
 ) : SubcomposeAsyncImageScope, BoxScope by parentScope

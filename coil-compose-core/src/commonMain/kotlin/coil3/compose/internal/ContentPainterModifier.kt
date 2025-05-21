@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import coil3.ImageLoader
@@ -62,6 +63,7 @@ internal data class ContentPainterElement(
     private val alpha: Float,
     private val colorFilter: ColorFilter?,
     private val clipToBounds: Boolean,
+    private val keepContentNoneStartOnDraw: Boolean,
     private val previewHandler: AsyncImagePreviewHandler?,
     private val contentDescription: String?,
 ) : ModifierNodeElement<ContentPainterNode>() {
@@ -87,6 +89,7 @@ internal data class ContentPainterElement(
             alpha = alpha,
             colorFilter = colorFilter,
             clipToBounds = clipToBounds,
+            keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
             contentDescription = contentDescription,
         )
     }
@@ -111,6 +114,7 @@ internal data class ContentPainterElement(
         node.alpha = alpha
         node.colorFilter = colorFilter
         node.clipToBounds = clipToBounds
+        node.keepContentNoneStartOnDraw = keepContentNoneStartOnDraw
 
         if (node.contentDescription != contentDescription) {
             node.contentDescription = contentDescription
@@ -142,6 +146,7 @@ internal data class ContentPainterElement(
         properties["alpha"] = alpha
         properties["colorFilter"] = colorFilter
         properties["clipToBounds"] = clipToBounds
+        properties["keepContentNoneStartOnDraw"] = keepContentNoneStartOnDraw
         properties["previewHandler"] = previewHandler
         properties["contentDescription"] = contentDescription
     }
@@ -154,6 +159,7 @@ internal class ContentPainterNode(
     alpha: Float,
     colorFilter: ColorFilter?,
     clipToBounds: Boolean,
+    keepContentNoneStartOnDraw: Boolean,
     contentDescription: String?,
     constraintSizeResolver: ConstraintsSizeResolver?,
 ) : AbstractContentPainterNode(
@@ -162,6 +168,7 @@ internal class ContentPainterNode(
     alpha = alpha,
     colorFilter = colorFilter,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
     contentDescription = contentDescription,
     constraintSizeResolver = constraintSizeResolver,
 ) {
@@ -197,6 +204,7 @@ internal data class SubcomposeContentPainterElement(
     private val alpha: Float,
     private val colorFilter: ColorFilter?,
     private val clipToBounds: Boolean,
+    private val keepContentNoneStartOnDraw: Boolean,
     private val contentDescription: String?,
 ) : ModifierNodeElement<SubcomposeContentPainterNode>() {
 
@@ -208,6 +216,7 @@ internal data class SubcomposeContentPainterElement(
             alpha = alpha,
             colorFilter = colorFilter,
             clipToBounds = clipToBounds,
+            keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
             contentDescription = contentDescription,
         )
     }
@@ -255,6 +264,7 @@ internal class SubcomposeContentPainterNode(
     alpha: Float,
     colorFilter: ColorFilter?,
     clipToBounds: Boolean,
+    keepContentNoneStartOnDraw: Boolean,
     contentDescription: String?,
 ) : AbstractContentPainterNode(
     alignment = alignment,
@@ -262,6 +272,7 @@ internal class SubcomposeContentPainterNode(
     alpha = alpha,
     colorFilter = colorFilter,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
     contentDescription = contentDescription,
     constraintSizeResolver = null,
 )
@@ -272,6 +283,7 @@ internal abstract class AbstractContentPainterNode(
     var alpha: Float,
     var colorFilter: ColorFilter?,
     var clipToBounds: Boolean,
+    var keepContentNoneStartOnDraw: Boolean,
     var contentDescription: String?,
     var constraintSizeResolver: ConstraintsSizeResolver?,
 ) : Modifier.Node(), DrawModifierNode, LayoutModifierNode, SemanticsModifierNode {
@@ -370,6 +382,7 @@ internal abstract class AbstractContentPainterNode(
             width = intrinsicSize.width.takeOrElse { dstSize.width },
             height = intrinsicSize.height.takeOrElse { dstSize.height },
         )
+        val contentScale = if (keepContentNoneStartOnDraw) ContentScale.None else contentScale
         val scaleFactor = contentScale.computeScaleFactor(srcSize, dstSize)
         if (!scaleFactor.scaleX.isFinite() || !scaleFactor.scaleY.isFinite()) {
             return dstSize
@@ -435,6 +448,11 @@ internal abstract class AbstractContentPainterNode(
 
     override fun ContentDrawScope.draw() {
         val scaledSize = calculateScaledSize(size)
+        val (alignment, layoutDirection) = if (keepContentNoneStartOnDraw) {
+            Alignment.TopStart to LayoutDirection.Ltr
+        } else {
+            alignment to layoutDirection
+        }
         val (dx, dy) = alignment.align(
             size = scaledSize.toIntSize(),
             space = size.toIntSize(),

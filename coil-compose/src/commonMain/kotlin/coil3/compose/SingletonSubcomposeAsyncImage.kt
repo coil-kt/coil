@@ -43,6 +43,7 @@ import coil3.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  */
 @Composable
 @NonRestartableComposable
@@ -63,6 +64,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
 ) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -81,6 +83,7 @@ fun SubcomposeAsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
 )
 
 /**
@@ -108,6 +111,7 @@ fun SubcomposeAsyncImage(
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  * @param clipToBounds If true, clips the content to its bounds. Else, it will not be clipped.
+ * @param keepContentNoneStartOnDraw If true, content never scales and stay in the upper left corner during the drawing phase.
  * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
 @Composable
@@ -124,6 +128,7 @@ fun SubcomposeAsyncImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     clipToBounds: Boolean = true,
+    keepContentNoneStartOnDraw: Boolean = false,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) = SubcomposeAsyncImage(
     model = model,
@@ -138,5 +143,6 @@ fun SubcomposeAsyncImage(
     colorFilter = colorFilter,
     filterQuality = filterQuality,
     clipToBounds = clipToBounds,
+    keepContentNoneStartOnDraw = keepContentNoneStartOnDraw,
     content = content,
 )
