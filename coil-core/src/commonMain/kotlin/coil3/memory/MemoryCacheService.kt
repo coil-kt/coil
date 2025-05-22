@@ -38,7 +38,10 @@ internal class MemoryCacheService(
         options: Options,
         eventListener: EventListener,
     ): MemoryCache.Key? {
-        if (request.memoryCachePolicy == CachePolicy.DISABLED) return null
+        // Fast path: read and write are both disabled.
+        if (request.memoryCachePolicy == CachePolicy.DISABLED) {
+            return null
+        }
 
         // Fast path: an explicit memory cache key has been set.
         if (request.memoryCacheKey != null) {
