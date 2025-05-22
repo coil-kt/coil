@@ -7,6 +7,7 @@ import coil3.annotation.VisibleForTesting
 import coil3.decode.DataSource
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.intercept.Interceptor
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
@@ -37,6 +38,8 @@ internal class MemoryCacheService(
         options: Options,
         eventListener: EventListener,
     ): MemoryCache.Key? {
+        if (request.memoryCachePolicy == CachePolicy.DISABLED) return null
+
         // Fast path: an explicit memory cache key has been set.
         if (request.memoryCacheKey != null) {
             return MemoryCache.Key(request.memoryCacheKey, request.memoryCacheKeyExtras)
