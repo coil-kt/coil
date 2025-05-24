@@ -19,6 +19,11 @@ kotlin {
                 api(libs.ktor3.core)
             }
         }
+        named("nonJvmCommonMain") {
+            dependencies {
+                implementation(libs.kotlinx.io.okio)
+            }
+        }
         commonTest {
             dependencies {
                 implementation(projects.internal.testUtils)
