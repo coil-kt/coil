@@ -121,9 +121,7 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
             // Attempt to pass execution responsibility (baton) to another waiting coroutine.
             val successfullyPassedBaton = request.channel.trySend(Unit).isSuccess
             if (successfullyPassedBaton) {
-                // Baton was passed. This coroutine is no longer the channel controller nor
-                // responsible for cleanup.
-                currentChannelController = false
+                // Baton was passed. This coroutine is no longer responsible for cleanup.
                 isResponsibleForCleanup = false
             } else {
                 // The baton was not passed (no waiter or channel closed), this coroutine remains
