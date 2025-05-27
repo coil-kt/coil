@@ -20,6 +20,31 @@ interface InFlightRequestStrategy {
     }
 }
 
+/**
+ * Implements a basic in-flight request de-duplication strategy.
+ * If multiple requests for the same key arrive concurrently, the `block`
+ * lambda is executed once by the first request.
+ * Subsequent requests wait for the first one to complete before proceeding.
+ *
+ * Mechanism:
+ * 1. First Request: The first coroutine for a key creates the `InFlightRequest`,
+ * stores it, and proceeds to execute the `block`.
+ * 2. Subsequent Requests: If an `InFlightRequest` for the key already exists,
+ * subsequent coroutines suspend by calling `await()` on the `CompletableDeferred`
+ * held by that existing request.
+ * 3. Unblocking Waiters: The `block` is executed within a `request.use { ... }`
+ * construct. The `InFlightRequest.close()` method, which is called when the
+ * `use` block finishes (whether `block()` succeeds or throws an exception),
+ * completes the `CompletableDeferred`. This resumes all waiting coroutines.
+ * 4. Execution by Waiters: After being unblocked, the waiting coroutines will then
+ * also proceed to execute the `block()` themselves (at which point, if the first
+ * call populated a cache, they should hit the cache).
+ * 5. Cleanup: Finally, the `InFlightRequest` entry for the key is removed from the
+ * map.
+ *
+ * Note: This strategy unblocks all waiters regardless of whether the initial `block()`
+ * execution succeeded or failed, as long as the deferred is completed.
+ */
 class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
     private val inFlightRequests = mutableMapOf<String, InFlightRequest>()
     private val lock = SynchronizedObject()
@@ -28,9 +53,12 @@ class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
         key: String,
         block: (suspend () -> FetchResult),
     ): FetchResult {
-        var shouldWait = false
+        var shouldWait = true
         val request = synchronized(lock) {
-            inFlightRequests[key]?.also { shouldWait = true } ?: addRequest(key)
+            inFlightRequests.getOrPut(key) {
+                shouldWait = false
+                InFlightRequest(CompletableDeferred())
+            }
         }
 
         if (shouldWait) {
@@ -48,13 +76,7 @@ class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
         }
     }
 
-    // must be called with the lock already acquired
-    private fun addRequest(key: String): InFlightRequest {
-        return InFlightRequest(key, CompletableDeferred()).also { inFlightRequests[key] = it }
-    }
-
     data class InFlightRequest(
-        val key: String,
         val deferrable: CompletableDeferred<Unit>,
     ) : Closeable {
         override fun close() {
@@ -63,6 +85,46 @@ class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
     }
 }
 
+/**
+ * This Class implements an in-flight request de-duplication strategy.
+ * It ensures that for a given key, the suspendable `block` (e.g., a network call)
+ * is executed primarily by one coroutine at a time.
+ *
+ * Mechanism:
+ * 1. Request Tracking: Keeps an `InFlightRequest` object for each active key.
+ * Each `InFlightRequest` contains a `Channel<Unit>` which acts as a signal/communication primitive.
+ *
+ * 2. Controller Election & State:
+ * - Three flags manage the state for the current coroutine's execution:
+ * `shouldWaitForSignal`, `currentChannelController`, and `isResponsibleForCleanup`.
+ * - The first coroutine to request a key becomes the `currentChannelController`
+ * and is also marked `isResponsibleForCleanup`. It creates and stores the `InFlightRequest`.
+ * - Subsequent coroutines for the same key are marked `shouldWaitForSignal = true`
+ * and suspend by attempting to receive from the request's channel.
+ *
+ * 3. Baton Passing on Failure:
+ * - If a waiting coroutine successfully receives a `Unit` from the channel, it means
+ * the previous `currentChannelController` failed and passed the "baton." This
+ * waiter then becomes the new `currentChannelController` and `isResponsibleForCleanup`.
+ * - If a waiter receives `null` (channel closed), it means the operation likely
+ * succeeded or failed terminally. The waiter proceeds to execute `block()`
+ * (e.g., to hit a cache) but does not become a controller or responsible for cleanup.
+ *
+ * 4. Block Execution & Error Handling:
+ * - All coroutines eventually execute the provided `block()`.
+ * - If `block()` throws an exception for any coroutine:
+ * That coroutine will attempt to send a `Unit` signal on the channel
+ * (`request.channel.trySend(Unit)`).
+ * If this `trySend` is successful (meaning another waiter received the signal and can retry),
+ * and if the currently failing coroutine *was* `isResponsibleForCleanup`, it relinquishes
+ * this responsibility by setting `isResponsibleForCleanup = false`.
+ *
+ * 5. Cleanup:
+ * - In the `finally` block, if a coroutine is both the `currentChannelController` AND
+ * `isResponsibleForCleanup`, it will close the channel and remove the
+ * `InFlightRequest` from the map. This ensures resources are freed when the
+ * operation succeeds, or when it fails and no other waiter takes over.
+ */
 class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
     private val inFlightRequests = mutableMapOf<String, InFlightRequest>()
     private val lock = SynchronizedObject()
@@ -71,80 +133,42 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
         key: String,
         block: (suspend () -> FetchResult),
     ): FetchResult {
-        // This coroutine found an existing request and should attempt to wait on its channel.
-        var shouldWaitForSignal = false
-        // This coroutine is controlling the channel. This can be the first coroutine for the key
-        // or one that received the baton after a prior failure
+        var shouldWaitForSignal = true
         var currentChannelController = false
-        // Is this channel controller also responsible for cleaning up the channel and map entry.
-        // A controller might not be responsible for cleanup if it successfully passes the baton to
-        // another waiter upon its own failure.
         var isResponsibleForCleanup = false
 
         val request = synchronized(lock) {
-            inFlightRequests[key]?.also {
-                // An InFlightRequest already exists for this key. This coroutine must wait.
-                shouldWaitForSignal = true
-            } ?: addRequest(key).also {
-                // No existing request. This coroutine is the first and the channel controller
+            inFlightRequests.getOrPut(key) {
+                shouldWaitForSignal = false
                 currentChannelController = true
-                // Initially responsible for cleanup.
                 isResponsibleForCleanup = true
+                InFlightRequest(key)
             }
         }
 
         if (shouldWaitForSignal) {
-            // This coroutine is a waiter. It suspends until the channel receives or is closed.
-            // Receiving Unit means a previous executor failed, and this waiter should take over.
             if (request.channel.receiveCatching().getOrNull() != null) {
-                // Successfully received a signal (Unit). This waiter is now the channel controller.
                 currentChannelController = true
-                // And also responsible for cleaning up after success.
                 isResponsibleForCleanup = true
-            } else {
-                // Channel was closed (by a successful executor or the last in a chain of failures).
-                // This waiter will proceed to run block() hoping for a cache hit.
-                // It's not the channel controller for this attempt post-signal, nor
-                // responsible for cleanup.
             }
         }
 
-        // If !currentChannelController at this point, it means:
-        // 1. This coroutine was a waiter.
-        // 2. It didn't receive a direct signal (Unit) to become the next executor
-        //    (channel was likely closed).
-        // 3. It will run block() (e.g., to hit cache) but won't manage the channel or map entry.
         try {
             return block()
         } catch (ex: Exception) {
-            // This coroutine was the designated executor and its block() failed.
-            // Attempt to pass execution responsibility (baton) to another waiting coroutine.
             val successfullyPassedBaton = request.channel.trySend(Unit).isSuccess
             if (successfullyPassedBaton) {
-                // Baton was passed. This coroutine is no longer responsible for cleanup.
                 isResponsibleForCleanup = false
-            } else {
-                // The baton was not passed (no waiter or channel closed), this coroutine remains
-                // the channel controller and responsible for the cleanup in the finally block.
             }
             throw ex
         } finally {
             if (currentChannelController && isResponsibleForCleanup) {
-                // This coroutine was the channel owner AND is responsible for cleanup.
-                // This happens if:
-                // 1. It executed block() successfully.
-                // 2. It executed block(), failed, AND could not pass the baton to a waiter.
                 synchronized(lock) {
                     request.channel.close()
                     inFlightRequests.remove(key)
                 }
             }
         }
-    }
-
-    // must be called with the lock already acquired
-    private fun addRequest(key: String): InFlightRequest {
-        return InFlightRequest(key).also { inFlightRequests[key] = it }
     }
 
     data class InFlightRequest(
