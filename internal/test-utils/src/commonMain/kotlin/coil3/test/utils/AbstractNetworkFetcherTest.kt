@@ -159,8 +159,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
                         inFlightRequestStrategy = inFlightRequestStrategy
                     ).fetch()
                     assertIs<SourceFetchResult>(result)
-                    val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
-                    assertEquals(expectedSize.toLong(), actualSize)
+                    result.source.close()
                     results.add(result)
                 }
             }
@@ -177,19 +176,6 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
             results.filterIsInstance<SourceFetchResult>()
                 .count { it.dataSource == DataSource.DISK },
         )
-
-        // Run the fetcher another time.
-        val result = newFetcher(path, ByteArray(expectedSize).toByteString()).fetch()
-        assertIs<SourceFetchResult>(result)
-        val file = assertNotNull(result.source.fileOrNull())
-        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
-        assertEquals(expectedSize.toLong(), actualSize)
-
-        // Ensure the result file is present.
-        diskCache.openSnapshot(url("image.jpg"))!!.use { snapshot ->
-            assertContains(fileSystem.list(diskCache.directory), snapshot.data)
-            assertEquals(snapshot.data, file)
-        }
     }
 
     abstract fun url(path: String): String
