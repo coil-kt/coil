@@ -126,7 +126,7 @@ class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
  * operation succeeds, or when it fails and no other waiter takes over.
  */
 class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
-    private val inFlightRequests = mutableMapOf<String, InFlightRequest>()
+    private val inFlightRequests = mutableMapOf<String, Channel<Unit>>()
     private val lock = SynchronizedObject()
 
     override suspend fun apply(
@@ -137,17 +137,17 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
         var currentChannelController = false
         var isResponsibleForCleanup = false
 
-        val request = synchronized(lock) {
+        val channel = synchronized(lock) {
             inFlightRequests.getOrPut(key) {
                 shouldWaitForSignal = false
                 currentChannelController = true
                 isResponsibleForCleanup = true
-                InFlightRequest(key)
+                Channel()
             }
         }
 
         if (shouldWaitForSignal) {
-            if (request.channel.receiveCatching().getOrNull() != null) {
+            if (channel.receiveCatching().getOrNull() != null) {
                 currentChannelController = true
                 isResponsibleForCleanup = true
             }
@@ -156,7 +156,7 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
         try {
             return block()
         } catch (ex: Exception) {
-            val successfullyPassedBaton = request.channel.trySend(Unit).isSuccess
+            val successfullyPassedBaton = channel.trySend(Unit).isSuccess
             if (successfullyPassedBaton) {
                 isResponsibleForCleanup = false
             }
@@ -164,15 +164,10 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
         } finally {
             if (currentChannelController && isResponsibleForCleanup) {
                 synchronized(lock) {
-                    request.channel.close()
+                    channel.close()
                     inFlightRequests.remove(key)
                 }
             }
         }
     }
-
-    data class InFlightRequest(
-        val key: String,
-        val channel: Channel<Unit> = Channel()
-    )
 }
