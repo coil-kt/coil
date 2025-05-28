@@ -90,22 +90,6 @@ final class coil3.network/DeDupeInFlightRequestStrategy : coil3.network/InFlight
     constructor <init>() // coil3.network/DeDupeInFlightRequestStrategy.<init>|<init>(){}[0]
 
     final suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/DeDupeInFlightRequestStrategy.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
-
-    final class InFlightRequest { // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest|null[0]
-        constructor <init>(kotlin/String, kotlinx.coroutines.channels/Channel<kotlin/Unit> = ...) // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.<init>|<init>(kotlin.String;kotlinx.coroutines.channels.Channel<kotlin.Unit>){}[0]
-
-        final val channel // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.channel|{}channel[0]
-            final fun <get-channel>(): kotlinx.coroutines.channels/Channel<kotlin/Unit> // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.channel.<get-channel>|<get-channel>(){}[0]
-        final val key // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.key|{}key[0]
-            final fun <get-key>(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.key.<get-key>|<get-key>(){}[0]
-
-        final fun component1(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.component1|component1(){}[0]
-        final fun component2(): kotlinx.coroutines.channels/Channel<kotlin/Unit> // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlinx.coroutines.channels/Channel<kotlin/Unit> = ...): coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.copy|copy(kotlin.String;kotlinx.coroutines.channels.Channel<kotlin.Unit>){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategy.InFlightRequest.toString|toString(){}[0]
-    }
 }
 
 final class coil3.network/DeDupeInFlightRequestStrategyOld : coil3.network/InFlightRequestStrategyOld { // coil3.network/DeDupeInFlightRequestStrategyOld|null[0]
