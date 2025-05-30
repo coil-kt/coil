@@ -41,14 +41,15 @@ fun OkHttpNetworkFetcherFactory(
 )
 
 @JvmName("factory")
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 fun OkHttpNetworkFetcherFactory(
     callFactory: () -> Call.Factory = ::OkHttpClient,
     cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
-    inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT }
+    connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
 ) = NetworkFetcher.Factory(
     networkClient = { callFactory().asNetworkClient() },
     cacheStrategy = cacheStrategy,
-    inFlightRequestStrategy = inFlightRequestStrategy
+    connectivityChecker = connectivityChecker,
 )
 
 @JvmName("factory")
@@ -60,8 +61,8 @@ fun OkHttpNetworkFetcherFactory(
 ) = NetworkFetcher.Factory(
     networkClient = { callFactory().asNetworkClient() },
     cacheStrategy = cacheStrategy,
-    inFlightRequestStrategy = inFlightRequestStrategy,
     connectivityChecker = connectivityChecker,
+    inFlightRequestStrategy = inFlightRequestStrategy,
 )
 
 fun Call.Factory.asNetworkClient(): NetworkClient {
