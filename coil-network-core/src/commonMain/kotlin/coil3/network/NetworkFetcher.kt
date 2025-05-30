@@ -35,12 +35,12 @@ class NetworkFetcher(
     private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
-    private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
     private val connectivityChecker: ConnectivityChecker,
+    private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        return inFlightRequestStrategy.value.apply(diskCacheKey) {
+        return inFlightRequestStrategy.value.apply(safeDiskCacheKey) {
             doFetch()
         }
     }
@@ -265,19 +265,30 @@ class NetworkFetcher(
     private val diskCacheKey: String
         get() = options.diskCacheKey ?: url
 
+    private val safeDiskCacheKey: String
+        get() = options.diskCacheKey?.let { StringBuilder(it).toString() } ?: url
+
     private val fileSystem: FileSystem
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
     class Factory(
         networkClient: () -> NetworkClient,
         cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
-        inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
     ) : Fetcher.Factory<Uri> {
+
+        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+        constructor(
+            networkClient: () -> NetworkClient,
+            cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
+            connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        ) : this(networkClient, cacheStrategy, connectivityChecker)
+
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
-        private val inFlightRequestStrategyLazy = lazy(inFlightRequestStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
+        private val inFlightRequestStrategyLazy = lazy(inFlightRequestStrategy)
 
         override fun create(
             data: Uri,
