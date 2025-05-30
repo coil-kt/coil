@@ -18,6 +18,14 @@ fun KtorNetworkFetcherFactory() = NetworkFetcher.Factory(
 )
 
 @JvmName("factory")
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+fun KtorNetworkFetcherFactory(
+    httpClient: HttpClient,
+) = NetworkFetcher.Factory(
+    networkClient = { httpClient.asNetworkClient() },
+)
+
+@JvmName("factory")
 fun KtorNetworkFetcherFactory(
     httpClient: HttpClient,
     inFlightRequestStrategy: InFlightRequestStrategy = InFlightRequestStrategy.DEFAULT
@@ -31,6 +39,18 @@ fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient,
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient().asNetworkClient() },
+)
+
+@JvmName("factory")
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+fun KtorNetworkFetcherFactory(
+    httpClient: () -> HttpClient = { HttpClient() },
+    cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
+    connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+) = NetworkFetcher.Factory(
+    networkClient = { httpClient().asNetworkClient() },
+    cacheStrategy = cacheStrategy,
+    connectivityChecker = connectivityChecker,
 )
 
 @JvmName("factory")
