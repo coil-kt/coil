@@ -1,88 +1,80 @@
 package coil3.network
 
+import coil3.annotation.ExperimentalCoilApi
 import coil3.fetch.FetchResult
+import coil3.network.InFlightRequestStrategy.Companion.DEFAULT
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmField
+import kotlin.time.Duration
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import okio.Closeable
-import okio.use
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+/**
+ * Interface for in-flight request de-duplication strategies.
+ *
+ * Implementations coordinate concurrent requests for the same resource key, allowing only one
+ * coroutine to perform the actual work (`block()`) while others wait for its result.
+ * This helps prevent redundant work (e.g., multiple network requests for the same image)
+ * and enables efficient cache utilization.
+ *
+ * ### Sample: Simple In-Flight Deduplication Strategy
+ *
+ * The example below ensures that only one coroutine executes the block for a given key.
+ * All others wait for the first to finish, and then proceed:
+ *
+ * ```
+ * class SimpleInFlightRequestStrategy : InFlightRequestStrategy {
+ *     private val inFlightRequests = mutableMapOf<String, CompletableDeferred<Unit>>()
+ *     private val lock = Any()
+ *
+ *     override suspend fun apply(key: String, block: suspend () -> FetchResult): FetchResult {
+ *         var shouldWait = false
+ *         val deferred = synchronized(lock) {
+ *             inFlightRequests[key]?.also { shouldWait = true }
+ *                 ?: CompletableDeferred<Unit>().also { inFlightRequests[key] = it }
+ *         }
+ *
+ *         if (shouldWait) deferred.await()
+ *
+ *         try {
+ *             return block()
+ *         } finally {
+ *             synchronized(lock) { inFlightRequests.remove(key)?.complete(Unit) }
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * The [DEFAULT] implementation simply executes the request immediately with **no coordination or
+ * de-duplication**.
+ * That means every call to `apply` will run `block()` without any concurrency control or waiting.
+ */
+@ExperimentalCoilApi
 interface InFlightRequestStrategy {
-    suspend fun apply(key: String, block: (suspend () -> FetchResult)): FetchResult {
-        return block()
-    }
+    suspend fun apply(key: String, block: (suspend () -> FetchResult)): FetchResult
 
     companion object {
+        /**
+         * The default implementation runs the block immediately with no concurrency control.
+         * Use a real implementation to avoid duplicated requests.
+         */
         @JvmField
-        val DEFAULT: InFlightRequestStrategy = object : InFlightRequestStrategy {}
+        val DEFAULT: InFlightRequestStrategy = DefaultInFlightRequestStrategy()
     }
 }
 
-/**
- * Implements a basic in-flight request de-duplication strategy.
- * If multiple requests for the same key arrive concurrently, the `block`
- * lambda is executed once by the first request.
- * Subsequent requests wait for the first one to complete before proceeding.
- *
- * Mechanism:
- * 1. First Request: The first coroutine for a key creates the `InFlightRequest`,
- * stores it, and proceeds to execute the `block`.
- * 2. Subsequent Requests: If an `InFlightRequest` for the key already exists,
- * subsequent coroutines suspend by calling `await()` on the `CompletableDeferred`
- * held by that existing request.
- * 3. Unblocking Waiters: The `block` is executed within a `request.use { ... }`
- * construct. The `InFlightRequest.close()` method, which is called when the
- * `use` block finishes (whether `block()` succeeds or throws an exception),
- * completes the `CompletableDeferred`. This resumes all waiting coroutines.
- * 4. Execution by Waiters: After being unblocked, the waiting coroutines will then
- * also proceed to execute the `block()` themselves (at which point, if the first
- * call populated a cache, they should hit the cache).
- * 5. Cleanup: Finally, the `InFlightRequest` entry for the key is removed from the
- * map.
- *
- * Note: This strategy unblocks all waiters regardless of whether the initial `block()`
- * execution succeeded or failed, as long as the deferred is completed.
- */
-class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
-    private val inFlightRequests = mutableMapOf<String, InFlightRequest>()
-    private val lock = SynchronizedObject()
-
+internal class DefaultInFlightRequestStrategy : InFlightRequestStrategy {
     override suspend fun apply(
         key: String,
-        block: (suspend () -> FetchResult),
-    ): FetchResult {
-        var shouldWait = true
-        val request = synchronized(lock) {
-            inFlightRequests.getOrPut(key) {
-                shouldWait = false
-                InFlightRequest(CompletableDeferred())
-            }
-        }
-
-        if (shouldWait) {
-            request.deferrable.await()
-        }
-
-        try {
-            return request.use {
-                block()
-            }
-        } finally {
-            synchronized(lock) {
-                inFlightRequests.remove(key)
-            }
-        }
-    }
-
-    data class InFlightRequest(
-        val deferrable: CompletableDeferred<Unit>,
-    ) : Closeable {
-        override fun close() {
-            deferrable.complete(Unit)
-        }
-    }
+        block: suspend () -> FetchResult,
+    ): FetchResult = block()
 }
 
 /**
@@ -125,10 +117,11 @@ class SimpleInFlightRequestStrategy() : InFlightRequestStrategy {
  * `InFlightRequest` from the map. This ensures resources are freed when the
  * operation succeeds, or when it fails and no other waiter takes over.
  */
-class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
+class DeDupeInFlightRequestStrategy : InFlightRequestStrategy {
     private val inFlightRequests = mutableMapOf<String, Channel<Unit>>()
     private val lock = SynchronizedObject()
 
+    @OptIn(ExperimentalAtomicApi::class)
     override suspend fun apply(
         key: String,
         block: (suspend () -> FetchResult),
@@ -167,6 +160,107 @@ class DeDupeInFlightRequestStrategy() : InFlightRequestStrategy {
                     channel.close()
                     inFlightRequests.remove(key)
                 }
+            }
+        }
+    }
+}
+
+/**
+ * A de-duplicating in-flight request strategy that allows only one coroutine to execute the
+ * critical section (`block`) for a given key at a time, deduplicating concurrent requests and
+ * avoiding redundant work (such as repeated network calls).
+ *
+ * - The first coroutine for a given key becomes the "controller" and executes `block`.
+ * - Additional concurrent requests for the same key wait for a signal on a channel.
+ * - If the controller succeeds, all waiting requests are unblocked and can continue
+ *   (e.g., to use the newly populated cache).
+ * - If the controller fails, only one waiting coroutine is unblocked and given a chance to retry
+ *   (`block`). This process repeats (baton-passing) until a call succeeds or there are no more
+ *   waiters.
+ * - Resources and map entries for the key are cleaned up either immediately after completion,
+ *   or after a configurable [delay] (to avoid rapid thrashing if new requests for the key arrive
+ *   soon after completion).
+ *
+ * This approach prevents the "thundering herd" problem, ensures only one attempt is made at a
+ * time for a resource, and optionally delays cleanup to optimize for bursty request patterns.
+ *
+ * @property delay Optional delay before removing the request entry from the map after completion.
+ *                  This can help prevent repeated creation and removal of in-flight entries if
+ *                  requests arrive in quick succession.
+ */
+class DeDupe2InFlightRequestStrategy(
+    val delay: Duration = Duration.ZERO
+) : InFlightRequestStrategy {
+    private val inFlightRequests = mutableMapOf<String, Request>()
+    private val lock = SynchronizedObject()
+
+    override suspend fun apply(
+        key: String,
+        block: (suspend () -> FetchResult),
+    ): FetchResult {
+        var shouldWaitForSignal = true
+
+        val state = synchronized(lock) {
+            inFlightRequests.getOrPut(key) {
+                shouldWaitForSignal = false
+                Request(delay)
+            }
+        }.acquire()
+
+        if (shouldWaitForSignal) {
+            state.channel.receiveCatching()
+        }
+
+        try {
+            return block().also {
+                state.succeed()
+            }
+        } catch (ex: Exception) {
+            state.channel.trySend(Unit)
+            throw ex
+        } finally {
+            state.release {
+                synchronized(lock) {
+                    inFlightRequests.remove(key)
+                }
+            }
+        }
+    }
+
+    private class Request(val delay: Duration) : CoroutineScope {
+        override val coroutineContext: CoroutineContext
+            get() = Dispatchers.Default + Job()
+        val channel = Channel<Unit>(Channel.UNLIMITED)
+
+        // Internal state management.
+        private val lock = SynchronizedObject()
+        private var hasSucceeded = false
+        private var isClosed = false
+        private var refCount = 0
+        private var cancelJob: Job? = null
+
+        fun acquire(): Request = synchronized(lock) {
+            refCount++
+            this
+        }
+
+        fun succeed() = synchronized(lock) {
+            hasSucceeded = true
+        }
+
+        fun release(cleanup: () -> Unit) = synchronized(lock) {
+            if ((--refCount <= 0 || hasSucceeded) && !isClosed) {
+                channel.close()
+                cancelJob?.cancel()
+                if (delay != Duration.ZERO) {
+                    cancelJob = launch {
+                        delay(delay)
+                        cleanup()
+                    }
+                } else {
+                    cleanup()
+                }
+                isClosed = true
             }
         }
     }
