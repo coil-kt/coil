@@ -44,6 +44,13 @@ public final class coil3/network/ConnectivityCheckerKt {
 	public static final fun ConnectivityChecker (Landroid/content/Context;)Lcoil3/network/ConnectivityChecker;
 }
 
+public final class coil3/network/DeDupe2InFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
+	public synthetic fun <init> (JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getDelay-UwyO8pc ()J
+}
+
 public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
 	public fun <init> ()V
 	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -91,7 +98,7 @@ public final class coil3/network/ImageRequestsKt {
 public abstract interface class coil3/network/InFlightRequestStrategy {
 	public static final field Companion Lcoil3/network/InFlightRequestStrategy$Companion;
 	public static final field DEFAULT Lcoil3/network/InFlightRequestStrategy;
-	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/network/InFlightRequestStrategy$Companion {
@@ -116,13 +123,15 @@ public final class coil3/network/NetworkClientKt {
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;)V
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;Lkotlin/Lazy;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
-	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 }
@@ -195,22 +204,5 @@ public final class coil3/network/NetworkResponse {
 public abstract interface class coil3/network/NetworkResponseBody : java/lang/AutoCloseable {
 	public abstract fun writeTo (Lokio/BufferedSink;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun writeTo (Lokio/FileSystem;Lokio/Path;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/network/SimpleInFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
-	public fun <init> ()V
-	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/network/SimpleInFlightRequestStrategy$InFlightRequest : java/io/Closeable {
-	public fun <init> (Lkotlinx/coroutines/CompletableDeferred;)V
-	public fun close ()V
-	public final fun component1 ()Lkotlinx/coroutines/CompletableDeferred;
-	public final fun copy (Lkotlinx/coroutines/CompletableDeferred;)Lcoil3/network/SimpleInFlightRequestStrategy$InFlightRequest;
-	public static synthetic fun copy$default (Lcoil3/network/SimpleInFlightRequestStrategy$InFlightRequest;Lkotlinx/coroutines/CompletableDeferred;ILjava/lang/Object;)Lcoil3/network/SimpleInFlightRequestStrategy$InFlightRequest;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDeferrable ()Lkotlinx/coroutines/CompletableDeferred;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
