@@ -56,8 +56,6 @@ val Options.transformations: List<Transformation>
 val Extras.Key.Companion.transformations: Extras.Key<List<Transformation>>
     get() = transformationsKey
 
-private const val EXTRA_TRANSFORMATIONS = "coil#transformations"
-
 private val transformationsKey = Extras.Key<List<Transformation>>(default = emptyList())
 
 // endregion
