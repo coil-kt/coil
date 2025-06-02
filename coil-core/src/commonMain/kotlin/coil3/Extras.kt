@@ -3,11 +3,14 @@ package coil3
 import coil3.annotation.Poko
 import coil3.request.ImageRequest
 import coil3.request.Options
+import coil3.request.transformations
 import coil3.util.toImmutableMap
 import kotlin.jvm.JvmField
 
 /**
  * A map of key/value pairs to support extensions.
+ *
+ * See [transformations] for an example of how to implement a custom request property with extras.
  */
 @Poko
 class Extras private constructor(
@@ -27,6 +30,11 @@ class Extras private constructor(
         return Builder(this)
     }
 
+    /**
+     * A key for a specific extra value.
+     *
+     * Keys do not implement `equals`/`hashCode` and are only compared using instance equality.
+     */
     class Key<T>(
         val default: T,
     ) {
