@@ -64,15 +64,6 @@ abstract interface coil3.network/InFlightRequestStrategy { // coil3.network/InFl
     }
 }
 
-abstract interface coil3.network/InFlightRequestStrategyOld { // coil3.network/InFlightRequestStrategyOld|null[0]
-    open suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/InFlightRequestStrategyOld.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
-
-    final object Companion { // coil3.network/InFlightRequestStrategyOld.Companion|null[0]
-        final val DEFAULT // coil3.network/InFlightRequestStrategyOld.Companion.DEFAULT|{}DEFAULT[0]
-            final fun <get-DEFAULT>(): coil3.network/InFlightRequestStrategy // coil3.network/InFlightRequestStrategyOld.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
-    }
-}
-
 abstract interface coil3.network/NetworkClient { // coil3.network/NetworkClient|null[0]
     abstract suspend fun <#A1: kotlin/Any?> executeRequest(coil3.network/NetworkRequest, kotlin.coroutines/SuspendFunction1<coil3.network/NetworkResponse, #A1>): #A1 // coil3.network/NetworkClient.executeRequest|executeRequest(coil3.network.NetworkRequest;kotlin.coroutines.SuspendFunction1<coil3.network.NetworkResponse,0:0>){0§<kotlin.Any?>}[0]
 }
@@ -99,28 +90,6 @@ final class coil3.network/DeDupeInFlightRequestStrategy : coil3.network/InFlight
     constructor <init>() // coil3.network/DeDupeInFlightRequestStrategy.<init>|<init>(){}[0]
 
     final suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/DeDupeInFlightRequestStrategy.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
-}
-
-final class coil3.network/DeDupeInFlightRequestStrategyOld : coil3.network/InFlightRequestStrategyOld { // coil3.network/DeDupeInFlightRequestStrategyOld|null[0]
-    constructor <init>() // coil3.network/DeDupeInFlightRequestStrategyOld.<init>|<init>(){}[0]
-
-    final suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/DeDupeInFlightRequestStrategyOld.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
-
-    final class InFlightRequest { // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest|null[0]
-        constructor <init>(kotlin/String, kotlinx.coroutines.channels/Channel<kotlin/Unit> = ...) // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.<init>|<init>(kotlin.String;kotlinx.coroutines.channels.Channel<kotlin.Unit>){}[0]
-
-        final val channel // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.channel|{}channel[0]
-            final fun <get-channel>(): kotlinx.coroutines.channels/Channel<kotlin/Unit> // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.channel.<get-channel>|<get-channel>(){}[0]
-        final val key // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.key|{}key[0]
-            final fun <get-key>(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.key.<get-key>|<get-key>(){}[0]
-
-        final fun component1(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.component1|component1(){}[0]
-        final fun component2(): kotlinx.coroutines.channels/Channel<kotlin/Unit> // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlinx.coroutines.channels/Channel<kotlin/Unit> = ...): coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.copy|copy(kotlin.String;kotlinx.coroutines.channels.Channel<kotlin.Unit>){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // coil3.network/DeDupeInFlightRequestStrategyOld.InFlightRequest.toString|toString(){}[0]
-    }
 }
 
 final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.network/HttpException|null[0]

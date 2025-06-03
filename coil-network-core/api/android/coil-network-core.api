@@ -56,25 +56,6 @@ public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/I
 	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil3/network/DeDupeInFlightRequestStrategyOld : coil3/network/InFlightRequestStrategyOld {
-	public fun <init> ()V
-	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/network/DeDupeInFlightRequestStrategyOld$InFlightRequest {
-	public fun <init> (Ljava/lang/String;Lkotlinx/coroutines/channels/Channel;)V
-	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/coroutines/channels/Channel;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lkotlinx/coroutines/channels/Channel;
-	public final fun copy (Ljava/lang/String;Lkotlinx/coroutines/channels/Channel;)Lcoil3/network/DeDupeInFlightRequestStrategyOld$InFlightRequest;
-	public static synthetic fun copy$default (Lcoil3/network/DeDupeInFlightRequestStrategyOld$InFlightRequest;Ljava/lang/String;Lkotlinx/coroutines/channels/Channel;ILjava/lang/Object;)Lcoil3/network/DeDupeInFlightRequestStrategyOld$InFlightRequest;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getChannel ()Lkotlinx/coroutines/channels/Channel;
-	public final fun getKey ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class coil3/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
 	public final fun getResponse ()Lcoil3/network/NetworkResponse;
@@ -102,15 +83,6 @@ public abstract interface class coil3/network/InFlightRequestStrategy {
 }
 
 public final class coil3/network/InFlightRequestStrategy$Companion {
-}
-
-public abstract interface class coil3/network/InFlightRequestStrategyOld {
-	public static final field Companion Lcoil3/network/InFlightRequestStrategyOld$Companion;
-	public static final field DEFAULT Lcoil3/network/InFlightRequestStrategy;
-	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/network/InFlightRequestStrategyOld$Companion {
 }
 
 public abstract interface class coil3/network/NetworkClient {
