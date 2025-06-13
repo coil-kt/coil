@@ -6,9 +6,58 @@
 // - Show declarations: true
 
 // Library unique name: <io.coil-kt.coil3:coil-svg>
+abstract interface coil3.svg/Svg { // coil3.svg/Svg|null[0]
+    abstract val height // coil3.svg/Svg.height|{}height[0]
+        abstract fun <get-height>(): kotlin/Float // coil3.svg/Svg.height.<get-height>|<get-height>(){}[0]
+    abstract val viewBox // coil3.svg/Svg.viewBox|{}viewBox[0]
+        abstract fun <get-viewBox>(): coil3.svg/Svg.ViewBox? // coil3.svg/Svg.viewBox.<get-viewBox>|<get-viewBox>(){}[0]
+    abstract val width // coil3.svg/Svg.width|{}width[0]
+        abstract fun <get-width>(): kotlin/Float // coil3.svg/Svg.width.<get-width>|<get-width>(){}[0]
+
+    abstract fun asImage(kotlin/Int = ..., kotlin/Int = ...): coil3/Image // coil3.svg/Svg.asImage|asImage(kotlin.Int;kotlin.Int){}[0]
+    abstract fun height(kotlin/String) // coil3.svg/Svg.height|height(kotlin.String){}[0]
+    abstract fun options(coil3.request/Options) // coil3.svg/Svg.options|options(coil3.request.Options){}[0]
+    abstract fun viewBox(coil3.svg/Svg.ViewBox) // coil3.svg/Svg.viewBox|viewBox(coil3.svg.Svg.ViewBox){}[0]
+    abstract fun width(kotlin/String) // coil3.svg/Svg.width|width(kotlin.String){}[0]
+
+    abstract fun interface Parser { // coil3.svg/Svg.Parser|null[0]
+        abstract fun parse(okio/BufferedSource): coil3.svg/Svg // coil3.svg/Svg.Parser.parse|parse(okio.BufferedSource){}[0]
+
+        final object Companion { // coil3.svg/Svg.Parser.Companion|null[0]
+            final val DEFAULT // coil3.svg/Svg.Parser.Companion.DEFAULT|{}DEFAULT[0]
+                final fun <get-DEFAULT>(): coil3.svg/Svg.Parser // coil3.svg/Svg.Parser.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+        }
+    }
+
+    final class ViewBox { // coil3.svg/Svg.ViewBox|null[0]
+        constructor <init>(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float) // coil3.svg/Svg.ViewBox.<init>|<init>(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
+
+        final val bottom // coil3.svg/Svg.ViewBox.bottom|{}bottom[0]
+            final fun <get-bottom>(): kotlin/Float // coil3.svg/Svg.ViewBox.bottom.<get-bottom>|<get-bottom>(){}[0]
+        final val left // coil3.svg/Svg.ViewBox.left|{}left[0]
+            final fun <get-left>(): kotlin/Float // coil3.svg/Svg.ViewBox.left.<get-left>|<get-left>(){}[0]
+        final val right // coil3.svg/Svg.ViewBox.right|{}right[0]
+            final fun <get-right>(): kotlin/Float // coil3.svg/Svg.ViewBox.right.<get-right>|<get-right>(){}[0]
+        final val top // coil3.svg/Svg.ViewBox.top|{}top[0]
+            final fun <get-top>(): kotlin/Float // coil3.svg/Svg.ViewBox.top.<get-top>|<get-top>(){}[0]
+
+        final fun component1(): kotlin/Float // coil3.svg/Svg.ViewBox.component1|component1(){}[0]
+        final fun component2(): kotlin/Float // coil3.svg/Svg.ViewBox.component2|component2(){}[0]
+        final fun component3(): kotlin/Float // coil3.svg/Svg.ViewBox.component3|component3(){}[0]
+        final fun component4(): kotlin/Float // coil3.svg/Svg.ViewBox.component4|component4(){}[0]
+        final fun copy(kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ...): coil3.svg/Svg.ViewBox // coil3.svg/Svg.ViewBox.copy|copy(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // coil3.svg/Svg.ViewBox.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // coil3.svg/Svg.ViewBox.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // coil3.svg/Svg.ViewBox.toString|toString(){}[0]
+    }
+}
+
 final class coil3.svg/SvgDecoder : coil3.decode/Decoder { // coil3.svg/SvgDecoder|null[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, coil3.svg/Svg.Parser = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;coil3.svg.Svg.Parser;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
     constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
+    final val parser // coil3.svg/SvgDecoder.parser|{}parser[0]
+        final fun <get-parser>(): coil3.svg/Svg.Parser // coil3.svg/SvgDecoder.parser.<get-parser>|<get-parser>(){}[0]
     final val renderToBitmap // coil3.svg/SvgDecoder.renderToBitmap|{}renderToBitmap[0]
         final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
     final val scaleToDensity // coil3.svg/SvgDecoder.scaleToDensity|{}scaleToDensity[0]
@@ -51,5 +100,9 @@ final class coil3.svg/SvgImage : coil3/Image { // coil3.svg/SvgImage|null[0]
 
 final val coil3.svg.internal/initHook // coil3.svg.internal/initHook|{}initHook[0]
     final fun <get-initHook>(): kotlin/Any // coil3.svg.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
+final val coil3.svg/height // coil3.svg/height|@coil3.svg.Svg.ViewBox{}height[0]
+    final fun (coil3.svg/Svg.ViewBox).<get-height>(): kotlin/Float // coil3.svg/height.<get-height>|<get-height>@coil3.svg.Svg.ViewBox(){}[0]
+final val coil3.svg/width // coil3.svg/width|@coil3.svg.Svg.ViewBox{}width[0]
+    final fun (coil3.svg/Svg.ViewBox).<get-width>(): kotlin/Float // coil3.svg/width.<get-width>|<get-width>@coil3.svg.Svg.ViewBox(){}[0]
 
 final fun (coil3.decode/DecodeUtils).coil3.svg/isSvg(okio/BufferedSource): kotlin/Boolean // coil3.svg/isSvg|isSvg@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]

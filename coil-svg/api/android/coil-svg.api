@@ -9,10 +9,51 @@ public final class coil3/svg/ImageRequests_androidKt {
 	public static final fun getCss (Lcoil3/request/Options;)Ljava/lang/String;
 }
 
+public abstract interface class coil3/svg/Svg {
+	public abstract fun asImage (II)Lcoil3/Image;
+	public static synthetic fun asImage$default (Lcoil3/svg/Svg;IIILjava/lang/Object;)Lcoil3/Image;
+	public abstract fun getHeight ()F
+	public abstract fun getViewBox ()Lcoil3/svg/Svg$ViewBox;
+	public abstract fun getWidth ()F
+	public abstract fun height (Ljava/lang/String;)V
+	public abstract fun options (Lcoil3/request/Options;)V
+	public abstract fun viewBox (Lcoil3/svg/Svg$ViewBox;)V
+	public abstract fun width (Ljava/lang/String;)V
+}
+
+public abstract interface class coil3/svg/Svg$Parser {
+	public static final field Companion Lcoil3/svg/Svg$Parser$Companion;
+	public static final field DEFAULT Lcoil3/svg/Svg$Parser;
+	public abstract fun parse (Lokio/BufferedSource;)Lcoil3/svg/Svg;
+}
+
+public final class coil3/svg/Svg$Parser$Companion {
+}
+
+public final class coil3/svg/Svg$ViewBox {
+	public fun <init> (FFFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (FFFF)Lcoil3/svg/Svg$ViewBox;
+	public static synthetic fun copy$default (Lcoil3/svg/Svg$ViewBox;FFFFILjava/lang/Object;)Lcoil3/svg/Svg$ViewBox;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom ()F
+	public final fun getLeft ()F
+	public final fun getRight ()F
+	public final fun getTop ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;ZZZ)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZZ)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
 	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
@@ -37,5 +78,10 @@ public final class coil3/svg/SvgImage : coil3/Image {
 	public fun getSize ()J
 	public final fun getSvg ()Lcom/caverock/androidsvg/SVG;
 	public fun getWidth ()I
+}
+
+public final class coil3/svg/SvgKt {
+	public static final fun getHeight (Lcoil3/svg/Svg$ViewBox;)F
+	public static final fun getWidth (Lcoil3/svg/Svg$ViewBox;)F
 }
 
