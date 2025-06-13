@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.3.0] - Unreleased
+
+- **New**: Add an `Svg.Parser` argument to `SvgDecoder` to support custom SVG parsers.
+    - This allows using custom SVG parsers if the default SVG parser doesn't meet your needs.
+
 ## [3.2.0] - May 13, 2025
 
 Changes since `3.1.0`:
