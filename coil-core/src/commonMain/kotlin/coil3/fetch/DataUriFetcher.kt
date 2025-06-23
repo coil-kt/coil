@@ -6,7 +6,6 @@ import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 import okio.Buffer
 
 /**
@@ -26,7 +25,6 @@ internal class DataUriFetcher(
 
         val mimeType = uri.toString().substring(pathStartIndex + 1, tagIndex)
 
-        @OptIn(ExperimentalEncodingApi::class)
         val data = Base64.decode(
             source = uri.toString(),
             startIndex = tagIndex + BASE64_TAG.length,
