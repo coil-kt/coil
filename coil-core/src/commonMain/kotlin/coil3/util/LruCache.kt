@@ -4,10 +4,14 @@ package coil3.util
  * A least recently used cache that evicts the eldest entry when the cache's current size
  * exceeds its max size.
  */
-internal open class LruCache<K : Any, V : Any>(
-    val maxSize: Long,
-) {
+internal open class LruCache<K : Any, V : Any>(maxSize: Long) {
     private val map = LruMutableMap<K, V>()
+
+    var maxSize = maxSize
+        set(value) {
+            field = value
+            trimToSize(field)
+        }
 
     var size: Long = 0
         get() {

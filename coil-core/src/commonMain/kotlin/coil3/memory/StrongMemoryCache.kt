@@ -14,7 +14,9 @@ internal interface StrongMemoryCache {
 
     val size: Long
 
-    val maxSize: Long
+    var maxSize: Long
+
+    val initialMaxSize: Long
 
     val keys: Set<Key>
 
@@ -35,7 +37,9 @@ internal class EmptyStrongMemoryCache(
 
     override val size get() = 0L
 
-    override val maxSize get() = 0L
+    override var maxSize = 0L
+
+    override val initialMaxSize get() = 0L
 
     override val keys get() = emptySet<Key>()
 
@@ -53,11 +57,11 @@ internal class EmptyStrongMemoryCache(
 }
 
 internal class RealStrongMemoryCache(
-    maxSize: Long,
+    override val initialMaxSize: Long,
     private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
-    private val cache = object : LruCache<Key, InternalValue>(maxSize) {
+    private val cache = object : LruCache<Key, InternalValue>(initialMaxSize) {
         override fun sizeOf(
             key: Key,
             value: InternalValue,
@@ -73,8 +77,11 @@ internal class RealStrongMemoryCache(
     override val size: Long
         get() = cache.size
 
-    override val maxSize: Long
+    override var maxSize: Long
         get() = cache.maxSize
+        set(value) {
+            cache.maxSize = value
+        }
 
     override val keys: Set<Key>
         get() = cache.keys

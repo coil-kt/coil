@@ -216,6 +216,7 @@ public final class coil3/ImageLoaders_androidKt {
 	public static final fun bitmapFactoryExifOrientationStrategy (Lcoil3/ImageLoader$Builder;Lcoil3/decode/ExifOrientationStrategy;)Lcoil3/ImageLoader$Builder;
 	public static final fun bitmapFactoryMaxParallelism (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
 	public static final fun imageDecoderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun memoryCacheMaxSizePercentWhileInBackground (Lcoil3/ImageLoader$Builder;D)Lcoil3/ImageLoader$Builder;
 }
 
 public final class coil3/ImageLoaders_nonJsCommonKt {
@@ -515,11 +516,13 @@ public abstract interface class coil3/map/Mapper {
 public abstract interface class coil3/memory/MemoryCache {
 	public abstract fun clear ()V
 	public abstract fun get (Lcoil3/memory/MemoryCache$Key;)Lcoil3/memory/MemoryCache$Value;
+	public abstract fun getInitialMaxSize ()J
 	public abstract fun getKeys ()Ljava/util/Set;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
 	public abstract fun remove (Lcoil3/memory/MemoryCache$Key;)Z
 	public abstract fun set (Lcoil3/memory/MemoryCache$Key;Lcoil3/memory/MemoryCache$Value;)V
+	public abstract fun setMaxSize (J)V
 	public abstract fun trimToSize (J)V
 }
 

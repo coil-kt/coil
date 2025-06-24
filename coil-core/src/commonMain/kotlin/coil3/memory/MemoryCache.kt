@@ -2,6 +2,7 @@ package coil3.memory
 
 import coil3.Image
 import coil3.PlatformContext
+import coil3.annotation.ExperimentalCoilApi
 import coil3.key.Keyer
 import coil3.util.defaultMemoryCacheSizePercent
 import coil3.util.toImmutableMap
@@ -16,8 +17,12 @@ interface MemoryCache {
     /** The current size of the cache in bytes. */
     val size: Long
 
-    /** The maximum size of the cache in bytes. */
-    val maxSize: Long
+    /** The current maximum size of the cache in bytes. */
+    var maxSize: Long
+
+    /** The [maxSize] that the cache was initialized with. */
+    @ExperimentalCoilApi
+    val initialMaxSize: Long
 
     /** The keys present in the cache. */
     val keys: Set<Key>
@@ -174,11 +179,7 @@ interface MemoryCache {
                     "maxSizeBytesFactory == null"
                 }
                 val maxSizeBytes = maxSizeBytesFactory()
-                if (maxSizeBytes > 0) {
-                    RealStrongMemoryCache(maxSizeBytes, weakMemoryCache)
-                } else {
-                    EmptyStrongMemoryCache(weakMemoryCache)
-                }
+                RealStrongMemoryCache(maxSizeBytes, weakMemoryCache)
             } else {
                 EmptyStrongMemoryCache(weakMemoryCache)
             }

@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
-    <application>
+    <application
+        android:name="coil3.util.TestApplication">
+
         <provider
             android:name="coil3.util.AssetContentProvider"
             android:authorities="coil"

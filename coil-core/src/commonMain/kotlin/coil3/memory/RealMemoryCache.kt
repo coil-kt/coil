@@ -11,13 +11,27 @@ internal class RealMemoryCache(
     private val lock = SynchronizedObject()
 
     override val size: Long
-        get() = synchronized(lock) { strongMemoryCache.size }
+        get() = synchronized(lock) {
+            strongMemoryCache.size
+        }
 
-    override val maxSize: Long
-        get() = synchronized(lock) { strongMemoryCache.maxSize }
+    override var maxSize: Long
+        get() = synchronized(lock) {
+            strongMemoryCache.maxSize
+        }
+        set(value) = synchronized(lock) {
+            strongMemoryCache.maxSize = value
+        }
+
+    override val initialMaxSize: Long
+        get() = synchronized(lock) {
+            strongMemoryCache.initialMaxSize
+        }
 
     override val keys: Set<Key>
-        get() = synchronized(lock) { strongMemoryCache.keys + weakMemoryCache.keys }
+        get() = synchronized(lock) {
+            strongMemoryCache.keys + weakMemoryCache.keys
+        }
 
     override fun get(key: Key): MemoryCache.Value? = synchronized(lock) {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
