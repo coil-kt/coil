@@ -20,7 +20,7 @@ interface MemoryCache {
     /** The current maximum size of the cache in bytes. */
     var maxSize: Long
 
-    /** The [maxSize] that the cache was initialized with. */
+    /** The [maxSize] in bytes that the cache was initialized with. */
     @ExperimentalCoilApi
     val initialMaxSize: Long
 
