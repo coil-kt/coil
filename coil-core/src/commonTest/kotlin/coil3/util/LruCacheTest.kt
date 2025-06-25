@@ -112,4 +112,18 @@ class LruCacheTest {
         assertEquals(2, cache["two"])
         assertEquals(3, cache["three"])
     }
+
+    @Test
+    fun setMaxSizeEvicts() {
+        val cache = LruCache<String, Int>(maxSize = 3)
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
+
+        cache.maxSize = 2
+
+        assertNull(cache["one"])
+        assertEquals(2, cache["two"])
+        assertEquals(3, cache["three"])
+    }
 }

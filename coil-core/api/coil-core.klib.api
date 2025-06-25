@@ -182,12 +182,16 @@ abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
 }
 
 abstract interface coil3.memory/MemoryCache { // coil3.memory/MemoryCache|null[0]
+    abstract val initialMaxSize // coil3.memory/MemoryCache.initialMaxSize|{}initialMaxSize[0]
+        abstract fun <get-initialMaxSize>(): kotlin/Long // coil3.memory/MemoryCache.initialMaxSize.<get-initialMaxSize>|<get-initialMaxSize>(){}[0]
     abstract val keys // coil3.memory/MemoryCache.keys|{}keys[0]
         abstract fun <get-keys>(): kotlin.collections/Set<coil3.memory/MemoryCache.Key> // coil3.memory/MemoryCache.keys.<get-keys>|<get-keys>(){}[0]
-    abstract val maxSize // coil3.memory/MemoryCache.maxSize|{}maxSize[0]
-        abstract fun <get-maxSize>(): kotlin/Long // coil3.memory/MemoryCache.maxSize.<get-maxSize>|<get-maxSize>(){}[0]
     abstract val size // coil3.memory/MemoryCache.size|{}size[0]
         abstract fun <get-size>(): kotlin/Long // coil3.memory/MemoryCache.size.<get-size>|<get-size>(){}[0]
+
+    abstract var maxSize // coil3.memory/MemoryCache.maxSize|{}maxSize[0]
+        abstract fun <get-maxSize>(): kotlin/Long // coil3.memory/MemoryCache.maxSize.<get-maxSize>|<get-maxSize>(){}[0]
+        abstract fun <set-maxSize>(kotlin/Long) // coil3.memory/MemoryCache.maxSize.<set-maxSize>|<set-maxSize>(kotlin.Long){}[0]
 
     abstract fun clear() // coil3.memory/MemoryCache.clear|clear(){}[0]
     abstract fun get(coil3.memory/MemoryCache.Key): coil3.memory/MemoryCache.Value? // coil3.memory/MemoryCache.get|get(coil3.memory.MemoryCache.Key){}[0]

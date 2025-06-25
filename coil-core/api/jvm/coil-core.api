@@ -433,11 +433,13 @@ public abstract interface class coil3/map/Mapper {
 public abstract interface class coil3/memory/MemoryCache {
 	public abstract fun clear ()V
 	public abstract fun get (Lcoil3/memory/MemoryCache$Key;)Lcoil3/memory/MemoryCache$Value;
+	public abstract fun getInitialMaxSize ()J
 	public abstract fun getKeys ()Ljava/util/Set;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
 	public abstract fun remove (Lcoil3/memory/MemoryCache$Key;)Z
 	public abstract fun set (Lcoil3/memory/MemoryCache$Key;Lcoil3/memory/MemoryCache$Value;)V
+	public abstract fun setMaxSize (J)V
 	public abstract fun trimToSize (J)V
 }
 
