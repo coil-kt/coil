@@ -14,7 +14,6 @@ internal actual suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
         val packet = readRemaining(buffer.size.toLong())
         if (packet.isEmpty) break
 
-        // TODO: Figure out how to remove 'buffer' and read directly into 'sink'.
         val bytesRead = packet.remaining.toInt()
         packet.readFully(buffer, 0, bytesRead)
         sink.write(buffer, 0, bytesRead)
