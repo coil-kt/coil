@@ -12,10 +12,13 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.time.ExperimentalTime
+import kotlinx.datetime.toDeprecatedClock
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
+@OptIn(ExperimentalTime::class)
 class FileUriKeyerTest : RobolectricTest() {
 
     private lateinit var clock: FakeClock
@@ -25,7 +28,7 @@ class FileUriKeyerTest : RobolectricTest() {
     @BeforeTest
     fun before() {
         clock = FakeClock()
-        fileSystem = FakeFileSystem(clock)
+        fileSystem = FakeFileSystem(clock.toDeprecatedClock())
         options = Options(context, fileSystem = fileSystem)
     }
 

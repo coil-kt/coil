@@ -102,13 +102,13 @@ internal val BROWSER_DATE_TIME_FORMAT: DateTimeFormat<DateTimeComponents> = Form
     }
 
     // dd
-    dayOfMonth(Padding.NONE)
+    day(Padding.NONE)
     alternativeParsing({ char('-') }) {
         char(' ')
     }
 
     // MM/MMM
-    alternativeParsing({ dayOfMonth() }) {
+    alternativeParsing({ day() }) {
         monthName(MonthNames.ENGLISH_ABBREVIATED)
     }
     alternativeParsing({ char('-') }) {

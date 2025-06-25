@@ -26,8 +26,10 @@ import coil3.network.cachecontrol.internal.CacheControl
 import coil3.network.cachecontrol.internal.toNonNegativeInt
 import coil3.request.Options
 import kotlin.jvm.JvmOverloads
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+import kotlinx.datetime.parse
 
 /**
  * A [CacheStrategy] that uses the 'Cache-Control' response header and associated headers to
@@ -39,6 +41,7 @@ import kotlinx.datetime.Instant
  *
  * @param now A function that returns the current time.
  */
+@OptIn(ExperimentalTime::class)
 @ExperimentalCoilApi
 class CacheControlCacheStrategy @JvmOverloads constructor(
     private val now: () -> Instant = Clock.System::now,
