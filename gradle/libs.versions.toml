@@ -74,7 +74,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
-kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.0"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.0-0.6.x-compat"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1"
 
 ktor2-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor2" }

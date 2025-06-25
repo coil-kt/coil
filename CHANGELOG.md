@@ -2,8 +2,8 @@
 
 ## [3.3.0] - Unreleased
 
-- Update `kotlinx-datetime` to 0.7.0.
-    - NOTE: Due to a binary incompatible change, this can cause issues if you also use libraries that depend on `kotlinx-datetime` `0.6.x` or earlier. See [here](https://github.com/Kotlin/kotlinx-datetime?tab=readme-ov-file#deprecation-of-instant) for more info.
+- Update `kotlinx-datetime` to `0.7.0-0.6.x-compat`.
+    - See [here](https://github.com/Kotlin/kotlinx-datetime?tab=readme-ov-file#deprecation-of-instant) for more info.
 
 ## [3.2.0] - May 13, 2025
 
