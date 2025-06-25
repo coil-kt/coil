@@ -25,6 +25,8 @@ internal actual fun SystemCallbacks(
  * This prevents the system from having a strong reference to the [imageLoader], which allows
  * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
  * its callbacks.
+ *
+ * This class uses the callbacks to trim the memory cache and/or restrict its maximum size.
  */
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 internal class AndroidSystemCallbacks(
