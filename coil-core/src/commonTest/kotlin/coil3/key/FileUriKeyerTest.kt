@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.time.ExperimentalTime
-import kotlinx.datetime.toDeprecatedClock
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
@@ -28,7 +27,7 @@ class FileUriKeyerTest : RobolectricTest() {
     @BeforeTest
     fun before() {
         clock = FakeClock()
-        fileSystem = FakeFileSystem(clock.toDeprecatedClock())
+        fileSystem = FakeFileSystem(clock)
         options = Options(context, fileSystem = fileSystem)
     }
 
