@@ -16,11 +16,10 @@ import okio.BufferedSource
  */
 @ExperimentalCoilApi
 interface Svg {
-    val viewBox: ViewBox?
+    var viewBox: ViewBox?
     val width: Float
     val height: Float
 
-    fun viewBox(value: ViewBox)
     fun width(value: String)
     fun height(value: String)
     fun options(options: Options)

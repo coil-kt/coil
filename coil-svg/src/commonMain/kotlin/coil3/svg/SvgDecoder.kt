@@ -100,7 +100,7 @@ class SvgDecoder(
 
             // Set the SVG's view box to enable scaling if it is not set.
             if (viewBox == null) {
-                svg.viewBox(ViewBox(0f, 0f, svgWidth, svgHeight))
+                svg.viewBox = ViewBox(0f, 0f, svgWidth, svgHeight)
             }
         } else {
             bitmapWidth = dstWidth

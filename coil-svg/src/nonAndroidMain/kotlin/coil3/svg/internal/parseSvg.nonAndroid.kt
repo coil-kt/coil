@@ -24,16 +24,15 @@ internal actual fun parseSvg(source: BufferedSource): Svg {
 private value class SkiaSvg(
     private val svg: SVGDOM,
 ) : Svg {
-    override val viewBox: ViewBox?
+    override var viewBox: ViewBox?
         get() = svg.root?.viewBox?.run { ViewBox(left, top, right, bottom) }
+        set(value) {
+            svg.root?.viewBox = value?.run { Rect.makeLTRB(left, top, right, bottom) }
+        }
     override val width: Float
         get() = svg.root?.width.toFloat()
     override val height: Float
         get() = svg.root?.height.toFloat()
-
-    override fun viewBox(value: ViewBox) {
-        svg.root?.viewBox = Rect.makeLTRB(value.left, value.top, value.right, value.bottom)
-    }
 
     override fun width(value: String) {
         svg.root?.width = parseSVGLength(value)

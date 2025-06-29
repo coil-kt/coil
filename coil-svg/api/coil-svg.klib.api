@@ -9,15 +9,16 @@
 abstract interface coil3.svg/Svg { // coil3.svg/Svg|null[0]
     abstract val height // coil3.svg/Svg.height|{}height[0]
         abstract fun <get-height>(): kotlin/Float // coil3.svg/Svg.height.<get-height>|<get-height>(){}[0]
-    abstract val viewBox // coil3.svg/Svg.viewBox|{}viewBox[0]
-        abstract fun <get-viewBox>(): coil3.svg/Svg.ViewBox? // coil3.svg/Svg.viewBox.<get-viewBox>|<get-viewBox>(){}[0]
     abstract val width // coil3.svg/Svg.width|{}width[0]
         abstract fun <get-width>(): kotlin/Float // coil3.svg/Svg.width.<get-width>|<get-width>(){}[0]
+
+    abstract var viewBox // coil3.svg/Svg.viewBox|{}viewBox[0]
+        abstract fun <get-viewBox>(): coil3.svg/Svg.ViewBox? // coil3.svg/Svg.viewBox.<get-viewBox>|<get-viewBox>(){}[0]
+        abstract fun <set-viewBox>(coil3.svg/Svg.ViewBox?) // coil3.svg/Svg.viewBox.<set-viewBox>|<set-viewBox>(coil3.svg.Svg.ViewBox?){}[0]
 
     abstract fun asImage(kotlin/Int = ..., kotlin/Int = ...): coil3/Image // coil3.svg/Svg.asImage|asImage(kotlin.Int;kotlin.Int){}[0]
     abstract fun height(kotlin/String) // coil3.svg/Svg.height|height(kotlin.String){}[0]
     abstract fun options(coil3.request/Options) // coil3.svg/Svg.options|options(coil3.request.Options){}[0]
-    abstract fun viewBox(coil3.svg/Svg.ViewBox) // coil3.svg/Svg.viewBox|viewBox(coil3.svg.Svg.ViewBox){}[0]
     abstract fun width(kotlin/String) // coil3.svg/Svg.width|width(kotlin.String){}[0]
 
     abstract fun interface Parser { // coil3.svg/Svg.Parser|null[0]

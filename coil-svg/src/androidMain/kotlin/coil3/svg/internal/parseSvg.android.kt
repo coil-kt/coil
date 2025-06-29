@@ -24,16 +24,24 @@ private class AndroidSvg(
 ) : Svg {
     private var renderOptions: RenderOptions? = null
 
-    override val viewBox: ViewBox?
+    override var viewBox: ViewBox?
         get() = svg.documentViewBox?.run { ViewBox(left, top, right, bottom) }
+        set(value) {
+            if (value == null) {
+                // The underlying implementation has no way to set a null view box.
+                throw UnsupportedOperationException()
+            }
+            svg.setDocumentViewBox(
+                value.left,
+                value.top,
+                value.width,
+                value.height,
+            )
+        }
     override val width: Float
         get() = svg.documentWidth
     override val height: Float
         get() = svg.documentHeight
-
-    override fun viewBox(value: ViewBox) {
-        svg.setDocumentViewBox(value.left, value.top, value.width, value.height)
-    }
 
     override fun width(value: String) {
         svg.setDocumentWidth(value)
