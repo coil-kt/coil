@@ -16,7 +16,7 @@ The syntax to enqueue an `ImageRequest` is almost the same in Java and Kotlin:
 ImageRequest request = new ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
     .crossfade(true)
-    .target(imageView)
+    .target(new ImageViewTarget(imageView))
     .build();
 imageLoader.enqueue(request);
 ```
