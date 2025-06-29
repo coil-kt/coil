@@ -11,10 +11,10 @@ import coil3.request.Options
 import coil3.request.maxBitmapSize
 import coil3.size.Size
 import coil3.size.isOriginal
+import coil3.svg.Svg.ViewBox
 import coil3.svg.internal.MIME_TYPE_SVG
 import coil3.svg.internal.SVG_DEFAULT_SIZE
 import coil3.svg.internal.density
-import coil3.svg.internal.parseSvg
 import coil3.svg.internal.runInterruptible
 import coil3.toBitmap
 import coil3.util.component1
@@ -36,21 +36,37 @@ import okio.use
 class SvgDecoder(
     private val source: ImageSource,
     private val options: Options,
+    val parser: Svg.Parser = Svg.Parser.DEFAULT,
     val useViewBoundsAsIntrinsicSize: Boolean = true,
     val renderToBitmap: Boolean = true,
     val scaleToDensity: Boolean = false,
 ) : Decoder {
 
+    constructor(
+        source: ImageSource,
+        options: Options,
+        useViewBoundsAsIntrinsicSize: Boolean = true,
+        renderToBitmap: Boolean = true,
+        scaleToDensity: Boolean = false,
+    ) : this(
+        source = source,
+        options = options,
+        parser = Svg.Parser.DEFAULT,
+        useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
+        renderToBitmap = renderToBitmap,
+        scaleToDensity = scaleToDensity,
+    )
+
     override suspend fun decode() = runInterruptible {
-        val svg = source.source().use(::parseSvg)
+        val svg = source.source().use(parser::parse)
 
         var svgWidth: Float
         var svgHeight: Float
-        val viewBox: FloatArray? = svg.viewBox
+        val viewBox: ViewBox? = svg.viewBox
 
         if (useViewBoundsAsIntrinsicSize && viewBox != null) {
-            svgWidth = viewBox[2] - viewBox[0]
-            svgHeight = viewBox[3] - viewBox[1]
+            svgWidth = viewBox.width
+            svgHeight = viewBox.height
         } else {
             svgWidth = svg.width
             svgHeight = svg.height
@@ -84,7 +100,7 @@ class SvgDecoder(
 
             // Set the SVG's view box to enable scaling if it is not set.
             if (viewBox == null) {
-                svg.viewBox(floatArrayOf(0f, 0f, svgWidth, svgHeight))
+                svg.viewBox = ViewBox(0f, 0f, svgWidth, svgHeight)
             }
         } else {
             bitmapWidth = dstWidth

@@ -2,6 +2,8 @@ package coil3.svg.internal
 
 import coil3.Image
 import coil3.request.Options
+import coil3.svg.Svg
+import coil3.svg.Svg.ViewBox
 import coil3.svg.SvgImage
 import kotlin.jvm.JvmInline
 import okio.BufferedSource
@@ -22,16 +24,15 @@ internal actual fun parseSvg(source: BufferedSource): Svg {
 private value class SkiaSvg(
     private val svg: SVGDOM,
 ) : Svg {
-    override val viewBox: FloatArray?
-        get() = svg.root?.viewBox?.run { floatArrayOf(left, top, right, bottom) }
+    override var viewBox: ViewBox?
+        get() = svg.root?.viewBox?.run { ViewBox(left, top, right, bottom) }
+        set(value) {
+            svg.root?.viewBox = value?.run { Rect.makeLTRB(left, top, right, bottom) }
+        }
     override val width: Float
         get() = svg.root?.width.toFloat()
     override val height: Float
         get() = svg.root?.height.toFloat()
-
-    override fun viewBox(value: FloatArray) {
-        svg.root?.viewBox = Rect.makeLTRB(value[0], value[1], value[2], value[3])
-    }
 
     override fun width(value: String) {
         svg.root?.width = parseSVGLength(value)
