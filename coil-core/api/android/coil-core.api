@@ -207,6 +207,10 @@ public final class coil3/ImageLoader$Builder {
 	public final fun precision (Lcoil3/size/Precision;)Lcoil3/ImageLoader$Builder;
 }
 
+public final class coil3/ImageLoaders {
+	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
+}
+
 public final class coil3/ImageLoadersKt {
 	public static final fun ImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
 	public static final fun serviceLoaderEnabled (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
@@ -220,7 +224,7 @@ public final class coil3/ImageLoaders_androidKt {
 }
 
 public final class coil3/ImageLoaders_nonJsCommonKt {
-	public static final fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
+	public static final synthetic fun executeBlocking (Lcoil3/ImageLoader;Lcoil3/request/ImageRequest;)Lcoil3/request/ImageResult;
 }
 
 public final class coil3/Image_androidKt {
