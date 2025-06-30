@@ -15,10 +15,9 @@ androidLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
     }
-    testOptions {
-        screenshotTests {
-            imageDifferenceThreshold = 0.01f
-        }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
@@ -33,6 +32,10 @@ dependencies {
     testImplementation(libs.bundles.test.jvm)
 
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+}
+
+screenshotTests {
+    imageDifferenceThreshold = 0.01f
 }
 
 // Compose 1.8.0 requires JVM 11.

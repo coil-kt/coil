@@ -21,11 +21,11 @@ baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-ben
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.17.0"
 dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.18.7"
-screenshot = "com.android.compose.screenshot:0.0.1-alpha09"
+screenshot = "com.android.compose.screenshot:0.0.1-alpha10"
 spotless = "com.diffplug.spotless:7.0.3"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.10.0"
+gradlePlugin-android = "com.android.tools.build:gradle:8.11.0"
 gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
