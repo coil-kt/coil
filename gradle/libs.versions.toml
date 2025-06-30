@@ -36,7 +36,7 @@ gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gra
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.0"
+androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.1"
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
 androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.3.4"
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
