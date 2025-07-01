@@ -50,6 +50,7 @@ extensions.configure<ApiValidationExtension> {
 }
 
 dokka {
+    dokkaGeneratorIsolation = ClassLoaderIsolation()
     dokkaPublications.configureEach {
         outputDirectory.set(layout.projectDirectory.dir("docs/api"))
     }
