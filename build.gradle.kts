@@ -35,7 +35,7 @@ plugins {
     alias(libs.plugins.poko) apply false
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.spotless)
-    id(libs.plugins.dokka.get().pluginId)
+    id("org.jetbrains.dokka")
 }
 
 extensions.configure<ApiValidationExtension> {
