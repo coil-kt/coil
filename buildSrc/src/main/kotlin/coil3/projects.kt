@@ -63,12 +63,6 @@ fun Project.setupPublishing(
         publishToMavenCentral()
         signAllPublications()
         action()
-
-        coordinates(
-            groupId = project.property("POM_GROUP_ID").toString(),
-            artifactId = project.property("POM_ARTIFACT_ID").toString(),
-            version = project.property("POM_VERSION").toString(),
-        )
     }
 }
 

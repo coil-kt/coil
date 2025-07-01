@@ -29,10 +29,10 @@ val Project.compileSdk: Int
     get() = intProperty("compileSdk")
 
 val Project.groupId: String
-    get() = stringProperty("POM_GROUP_ID")
+    get() = stringProperty("GROUP")
 
 val Project.versionName: String
-    get() = stringProperty("POM_VERSION")
+    get() = stringProperty("VERSION_NAME")
 
 val Project.versionCode: Int
     get() = versionName
