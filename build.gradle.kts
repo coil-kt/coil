@@ -32,9 +32,10 @@ buildscript {
 
 plugins {
     alias(libs.plugins.baselineProfile) apply false
-    alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.poko) apply false
+    alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.spotless)
+    id(libs.plugins.dokka.get().pluginId)
 }
 
 extensions.configure<ApiValidationExtension> {
@@ -45,6 +46,18 @@ extensions.configure<ApiValidationExtension> {
     @OptIn(ExperimentalBCVApi::class)
     klib {
         enabled = true
+    }
+}
+
+dokka {
+    dokkaPublications.configureEach {
+        outputDirectory.set(layout.projectDirectory.dir("docs/api"))
+    }
+}
+
+dependencies {
+    for (module in publicModules) {
+        dokka(project(":$module"))
     }
 }
 
@@ -225,5 +238,3 @@ fun Project.applyOkioJsTestWorkaround() {
         }
     }
 }
-
-private val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
