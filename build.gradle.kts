@@ -81,17 +81,6 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     }
 
-    dependencies {
-        modules {
-            module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
-                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
-            }
-            module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
-                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
-            }
-        }
-    }
-
     // Uninstall test APKs after running instrumentation tests.
     tasks.configureEach {
         if (name == "connectedDebugAndroidTest") {
