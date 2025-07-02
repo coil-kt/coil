@@ -35,6 +35,7 @@ plugins {
     alias(libs.plugins.poko) apply false
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.spotless)
+    // https://github.com/gradle/gradle/issues/20084#issuecomment-1060822638
     id("org.jetbrains.dokka")
 }
 
