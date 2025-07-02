@@ -2,7 +2,7 @@
 
 Coil's API is designed to be Kotlin-first. It leverages Kotlin language features such as inlined lambdas, receiver params, default arguments, and extension functions, which are not available in Java.
 
-Importantly, suspend functions cannot be implemented in Java. This means custom [Transformations](transformations.md), [Size Resolvers](/coil/api/coil-core/coil3.size/-size-resolver), [Fetchers](image_pipeline.md#fetchers), and [Decoders](image_pipeline.md#decoders) **must** be implemented in Kotlin.
+Importantly, suspend functions cannot be implemented in Java. This means custom [Transformations](/coil/api/coil-core/coil3.transform/-transformation), [Size Resolvers](/coil/api/coil-core/coil3.size/-size-resolver), [Fetchers](image_pipeline.md#fetchers), and [Decoders](image_pipeline.md#decoders) **must** be implemented in Kotlin.
 
 Despite these limitations, most of Coil's API is Java compatible. You can get the singleton `ImageLoader` using:
 

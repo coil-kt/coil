@@ -5,6 +5,7 @@ androidx-lifecycle = "2.8.7"
 androidx-tracing-perfetto = "1.0.0"
 atomicfu = "0.29.0"
 coroutines = "1.10.2"
+dokka = "2.0.0"
 jetbrains-compose = "1.8.2"
 kotlin = "2.2.0"
 ktlint = "1.4.1"
@@ -19,7 +20,6 @@ skiko = "0.9.4.2"
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.18.0"
-dokka = "org.jetbrains.dokka:1.9.20"
 poko = "dev.drewhamilton.poko:0.19.0"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha10"
 spotless = "com.diffplug.spotless:7.0.4"
@@ -27,8 +27,9 @@ spotless = "com.diffplug.spotless:7.0.4"
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.11.0"
 gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
-gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
+gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.33.0"
 gradlePlugin-paparazzi = { module = "app.cash.paparazzi:paparazzi-gradle-plugin", version.ref = "paparazzi" }

@@ -16,6 +16,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -33,9 +34,10 @@ fun Project.androidLibrary(
     if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
+        setupDokka()
         setupPublishing {
             val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-                KotlinMultiplatform(Dokka("dokkaHtml"))
+                KotlinMultiplatform(Dokka("dokkaGenerate"))
             } else {
                 AndroidSingleVariantLibrary()
             }
@@ -62,6 +64,48 @@ fun Project.setupPublishing(
         pomFromGradleProperties()
         publishToMavenCentral()
         signAllPublications()
+        action()
+    }
+}
+
+fun Project.setupDokka(
+    action: DokkaExtension.() -> Unit = {},
+) {
+    extensions.configure<DokkaExtension> {
+        dokkaPublications.configureEach {
+            failOnWarning.set(true)
+            suppressInheritedMembers.set(true)
+        }
+        dokkaSourceSets.configureEach {
+            jdkVersion.set(8)
+            skipDeprecated.set(true)
+
+            externalDocumentationLinks.register("android") {
+                url.set(uri("https://developer.android.com/reference/"))
+            }
+            externalDocumentationLinks.register("coroutines") {
+                url.set(uri("https://kotlinlang.org/api/kotlinx.coroutines/"))
+            }
+            externalDocumentationLinks.register("skiko") {
+                url.set(uri("https://jetbrains.github.io/skiko/"))
+                packageListUrl.set(uri("https://jetbrains.github.io/skiko/skiko/package-list"))
+            }
+            externalDocumentationLinks.register("ktor") {
+                url.set(uri("https://api.ktor.io/"))
+            }
+            externalDocumentationLinks.register("datetime") {
+                url.set(uri("https://kotlinlang.org/api/kotlinx-datetime/"))
+                packageListUrl.set(uri("https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/package-list"))
+            }
+            externalDocumentationLinks.register("okio") {
+                url.set(uri("https://square.github.io/okio/3.x/okio/"))
+                packageListUrl.set(uri("https://square.github.io/okio/3.x/okio/okio/package-list"))
+            }
+            externalDocumentationLinks.register("okhttp") {
+                url.set(uri("https://square.github.io/okhttp/5.x/okhttp/okhttp3/"))
+                packageListUrl.set(uri("https://square.github.io/okhttp/5.x/package-list"))
+            }
+        }
         action()
     }
 }
