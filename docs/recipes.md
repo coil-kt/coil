@@ -135,7 +135,7 @@ AsyncImage(
 You may need to transform HTTP requests used to fetch images. In this example, we'll use an [Interceptor](https://coil-kt.github.io/coil/api/coil-core/coil3.intercept/-interceptor) to append `width` & `height` query parameters to the request URL.
 
 ```kotlin
-class FastlyCoilInterceptor : Interceptor {
+class UrlSizeInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Chain): ImageResult {
         val request = chain.request
