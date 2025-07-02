@@ -129,3 +129,56 @@ AsyncImage(
     },
 )
 ```
+
+## Transforming Requests
+
+You may need to transform HTTP requests used to fetch images. In this example, we'll use an [Interceptor](https://coil-kt.github.io/coil/api/coil-core/coil3.intercept/-interceptor) to append `width` & `height` query parameters to the request URL.
+
+```kotlin
+class FastlyCoilInterceptor : Interceptor {
+
+    override suspend fun intercept(chain: Chain): ImageResult {
+        val request = chain.request
+        val uri = request.uri
+
+        if (uri == null || uri.scheme !in setOf("https", "http")) {
+            // Ignore non-HTTP requests.
+            return chain.proceed()
+        }
+
+        val (width, height) = chain.size
+        return if (width is Pixels && height is Pixels) {
+            val transformedRequest = request.newBuilder()
+                .data(
+                    uri.buildUpon()
+                        .appendQueryParameter("width", "${width.px}")
+                        .appendQueryParameter("height", "${height.px}")
+                        .build()
+                )
+                .build()
+            return chain.withRequest(transformedRequest).proceed()
+        } else {
+            // Width & height aren't available, i.e. because of infinite constraints.
+            chain.proceed()
+        }
+    }
+
+    private val ImageRequest.uri: Uri?
+        get() = when (val data = data) {
+            is Uri -> data
+            is coil3.Uri -> data.toAndroidUri()
+            is String -> data.toUri()
+            else -> null
+        }
+}
+```
+
+Don't forget to register add interceptor to your `ImageLoader`!
+
+```kotlin
+ImageLoader.Builder(context)
+    .components {
+        add(FastlyCoilInterceptor())
+    }
+    .build()
+```
