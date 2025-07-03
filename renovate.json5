@@ -3,5 +3,6 @@
     "extends": [
         "config:recommended"
     ],
-    "automerge": false
+    "automerge": false,
+    "dependencyDashboard": false
 }
