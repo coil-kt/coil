@@ -15,6 +15,9 @@ import coil3.request.ImageRequest
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
+ * [rememberAsyncImagePainter] has limitations compared to [AsyncImage]. Check out the full
+ * documentation [here](https://coil-kt.github.io/coil/compose/#rememberasyncimagepainter).
+ *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param placeholder A [Painter] that is displayed while the image is loading.
  * @param error A [Painter] that is displayed when the image request is unsuccessful.
@@ -55,6 +58,9 @@ fun rememberAsyncImagePainter(
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * [rememberAsyncImagePainter] has limitations compared to [AsyncImage]. Check out the full
+ * documentation [here](https://coil-kt.github.io/coil/compose/#rememberasyncimagepainter).
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param transform A callback to transform a new [State] before it's applied to the
