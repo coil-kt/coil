@@ -53,6 +53,9 @@ import kotlinx.coroutines.flow.asStateFlow
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
+ * [rememberAsyncImagePainter] has limitations compared to [AsyncImage]. Check out the full
+ * documentation here: https://coil-kt.github.io/coil/compose/#rememberasyncimagepainter
+ *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param placeholder A [Painter] that is displayed while the image is loading.
@@ -90,6 +93,9 @@ fun rememberAsyncImagePainter(
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * [rememberAsyncImagePainter] has limitations compared to [AsyncImage]. Check out the full
+ * documentation here: https://coil-kt.github.io/coil/compose/#rememberasyncimagepainter
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
