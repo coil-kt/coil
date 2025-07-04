@@ -3,6 +3,7 @@ package coil3
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class UriTest {
 
@@ -254,5 +255,90 @@ class UriTest {
         assertEquals(listOf("image", "png;base64,FAKE_DATA"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
+    }
+
+    @Test
+    fun uriCopyAllFields() {
+        val uri = "http://localhost/test?q=1".toUri()
+        val copiedUri = uri.copy()
+
+        assertEquals(uri.scheme, copiedUri.scheme)
+        assertEquals(uri.authority, copiedUri.authority)
+        assertEquals(uri.path, copiedUri.path)
+        assertEquals(uri.query, copiedUri.query)
+        assertEquals(uri.fragment, copiedUri.fragment)
+        assertEquals(uri.separator, copiedUri.separator)
+        assertEquals(uri.toString(), copiedUri.toString())
+        assertEquals(uri, copiedUri)
+    }
+
+    @Test
+    fun uriCopyModifiesSpecificField() {
+        val uri = "http://localhost/test?q=1#abc".toUri()
+        val modifiedUri = uri.copy(scheme = "https", query = "q=2", fragment = null)
+
+        assertEquals("https", modifiedUri.scheme)
+        assertEquals(uri.authority, modifiedUri.authority)
+        assertEquals(uri.path, modifiedUri.path)
+        assertEquals("q=2", modifiedUri.query)
+        assertNull(modifiedUri.fragment)
+        assertEquals(uri.separator, modifiedUri.separator)
+        assertEquals("https://localhost/test?q=2", modifiedUri.toString())
+    }
+
+    @Test
+    fun uriBuildUponInitializesBuilderCorrectly() {
+        val uri = "https://example.com/api?token=secret#data".toUri()
+        val builder = uri.buildUpon()
+        val rebuiltUri = builder.build()
+
+        assertEquals(uri.scheme, rebuiltUri.scheme)
+        assertEquals(uri.authority, rebuiltUri.authority)
+        assertEquals(uri.path, rebuiltUri.path)
+        assertEquals(uri.query, rebuiltUri.query)
+        assertEquals(uri.fragment, rebuiltUri.fragment)
+    }
+
+    @Test
+    fun uriBuilderAppendQueryParameter() {
+        val baseUri = "http://example.com/path?a=1".toUri()
+        val newUri = baseUri.buildUpon()
+            .appendQueryParameter("b", "2")
+            .build()
+
+        assertTrue(newUri.query!!.contains("a=1"))
+        assertTrue(newUri.query!!.contains("b=2"))
+        assertTrue(newUri.query!!.contains("&"))
+    }
+
+    @Test
+    fun uriBuilderClearQuery() {
+        val baseUri = "http://example.com/path?a=1&b=2#frag".toUri()
+        val newUri = baseUri.buildUpon()
+            .clearQuery()
+            .build()
+        assertNull(newUri.query)
+        assertEquals("http://example.com/path#frag", newUri.toString())
+    }
+
+    @Test
+    fun uriBuilderSetAllParts() {
+        val originalUri = "foo://bar/baz?q=1#f".toUri()
+        val newUri = originalUri.buildUpon()
+            .scheme("https")
+            .authority("new.example.com")
+            .path("/new/path")
+            .clearQuery()
+            .appendQueryParameter("p1", "v1")
+            .appendQueryParameter("p2", "v2")
+            .fragment("newFrag")
+            .build()
+
+        assertEquals("https", newUri.scheme)
+        assertEquals("new.example.com", newUri.authority)
+        assertEquals("/new/path", newUri.path)
+        assertEquals("p1=v1&p2=v2", newUri.query)
+        assertEquals("newFrag", newUri.fragment)
+        assertEquals("https://new.example.com/new/path?p1=v1&p2=v2#newFrag", newUri.toString())
     }
 }
