@@ -8,7 +8,11 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-fun Project.addAllMultiplatformTargets(skikoVersion: Provider<String>, enableWasm: Boolean = true) {
+fun Project.addAllMultiplatformTargets(
+    skikoVersion: Provider<String>,
+    enableWasm: Boolean = true,
+    enableNativeLinux: Boolean = true,
+) {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
@@ -63,6 +67,11 @@ fun Project.addAllMultiplatformTargets(skikoVersion: Provider<String>, enableWas
 
             macosX64()
             macosArm64()
+
+            if (enableNativeLinux) {
+                linuxX64()
+                linuxArm64()
+            }
         }
 
         applyKotlinJsImplicitDependencyWorkaround(enableWasm)
