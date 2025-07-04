@@ -1,6 +1,6 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, macosArm64, macosX64, wasmJs]
-// Alias: apple => [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, wasmJs]
+// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -1056,5 +1056,5 @@ final inline fun (coil3.util/IntPair).coil3.util/component2(): kotlin/Int // coi
 final inline fun (coil3.util/Logger).coil3.util/log(kotlin/String, coil3.util/Logger.Level, kotlin/Function0<kotlin/String>) // coil3.util/log|log@coil3.util.Logger(kotlin.String;coil3.util.Logger.Level;kotlin.Function0<kotlin.String>){}[0]
 final inline fun (coil3.util/Logger).coil3.util/log(kotlin/String, kotlin/Throwable, kotlin/Function0<kotlin/String>) // coil3.util/log|log@coil3.util.Logger(kotlin.String;kotlin.Throwable;kotlin.Function0<kotlin.String>){}[0]
 
-// Targets: [apple]
+// Targets: [native]
 final fun (coil3/ImageLoader).coil3/executeBlocking(coil3.request/ImageRequest): coil3.request/ImageResult // coil3/executeBlocking|executeBlocking@coil3.ImageLoader(coil3.request.ImageRequest){}[0]
