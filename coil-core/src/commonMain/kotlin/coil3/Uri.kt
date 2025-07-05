@@ -59,7 +59,7 @@ class UriBuilder internal constructor(
     fun build(): Uri {
         val queryString = if (queryParameters.isNotEmpty()) {
             queryParameters.map { (key, value) ->
-                "${key}=${value}"
+                "$key=$value"
             }.joinToString("&")
         } else {
             null
