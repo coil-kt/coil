@@ -25,6 +25,8 @@ import okio.use
 /**
  * A [Decoder] that decodes SVGs. Relies on external dependencies to parse and decode the SVGs.
  *
+ * @param parser An [Svg.Parser] that converts bytes into an [Svg]. This property can be used
+ *  to replace the default SVG parser with a different library.
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  * @param renderToBitmap If true, renders the SVG to a bitmap immediately after decoding. Else, the
@@ -123,10 +125,22 @@ class SvgDecoder(
     }
 
     class Factory(
+        val parser: Svg.Parser = Svg.Parser.DEFAULT,
         val useViewBoundsAsIntrinsicSize: Boolean = true,
         val renderToBitmap: Boolean = true,
         val scaleToDensity: Boolean = false,
     ) : Decoder.Factory {
+
+        constructor(
+            useViewBoundsAsIntrinsicSize: Boolean = true,
+            renderToBitmap: Boolean = true,
+            scaleToDensity: Boolean = false,
+        ) : this(
+            parser = Svg.Parser.DEFAULT,
+            useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
+            renderToBitmap = renderToBitmap,
+            scaleToDensity = scaleToDensity,
+        )
 
         override fun create(
             result: SourceFetchResult,
@@ -137,6 +151,7 @@ class SvgDecoder(
             return SvgDecoder(
                 source = result.source,
                 options = options,
+                parser = parser,
                 useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
                 renderToBitmap = renderToBitmap,
                 scaleToDensity = scaleToDensity,
