@@ -10,7 +10,8 @@ import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -215,7 +216,7 @@ fun Project.applyOkioJsTestWorkaround() {
             sourceSets {
                 targets.configureEach {
                     compilations.configureEach {
-                        if (platformType == KotlinPlatformType.js && name == "test") {
+                        if ((platformType == js || platformType == wasm) && name == "test") {
                             tasks
                                 .getByName(compileKotlinTaskName)
                                 .dependsOn(applyNodePolyfillPlugin)
