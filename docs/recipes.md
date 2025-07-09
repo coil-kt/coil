@@ -148,9 +148,8 @@ class UrlSizeInterceptor : Interceptor {
 
         val (width, height) = chain.size
         return if (width is Pixels && height is Pixels) {
-            val transformUri = uri.buildUpon()
-                .appendQueryParameter("width", "${width.px}")
-                .appendQueryParameter("height", "${height.px}")
+            val transformUri = uri.newBuilder()
+                .query("width=${width.px}&height=${height.px}")
                 .build()
 
             val transformedRequest = request.newBuilder()

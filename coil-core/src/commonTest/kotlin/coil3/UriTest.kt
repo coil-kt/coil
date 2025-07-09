@@ -272,6 +272,16 @@ class UriTest {
     }
 
     @Test
+    fun uriCopyAddsMultipleQueryField() {
+        val uri = "http://localhost/test?".toUri()
+        val modifiedUri = uri.newBuilder()
+            .query("q=1&q=2&q=3")
+            .build()
+
+        assertEquals("q=1&q=2&q=3", modifiedUri.query)
+    }
+
+    @Test
     fun uriCopyModifiesFields() {
         val uri = "http://localhost/test?q=1#abc".toUri()
         val modifiedUri = uri.newBuilder()

@@ -49,7 +49,7 @@ class Uri internal constructor(
      * A builder for creating or modifying [Uri] instances.
      * This provides a more convenient way to manipulate URI components.
      */
-    inner class Builder internal constructor(
+    class Builder internal constructor(
         private var scheme: String?,
         private var authority: String?,
         private var path: String?,

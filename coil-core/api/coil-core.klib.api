@@ -943,7 +943,7 @@ final class coil3/Uri { // coil3/Uri|null[0]
     final fun newBuilder(): coil3/Uri.Builder // coil3/Uri.newBuilder|newBuilder(){}[0]
     final fun toString(): kotlin/String // coil3/Uri.toString|toString(){}[0]
 
-    final inner class Builder { // coil3/Uri.Builder|null[0]
+    final class Builder { // coil3/Uri.Builder|null[0]
         final fun authority(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.authority|authority(kotlin.String?){}[0]
         final fun build(): coil3/Uri // coil3/Uri.Builder.build|build(){}[0]
         final fun fragment(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.fragment|fragment(kotlin.String?){}[0]
