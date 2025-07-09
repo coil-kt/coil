@@ -30,46 +30,43 @@ class Uri internal constructor(
     override fun toString(): String {
         return data
     }
-}
 
-/**
- * A builder for creating or modifying [Uri] instances.
- * This provides a more convenient way to manipulate URI components.
- */
-class UriBuilder internal constructor(
-    private var scheme: String?,
-    private var authority: String?,
-    private var path: String?,
-    private var queryParameters: MutableMap<String, String>,
-    private var fragment: String?
-) {
-    fun scheme(scheme: String?): UriBuilder = apply { this.scheme = scheme }
-    fun authority(authority: String?): UriBuilder = apply { this.authority = authority }
-    fun path(path: String?): UriBuilder = apply { this.path = path }
-    fun fragment(fragment: String?): UriBuilder = apply { this.fragment = fragment }
+    /**
+     * Return a [Builder] that is initialized with the components of this [Uri].
+     * This allows for convenient modification of the URI, such as adding query parameters.
+     *
+     * @return a new [Builder] instance initialized with this URI's components.
+     */
+    fun newBuilder() = Builder(
+        scheme = scheme,
+        authority = authority,
+        path = path,
+        query = query,
+        fragment = fragment,
+    )
 
-    fun appendQueryParameter(key: String, value: String): UriBuilder = apply {
-        queryParameters[key] = value
-    }
+    /**
+     * A builder for creating or modifying [Uri] instances.
+     * This provides a more convenient way to manipulate URI components.
+     */
+    inner class Builder internal constructor(
+        private var scheme: String?,
+        private var authority: String?,
+        private var path: String?,
+        private var query: String?,
+        private var fragment: String?
+    ) {
+        fun scheme(scheme: String?): Builder = apply { this.scheme = scheme }
+        fun authority(authority: String?): Builder = apply { this.authority = authority }
+        fun path(path: String?): Builder = apply { this.path = path }
+        fun query(query: String?): Builder = apply { this.query = query }
+        fun fragment(fragment: String?): Builder = apply { this.fragment = fragment }
 
-    fun clearQuery(): UriBuilder = apply {
-        queryParameters.clear()
-    }
-
-    fun build(): Uri {
-        val queryString = if (queryParameters.isNotEmpty()) {
-            queryParameters.map { (key, value) ->
-                "$key=$value"
-            }.joinToString("&")
-        } else {
-            null
-        }
-
-        return Uri(
+        fun build() = Uri(
             scheme = scheme,
             authority = authority,
             path = path,
-            query = queryString,
+            query = query,
             fragment = fragment
         )
     }
@@ -100,52 +97,6 @@ fun Uri(
         path = path,
         query = query,
         fragment = fragment,
-    )
-}
-
-/**
- * Create a new [Uri] by copying the properties of the original [Uri] and
- * optionally modifying some of them.
- */
-fun Uri.copy(
-    scheme: String? = this.scheme,
-    authority: String? = this.authority,
-    path: String? = this.path,
-    query: String? = this.query,
-    fragment: String? = this.fragment,
-): Uri {
-    return Uri(
-        scheme = scheme,
-        authority = authority,
-        path = path,
-        query = query,
-        fragment = fragment,
-        separator = this.separator,
-    )
-}
-
-/**
- * Return a [UriBuilder] that is initialized with the components of this [Uri].
- * This allows for convenient modification of the URI, such as adding query parameters.
- *
- * @return a new [UriBuilder] instance initialized with this URI's components.
- */
-fun Uri.buildUpon(): UriBuilder {
-    val currentQueryParameters = query?.split("&")?.mapNotNull { param ->
-        val parts = param.split("=", limit = 2)
-        if (parts.isNotEmpty()) {
-            parts[0] to (parts.getOrNull(1) ?: "")
-        } else {
-            null
-        }
-    }?.toMap(LinkedHashMap()) ?: mutableMapOf()
-
-    return UriBuilder(
-        scheme = scheme,
-        authority = authority,
-        path = path,
-        queryParameters = currentQueryParameters,
-        fragment = fragment
     )
 }
 

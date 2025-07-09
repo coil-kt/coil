@@ -222,25 +222,22 @@ public final class coil3/Uri {
 	public final fun getScheme ()Ljava/lang/String;
 	public final fun getSeparator ()Ljava/lang/String;
 	public fun hashCode ()I
+	public final fun newBuilder ()Lcoil3/Uri$Builder;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil3/UriBuilder {
-	public final fun appendQueryParameter (Ljava/lang/String;Ljava/lang/String;)Lcoil3/UriBuilder;
-	public final fun authority (Ljava/lang/String;)Lcoil3/UriBuilder;
+public final class coil3/Uri$Builder {
+	public final fun authority (Ljava/lang/String;)Lcoil3/Uri$Builder;
 	public final fun build ()Lcoil3/Uri;
-	public final fun clearQuery ()Lcoil3/UriBuilder;
-	public final fun fragment (Ljava/lang/String;)Lcoil3/UriBuilder;
-	public final fun path (Ljava/lang/String;)Lcoil3/UriBuilder;
-	public final fun scheme (Ljava/lang/String;)Lcoil3/UriBuilder;
+	public final fun fragment (Ljava/lang/String;)Lcoil3/Uri$Builder;
+	public final fun path (Ljava/lang/String;)Lcoil3/Uri$Builder;
+	public final fun query (Ljava/lang/String;)Lcoil3/Uri$Builder;
+	public final fun scheme (Ljava/lang/String;)Lcoil3/Uri$Builder;
 }
 
 public final class coil3/UriKt {
 	public static final fun Uri (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcoil3/Uri;
 	public static synthetic fun Uri$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcoil3/Uri;
-	public static final fun buildUpon (Lcoil3/Uri;)Lcoil3/UriBuilder;
-	public static final fun copy (Lcoil3/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcoil3/Uri;
-	public static synthetic fun copy$default (Lcoil3/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcoil3/Uri;
 	public static final fun getFilePath (Lcoil3/Uri;)Ljava/lang/String;
 	public static final fun getPathSegments (Lcoil3/Uri;)Ljava/util/List;
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;
