@@ -940,7 +940,17 @@ final class coil3/Uri { // coil3/Uri|null[0]
 
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3/Uri.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3/Uri.hashCode|hashCode(){}[0]
+    final fun newBuilder(): coil3/Uri.Builder // coil3/Uri.newBuilder|newBuilder(){}[0]
     final fun toString(): kotlin/String // coil3/Uri.toString|toString(){}[0]
+
+    final class Builder { // coil3/Uri.Builder|null[0]
+        final fun authority(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.authority|authority(kotlin.String?){}[0]
+        final fun build(): coil3/Uri // coil3/Uri.Builder.build|build(){}[0]
+        final fun fragment(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.fragment|fragment(kotlin.String?){}[0]
+        final fun path(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.path|path(kotlin.String?){}[0]
+        final fun query(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.query|query(kotlin.String?){}[0]
+        final fun scheme(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.scheme|scheme(kotlin.String?){}[0]
+    }
 }
 
 final value class coil3.util/IntPair { // coil3.util/IntPair|null[0]

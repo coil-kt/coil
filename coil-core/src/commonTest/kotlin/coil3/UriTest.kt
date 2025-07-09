@@ -255,4 +255,47 @@ class UriTest {
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
+
+    @Test
+    fun uriCopy() {
+        val uri = "http://localhost/test?q=1".toUri()
+        val copiedUri = uri.newBuilder().build()
+
+        assertEquals(uri.scheme, copiedUri.scheme)
+        assertEquals(uri.authority, copiedUri.authority)
+        assertEquals(uri.path, copiedUri.path)
+        assertEquals(uri.query, copiedUri.query)
+        assertEquals(uri.fragment, copiedUri.fragment)
+        assertEquals(uri.separator, copiedUri.separator)
+        assertEquals(uri.toString(), copiedUri.toString())
+        assertEquals(uri, copiedUri)
+    }
+
+    @Test
+    fun uriCopyAddsMultipleQueryField() {
+        val uri = "http://localhost/test?".toUri()
+        val modifiedUri = uri.newBuilder()
+            .query("q=1&q=2&q=3")
+            .build()
+
+        assertEquals("q=1&q=2&q=3", modifiedUri.query)
+    }
+
+    @Test
+    fun uriCopyModifiesFields() {
+        val uri = "http://localhost/test?q=1#abc".toUri()
+        val modifiedUri = uri.newBuilder()
+            .scheme("https")
+            .query("q=2")
+            .fragment(null)
+            .build()
+
+        assertEquals("https", modifiedUri.scheme)
+        assertEquals(uri.authority, modifiedUri.authority)
+        assertEquals(uri.path, modifiedUri.path)
+        assertEquals("q=2", modifiedUri.query)
+        assertNull(modifiedUri.fragment)
+        assertEquals(uri.separator, modifiedUri.separator)
+        assertEquals("https://localhost/test?q=2", modifiedUri.toString())
+    }
 }
