@@ -69,8 +69,11 @@ final class coil3.svg/SvgDecoder : coil3.decode/Decoder { // coil3.svg/SvgDecode
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.svg/SvgDecoder.decode|decode(){}[0]
 
     final class Factory : coil3.decode/Decoder.Factory { // coil3.svg/SvgDecoder.Factory|null[0]
+        constructor <init>(coil3.svg/Svg.Parser = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(coil3.svg.Svg.Parser;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
         constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
+        final val parser // coil3.svg/SvgDecoder.Factory.parser|{}parser[0]
+            final fun <get-parser>(): coil3.svg/Svg.Parser // coil3.svg/SvgDecoder.Factory.parser.<get-parser>|<get-parser>(){}[0]
         final val renderToBitmap // coil3.svg/SvgDecoder.Factory.renderToBitmap|{}renderToBitmap[0]
             final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
         final val scaleToDensity // coil3.svg/SvgDecoder.Factory.scaleToDensity|{}scaleToDensity[0]

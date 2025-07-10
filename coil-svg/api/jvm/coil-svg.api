@@ -54,9 +54,12 @@ public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
 
 public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
+	public fun <init> (Lcoil3/svg/Svg$Parser;ZZZ)V
+	public synthetic fun <init> (Lcoil3/svg/Svg$Parser;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (ZZZ)V
 	public synthetic fun <init> (ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
 	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
