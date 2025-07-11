@@ -63,7 +63,7 @@ internal class RealImageLoader(
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
-        val job = scope.async(options.mainCoroutineContext) {
+        val job = scope.async(options.mainCoroutineContextLazy.value) {
             execute(request, REQUEST_TYPE_ENQUEUE)
         }
 
@@ -79,7 +79,7 @@ internal class RealImageLoader(
             // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
-                val job = async(options.mainCoroutineContext) {
+                val job = async(options.mainCoroutineContextLazy.value) {
                     execute(request, REQUEST_TYPE_EXECUTE)
                 }
 
@@ -219,7 +219,7 @@ internal class RealImageLoader(
     data class Options(
         val application: PlatformContext,
         val defaults: ImageRequest.Defaults,
-        val mainCoroutineContext: CoroutineContext,
+        val mainCoroutineContextLazy: Lazy<CoroutineContext>,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,
         val eventListenerFactory: EventListener.Factory,

@@ -83,7 +83,7 @@ interface ImageLoader {
 
         private val application: PlatformContext
         private var defaults: ImageRequest.Defaults
-        private var mainCoroutineContext: CoroutineContext?
+        private var mainCoroutineContextLazy: Lazy<CoroutineContext>?
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
         private var eventListenerFactory: EventListener.Factory?
@@ -94,7 +94,7 @@ interface ImageLoader {
         constructor(context: PlatformContext) {
             application = context.application
             defaults = ImageRequest.Defaults.DEFAULT
-            mainCoroutineContext = null
+            mainCoroutineContextLazy = null
             memoryCacheLazy = null
             diskCacheLazy = null
             eventListenerFactory = null
@@ -106,7 +106,7 @@ interface ImageLoader {
         internal constructor(options: RealImageLoader.Options) {
             application = options.application
             defaults = options.defaults
-            mainCoroutineContext = options.mainCoroutineContext
+            mainCoroutineContextLazy = options.mainCoroutineContextLazy
             memoryCacheLazy = options.memoryCacheLazy
             diskCacheLazy = options.diskCacheLazy
             eventListenerFactory = options.eventListenerFactory
@@ -228,8 +228,12 @@ interface ImageLoader {
          * Default: `Dispatchers.Main.immediate`
          */
         @ExperimentalCoilApi
-        fun mainCoroutineContext(context: CoroutineContext) = apply {
-            this.mainCoroutineContext = context
+        fun mainCoroutineContext(context: CoroutineContext) = mainCoroutineContext { context }
+
+        /** @see mainCoroutineContext */
+        @ExperimentalCoilApi
+        fun mainCoroutineContext(initializer: () -> CoroutineContext) = apply {
+            this.mainCoroutineContextLazy = lazy(initializer)
         }
 
         /**
@@ -334,7 +338,9 @@ interface ImageLoader {
             val options = RealImageLoader.Options(
                 application = application,
                 defaults = defaults.copy(extras = extras.build()),
-                mainCoroutineContext = mainCoroutineContext ?: Dispatchers.Main.immediate,
+                mainCoroutineContextLazy = mainCoroutineContextLazy ?: lazy {
+                    Dispatchers.Main.immediate
+                },
                 memoryCacheLazy = memoryCacheLazy ?: lazy {
                     MemoryCache.Builder()
                         .maxSizePercent(application)
