@@ -31,12 +31,6 @@ class Uri internal constructor(
         return data
     }
 
-    /**
-     * Return a [Builder] that is initialized with the components of this [Uri].
-     * This allows for convenient modification of the URI, such as adding query parameters.
-     *
-     * @return a new [Builder] instance initialized with this URI's components.
-     */
     fun newBuilder() = Builder(
         scheme = scheme,
         authority = authority,
@@ -45,29 +39,40 @@ class Uri internal constructor(
         fragment = fragment,
     )
 
-    /**
-     * A builder for creating or modifying [Uri] instances.
-     * This provides a more convenient way to manipulate URI components.
-     */
     class Builder internal constructor(
         private var scheme: String?,
         private var authority: String?,
         private var path: String?,
         private var query: String?,
-        private var fragment: String?
+        private var fragment: String?,
     ) {
-        fun scheme(scheme: String?): Builder = apply { this.scheme = scheme }
-        fun authority(authority: String?): Builder = apply { this.authority = authority }
-        fun path(path: String?): Builder = apply { this.path = path }
-        fun query(query: String?): Builder = apply { this.query = query }
-        fun fragment(fragment: String?): Builder = apply { this.fragment = fragment }
+
+        fun scheme(scheme: String?) = apply {
+            this.scheme = scheme
+        }
+
+        fun authority(authority: String?) = apply {
+            this.authority = authority
+        }
+
+        fun path(path: String?) = apply {
+            this.path = path
+        }
+
+        fun query(query: String?) = apply {
+            this.query = query
+        }
+
+        fun fragment(fragment: String?) = apply {
+            this.fragment = fragment
+        }
 
         fun build() = Uri(
             scheme = scheme,
             authority = authority,
             path = path,
             query = query,
-            fragment = fragment
+            fragment = fragment,
         )
     }
 }
