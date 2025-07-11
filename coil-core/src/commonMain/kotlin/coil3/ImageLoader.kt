@@ -1,5 +1,6 @@
 package coil3
 
+import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.Decoder
 import coil3.disk.DiskCache
 import coil3.disk.singletonDiskCache
@@ -17,6 +18,7 @@ import coil3.util.Logger
 import coil3.util.application
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmSynthetic
+import kotlinx.coroutines.Dispatchers
 import okio.FileSystem
 
 /**
@@ -81,6 +83,7 @@ interface ImageLoader {
 
         private val application: PlatformContext
         private var defaults: ImageRequest.Defaults
+        private var mainCoroutineContext: CoroutineContext?
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
         private var eventListenerFactory: EventListener.Factory?
@@ -91,6 +94,7 @@ interface ImageLoader {
         constructor(context: PlatformContext) {
             application = context.application
             defaults = ImageRequest.Defaults.DEFAULT
+            mainCoroutineContext = null
             memoryCacheLazy = null
             diskCacheLazy = null
             eventListenerFactory = null
@@ -102,6 +106,7 @@ interface ImageLoader {
         internal constructor(options: RealImageLoader.Options) {
             application = options.application
             defaults = options.defaults
+            mainCoroutineContext = options.mainCoroutineContext
             memoryCacheLazy = options.memoryCacheLazy
             diskCacheLazy = options.diskCacheLazy
             eventListenerFactory = options.eventListenerFactory
@@ -214,6 +219,20 @@ interface ImageLoader {
         }
 
         /**
+         * The [CoroutineContext] that any UI/main thread work will be executed in.
+         *
+         * NOTE: This should typically only be used in tests, as `View`s and `Lifecycle`s will be
+         * accessed in this context and those operations will throw if not performed on a valid
+         * thread.
+         *
+         * Default: `Dispatchers.Main.immediate`
+         */
+        @ExperimentalCoilApi
+        fun mainCoroutineContext(context: CoroutineContext) = apply {
+            this.mainCoroutineContext = context
+        }
+
+        /**
          * The [CoroutineContext] that the [Interceptor] chain will be executed in.
          *
          * Default: `EmptyCoroutineContext`
@@ -315,6 +334,7 @@ interface ImageLoader {
             val options = RealImageLoader.Options(
                 application = application,
                 defaults = defaults.copy(extras = extras.build()),
+                mainCoroutineContext = mainCoroutineContext ?: Dispatchers.Main.immediate,
                 memoryCacheLazy = memoryCacheLazy ?: lazy {
                     MemoryCache.Builder()
                         .maxSizePercent(application)
