@@ -230,7 +230,15 @@ interface ImageLoader {
         @ExperimentalCoilApi
         fun mainCoroutineContext(context: CoroutineContext) = mainCoroutineContext { context }
 
-        /** @see mainCoroutineContext */
+        /**
+         * The [CoroutineContext] that any UI/main thread work will be executed in.
+         *
+         * NOTE: This should typically only be used in tests, as `View`s and `Lifecycle`s will be
+         * accessed in this context and those operations will throw if not performed on a valid
+         * thread.
+         *
+         * Default: `Dispatchers.Main.immediate`
+         */
         @ExperimentalCoilApi
         fun mainCoroutineContext(initializer: () -> CoroutineContext) = apply {
             this.mainCoroutineContextLazy = lazy(initializer)
