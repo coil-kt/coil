@@ -28,13 +28,13 @@ import coil3.util.SystemCallbacks
 import coil3.util.emoji
 import coil3.util.log
 import coil3.util.mapNotNullIndices
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -63,7 +63,7 @@ internal class RealImageLoader(
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
-        val job = scope.async(Dispatchers.Main.immediate) {
+        val job = scope.async(options.mainCoroutineContextLazy.value) {
             execute(request, REQUEST_TYPE_ENQUEUE)
         }
 
@@ -79,7 +79,7 @@ internal class RealImageLoader(
             // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
-                val job = async(Dispatchers.Main.immediate) {
+                val job = async(options.mainCoroutineContextLazy.value) {
                     execute(request, REQUEST_TYPE_EXECUTE)
                 }
 
@@ -219,6 +219,7 @@ internal class RealImageLoader(
     data class Options(
         val application: PlatformContext,
         val defaults: ImageRequest.Defaults,
+        val mainCoroutineContextLazy: Lazy<CoroutineContext>,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,
         val eventListenerFactory: EventListener.Factory,

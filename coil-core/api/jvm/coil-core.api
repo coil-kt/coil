@@ -172,6 +172,8 @@ public final class coil3/ImageLoader$Builder {
 	public final fun getExtras ()Lcoil3/Extras$Builder;
 	public final fun interceptorCoroutineContext (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
 	public final fun logger (Lcoil3/util/Logger;)Lcoil3/ImageLoader$Builder;
+	public final fun mainCoroutineContext (Lkotlin/coroutines/CoroutineContext;)Lcoil3/ImageLoader$Builder;
+	public final fun mainCoroutineContext (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCache (Lcoil3/memory/MemoryCache;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCache (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
