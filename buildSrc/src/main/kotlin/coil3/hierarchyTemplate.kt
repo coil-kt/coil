@@ -24,6 +24,7 @@ private val hierarchyTemplate = KotlinHierarchyTemplate {
         groupNonJvmCommon()
         groupNative()
         groupNonNative()
+        groupNonApple()
     }
 }
 
@@ -67,17 +68,35 @@ private fun KotlinHierarchyBuilder.groupNative() {
     group("native") {
         withNative()
 
-        group("apple") {
-            withApple()
+        groupApple()
+        groupLinux()
+    }
+}
 
-            group("ios") {
-                withIos()
-            }
+private fun KotlinHierarchyBuilder.groupApple() {
+    group("apple") {
+        withApple()
 
-            group("macos") {
-                withMacos()
-            }
+        group("ios") {
+            withIos()
         }
+
+        group("macos") {
+            withMacos()
+        }
+    }
+}
+
+private fun KotlinHierarchyBuilder.groupLinux() {
+    group("linux") {
+        withLinux()
+    }
+}
+
+private fun KotlinHierarchyBuilder.groupNonApple() {
+    group("nonApple") {
+        groupNonNative()
+        groupLinux()
     }
 }
 
