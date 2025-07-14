@@ -6,9 +6,11 @@ import coil3.util.IntPair
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
+expect fun assetTypes(): List<AssetType>
+
 fun AssetType.next(): AssetType {
-    val entries = AssetType.entries
-    return entries[(entries.indexOf(this) + 1) % entries.size]
+    val types = assetTypes()
+    return types[(types.indexOf(this) + 1) % types.size]
 }
 
 fun randomColor(): Int {
