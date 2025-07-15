@@ -952,6 +952,7 @@ final class coil3/Uri { // coil3/Uri|null[0]
         final fun path(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.path|path(kotlin.String?){}[0]
         final fun query(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.query|query(kotlin.String?){}[0]
         final fun scheme(kotlin/String?): coil3/Uri.Builder // coil3/Uri.Builder.scheme|scheme(kotlin.String?){}[0]
+        final fun separator(kotlin/String): coil3/Uri.Builder // coil3/Uri.Builder.separator|separator(kotlin.String){}[0]
     }
 }
 

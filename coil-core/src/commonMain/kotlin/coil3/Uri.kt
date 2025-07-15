@@ -37,6 +37,7 @@ class Uri internal constructor(
         path = path,
         query = query,
         fragment = fragment,
+        separator = separator,
     )
 
     class Builder internal constructor(
@@ -45,6 +46,7 @@ class Uri internal constructor(
         private var path: String?,
         private var query: String?,
         private var fragment: String?,
+        private var separator: String,
     ) {
 
         fun scheme(scheme: String?) = apply {
@@ -67,12 +69,17 @@ class Uri internal constructor(
             this.fragment = fragment
         }
 
+        fun separator(separator: String) = apply {
+            this.separator = separator
+        }
+
         fun build() = Uri(
             scheme = scheme,
             authority = authority,
             path = path,
             query = query,
             fragment = fragment,
+            separator = separator,
         )
     }
 }

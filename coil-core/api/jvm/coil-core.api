@@ -235,6 +235,7 @@ public final class coil3/Uri$Builder {
 	public final fun path (Ljava/lang/String;)Lcoil3/Uri$Builder;
 	public final fun query (Ljava/lang/String;)Lcoil3/Uri$Builder;
 	public final fun scheme (Ljava/lang/String;)Lcoil3/Uri$Builder;
+	public final fun separator (Ljava/lang/String;)Lcoil3/Uri$Builder;
 }
 
 public final class coil3/UriKt {
