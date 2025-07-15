@@ -272,6 +272,21 @@ class UriTest {
     }
 
     @Test
+    fun uriCopySeparator() {
+        val uri = "D:\\test\\relative\\image.jpg".toUri(separator = "\\")
+        val copiedUri = uri.newBuilder().build()
+
+        assertEquals(uri.scheme, copiedUri.scheme)
+        assertEquals(uri.authority, copiedUri.authority)
+        assertEquals(uri.path, copiedUri.path)
+        assertEquals(uri.query, copiedUri.query)
+        assertEquals(uri.fragment, copiedUri.fragment)
+        assertEquals(uri.separator, copiedUri.separator)
+        assertEquals(uri.toString(), copiedUri.toString())
+        assertEquals(uri, copiedUri)
+    }
+
+    @Test
     fun uriCopyAddsMultipleQueryField() {
         val uri = "http://localhost/test?".toUri()
         val modifiedUri = uri.newBuilder()
