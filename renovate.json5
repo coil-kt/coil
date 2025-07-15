@@ -8,8 +8,8 @@
     "packageRules": [
         {
             // Ignore Gradle updates as they cause the Renovate update job to OOM.
-            "matchPackageNames": ["/gradle/"],
-            "matchManagers": ["gradle"],
+            "matchPackageNames": ["gradle-wrapper"],
+            "matchDatasources": ["gradle-version"],
             "enabled": false
         }
     ]
