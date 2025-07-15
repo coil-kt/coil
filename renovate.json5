@@ -4,5 +4,12 @@
         "config:recommended"
     ],
     "automerge": false,
-    "dependencyDashboard": false
+    "dependencyDashboard": false,
+    "packageRules": [
+        {
+            // Ignore Gradle updates as they cause the Renovate update job to OOM.
+            "matchManagers": ["gradle"],
+            "enabled": false
+        }
+    ]
 }
