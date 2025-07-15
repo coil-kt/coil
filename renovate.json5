@@ -9,7 +9,7 @@
         {
             // Ignore Gradle updates as they cause the Renovate update job to OOM.
             "matchPackageNames": ["gradle-wrapper"],
-            "matchManagers": ["gradle"],
+            "matchDatasources": ["gradle-version"],
             "enabled": false
         }
     ]
