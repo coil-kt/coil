@@ -1,7 +1,7 @@
 [versions]
 androidx-activity = "1.10.1"
 androidx-benchmark = "1.3.4"
-androidx-lifecycle = "2.8.7"
+androidx-lifecycle = "2.9.2"
 androidx-tracing-perfetto = "1.0.0"
 atomicfu = "0.29.0"
 coroutines = "1.10.2"
