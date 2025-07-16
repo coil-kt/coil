@@ -54,34 +54,41 @@ abstract interface coil3.svg/Svg { // coil3.svg/Svg|null[0]
 }
 
 final class coil3.svg/SvgDecoder : coil3.decode/Decoder { // coil3.svg/SvgDecoder|null[0]
-    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, coil3.svg/Svg.Parser = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;coil3.svg.Svg.Parser;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, coil3.svg/Svg.Parser = ..., kotlin/Function1<coil3/PlatformContext, kotlin/Float> = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;coil3.svg.Svg.Parser;kotlin.Function1<coil3.PlatformContext,kotlin.Float>;kotlin.Boolean;kotlin.Boolean){}[0]
     constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
+    final val density // coil3.svg/SvgDecoder.density|{}density[0]
+        final fun <get-density>(): kotlin/Function1<coil3/PlatformContext, kotlin/Float> // coil3.svg/SvgDecoder.density.<get-density>|<get-density>(){}[0]
     final val parser // coil3.svg/SvgDecoder.parser|{}parser[0]
         final fun <get-parser>(): coil3.svg/Svg.Parser // coil3.svg/SvgDecoder.parser.<get-parser>|<get-parser>(){}[0]
     final val renderToBitmap // coil3.svg/SvgDecoder.renderToBitmap|{}renderToBitmap[0]
         final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
-    final val scaleToDensity // coil3.svg/SvgDecoder.scaleToDensity|{}scaleToDensity[0]
-        final fun <get-scaleToDensity>(): kotlin/Boolean // coil3.svg/SvgDecoder.scaleToDensity.<get-scaleToDensity>|<get-scaleToDensity>(){}[0]
     final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
         final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
 
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.svg/SvgDecoder.decode|decode(){}[0]
 
     final class Factory : coil3.decode/Decoder.Factory { // coil3.svg/SvgDecoder.Factory|null[0]
-        constructor <init>(coil3.svg/Svg.Parser = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(coil3.svg.Svg.Parser;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+        constructor <init>(coil3.svg/Svg.Parser = ..., kotlin/Function1<coil3/PlatformContext, kotlin/Float> = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(coil3.svg.Svg.Parser;kotlin.Function1<coil3.PlatformContext,kotlin.Float>;kotlin.Boolean;kotlin.Boolean){}[0]
         constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // coil3.svg/SvgDecoder.Factory.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
+        final val density // coil3.svg/SvgDecoder.Factory.density|{}density[0]
+            final fun <get-density>(): kotlin/Function1<coil3/PlatformContext, kotlin/Float> // coil3.svg/SvgDecoder.Factory.density.<get-density>|<get-density>(){}[0]
         final val parser // coil3.svg/SvgDecoder.Factory.parser|{}parser[0]
             final fun <get-parser>(): coil3.svg/Svg.Parser // coil3.svg/SvgDecoder.Factory.parser.<get-parser>|<get-parser>(){}[0]
         final val renderToBitmap // coil3.svg/SvgDecoder.Factory.renderToBitmap|{}renderToBitmap[0]
             final fun <get-renderToBitmap>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.renderToBitmap.<get-renderToBitmap>|<get-renderToBitmap>(){}[0]
-        final val scaleToDensity // coil3.svg/SvgDecoder.Factory.scaleToDensity|{}scaleToDensity[0]
-            final fun <get-scaleToDensity>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.scaleToDensity.<get-scaleToDensity>|<get-scaleToDensity>(){}[0]
         final val useViewBoundsAsIntrinsicSize // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize|{}useViewBoundsAsIntrinsicSize[0]
             final fun <get-useViewBoundsAsIntrinsicSize>(): kotlin/Boolean // coil3.svg/SvgDecoder.Factory.useViewBoundsAsIntrinsicSize.<get-useViewBoundsAsIntrinsicSize>|<get-useViewBoundsAsIntrinsicSize>(){}[0]
 
         final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.svg/SvgDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+    }
+
+    final object Companion { // coil3.svg/SvgDecoder.Companion|null[0]
+        final val NO_DENSITY // coil3.svg/SvgDecoder.Companion.NO_DENSITY|{}NO_DENSITY[0]
+            final fun <get-NO_DENSITY>(): kotlin/Function1<coil3/PlatformContext, kotlin/Float> // coil3.svg/SvgDecoder.Companion.NO_DENSITY.<get-NO_DENSITY>|<get-NO_DENSITY>(){}[0]
+        final val PLATFORM_DENSITY // coil3.svg/SvgDecoder.Companion.PLATFORM_DENSITY|{}PLATFORM_DENSITY[0]
+            final fun <get-PLATFORM_DENSITY>(): kotlin/Function1<coil3/PlatformContext, kotlin/Float> // coil3.svg/SvgDecoder.Companion.PLATFORM_DENSITY.<get-PLATFORM_DENSITY>|<get-PLATFORM_DENSITY>(){}[0]
     }
 }
 

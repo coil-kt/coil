@@ -1,6 +1,7 @@
 package coil3.svg
 
 import coil3.ImageLoader
+import coil3.PlatformContext
 import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
@@ -19,6 +20,7 @@ import coil3.svg.internal.runInterruptible
 import coil3.toBitmap
 import coil3.util.component1
 import coil3.util.component2
+import kotlin.jvm.JvmField
 import kotlin.math.roundToInt
 import okio.use
 
@@ -27,21 +29,21 @@ import okio.use
  *
  * @param parser An [Svg.Parser] that converts bytes into an [Svg]. This property can be used
  *  to replace the default SVG parser with a different library.
+ * @param density A function whose return value will be used to scale the output dimensions of the
+ *  image if the target size is [Size.ORIGINAL].
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  * @param renderToBitmap If true, renders the SVG to a bitmap immediately after decoding. Else, the
  *  SVG will be rendered at draw time. Rendering at draw time is more memory efficient, but
  *  depending on the complexity of the SVG, can be slow.
- * @param scaleToDensity If true and the target size is [Size.ORIGINAL], multiplies the source
- *  dimensions of the image by the device's display density. NOTE: This only affects Android.
  */
 class SvgDecoder(
     private val source: ImageSource,
     private val options: Options,
     val parser: Svg.Parser = Svg.Parser.DEFAULT,
+    val density: PlatformContext.() -> Float = NO_DENSITY,
     val useViewBoundsAsIntrinsicSize: Boolean = true,
     val renderToBitmap: Boolean = true,
-    val scaleToDensity: Boolean = false,
 ) : Decoder {
 
     constructor(
@@ -54,9 +56,9 @@ class SvgDecoder(
         source = source,
         options = options,
         parser = Svg.Parser.DEFAULT,
+        density = if (scaleToDensity) PLATFORM_DENSITY else NO_DENSITY,
         useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
         renderToBitmap = renderToBitmap,
-        scaleToDensity = scaleToDensity,
     )
 
     override suspend fun decode() = runInterruptible {
@@ -74,8 +76,8 @@ class SvgDecoder(
             svgHeight = svg.height
         }
 
-        if (scaleToDensity && options.size.isOriginal) {
-            val density = options.context.density
+        if (options.size.isOriginal) {
+            val density = options.context.density()
             if (svgWidth > 0f) svgWidth *= density
             if (svgHeight > 0f) svgHeight *= density
         }
@@ -126,9 +128,9 @@ class SvgDecoder(
 
     class Factory(
         val parser: Svg.Parser = Svg.Parser.DEFAULT,
+        val density: PlatformContext.() -> Float = NO_DENSITY,
         val useViewBoundsAsIntrinsicSize: Boolean = true,
         val renderToBitmap: Boolean = true,
-        val scaleToDensity: Boolean = false,
     ) : Decoder.Factory {
 
         constructor(
@@ -137,9 +139,9 @@ class SvgDecoder(
             scaleToDensity: Boolean = false,
         ) : this(
             parser = Svg.Parser.DEFAULT,
+            density = if (scaleToDensity) PLATFORM_DENSITY else NO_DENSITY,
             useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
             renderToBitmap = renderToBitmap,
-            scaleToDensity = scaleToDensity,
         )
 
         override fun create(
@@ -152,14 +154,28 @@ class SvgDecoder(
                 source = result.source,
                 options = options,
                 parser = parser,
+                density = density,
                 useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
                 renderToBitmap = renderToBitmap,
-                scaleToDensity = scaleToDensity,
             )
         }
 
         private fun isApplicable(result: SourceFetchResult): Boolean {
             return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
+    }
+
+    companion object {
+        /**
+         * A density implementation that always returns 1 (no scaling).
+         */
+        @JvmField val NO_DENSITY: PlatformContext.() -> Float = { 1f }
+
+        /**
+         * A density implementation that returns the platform's display density.
+         *
+         * NOTE: This currently behaves the same as [NO_DENSITY] on non-Android platforms.
+         */
+        @JvmField val PLATFORM_DENSITY: PlatformContext.() -> Float = { density }
     }
 }
