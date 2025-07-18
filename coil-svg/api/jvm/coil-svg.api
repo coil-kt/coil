@@ -41,27 +41,33 @@ public final class coil3/svg/Svg$ViewBox {
 }
 
 public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;ZZZ)V
-	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final field Companion Lcoil3/svg/SvgDecoder$Companion;
+	public static final field NO_DENSITY Lkotlin/jvm/functions/Function1;
+	public static final field PLATFORM_DENSITY Lkotlin/jvm/functions/Function1;
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;Lkotlin/jvm/functions/Function1;ZZ)V
+	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lcoil3/svg/Svg$Parser;Lkotlin/jvm/functions/Function1;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZZ)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getDensity ()Lkotlin/jvm/functions/Function1;
 	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
-	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+}
+
+public final class coil3/svg/SvgDecoder$Companion {
 }
 
 public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (Lcoil3/svg/Svg$Parser;ZZZ)V
-	public synthetic fun <init> (Lcoil3/svg/Svg$Parser;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil3/svg/Svg$Parser;Lkotlin/jvm/functions/Function1;ZZ)V
+	public synthetic fun <init> (Lcoil3/svg/Svg$Parser;Lkotlin/jvm/functions/Function1;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (ZZZ)V
 	public synthetic fun <init> (ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+	public final fun getDensity ()Lkotlin/jvm/functions/Function1;
 	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
-	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
