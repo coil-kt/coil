@@ -61,6 +61,10 @@ class SvgDecoder(
         renderToBitmap = renderToBitmap,
     )
 
+    @Deprecated("Migrate to `density`.")
+    val scaleToDensity: Boolean
+        get() = density != NO_DENSITY
+
     override suspend fun decode() = runInterruptible {
         val svg = source.source().use(parser::parse)
 
@@ -143,6 +147,10 @@ class SvgDecoder(
             useViewBoundsAsIntrinsicSize = useViewBoundsAsIntrinsicSize,
             renderToBitmap = renderToBitmap,
         )
+
+        @Deprecated("Migrate to `density`.")
+        val scaleToDensity: Boolean
+            get() = density != NO_DENSITY
 
         override fun create(
             result: SourceFetchResult,
