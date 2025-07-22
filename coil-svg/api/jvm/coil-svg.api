@@ -52,6 +52,7 @@ public final class coil3/svg/SvgDecoder : coil3/decode/Decoder {
 	public final fun getDensity ()Lkotlin/jvm/functions/Function1;
 	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
+	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
@@ -68,6 +69,7 @@ public final class coil3/svg/SvgDecoder$Factory : coil3/decode/Decoder$Factory {
 	public final fun getDensity ()Lkotlin/jvm/functions/Function1;
 	public final fun getParser ()Lcoil3/svg/Svg$Parser;
 	public final fun getRenderToBitmap ()Z
+	public final fun getScaleToDensity ()Z
 	public final fun getUseViewBoundsAsIntrinsicSize ()Z
 }
 
