@@ -61,7 +61,7 @@ class SvgDecoder(
         renderToBitmap = renderToBitmap,
     )
 
-    @Deprecated("Migrate to `density`.")
+    @Deprecated("Migrate to density.")
     val scaleToDensity: Boolean
         get() = density != NO_DENSITY
 
@@ -148,7 +148,7 @@ class SvgDecoder(
             renderToBitmap = renderToBitmap,
         )
 
-        @Deprecated("Migrate to `density`.")
+        @Deprecated("Migrate to density.")
         val scaleToDensity: Boolean
             get() = density != NO_DENSITY
 
