@@ -100,7 +100,7 @@ SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter
 SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLcoil3/compose/CrossfadePainter;->computeDrawSize-x8L_9b0(JJ)J
-HSPLcoil3/compose/CrossfadePainter;->computeIntrinsicSize-NH-jbRc()J
+SPLcoil3/compose/CrossfadePainter;->computeIntrinsicSize-xjbvk4A(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;)J
 HSPLcoil3/compose/CrossfadePainter;->drawPainter(Landroidx/compose/ui/graphics/drawscope/DrawScope;Landroidx/compose/ui/graphics/painter/Painter;F)V
 SPLcoil3/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
 SPLcoil3/compose/CrossfadePainter;->getInvalidateTick()I
@@ -204,7 +204,7 @@ SPLcoil3/compose/internal/UtilsKt;->previewHandler(Landroidx/compose/runtime/Com
 SPLcoil3/compose/internal/UtilsKt;->rememberSizeResolver(Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/runtime/Composer;I)Lcoil3/size/SizeResolver;
 SPLcoil3/compose/internal/UtilsKt;->requestOfWithSizeResolver(Ljava/lang/Object;Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/runtime/Composer;I)Lcoil3/request/ImageRequest;
 SPLcoil3/compose/internal/UtilsKt;->toDimension(I)Lcoil3/size/Dimension;
-HSPLcoil3/compose/internal/UtilsKt;->toIntSize-uvyYCjk(J)J
+SPLcoil3/compose/internal/UtilsKt;->toIntSize-uvyYCjk(J)J
 SPLcoil3/compose/internal/UtilsKt;->toScale(Landroidx/compose/ui/layout/ContentScale;)Lcoil3/size/Scale;
 SPLcoil3/compose/internal/UtilsKt;->toSize-BRTryo0(J)Lcoil3/size/Size;
 SPLcoil3/compose/internal/UtilsKt;->transformOf$lambda$4(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/compose/AsyncImagePainter$State;)Lcoil3/compose/AsyncImagePainter$State;

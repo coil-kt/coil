@@ -14,8 +14,8 @@
 کتابخانه‌ی Compose و یک [networking library](https://coil-kt.github.io/coil/network/) را وارد (Import) کنید:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 ```
 
 برای بارگیری یک تصویر، `AsyncImage` composable را استفاده کنید:

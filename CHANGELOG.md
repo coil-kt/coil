@@ -1,11 +1,25 @@
 # Changelog
 
-## [3.3.0] - Unreleased
+## [3.3.0] - July 22, 2025
 
-- **New**: Add an `Svg.Parser` argument to `SvgDecoder` to support custom SVG parsers.
-    - This allows using custom SVG parsers if the default SVG parser doesn't meet your needs.
-- Update `kotlinx-datetime` to `0.7.0`.
-    - See [here](https://github.com/Kotlin/kotlinx-datetime?tab=readme-ov-file#deprecation-of-instant) for more info.
+- **New**: Introduce a new API to limit `MemoryCache.maxSize` on Android while the app is backgrounded.
+    - If `ImageLoader.Builder.memoryCacheMaxSizePercentWhileInBackground` is set, the `ImageLoader`'s memory cache will be limited to a percent of its max size while the app is backgrounded. This setting is currently disabled by default.
+    - Images will be trimmed from the memory cache to reach the limited max size when the app is backgrounded, however the memory cache's weak references to recently trimmed images are unaffected. This means if an image is currently referenced elsewhere (e.g. `AsyncImage`, `ImageView`, etc.) it will still be present in the memory cache.
+    - This API is useful to reduce background memory usage, keep your app from being killed earlier, and help reduce memory pressure on your users' devices.
+- **New**: Add an `Svg.Parser` argument to `SvgDecoder`.
+    - This enables using custom SVG parsers if the default SVG parser doesn't meet your needs.
+- Add a `density` argument to `SvgDecoder` to support providing a custom density multiplier.
+- Add `Uri.Builder` to support copying and modifying `Uri`s.
+- Add `ImageLoader.Builder.mainCoroutineContext` to support overriding Coil's `Dispatchers.main.immediate` usage in tests.
+- Fix `CrossfadePainter.intrinsicSize` changing when the `start` image is dereferenced at the end of the animation. This aligns with the behaviour of `CrossfadeDrawable`.
+- Fix `ImageLoaders.executeBlocking` being inaccessible from Java.
+- Use `kotlinx.io`'s Okio interop module in `coil-network-ktor3`.
+- Update `kotlinx-datetime` to `0.7.1`.
+    - This release includes binary incompatible changes that only affect the `coil-network-cache-control` module. See [here](https://github.com/Kotlin/kotlinx-datetime?tab=readme-ov-file#deprecation-of-instant) for more info.
+- Update Kotlin to 2.2.0.
+- Update Compose to 1.8.2.
+- Update Okio to 3.15.0.
+- Update Skiko to 0.9.4.2.
 
 ## [3.2.0] - May 13, 2025
 
