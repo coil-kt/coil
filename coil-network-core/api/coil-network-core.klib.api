@@ -55,6 +55,15 @@ abstract interface coil3.network/CacheStrategy { // coil3.network/CacheStrategy|
     }
 }
 
+abstract interface coil3.network/InFlightRequestStrategy { // coil3.network/InFlightRequestStrategy|null[0]
+    abstract suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/InFlightRequestStrategy.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
+
+    final object Companion { // coil3.network/InFlightRequestStrategy.Companion|null[0]
+        final val DEFAULT // coil3.network/InFlightRequestStrategy.Companion.DEFAULT|{}DEFAULT[0]
+            final fun <get-DEFAULT>(): coil3.network/InFlightRequestStrategy // coil3.network/InFlightRequestStrategy.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+    }
+}
+
 abstract interface coil3.network/NetworkClient { // coil3.network/NetworkClient|null[0]
     abstract suspend fun <#A1: kotlin/Any?> executeRequest(coil3.network/NetworkRequest, kotlin.coroutines/SuspendFunction1<coil3.network/NetworkResponse, #A1>): #A1 // coil3.network/NetworkClient.executeRequest|executeRequest(coil3.network.NetworkRequest;kotlin.coroutines.SuspendFunction1<coil3.network.NetworkResponse,0:0>){0§<kotlin.Any?>}[0]
 }
@@ -68,6 +77,21 @@ abstract interface coil3.network/NetworkResponseBody : kotlin/AutoCloseable { //
     abstract suspend fun writeTo(okio/FileSystem, okio/Path) // coil3.network/NetworkResponseBody.writeTo|writeTo(okio.FileSystem;okio.Path){}[0]
 }
 
+final class coil3.network/DeDupe2InFlightRequestStrategy : coil3.network/InFlightRequestStrategy { // coil3.network/DeDupe2InFlightRequestStrategy|null[0]
+    constructor <init>(kotlin.time/Duration = ...) // coil3.network/DeDupe2InFlightRequestStrategy.<init>|<init>(kotlin.time.Duration){}[0]
+
+    final val delay // coil3.network/DeDupe2InFlightRequestStrategy.delay|{}delay[0]
+        final fun <get-delay>(): kotlin.time/Duration // coil3.network/DeDupe2InFlightRequestStrategy.delay.<get-delay>|<get-delay>(){}[0]
+
+    final suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/DeDupe2InFlightRequestStrategy.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
+}
+
+final class coil3.network/DeDupeInFlightRequestStrategy : coil3.network/InFlightRequestStrategy { // coil3.network/DeDupeInFlightRequestStrategy|null[0]
+    constructor <init>() // coil3.network/DeDupeInFlightRequestStrategy.<init>|<init>(){}[0]
+
+    final suspend fun apply(kotlin/String, kotlin.coroutines/SuspendFunction0<coil3.fetch/FetchResult>): coil3.fetch/FetchResult // coil3.network/DeDupeInFlightRequestStrategy.apply|apply(kotlin.String;kotlin.coroutines.SuspendFunction0<coil3.fetch.FetchResult>){}[0]
+}
+
 final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.network/HttpException|null[0]
     constructor <init>(coil3.network/NetworkResponse) // coil3.network/HttpException.<init>|<init>(coil3.network.NetworkResponse){}[0]
 
@@ -76,13 +100,14 @@ final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.net
 }
 
 final class coil3.network/NetworkFetcher : coil3.fetch/Fetcher { // coil3.network/NetworkFetcher|null[0]
-    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker){}[0]
+    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker, kotlin/Lazy<coil3.network/InFlightRequestStrategy>) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker;kotlin.Lazy<coil3.network.InFlightRequestStrategy>){}[0]
 
     final fun getMimeType(kotlin/String, kotlin/String?): kotlin/String? // coil3.network/NetworkFetcher.getMimeType|getMimeType(kotlin.String;kotlin.String?){}[0]
     final suspend fun fetch(): coil3.fetch/FetchResult // coil3.network/NetworkFetcher.fetch|fetch(){}[0]
 
     final class Factory : coil3.fetch/Fetcher.Factory<coil3/Uri> { // coil3.network/NetworkFetcher.Factory|null[0]
         constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy> = ..., kotlin/Function1<coil3/PlatformContext, coil3.network/ConnectivityChecker> = ...) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>;kotlin.Function1<coil3.PlatformContext,coil3.network.ConnectivityChecker>){}[0]
+        constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy> = ..., kotlin/Function1<coil3/PlatformContext, coil3.network/ConnectivityChecker> = ..., kotlin/Function0<coil3.network/InFlightRequestStrategy> = ...) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>;kotlin.Function1<coil3.PlatformContext,coil3.network.ConnectivityChecker>;kotlin.Function0<coil3.network.InFlightRequestStrategy>){}[0]
 
         final fun create(coil3/Uri, coil3.request/Options, coil3/ImageLoader): coil3.fetch/Fetcher? // coil3.network/NetworkFetcher.Factory.create|create(coil3.Uri;coil3.request.Options;coil3.ImageLoader){}[0]
     }
