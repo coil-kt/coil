@@ -27,7 +27,7 @@ AsyncImage(
 )
 ```
 
-Coil의 [전체 문서는 여기에서](https://coil-kt.github.io/coil/getting_started/)에서 확인하세요.
+Coil의 [전체 문서는 여기](https://coil-kt.github.io/coil/getting_started/)에서 확인하세요.
 
 ## 라이선스
 
