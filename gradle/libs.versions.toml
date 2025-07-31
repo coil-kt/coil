@@ -54,7 +54,7 @@ androidx-test-core = "androidx.test:core-ktx:1.6.1"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-junit = "androidx.test.ext:junit-ktx:1.2.1"
 androidx-test-rules = "androidx.test:rules:1.6.1"
-androidx-test-runner = "androidx.test:runner:1.6.2"
+androidx-test-runner = "androidx.test:runner:1.7.0"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing-perfetto" }
 androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing-perfetto" }
