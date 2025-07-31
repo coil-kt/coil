@@ -50,7 +50,7 @@ androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
 androidx-recyclerview = "androidx.recyclerview:recyclerview:1.4.0"
-androidx-test-core = "androidx.test:core-ktx:1.6.1"
+androidx-test-core = "androidx.test:core-ktx:1.7.0"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-junit = "androidx.test.ext:junit-ktx:1.2.1"
 androidx-test-rules = "androidx.test:rules:1.6.1"
