@@ -44,6 +44,22 @@ private val videoFrameIndexKey = Extras.Key(default = -1)
 // region videoFrameMicros
 
 /**
+ * Configures video frame to use an embedded thumbnail if available.
+ * */
+fun ImageRequest.Builder.preferVideoFrameEmbeddedThumbnailKey(value: Boolean) = apply {
+    memoryCacheKeyExtra("coil#preferVideoFrameEmbeddedThumbnailKey", value.toString())
+    extras[preferVideoFrameEmbeddedThumbnailKey] = value
+}
+
+val Options.preferVideoFrameEmbeddedThumbnail: Boolean
+    get() = getExtra(preferVideoFrameEmbeddedThumbnailKey)
+
+val Extras.Key.Companion.preferVideoFrameEmbeddedThumbnail: Extras.Key<Boolean>
+    get() = preferVideoFrameEmbeddedThumbnailKey
+
+private val preferVideoFrameEmbeddedThumbnailKey = Extras.Key(default = false)
+
+/**
  * Set the time **in milliseconds** of the frame to extract from a video.
  *
  * When both [videoFrameMicros] (or [videoFrameMillis]) and [videoFramePercent] are set,

@@ -1,6 +1,7 @@
 package coil3.video
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.METADATA_KEY_DURATION
@@ -97,30 +98,49 @@ class VideoFrameDecoder(
 
         val frameMicros = computeFrameMicros(retriever)
         val (dstWidth, dstHeight) = dstSize
-        val rawBitmap: Bitmap? = if (SDK_INT >= 28 && options.videoFrameIndex >= 0) {
-            retriever.getFrameAtIndex(
-                frameIndex = options.videoFrameIndex,
-                config = options.bitmapConfig,
-            )?.also {
-                srcWidth = it.width
-                srcHeight = it.height
+        var rawBitmap: Bitmap? = null
+        if (options.preferVideoFrameEmbeddedThumbnail) {
+            try {
+                val embeddedPicture = retriever.embeddedPicture!!
+                rawBitmap = BitmapFactory.decodeByteArray(
+                    embeddedPicture,
+                    0,
+                    embeddedPicture.size
+                )?.also {
+                    srcWidth = it.width
+                    srcHeight = it.height
+                }
+            } catch (throwable: Throwable) {
+                // we encountered an error while trying to decode the embedded thumbnail.
             }
-        } else if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(
-                timeUs = frameMicros,
-                option = options.videoFrameOption,
-                dstWidth = dstWidth.px,
-                dstHeight = dstHeight.px,
-                config = options.bitmapConfig,
-            )
-        } else {
-            retriever.getFrameAtTime(
-                timeUs = frameMicros,
-                option = options.videoFrameOption,
-                config = options.bitmapConfig,
-            )?.also {
-                srcWidth = it.width
-                srcHeight = it.height
+        }
+
+        if (rawBitmap == null) { // Fallback to decoding a frame from the video.
+            rawBitmap = if (SDK_INT >= 28 && options.videoFrameIndex >= 0) {
+                retriever.getFrameAtIndex(
+                    frameIndex = options.videoFrameIndex,
+                    config = options.bitmapConfig,
+                )?.also {
+                    srcWidth = it.width
+                    srcHeight = it.height
+                }
+            } else if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
+                retriever.getScaledFrameAtTime(
+                    timeUs = frameMicros,
+                    option = options.videoFrameOption,
+                    dstWidth = dstWidth.px,
+                    dstHeight = dstHeight.px,
+                    config = options.bitmapConfig,
+                )
+            } else {
+                retriever.getFrameAtTime(
+                    timeUs = frameMicros,
+                    option = options.videoFrameOption,
+                    config = options.bitmapConfig,
+                )?.also {
+                    srcWidth = it.width
+                    srcHeight = it.height
+                }
             }
         }
 
