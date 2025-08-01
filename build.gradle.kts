@@ -91,6 +91,11 @@ allprojects {
         }
     }
 
+    // https://issuetracker.google.com/issues/411739086?pli=1
+    tasks.withType<AbstractTestTask>().configureEach {
+        failOnNoDiscoveredTests = false
+    }
+
     apply(plugin = "com.diffplug.spotless")
 
     val configureSpotless: SpotlessExtension.() -> Unit = {
