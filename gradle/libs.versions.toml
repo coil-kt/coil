@@ -39,7 +39,7 @@ androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.1"
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.4.0"
+androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.1"
