@@ -219,4 +219,107 @@ class VideoFrameDecoderTest {
         val expected = context.decodeBitmapAsset("video_frame_1.jpg")
         actual.assertIsSimilarTo(expected)
     }
+
+    @Test
+    fun embeddedThumbnailPresentAndEmbeddedThumbnailOptionEnabled() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video_with_thumb.mp4").source().buffer(),
+                fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(
+                context = context,
+                extras = Extras.Builder()
+                    .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, true)
+                    .build(),
+            ),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_with_thumb.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun embeddedThumbnailPresentAndEmbeddedThumbnailOptionDisabled() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video_with_thumb.mp4").source().buffer(),
+                fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(
+                context = context,
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFramePercent, 0.2582)
+                    .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, false)
+                    .build(),
+            ),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_with_thumb_frame_402.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun embeddedThumbnailNotPresentAndEmbeddedThumbnailOptionEnabled() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video.mp4").source().buffer(),
+                fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(
+                context = context,
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFramePercent, 0.525)
+                    .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, true)
+                    .build(),
+            ),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_2.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun embeddedThumbnailNotPresentAndEmbeddedThumbnailOptionDisabled() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video.mp4").source().buffer(),
+                fileSystem = FileSystem.SYSTEM,
+            ),
+            options = Options(
+                context = context,
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFramePercent, 0.525)
+                    .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, false)
+                    .build(),
+            ),
+        ).decode()
+
+        val actual = result.image.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_2.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
 }

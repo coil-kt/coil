@@ -1,4 +1,6 @@
 public final class coil3/video/ImageRequestsKt {
+	public static final fun getPreferVideoFrameEmbeddedThumbnail (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getPreferVideoFrameEmbeddedThumbnail (Lcoil3/request/Options;)Z
 	public static final fun getVideoFrameIndex (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getVideoFrameIndex (Lcoil3/request/ImageRequest;)I
 	public static final fun getVideoFrameIndex (Lcoil3/request/Options;)I
@@ -11,6 +13,7 @@ public final class coil3/video/ImageRequestsKt {
 	public static final fun getVideoFramePercent (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getVideoFramePercent (Lcoil3/request/ImageRequest;)D
 	public static final fun getVideoFramePercent (Lcoil3/request/Options;)D
+	public static final fun preferVideoFrameEmbeddedThumbnailKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun videoFrameIndex (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 	public static final fun videoFrameMicros (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
 	public static final fun videoFrameMillis (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
