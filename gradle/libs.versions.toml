@@ -60,8 +60,6 @@ androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", vers
 androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing-perfetto" }
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
-compose-material-icons-core = "org.jetbrains.compose.material:material-icons-core:1.7.3"
-
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }

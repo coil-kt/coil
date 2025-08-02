@@ -57,7 +57,7 @@ kotlin {
 
     androidTarget()
 
-    jvm("desktop")
+    jvm()
 
     js {
         outputModuleName = "coilSample"
@@ -94,11 +94,11 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.samples.shared)
                 implementation(projects.coilCompose)
+                implementation(projects.samples.shared)
                 implementation(compose.components.resources)
                 implementation(compose.material3)
-                implementation(libs.compose.material.icons.core)
+                implementation(compose.materialIconsExtended)
             }
         }
         androidMain {
@@ -107,7 +107,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
             }
         }
-        named("desktopMain") {
+        jvmMain {
             dependencies {
                 implementation(compose.desktop.currentOs)
             }

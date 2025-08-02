@@ -3,21 +3,26 @@ package sample.view
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil3.load
 import kotlinx.coroutines.launch
 import sample.common.AndroidMainViewModel
-import sample.common.AssetType
 import sample.common.Image
 import sample.common.NUM_COLUMNS
 import sample.common.Screen
+import sample.common.enableEdgeToEdge
 import sample.common.extras
 import sample.common.next
 import sample.view.databinding.ActivityMainBinding
@@ -31,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -50,8 +56,25 @@ class MainActivity : AppCompatActivity() {
             viewModel.onBackPressed()
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            binding.list.updatePaddingRelative(bottom = navigationBars.bottom)
+            binding.detail.updatePaddingRelative(bottom = navigationBars.bottom)
+            binding.root.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = navigationBars.left
+                rightMargin = navigationBars.right
+            }
+
+            insets
+        }
+
         lifecycleScope.apply {
-            launch { viewModel.assetType.collect(::setAssetType) }
+            launch { viewModel.assetType.collect { invalidateOptionsMenu() } }
             launch { viewModel.images.collect(::setImages) }
             launch { viewModel.screen.collect(::setScreen) }
         }
@@ -81,11 +104,6 @@ class MainActivity : AppCompatActivity() {
             // Ensure we're at the top of the list when the list items are updated.
             binding.list.scrollToPosition(0)
         }
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    private fun setAssetType(assetType: AssetType) {
-        invalidateOptionsMenu()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
