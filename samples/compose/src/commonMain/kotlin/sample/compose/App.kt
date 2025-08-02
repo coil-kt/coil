@@ -2,7 +2,6 @@ package sample.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -195,19 +194,17 @@ private fun DetailScreen(
     screen: Screen.Detail,
     padding: PaddingValues,
 ) {
-    Box(
-        modifier = Modifier.padding(padding),
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(screen.image.uri)
-                .placeholderMemoryCacheKey(screen.placeholder)
-                .extras(screen.image.extras)
-                .build(),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+    AsyncImage(
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(screen.image.uri)
+            .placeholderMemoryCacheKey(screen.placeholder)
+            .extras(screen.image.extras)
+            .build(),
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
+    )
 }
 
 @Composable
