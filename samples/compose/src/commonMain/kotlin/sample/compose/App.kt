@@ -3,6 +3,7 @@ package sample.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -94,15 +95,12 @@ fun App(
                 )
             },
             content = { padding ->
-                Box(
-                    modifier = Modifier.padding(padding),
-                ) {
-                    ScaffoldContent(
-                        screen = screen,
-                        onScreenChange = { viewModel.screen.value = it },
-                        images = viewModel.images.collectAsState().value,
-                    )
-                }
+                ScaffoldContent(
+                    screen = screen,
+                    onScreenChange = { viewModel.screen.value = it },
+                    images = viewModel.images.collectAsState().value,
+                    padding = padding,
+                )
             },
             modifier = Modifier.testTagsAsResourceId(true),
         )
@@ -164,6 +162,7 @@ private fun ScaffoldContent(
     screen: Screen,
     onScreenChange: (Screen) -> Unit,
     images: List<Image>,
+    padding: PaddingValues,
 ) {
     // Reset the scroll position when the image list changes.
     // Preserve the scroll position when navigating to/from the detail screen.
@@ -173,12 +172,16 @@ private fun ScaffoldContent(
 
     when (screen) {
         is Screen.Detail -> {
-            DetailScreen(screen)
+            DetailScreen(
+                screen = screen,
+                padding = padding,
+            )
         }
         is Screen.List -> {
             ListScreen(
                 gridState = gridState,
                 images = images,
+                padding = padding,
                 onImageClick = { image, placeholder ->
                     onScreenChange(Screen.Detail(image, placeholder))
                 },
@@ -188,22 +191,30 @@ private fun ScaffoldContent(
 }
 
 @Composable
-private fun DetailScreen(screen: Screen.Detail) {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalPlatformContext.current)
-            .data(screen.image.uri)
-            .placeholderMemoryCacheKey(screen.placeholder)
-            .extras(screen.image.extras)
-            .build(),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-    )
+private fun DetailScreen(
+    screen: Screen.Detail,
+    padding: PaddingValues,
+) {
+    Box(
+        modifier = Modifier.padding(padding),
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalPlatformContext.current)
+                .data(screen.image.uri)
+                .placeholderMemoryCacheKey(screen.placeholder)
+                .extras(screen.image.extras)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }
 
 @Composable
 private fun ListScreen(
     gridState: LazyStaggeredGridState,
     images: List<Image>,
+    padding: PaddingValues,
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
     val density = LocalDensity.current
@@ -212,6 +223,7 @@ private fun ListScreen(
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(NUM_COLUMNS),
         state = gridState,
+        contentPadding = padding,
         modifier = Modifier.testTag("list"),
     ) {
         items(
