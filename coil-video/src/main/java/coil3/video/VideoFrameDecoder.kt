@@ -100,18 +100,15 @@ class VideoFrameDecoder(
         val (dstWidth, dstHeight) = dstSize
         var rawBitmap: Bitmap? = null
         if (options.preferVideoFrameEmbeddedThumbnail) {
-            try {
-                val embeddedPicture = retriever.embeddedPicture!!
+            retriever.embeddedPicture?.let { embeddedPicture ->
                 rawBitmap = BitmapFactory.decodeByteArray(
                     embeddedPicture,
                     0,
-                    embeddedPicture.size
+                    embeddedPicture.size,
                 )?.also {
                     srcWidth = it.width
                     srcHeight = it.height
                 }
-            } catch (throwable: Throwable) {
-                // we encountered an error while trying to decode the embedded thumbnail.
             }
         }
 
