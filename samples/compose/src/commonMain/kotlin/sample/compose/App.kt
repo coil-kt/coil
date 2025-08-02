@@ -3,6 +3,8 @@ package sample.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
@@ -215,13 +218,22 @@ private fun ListScreen(
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
     val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
     val screenWidth = containerSize().width
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(NUM_COLUMNS),
         state = gridState,
-        contentPadding = padding,
-        modifier = Modifier.testTag("list"),
+        contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
+        modifier = Modifier
+            .padding(
+                PaddingValues(
+                    start = padding.calculateStartPadding(layoutDirection),
+                    top = padding.calculateTopPadding(),
+                    end = padding.calculateEndPadding(layoutDirection),
+                )
+            )
+            .testTag("list"),
     ) {
         items(
             items = images,
