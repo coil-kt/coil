@@ -257,7 +257,7 @@ class VideoFrameDecoderTest {
             options = Options(
                 context = context,
                 extras = Extras.Builder()
-                    .set(Extras.Key.videoFrameIndex, 402)
+                    .set(Extras.Key.videoFramePercent, 0.2582)
                     .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, false)
                     .build(),
             ),
@@ -283,7 +283,7 @@ class VideoFrameDecoderTest {
             options = Options(
                 context = context,
                 extras = Extras.Builder()
-                    .set(Extras.Key.videoFrameIndex, 807)
+                    .set(Extras.Key.videoFramePercent, 0.525)
                     .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, true)
                     .build(),
             ),
@@ -309,7 +309,7 @@ class VideoFrameDecoderTest {
             options = Options(
                 context = context,
                 extras = Extras.Builder()
-                    .set(Extras.Key.videoFrameIndex, 807)
+                    .set(Extras.Key.videoFramePercent, 0.525)
                     .set(Extras.Key.preferVideoFrameEmbeddedThumbnail, false)
                     .build(),
             ),
