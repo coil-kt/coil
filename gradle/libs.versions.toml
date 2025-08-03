@@ -98,7 +98,6 @@ roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
-skiko-android = { module = "org.jetbrains.skiko:skiko-android", version.ref = "skiko" }
 skiko-android-x64 = { module = "org.jetbrains.skiko:skiko-android-runtime-x64", version.ref = "skiko" }
 skiko-android-arm64 = { module = "org.jetbrains.skiko:skiko-android-runtime-arm64", version.ref = "skiko" }
 
