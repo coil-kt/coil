@@ -16,6 +16,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
+                api(projects.coilSvgParserSkia)
             }
         }
         androidMain {
