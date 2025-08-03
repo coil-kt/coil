@@ -42,7 +42,13 @@ tasks.withType<Copy> {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.svg.skia")
+androidLibrary(name = "coil3.svg.skia") {
+    defaultConfig {
+        ndk {
+            abiFilters += listOf("x86_64", "arm64-v8a")
+        }
+    }
+}
 
 kotlin {
     sourceSets {
