@@ -25,16 +25,10 @@ internal actual fun render(image: SvgImage, canvas: Canvas) {
 }
 
 private fun SkiaBitmap.toAndroidBitmap(): AndroidBitmap {
-    val pixels = readPixels(
-        dstInfo = ImageInfo.makeN32Premul(width, height),
-        dstRowBytes = width * 4,  // 4 bytes per pixel
-        srcX = 0,
-        srcY = 0,
-    ) ?: error("Failed to read pixels from Skiko bitmap")
-
+    val pixels = checkNotNull(readPixels()) { "Failed to read pixels from Skiko bitmap" }
     val buffer = ByteBuffer.wrap(pixels).order(ByteOrder.nativeOrder())
 
-    return createBitmap(width, height, AndroidBitmap.Config.ARGB_8888).apply {
+    return createBitmap(width, height).apply {
         copyPixelsFromBuffer(buffer)
     }
 }
