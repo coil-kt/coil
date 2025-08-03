@@ -24,6 +24,7 @@ include(
     "coil-network-cache-control",
     "coil-gif",
     "coil-svg",
+    "coil-svg-parser-skia",
     "coil-video",
     "coil-bom",
     "coil-test",

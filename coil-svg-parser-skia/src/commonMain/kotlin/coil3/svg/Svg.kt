@@ -3,7 +3,7 @@ package coil3.svg
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
 import coil3.request.Options
-import coil3.svg.internal.parseSvg
+import coil3.svg.skia.parseSvg
 import kotlin.jvm.JvmField
 import okio.BufferedSource
 

@@ -27,3 +27,5 @@ site
 
 # https://github.com/square/okio/issues/1163
 **/webpack.config.d/applyNodePolyfillPlugin.js
+
+coil-svg-parser-skia/src/androidMain/jniLibs

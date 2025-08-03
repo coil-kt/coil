@@ -15,7 +15,7 @@ okhttp = "4.12.0"
 okio = "3.16.0"
 paparazzi = "2.0.0-alpha02"
 roborazzi = "1.50.0"
-skiko = "0.9.22.2"
+skiko = "0.9.25"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
@@ -98,6 +98,9 @@ roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
+skiko-android = { module = "org.jetbrains.skiko:skiko-android", version.ref = "skiko" }
+skiko-android-x64 = { module = "org.jetbrains.skiko:skiko-android-runtime-x64", version.ref = "skiko" }
+skiko-android-arm64 = { module = "org.jetbrains.skiko:skiko-android-runtime-arm64", version.ref = "skiko" }
 
 svg = "com.caverock:androidsvg-aar:1.4"
 
