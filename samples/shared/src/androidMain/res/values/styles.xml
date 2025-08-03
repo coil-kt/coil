@@ -1,13 +1,10 @@
 <resources>
 
-    <style name="AppTheme.v21" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#FFF</item>
         <item name="colorAccent">#FFF</item>
         <item name="android:background">#FFF</item>
-        <item name="android:statusBarColor">#FFF</item>
     </style>
-
-    <style name="AppTheme" parent="AppTheme.v21"/>
 
 </resources>

@@ -2,7 +2,9 @@ package sample.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
@@ -94,15 +97,12 @@ fun App(
                 )
             },
             content = { padding ->
-                Box(
-                    modifier = Modifier.padding(padding),
-                ) {
-                    ScaffoldContent(
-                        screen = screen,
-                        onScreenChange = { viewModel.screen.value = it },
-                        images = viewModel.images.collectAsState().value,
-                    )
-                }
+                ScaffoldContent(
+                    screen = screen,
+                    onScreenChange = { viewModel.screen.value = it },
+                    images = viewModel.images.collectAsState().value,
+                    padding = padding,
+                )
             },
             modifier = Modifier.testTagsAsResourceId(true),
         )
@@ -164,6 +164,7 @@ private fun ScaffoldContent(
     screen: Screen,
     onScreenChange: (Screen) -> Unit,
     images: List<Image>,
+    padding: PaddingValues,
 ) {
     // Reset the scroll position when the image list changes.
     // Preserve the scroll position when navigating to/from the detail screen.
@@ -173,12 +174,16 @@ private fun ScaffoldContent(
 
     when (screen) {
         is Screen.Detail -> {
-            DetailScreen(screen)
+            DetailScreen(
+                screen = screen,
+                padding = padding,
+            )
         }
         is Screen.List -> {
             ListScreen(
                 gridState = gridState,
                 images = images,
+                padding = padding,
                 onImageClick = { image, placeholder ->
                     onScreenChange(Screen.Detail(image, placeholder))
                 },
@@ -188,7 +193,10 @@ private fun ScaffoldContent(
 }
 
 @Composable
-private fun DetailScreen(screen: Screen.Detail) {
+private fun DetailScreen(
+    screen: Screen.Detail,
+    padding: PaddingValues,
+) {
     AsyncImage(
         model = ImageRequest.Builder(LocalPlatformContext.current)
             .data(screen.image.uri)
@@ -196,7 +204,9 @@ private fun DetailScreen(screen: Screen.Detail) {
             .extras(screen.image.extras)
             .build(),
         contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
     )
 }
 
@@ -204,15 +214,26 @@ private fun DetailScreen(screen: Screen.Detail) {
 private fun ListScreen(
     gridState: LazyStaggeredGridState,
     images: List<Image>,
+    padding: PaddingValues,
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
     val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
     val screenWidth = containerSize().width
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(NUM_COLUMNS),
         state = gridState,
-        modifier = Modifier.testTag("list"),
+        contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
+        modifier = Modifier
+            .padding(
+                PaddingValues(
+                    start = padding.calculateStartPadding(layoutDirection),
+                    top = padding.calculateTopPadding(),
+                    end = padding.calculateEndPadding(layoutDirection),
+                )
+            )
+            .testTag("list"),
     ) {
         items(
             items = images,

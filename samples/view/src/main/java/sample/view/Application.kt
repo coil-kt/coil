@@ -9,6 +9,6 @@ import sample.common.newImageLoader
 
 class Application : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader {
-        return newImageLoader(this, BuildConfig.DEBUG)
+        return newImageLoader(context, BuildConfig.DEBUG)
     }
 }
