@@ -36,11 +36,6 @@ tasks.withType<MergeSourceSetFolders>().configureEach {
     dependsOn(unzipTaskArm64)
 }
 
-tasks.withType<Copy> {
-    // This line needs to properly merge MANIFEST files from jars into dex.
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 addAllMultiplatformTargets(libs.versions.skiko)
 androidLibrary(name = "coil3.svg.skia") {
     defaultConfig {
@@ -61,7 +56,6 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.androidx.core)
-                implementation(libs.skiko.android)
             }
         }
     }
