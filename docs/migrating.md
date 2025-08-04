@@ -82,13 +82,13 @@ val request = ImageRequest.Builder(context)
     .data(url)
     .target(
         onStart = { placeholder ->
-            // Handle the placeholder drawable.
+            // Handle the placeholder image.
         },
         onSuccess = { result ->
             // Handle the successful result.
         },
         onError = { error ->
-            // Handle the error drawable.
+            // Handle the error image.
         }
     )
     .build()
@@ -115,5 +115,5 @@ val request = ImageRequest.Builder(context)
     .data(url)
     .size(width, height)
     .build()
-val drawable = context.imageLoader.execute(request).drawable
+val drawable = context.imageLoader.execute(request).image.asDrawable(resources)
 ```

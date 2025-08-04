@@ -9,7 +9,6 @@ import coil3.annotation.Poko
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
-import coil3.request.ImageRequest.Builder
 import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale

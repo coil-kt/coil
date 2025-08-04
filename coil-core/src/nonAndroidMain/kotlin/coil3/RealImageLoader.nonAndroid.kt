@@ -21,8 +21,8 @@ internal actual inline fun transition(
     result: ImageResult,
     target: Target?,
     eventListener: EventListener,
-    setDrawable: () -> Unit,
-) = setDrawable()
+    setImage: () -> Unit,
+) = setImage()
 
 internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     options: RealImageLoader.Options,

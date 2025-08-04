@@ -51,16 +51,16 @@ internal actual inline fun transition(
     result: ImageResult,
     target: Target?,
     eventListener: EventListener,
-    setDrawable: () -> Unit,
+    setImage: () -> Unit,
 ) {
     if (target !is TransitionTarget) {
-        setDrawable()
+        setImage()
         return
     }
 
     val transition = result.request.transitionFactory.create(target, result)
     if (transition is NoneTransition) {
-        setDrawable()
+        setImage()
         return
     }
 

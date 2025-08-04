@@ -247,7 +247,7 @@ internal expect inline fun transition(
     result: ImageResult,
     target: Target?,
     eventListener: EventListener,
-    setDrawable: () -> Unit,
+    setImage: () -> Unit,
 )
 
 @Suppress("UNCHECKED_CAST")
