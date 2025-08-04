@@ -77,6 +77,31 @@ SingletonImageLoader.setSafe { context ->
 !!! Note
     If you are writing a library that depends on Coil you should NOT get/set the singleton `ImageLoader`. Instead, you should depend on `io.coil-kt.coil3:coil-core`, create your own `ImageLoader`, and pass it around manually. If you set the singleton `ImageLoader` in your library you could be overwriting the `ImageLoader` set by the app using your library if they also use Coil.
 
+## Images
+
+To support multiplatform rendering, Coil 3.x uses a custom `coil3.Image` class. It replaces Android's `Drawable`, but is fully interoperable with it:
+
+```kotlin
+val drawable = image.asDrawable(resources)
+val image = drawable.asImage()
+```
+
+Coil also defines a `coil3.Bitmap` class, which is a type alias for `android.graphics.Bitmap` on Android or `org.jetbrains.skia.Bitmap` on non-Android platforms:
+
+```kotlin
+val bitmap = image.toBitmap()
+val image = bitmap.asImage()
+```
+
+It's also interoperable with Compose UI's `Painter` class. This extension function requires importing the `coil-compose-core` artifact:
+
+```kotlin
+val painter = image.asPainter()
+```
+
+!!! Note
+    `Painter`s can't be converted to `Image`s as painters can only be rendered inside a composition whereas `Image`s must be able to be rendered on any `Canvas`.
+
 ## Artifacts
 
 Here's a list of the main artifacts Coil has published to `mavenCentral()`:
