@@ -24,11 +24,10 @@ private fun requestedSkikoVersionFromJvmByOrigin(targetProject: Project, originG
         // Force dependency graph calculation.
         cfg.dependencies
         val result = cfg.incoming.resolutionResult
-        result.allDependencies.forEach { dep ->
-            val resolved = dep as? ResolvedDependencyResult ?: return@forEach
-            val from = resolved.from
-            val fromId = (from as? ResolvedComponentResult)?.moduleVersion
-            val requested = resolved.requested as? ModuleComponentSelector ?: return@forEach
+        for (dep in result.allDependencies) {
+            val resolved = dep as? ResolvedDependencyResult ?: continue
+            val fromId = (resolved.from as? ResolvedComponentResult)?.moduleVersion
+            val requested = resolved.requested as? ModuleComponentSelector ?: continue
             if (fromId != null && fromId.group.startsWith(originGroupPrefix) && requested.group == "org.jetbrains.skiko") {
                 return requested.version
             }
