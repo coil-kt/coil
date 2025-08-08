@@ -1,3 +1,6 @@
+import org.gradle.api.artifacts.component.ModuleComponentSelector
+import org.gradle.api.artifacts.result.ResolvedDependencyResult
+
 // Verify Skiko versions match between coil-core and coil-compose-core.
 tasks.register<VerifySkikoVersionsTask>("verifySkikoVersionsMatch") {
     group = "verification"
@@ -18,14 +21,14 @@ private fun requestedSkikoVersionFromJvmByOrigin(targetProject: Project, originG
     val configurationNames = listOf("jvmRuntimeClasspath", "jvmTestRuntimeClasspath")
     for (name in configurationNames) {
         val cfg = targetProject.configurations.findByName(name) ?: continue
-        // Force dependency graph calculation
+        // Force dependency graph calculation.
         cfg.dependencies
         val result = cfg.incoming.resolutionResult
         result.allDependencies.forEach { dep ->
-            val resolved = dep as? org.gradle.api.artifacts.result.ResolvedDependencyResult ?: return@forEach
+            val resolved = dep as? ResolvedDependencyResult ?: return@forEach
             val from = resolved.from
-            val fromId = (from as? org.gradle.api.artifacts.result.ResolvedComponentResult)?.moduleVersion
-            val requested = resolved.requested as? org.gradle.api.artifacts.component.ModuleComponentSelector ?: return@forEach
+            val fromId = (from as? ResolvedComponentResult)?.moduleVersion
+            val requested = resolved.requested as? ModuleComponentSelector ?: return@forEach
             if (fromId != null && fromId.group.startsWith(originGroupPrefix) && requested.group == "org.jetbrains.skiko") {
                 return requested.version
             }
