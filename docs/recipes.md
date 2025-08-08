@@ -177,7 +177,7 @@ Don't forget to register add interceptor to your `ImageLoader`!
 ```kotlin
 ImageLoader.Builder(context)
     .components {
-        add(FastlyCoilInterceptor())
+        add(UrlSizeInterceptor())
     }
     .build()
 ```
