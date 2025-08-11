@@ -235,3 +235,5 @@ fun Project.applyOkioJsTestWorkaround() {
         }
     }
 }
+
+apply(from = rootProject.file("gradle/verifySkikoVersionsMatch.gradle.kts"))
