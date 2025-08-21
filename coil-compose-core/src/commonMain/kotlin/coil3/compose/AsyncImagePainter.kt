@@ -277,7 +277,10 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    val painter = placeholder?.asPainter(request.context, filterQuality)
+                    var painter = placeholder?.asPainter(request.context, filterQuality)
+                    if (painter == null && this.painter != null) {
+                        painter = this.painter
+                    }
                     updateState(State.Loading(painter))
                 },
             )
