@@ -1105,6 +1105,7 @@ public final class coil3/transition/CrossfadeDrawable : android/graphics/drawabl
 	public fun setTintBlendMode (Landroid/graphics/BlendMode;)V
 	public fun setTintList (Landroid/content/res/ColorStateList;)V
 	public fun setTintMode (Landroid/graphics/PorterDuff$Mode;)V
+	public fun setVisible (ZZ)Z
 	public fun start ()V
 	public fun stop ()V
 	public fun unregisterAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)Z
