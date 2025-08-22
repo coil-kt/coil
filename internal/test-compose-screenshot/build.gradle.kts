@@ -1,7 +1,4 @@
 import coil3.androidLibrary
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.library")
@@ -14,10 +11,6 @@ plugins {
 androidLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
@@ -36,13 +29,4 @@ dependencies {
 
 screenshotTests {
     imageDifferenceThreshold = 0.01f
-}
-
-// Compose 1.8.0 requires JVM 11.
-tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-}
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions.jvmTarget = JvmTarget.JVM_11
 }
