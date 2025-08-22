@@ -33,8 +33,8 @@ internal class DefaultCacheStrategy : CacheStrategy {
 
         // Write the response metadata and body to disk.
         // Cache all 2xx responses for backwards compatibility.
-        if (networkResponse.code in 200 until 300
-            || networkResponse.code in CACHEABLE_STATUS_CODES) {
+        if (networkResponse.code in 200 until 300 ||
+            networkResponse.code in CACHEABLE_STATUS_CODES) {
             return WriteResult(networkResponse)
         }
 
