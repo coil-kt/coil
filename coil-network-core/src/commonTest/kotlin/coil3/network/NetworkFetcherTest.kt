@@ -60,7 +60,7 @@ class NetworkFetcherTest : RobolectricTest() {
     }
 
     @Test
-    fun errorResponseIsCachedToDisk() = runTestAsync {
+    fun error404ResponseIsCachedToDisk() = runTestAsync {
         val expectedSize = 1_000
         val url = "https://example.com/error.jpg"
 
@@ -74,7 +74,7 @@ class NetworkFetcherTest : RobolectricTest() {
         val networkClient = FakeNetworkClient(
             respond = {
                 NetworkResponse(
-                    code = 400,
+                    code = 404,
                     body = NetworkResponseBody(
                         source = Buffer().apply { write(ByteArray(expectedSize)) },
                     ),
@@ -84,7 +84,7 @@ class NetworkFetcherTest : RobolectricTest() {
 
         val fetcher = NetworkFetcher(
             url = url,
-            options = Options(context = context),
+            options = Options(context),
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
@@ -99,12 +99,54 @@ class NetworkFetcherTest : RobolectricTest() {
             val cachedResponse = diskCache.fileSystem.read(snapshot.metadata) {
                 CacheNetworkResponse.readFrom(this)
             }
-            assertEquals(400, cachedResponse.code)
+            assertEquals(404, cachedResponse.code)
 
             // Verify the cached data exists and has the expected size.
             val actualSize = fileSystem.read(snapshot.data) { readByteString().size }
             assertEquals(expectedSize, actualSize)
         }
+
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
+    }
+
+    @Test
+    fun error500ResponseIsNotCachedToDisk() = runTestAsync {
+        val expectedSize = 1_000
+        val url = "https://example.com/error-500.jpg"
+
+        val fileSystem = FakeFileSystem()
+        val diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
+            .build()
+
+        val networkClient = FakeNetworkClient(
+            respond = {
+                NetworkResponse(
+                    code = 500,
+                    body = NetworkResponseBody(
+                        source = Buffer().apply { write(ByteArray(expectedSize)) },
+                    ),
+                )
+            },
+        )
+
+        val fetcher = NetworkFetcher(
+            url = url,
+            options = Options(context),
+            networkClient = lazyOf(networkClient),
+            diskCache = lazyOf(diskCache),
+            cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
+            connectivityChecker = ConnectivityChecker.ONLINE,
+        )
+
+        // A 500 response throws and should not be cached.
+        assertFailsWith<HttpException> { fetcher.fetch() }
+
+        // Verify no snapshot was written for the 500 response.
+        assertEquals(null, diskCache.openSnapshot(url))
 
         diskCache.shutdown()
         fileSystem.checkNoOpenFiles()
