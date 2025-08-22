@@ -1,4 +1,5 @@
 import coil3.androidLibrary
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
@@ -11,10 +12,6 @@ plugins {
 androidLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
