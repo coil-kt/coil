@@ -119,7 +119,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         val superChanged = super.setVisible(visible, restart)
         val changedStart = start?.setVisible(visible, restart) == true
         val changedEnd = end?.setVisible(visible, restart) == true
-        return superChanged or changedStart or changedEnd
+        return superChanged || changedStart || changedEnd
     }
 
     @Deprecated("Deprecated in Java")
