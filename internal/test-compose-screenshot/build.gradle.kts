@@ -1,5 +1,4 @@
 import coil3.androidLibrary
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
