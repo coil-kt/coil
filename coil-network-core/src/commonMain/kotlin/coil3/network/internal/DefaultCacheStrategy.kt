@@ -31,7 +31,19 @@ internal class DefaultCacheStrategy : CacheStrategy {
             return WriteResult(networkResponse.copy(headers = combinedHeaders, body = null))
         }
 
-        // Write the response metadata and response body to disk.
-        return WriteResult(networkResponse)
+        // Write the response metadata and body to disk.
+        // Cache all 2xx responses for backwards compatibility.
+        if (networkResponse.code in 200 until 300 ||
+            networkResponse.code in CACHEABLE_STATUS_CODES) {
+            return WriteResult(networkResponse)
+        }
+
+        // Disable writing to disk for non-cacheable HTTP status codes.
+        return WriteResult.DISABLED
+    }
+
+    private companion object {
+        // List of non-200 HTTP codes that are cacheable by default according to RFC semantics.
+        private val CACHEABLE_STATUS_CODES = setOf(300, 301, 404, 405, 410, 414, 501)
     }
 }
