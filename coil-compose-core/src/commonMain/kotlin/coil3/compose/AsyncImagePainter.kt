@@ -38,6 +38,7 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
+import coil3.request.crossfadeBetweenImages
 import coil3.size.Precision
 import coil3.size.SizeResolver
 import kotlin.coroutines.EmptyCoroutineContext
@@ -277,7 +278,10 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    val painter = placeholder?.asPainter(request.context, filterQuality)
+                    var painter = placeholder?.asPainter(request.context, filterQuality)
+                    if (request.crossfadeBetweenImages && painter == null && this.painter != null) {
+                        painter = this.painter
+                    }
                     updateState(State.Loading(painter))
                 },
             )

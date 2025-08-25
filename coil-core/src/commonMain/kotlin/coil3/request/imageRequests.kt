@@ -30,6 +30,15 @@ expect val ImageRequest.crossfadeMillis: Int
 
 internal const val DEFAULT_CROSSFADE_MILLIS = 200
 
+fun ImageRequest.Builder.crossfadeBetweenImages(enable: Boolean) = apply {
+    extras[crossfadeBetweenImagesKey] = enable
+}
+
+val ImageRequest.crossfadeBetweenImages: Boolean
+    get() = getExtra(crossfadeBetweenImagesKey)
+
+private val crossfadeBetweenImagesKey = Extras.Key(default = false)
+
 // endregion
 // region transformations
 
