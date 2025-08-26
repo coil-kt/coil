@@ -277,7 +277,7 @@ class AsyncImagePainter internal constructor(
 
         return request.newBuilder()
             .target(
-                onStart = { placeholder ->
+                onStart = { placeholder, crossfadeBetweenImages ->
                     var painter = placeholder?.asPainter(request.context, filterQuality)
                     if (request.crossfadeBetweenImages && painter == null && this.painter != null) {
                         painter = this.painter
