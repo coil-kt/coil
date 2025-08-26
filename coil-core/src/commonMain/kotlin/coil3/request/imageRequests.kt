@@ -41,6 +41,9 @@ val ImageRequest.crossfadeBetweenImages: Boolean
 
 private val crossfadeBetweenImagesKey = Extras.Key(default = false)
 
+val Extras.Key.Companion.crossfadeBetweenImages: Extras.Key<Boolean>
+    get() = crossfadeBetweenImagesKey
+
 // endregion
 // region transformations
 
