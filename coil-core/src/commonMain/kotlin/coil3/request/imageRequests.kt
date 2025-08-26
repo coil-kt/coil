@@ -3,6 +3,7 @@ package coil3.request
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.getExtra
@@ -34,6 +35,7 @@ fun ImageRequest.Builder.crossfadeBetweenImages(enable: Boolean) = apply {
     extras[crossfadeBetweenImagesKey] = enable
 }
 
+@ExperimentalCoilApi
 val ImageRequest.crossfadeBetweenImages: Boolean
     get() = getExtra(crossfadeBetweenImagesKey)
 
