@@ -35,6 +35,10 @@ fun ImageRequest.Builder.crossfadeBetweenImages(enable: Boolean) = apply {
     extras[crossfadeBetweenImagesKey] = enable
 }
 
+fun ImageLoader.Builder.crossfadeBetweenImages(enable: Boolean) = apply {
+    extras[crossfadeBetweenImagesKey] = enable
+}
+
 @ExperimentalCoilApi
 val ImageRequest.crossfadeBetweenImages: Boolean
     get() = getExtra(crossfadeBetweenImagesKey)
