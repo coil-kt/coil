@@ -1,8 +1,12 @@
 package coil3.test.utils
 
 import coil3.ImageLoader
+import coil3.decode.DataSource
 import coil3.disk.DiskCache
+import coil3.fetch.FetchResult
 import coil3.fetch.SourceFetchResult
+import coil3.network.DeDupeInFlightRequestStrategy
+import coil3.network.InFlightRequestStrategy
 import coil3.network.NetworkFetcher
 import coil3.request.Options
 import kotlin.test.AfterTest
@@ -13,6 +17,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlinx.coroutines.launch
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
@@ -138,11 +143,47 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         }
     }
 
+    @Test
+    fun dedupe_multiple_requests() = runTestAsync {
+        val expectedSize = 1_000
+        val path = "image.jpg"
+        val inFlightRequestStrategy = DeDupeInFlightRequestStrategy()
+
+        val results = mutableListOf<FetchResult>()
+        launch {
+            for (i in 1..10) {
+                launch {
+                    val result = newFetcher(
+                        path = path,
+                        responseBody = ByteArray(expectedSize).toByteString(),
+                        inFlightRequestStrategy = inFlightRequestStrategy
+                    ).fetch()
+                    assertIs<SourceFetchResult>(result)
+                    result.source.close()
+                    results.add(result)
+                }
+            }
+        }.join()
+
+        assertEquals(
+            1,
+            results.filterIsInstance<SourceFetchResult>()
+                .count { it.dataSource == DataSource.NETWORK },
+        )
+
+        assertEquals(
+            9,
+            results.filterIsInstance<SourceFetchResult>()
+                .count { it.dataSource == DataSource.DISK },
+        )
+    }
+
     abstract fun url(path: String): String
 
     abstract fun newFetcher(
         path: String = "image.jpg",
         responseBody: ByteString = ByteString.EMPTY,
         options: Options = Options(context),
+        inFlightRequestStrategy: InFlightRequestStrategy = InFlightRequestStrategy.DEFAULT
     ): NetworkFetcher
 }
