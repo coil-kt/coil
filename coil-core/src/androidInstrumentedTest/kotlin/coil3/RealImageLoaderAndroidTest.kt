@@ -231,7 +231,7 @@ class RealImageLoaderAndroidTest {
                 .error(error)
                 .fallback(fallback)
                 .target(
-                    onStart = { throw IllegalStateException() },
+                    onStart = { _, _ -> throw IllegalStateException() },
                     onError = { drawable ->
                         check(drawable === fallback)
                         hasCalledTargetOnError = true
@@ -271,9 +271,9 @@ class RealImageLoaderAndroidTest {
                 .allowHardware(true)
                 .coroutineContext(EmptyCoroutineContext)
                 .target(
-                    onStart = {
+                    onStart = { placeholder, _ ->
                         // The drawable in the memory cache should be returned here.
-                        assertEquals(bitmap, (it as BitmapImage).bitmap)
+                        assertEquals(bitmap, (placeholder as BitmapImage).bitmap)
                     },
                     onSuccess = {
                         // The same drawable should be returned since the drawable is valid for this request.

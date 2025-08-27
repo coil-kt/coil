@@ -85,8 +85,8 @@ class RealImageLoaderTest : RobolectricTest() {
         val request = ImageRequest.Builder(context)
             .data(Unit)
             .target(
-                onStart = {
-                    actual = it
+                onStart = { placeholder, _ ->
+                    actual = placeholder
                     throw CancellationException()
                 },
             )
