@@ -31,6 +31,17 @@ expect val ImageRequest.crossfadeMillis: Int
 
 internal const val DEFAULT_CROSSFADE_MILLIS = 200
 
+/**
+ * If enabled, crossfade animation will be applied not only between placeholder and the loaded image,
+ * but also between consecutive images (i.e., when a new image is requested after a previous one has been successfully loaded).
+ * This allows for smooth transitions between images, rather than an abrupt replacement or only placeholder→image crossfade.
+ *
+ * Note: The [crossfade] option must also be enabled for crossfadeBetweenImages to take effect.
+ * If [crossfade] is not enabled, this option will have no effect.
+ *
+ * Also note: If a placeholder is set, the crossfade will always occur between the placeholder and the result,
+ * so consecutive image crossfading may not be observable in that scenario.
+ */
 fun ImageRequest.Builder.crossfadeBetweenImages(enable: Boolean) = apply {
     extras[crossfadeBetweenImagesKey] = enable
 }
