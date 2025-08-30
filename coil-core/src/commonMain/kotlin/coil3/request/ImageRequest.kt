@@ -25,6 +25,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 import okio.FileSystem
+import okio.Timeout
 
 /**
  * An immutable value object that represents a request for an image.
@@ -104,6 +105,9 @@ class ImageRequest private constructor(
 
     /** @see Builder.extras */
     val extras: Extras,
+
+    /** @see Builder.timeout */
+    val timeout: Long?,
 
     /** The raw values set on [Builder]. */
     val defined: Defined,
@@ -332,6 +336,8 @@ class ImageRequest private constructor(
         private var scale: Scale?
         private var precision: Precision?
         private var lazyExtras: Any
+        private var timeout:Long?
+
         val extras: Extras.Builder
             get() = when (val extras = lazyExtras) {
                 is Extras.Builder -> extras
@@ -365,6 +371,7 @@ class ImageRequest private constructor(
             scale = null
             precision = null
             lazyExtras = Extras.EMPTY
+            timeout = null
         }
 
         @JvmOverloads
@@ -394,6 +401,7 @@ class ImageRequest private constructor(
             scale = request.defined.scale
             precision = request.defined.precision
             lazyExtras = request.extras
+            timeout = request.timeout
         }
 
         /**
@@ -687,6 +695,14 @@ class ImageRequest private constructor(
         fun defaults(defaults: Defaults) = apply {
             this.defaults = defaults
         }
+        /**
+         * A timeout used to set a per-request time limit.
+         * If exceeded, an error image is displayed.
+         * timeout must be greater than 0
+         */
+        fun timeout(timeMillis: Long) = apply {
+            this.timeout = timeMillis
+        }
 
         /**
          * Create a new [ImageRequest].
@@ -741,6 +757,7 @@ class ImageRequest private constructor(
                     precision = precision,
                 ),
                 defaults = defaults,
+                timeout = timeout
             )
         }
     }

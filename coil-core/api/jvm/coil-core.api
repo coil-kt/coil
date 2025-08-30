@@ -528,7 +528,7 @@ public final class coil3/request/ErrorResult : coil3/request/ImageResult {
 }
 
 public final class coil3/request/ImageRequest {
-	public synthetic fun <init> (Lcoil3/PlatformContext;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcoil3/PlatformContext;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Ljava/lang/Long;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun error ()Lcoil3/Image;
 	public final fun fallback ()Lcoil3/Image;
@@ -558,6 +558,7 @@ public final class coil3/request/ImageRequest {
 	public final fun getScale ()Lcoil3/size/Scale;
 	public final fun getSizeResolver ()Lcoil3/size/SizeResolver;
 	public final fun getTarget ()Lcoil3/target/Target;
+	public final fun getTimeout ()Ljava/lang/Long;
 	public fun hashCode ()I
 	public final fun newBuilder ()Lcoil3/request/ImageRequest$Builder;
 	public final fun newBuilder (Lcoil3/PlatformContext;)Lcoil3/request/ImageRequest$Builder;
@@ -611,6 +612,7 @@ public final class coil3/request/ImageRequest$Builder {
 	public final fun target (Lcoil3/target/Target;)Lcoil3/request/ImageRequest$Builder;
 	public final fun target (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
 	public static synthetic fun target$default (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
+	public final fun timeout (J)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/request/ImageRequest$Defaults {
