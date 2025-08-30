@@ -105,13 +105,13 @@ class CrossfadeTransitionTest : RobolectricTest() {
 
     private inline fun createTransitionTarget(
         imageView: ImageView = ImageView(context),
-        crossinline onStart: (placeholder: Image?, crossfadeBetweenImages: Boolean) -> Unit = { _, _ -> fail() },
+        crossinline onStart: (placeholder: Image?) -> Unit = { fail() },
         crossinline onError: (error: Image?) -> Unit = { fail() },
-        crossinline onSuccess: (result: Image) -> Unit = { fail() },
+        crossinline onSuccess: (result: Image) -> Unit = { fail() }
     ) = object : TransitionTarget {
         override val view = imageView
         override val drawable: Drawable? get() = imageView.drawable
-        override fun onStart(placeholder: Image?, crossfadeBetweenImages: Boolean) = onStart(placeholder, crossfadeBetweenImages)
+        override fun onStart(placeholder: Image?) = onStart(placeholder)
         override fun onError(error: Image?) = onError(error)
         override fun onSuccess(result: Image) = onSuccess(result)
     }
