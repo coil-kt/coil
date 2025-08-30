@@ -36,11 +36,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 internal class RealImageLoader(
     val options: Options,
@@ -64,9 +66,8 @@ internal class RealImageLoader(
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.async(options.mainCoroutineContextLazy.value) {
-            execute(request, REQUEST_TYPE_ENQUEUE)
+            executeWithTimeout(request, REQUEST_TYPE_ENQUEUE)
         }
-
         // Update the current request attached to the view and return a new disposable.
         return getDisposable(request, job)
     }
@@ -74,15 +75,14 @@ internal class RealImageLoader(
     override suspend fun execute(request: ImageRequest): ImageResult {
         if (!needsExecuteOnMainDispatcher(request)) {
             // Fast path: skip dispatching.
-            return execute(request, REQUEST_TYPE_EXECUTE)
+            return scope.executeWithTimeout(request, REQUEST_TYPE_EXECUTE)
         } else {
             // Slow path: dispatch to the main thread.
             return coroutineScope {
                 // Start executing the request on the main thread.
                 val job = async(options.mainCoroutineContextLazy.value) {
-                    execute(request, REQUEST_TYPE_EXECUTE)
+                    executeWithTimeout(request, REQUEST_TYPE_EXECUTE)
                 }
-
                 // Update the current request attached to the view and await the result.
                 getDisposable(request, job).job.await()
             }
@@ -161,6 +161,20 @@ internal class RealImageLoader(
         } finally {
             requestDelegate.complete()
         }
+    }
+
+    private suspend fun CoroutineScope.executeWithTimeout(request: ImageRequest, type: Int): ImageResult {
+        return request.timeout?.let {
+            require(it > 0) { "Timeout $it must be positive." }
+            try {
+                withTimeout(it) {
+                    execute(request, type)
+                }
+            } catch (e: TimeoutCancellationException) {
+                cancel()
+                ErrorResult(request, e)
+            }
+        }?: execute(request, type)
     }
 
     override fun shutdown() {
