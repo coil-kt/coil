@@ -36,4 +36,3 @@ val Extras.Key.Companion.useExistingImageAsPlaceholder: Extras.Key<Boolean>
     get() = useExistingImageAsPlaceholderKey
 
 private val useExistingImageAsPlaceholderKey = Extras.Key(default = false)
-
