@@ -26,7 +26,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
      */
     abstract override var drawable: Drawable?
 
-    override fun onStart(placeholder: Image?, crossfadeBetweenImages: Boolean) = updateImage(placeholder, crossfadeBetweenImages)
+    override fun onStart(placeholder: Image?) = updateImage(placeholder)
 
     override fun onError(error: Image?) = updateImage(error)
 
@@ -43,12 +43,8 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
     }
 
     /** Replace the [ImageView]'s current image with [image]. */
-    protected fun updateImage(image: Image?, crossfadeBetweenImages: Boolean = false) {
-        var drawable = image?.asDrawable(view.resources)
-        if (drawable == null && crossfadeBetweenImages) {
-            drawable = this.drawable
-        }
-
+    protected fun updateImage(image: Image?) {
+        val drawable = image?.asDrawable(view.resources)
         (this.drawable as? Animatable)?.stop()
         this.drawable = drawable
         updateAnimation()

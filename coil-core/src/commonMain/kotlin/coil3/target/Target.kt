@@ -10,7 +10,7 @@ interface Target {
     /**
      * Called when the request starts.
      */
-    fun onStart(placeholder: Image?, crossfadeBetweenImages: Boolean = false) {}
+    fun onStart(placeholder: Image?) {}
 
     /**
      * Called if an error occurs while executing the request.

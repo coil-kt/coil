@@ -19,7 +19,6 @@ import coil3.request.NullRequestData
 import coil3.request.NullRequestDataException
 import coil3.request.RequestService
 import coil3.request.SuccessResult
-import coil3.request.crossfadeBetweenImages
 import coil3.target.Target
 import coil3.util.ErrorResult
 import coil3.util.FetcherServiceLoaderTarget
@@ -120,10 +119,7 @@ internal class RealImageLoader(
 
             // Set the placeholder on the target.
             val cachedPlaceholder = request.placeholderMemoryCacheKey?.let { memoryCache?.get(it)?.image }
-            request.target?.onStart(
-                placeholder = cachedPlaceholder ?: request.placeholder(),
-                crossfadeBetweenImages = request.crossfadeBetweenImages,
-            )
+            request.target?.onStart(placeholder = cachedPlaceholder ?: request.placeholder())
             eventListener.onStart(request)
             request.listener?.onStart(request)
 

@@ -407,11 +407,11 @@ class ImageRequest private constructor(
          * Convenience function to create and set the [Target].
          */
         inline fun target(
-            crossinline onStart: (placeholder: Image?, crossfadeBetweenImages: Boolean) -> Unit = { _, _ -> },
+            crossinline onStart: (placeholder: Image?) -> Unit = {},
             crossinline onError: (error: Image?) -> Unit = {},
             crossinline onSuccess: (result: Image) -> Unit = {},
         ) = target(object : Target {
-            override fun onStart(placeholder: Image?, crossfadeBetweenImages: Boolean) = onStart(placeholder, crossfadeBetweenImages)
+            override fun onStart(placeholder: Image?) = onStart(placeholder)
             override fun onError(error: Image?) = onError(error)
             override fun onSuccess(result: Image) = onSuccess(result)
         })
