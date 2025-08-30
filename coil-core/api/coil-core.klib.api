@@ -250,7 +250,7 @@ abstract interface coil3.request/Disposable { // coil3.request/Disposable|null[0
 
 abstract interface coil3.target/Target { // coil3.target/Target|null[0]
     open fun onError(coil3/Image?) // coil3.target/Target.onError|onError(coil3.Image?){}[0]
-    open fun onStart(coil3/Image?, kotlin/Boolean = ...) // coil3.target/Target.onStart|onStart(coil3.Image?;kotlin.Boolean){}[0]
+    open fun onStart(coil3/Image?) // coil3.target/Target.onStart|onStart(coil3.Image?){}[0]
     open fun onSuccess(coil3/Image) // coil3.target/Target.onSuccess|onSuccess(coil3.Image){}[0]
 }
 
@@ -644,7 +644,7 @@ final class coil3.request/ImageRequest { // coil3.request/ImageRequest|null[0]
         final fun target(coil3.target/Target?): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(coil3.target.Target?){}[0]
         final inline fun <#A2: reified kotlin/Any> fetcherFactory(coil3.fetch/Fetcher.Factory<#A2>): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.fetcherFactory|fetcherFactory(coil3.fetch.Fetcher.Factory<0:0>){0§<kotlin.Any>}[0]
         final inline fun listener(crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3.request/ImageRequest, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/ErrorResult, kotlin/Unit> = ..., crossinline kotlin/Function2<coil3.request/ImageRequest, coil3.request/SuccessResult, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.listener|listener(kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function1<coil3.request.ImageRequest,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.ErrorResult,kotlin.Unit>;kotlin.Function2<coil3.request.ImageRequest,coil3.request.SuccessResult,kotlin.Unit>){}[0]
-        final inline fun target(crossinline kotlin/Function2<coil3/Image?, kotlin/Boolean, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(kotlin.Function2<coil3.Image?,kotlin.Boolean,kotlin.Unit>;kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image,kotlin.Unit>){}[0]
+        final inline fun target(crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image?, kotlin/Unit> = ..., crossinline kotlin/Function1<coil3/Image, kotlin/Unit> = ...): coil3.request/ImageRequest.Builder // coil3.request/ImageRequest.Builder.target|target(kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image?,kotlin.Unit>;kotlin.Function1<coil3.Image,kotlin.Unit>){}[0]
     }
 
     final class Defaults { // coil3.request/ImageRequest.Defaults|null[0]
@@ -1010,10 +1010,6 @@ final val coil3.request/allowConversionToBitmap // coil3.request/allowConversion
     final fun (coil3.request/ImageRequest).<get-allowConversionToBitmap>(): kotlin/Boolean // coil3.request/allowConversionToBitmap.<get-allowConversionToBitmap>|<get-allowConversionToBitmap>@coil3.request.ImageRequest(){}[0]
 final val coil3.request/allowConversionToBitmap // coil3.request/allowConversionToBitmap|@coil3.request.Options{}allowConversionToBitmap[0]
     final fun (coil3.request/Options).<get-allowConversionToBitmap>(): kotlin/Boolean // coil3.request/allowConversionToBitmap.<get-allowConversionToBitmap>|<get-allowConversionToBitmap>@coil3.request.Options(){}[0]
-final val coil3.request/crossfadeBetweenImages // coil3.request/crossfadeBetweenImages|@coil3.Extras.Key.Companion{}crossfadeBetweenImages[0]
-    final fun (coil3/Extras.Key.Companion).<get-crossfadeBetweenImages>(): coil3/Extras.Key<kotlin/Boolean> // coil3.request/crossfadeBetweenImages.<get-crossfadeBetweenImages>|<get-crossfadeBetweenImages>@coil3.Extras.Key.Companion(){}[0]
-final val coil3.request/crossfadeBetweenImages // coil3.request/crossfadeBetweenImages|@coil3.request.ImageRequest{}crossfadeBetweenImages[0]
-    final fun (coil3.request/ImageRequest).<get-crossfadeBetweenImages>(): kotlin/Boolean // coil3.request/crossfadeBetweenImages.<get-crossfadeBetweenImages>|<get-crossfadeBetweenImages>@coil3.request.ImageRequest(){}[0]
 final val coil3.request/crossfadeMillis // coil3.request/crossfadeMillis|@coil3.request.ImageRequest{}crossfadeMillis[0]
     final fun (coil3.request/ImageRequest).<get-crossfadeMillis>(): kotlin/Int // coil3.request/crossfadeMillis.<get-crossfadeMillis>|<get-crossfadeMillis>@coil3.request.ImageRequest(){}[0]
 final val coil3.request/maxBitmapSize // coil3.request/maxBitmapSize|@coil3.Extras.Key.Companion{}maxBitmapSize[0]
@@ -1039,7 +1035,6 @@ final fun (coil3.request/ImageRequest.Builder).coil3.request/addLastModifiedToFi
 final fun (coil3.request/ImageRequest.Builder).coil3.request/allowConversionToBitmap(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/allowConversionToBitmap|allowConversionToBitmap@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfade(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.request/crossfade|crossfade@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
-final fun (coil3.request/ImageRequest.Builder).coil3.request/crossfadeBetweenImages(kotlin/Boolean): coil3.request/ImageRequest.Builder // coil3.request/crossfadeBetweenImages|crossfadeBetweenImages@coil3.request.ImageRequest.Builder(kotlin.Boolean){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/maxBitmapSize(coil3.size/Size): coil3.request/ImageRequest.Builder // coil3.request/maxBitmapSize|maxBitmapSize@coil3.request.ImageRequest.Builder(coil3.size.Size){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/transformations(kotlin.collections/List<coil3.transform/Transformation>): coil3.request/ImageRequest.Builder // coil3.request/transformations|transformations@coil3.request.ImageRequest.Builder(kotlin.collections.List<coil3.transform.Transformation>){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.request/transformations(kotlin/Array<out coil3.transform/Transformation>...): coil3.request/ImageRequest.Builder // coil3.request/transformations|transformations@coil3.request.ImageRequest.Builder(kotlin.Array<out|coil3.transform.Transformation>...){}[0]
@@ -1052,7 +1047,6 @@ final fun (coil3/ImageLoader.Builder).coil3.request/addLastModifiedToFileCacheKe
 final fun (coil3/ImageLoader.Builder).coil3.request/allowConversionToBitmap(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/allowConversionToBitmap|allowConversionToBitmap@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/crossfade(kotlin/Int): coil3/ImageLoader.Builder // coil3.request/crossfade|crossfade@coil3.ImageLoader.Builder(kotlin.Int){}[0]
-final fun (coil3/ImageLoader.Builder).coil3.request/crossfadeBetweenImages(kotlin/Boolean): coil3/ImageLoader.Builder // coil3.request/crossfadeBetweenImages|crossfadeBetweenImages@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (coil3/ImageLoader.Builder).coil3.request/maxBitmapSize(coil3.size/Size): coil3/ImageLoader.Builder // coil3.request/maxBitmapSize|maxBitmapSize@coil3.ImageLoader.Builder(coil3.size.Size){}[0]
 final fun (coil3/ImageLoader.Builder).coil3/serviceLoaderEnabled(kotlin/Boolean): coil3/ImageLoader.Builder // coil3/serviceLoaderEnabled|serviceLoaderEnabled@coil3.ImageLoader.Builder(kotlin.Boolean){}[0]
 final fun (kotlin/String).coil3/toUri(kotlin/String = ...): coil3/Uri // coil3/toUri|toUri@kotlin.String(kotlin.String){}[0]

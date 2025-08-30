@@ -609,8 +609,8 @@ public final class coil3/request/ImageRequest$Builder {
 	public final fun size (Lcoil3/size/Size;)Lcoil3/request/ImageRequest$Builder;
 	public final fun size (Lcoil3/size/SizeResolver;)Lcoil3/request/ImageRequest$Builder;
 	public final fun target (Lcoil3/target/Target;)Lcoil3/request/ImageRequest$Builder;
-	public final fun target (Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
-	public static synthetic fun target$default (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
+	public final fun target (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
+	public static synthetic fun target$default (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/request/ImageRequest$Defaults {
@@ -681,16 +681,12 @@ public final class coil3/request/ImageRequestsKt {
 	public static final fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun crossfade (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun crossfade (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
-	public static final fun crossfadeBetweenImages (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
-	public static final fun crossfadeBetweenImages (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAddLastModifiedToFileCacheKey (Lcoil3/request/Options;)Z
 	public static final fun getAllowConversionToBitmap (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAllowConversionToBitmap (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAllowConversionToBitmap (Lcoil3/request/Options;)Z
-	public static final fun getCrossfadeBetweenImages (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
-	public static final fun getCrossfadeBetweenImages (Lcoil3/request/ImageRequest;)Z
 	public static final fun getMaxBitmapSize (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getMaxBitmapSize (Lcoil3/request/ImageRequest;)Lcoil3/size/Size;
 	public static final fun getMaxBitmapSize (Lcoil3/request/Options;)Lcoil3/size/Size;
@@ -847,8 +843,7 @@ public final class coil3/size/SizeResolverKt {
 
 public abstract interface class coil3/target/Target {
 	public fun onError (Lcoil3/Image;)V
-	public fun onStart (Lcoil3/Image;Z)V
-	public static synthetic fun onStart$default (Lcoil3/target/Target;Lcoil3/Image;ZILjava/lang/Object;)V
+	public fun onStart (Lcoil3/Image;)V
 	public fun onSuccess (Lcoil3/Image;)V
 }
 
