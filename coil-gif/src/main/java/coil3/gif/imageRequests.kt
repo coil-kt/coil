@@ -61,12 +61,15 @@ fun ImageRequest.Builder.animatedTransformation(
     extras[animatedTransformationKey] = animatedTransformation
 }
 
+@ExperimentalCoilApi
 val ImageRequest.animatedTransformation: AnimatedTransformation?
     get() = getExtra(animatedTransformationKey)
 
+@ExperimentalCoilApi
 val Options.animatedTransformation: AnimatedTransformation?
     get() = getExtra(animatedTransformationKey)
 
+@ExperimentalCoilApi
 val Extras.Key.Companion.animatedTransformation: Extras.Key<AnimatedTransformation?>
     get() = animatedTransformationKey
 
