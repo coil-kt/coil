@@ -25,7 +25,7 @@ screenshot = "com.android.compose.screenshot:0.0.1-alpha11"
 spotless = "com.diffplug.spotless:7.2.1"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.12.2"
+gradlePlugin-android = "com.android.tools.build:gradle:8.13.0"
 gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
