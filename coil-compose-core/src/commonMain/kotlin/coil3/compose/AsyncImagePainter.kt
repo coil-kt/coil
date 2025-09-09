@@ -278,8 +278,8 @@ class AsyncImagePainter internal constructor(
             .target(
                 onStart = { placeholder ->
                     var painter = placeholder?.asPainter(request.context, filterQuality)
-                    if (request.useExistingImageAsPlaceholder && painter == null && this.painter != null) {
-                        painter = this.painter
+                    if (painter == null && request.useExistingImageAsPlaceholder) {
+                        this.painter?.let { painter = it }
                     }
                     updateState(State.Loading(painter))
                 },
