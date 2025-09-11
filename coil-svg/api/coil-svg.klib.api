@@ -113,8 +113,6 @@ final class coil3.svg/SvgImage : coil3/Image { // coil3.svg/SvgImage|null[0]
     final fun draw(org.jetbrains.skia/Canvas) // coil3.svg/SvgImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
 }
 
-final val coil3.svg.internal/initHook // coil3.svg.internal/initHook|{}initHook[0]
-    final fun <get-initHook>(): kotlin/Any // coil3.svg.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
 final val coil3.svg/height // coil3.svg/height|@coil3.svg.Svg.ViewBox{}height[0]
     final fun (coil3.svg/Svg.ViewBox).<get-height>(): kotlin/Float // coil3.svg/height.<get-height>|<get-height>@coil3.svg.Svg.ViewBox(){}[0]
 final val coil3.svg/width // coil3.svg/width|@coil3.svg.Svg.ViewBox{}width[0]
