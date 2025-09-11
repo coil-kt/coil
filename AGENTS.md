@@ -9,7 +9,7 @@
 ## Build, Test, and Development Commands
 - `./gradlew build`: Compile all modules and assemble artifacts.
 - `./gradlew check`: Run unit tests and verification tasks.
-- `./gradlew apiCheck`: Validate public API (binary compatibility).
+- `./gradlew checkLegacyAbi`: Validate public API (binary compatibility).
 - `./gradlew spotlessApply` / `spotlessCheck`: Format or verify Kotlin/KTS style.
 - `./test.sh`: CI-equivalent suite (API, unit, connected, screenshot tests).
 - Screenshot tests: `./verify_screenshot_tests.sh` to verify; `./record_screenshot_tests.sh` to update snapshots.
@@ -30,7 +30,7 @@
 ## Commit & Pull Request Guidelines
 - Commits: imperative mood; prefer Conventional Commits (e.g., `feat:`, `fix:`, `chore(deps):`). Reference issues/PRs when relevant.
 - PRs: clear description, linked issues, and screenshots/GIFs for UI-visible changes.
-- Before opening a PR: run `./test.sh`, ensure `spotlessCheck` passes, and run `apiCheck` for public API changes.
+- Before opening a PR: run `./test.sh`, ensure `spotlessCheck` passes, and run `checkLegacyAbi` for public API changes.
 
 ## Security & Configuration Tips
 - Use JDK 17 (`JAVA_VERSION=17`) to match CI.

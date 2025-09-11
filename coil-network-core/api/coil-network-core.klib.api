@@ -78,7 +78,6 @@ final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.net
 final class coil3.network/NetworkFetcher : coil3.fetch/Fetcher { // coil3.network/NetworkFetcher|null[0]
     constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker){}[0]
 
-    final fun getMimeType(kotlin/String, kotlin/String?): kotlin/String? // coil3.network/NetworkFetcher.getMimeType|getMimeType(kotlin.String;kotlin.String?){}[0]
     final suspend fun fetch(): coil3.fetch/FetchResult // coil3.network/NetworkFetcher.fetch|fetch(){}[0]
 
     final class Factory : coil3.fetch/Fetcher.Factory<coil3/Uri> { // coil3.network/NetworkFetcher.Factory|null[0]
@@ -155,11 +154,6 @@ final class coil3.network/NetworkResponse { // coil3.network/NetworkResponse|nul
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.network/NetworkResponse.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.network/NetworkResponse.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.network/NetworkResponse.toString|toString(){}[0]
-}
-
-final object coil3.network/CacheNetworkResponse { // coil3.network/CacheNetworkResponse|null[0]
-    final fun readFrom(okio/BufferedSource): coil3.network/NetworkResponse // coil3.network/CacheNetworkResponse.readFrom|readFrom(okio.BufferedSource){}[0]
-    final fun writeTo(coil3.network/NetworkResponse, okio/BufferedSink) // coil3.network/CacheNetworkResponse.writeTo|writeTo(coil3.network.NetworkResponse;okio.BufferedSink){}[0]
 }
 
 final val coil3.network/httpBody // coil3.network/httpBody|@coil3.Extras.Key.Companion{}httpBody[0]
