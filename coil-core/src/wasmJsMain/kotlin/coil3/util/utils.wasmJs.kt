@@ -4,6 +4,7 @@ import kotlin.js.JsAny
 import kotlin.js.JsReference
 import kotlin.js.toJsReference
 
+@OptIn(ExperimentalWasmJsInterop::class)
 internal actual class WeakReference<T : Any> actual constructor(referred: T) {
     private var reference: WeakRef? = WeakRef(referred.toJsReference())
 
@@ -19,6 +20,7 @@ internal actual class WeakReference<T : Any> actual constructor(referred: T) {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef
+@OptIn(ExperimentalWasmJsInterop::class)
 private external class WeakRef(target: JsAny) {
     fun deref(): JsAny?
 }
