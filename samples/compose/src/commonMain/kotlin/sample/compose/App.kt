@@ -5,7 +5,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -45,6 +46,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import coil3.util.component1
 import coil3.util.component2
 import io.coil_kt.coil3.compose.generated.resources.Res
@@ -197,16 +199,19 @@ private fun DetailScreen(
     screen: Screen.Detail,
     padding: PaddingValues,
 ) {
+    val context = LocalPlatformContext.current
     AsyncImage(
-        model = ImageRequest.Builder(LocalPlatformContext.current)
-            .data(screen.image.uri)
-            .placeholderMemoryCacheKey(screen.placeholder)
-            .extras(screen.image.extras)
-            .build(),
+        model = remember(context) {
+            ImageRequest.Builder(context)
+                .data("https://private-user-images.githubusercontent.com/52178347/488108718-11297c9a-f667-4650-ad3c-c89da6d644ac.jpg")
+                .size(1000)
+                .crossfade(true)
+                .build()
+        },
         contentDescription = null,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
+        modifier = Modifier.fillMaxHeight(),
+        filterQuality = FilterQuality.High,
+        contentScale = ContentScale.Fit,
     )
 }
 
@@ -231,7 +236,7 @@ private fun ListScreen(
                     start = padding.calculateStartPadding(layoutDirection),
                     top = padding.calculateTopPadding(),
                     end = padding.calculateEndPadding(layoutDirection),
-                )
+                ),
             )
             .testTag("list"),
     ) {
