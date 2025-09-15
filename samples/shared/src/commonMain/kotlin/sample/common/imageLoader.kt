@@ -29,7 +29,10 @@ fun newImageLoader(
                 logger(DebugLogger())
             }
         }
+        .platformSpecificConfig()
         .build()
 }
+
+internal expect fun ImageLoader.Builder.platformSpecificConfig():ImageLoader.Builder
 
 internal expect fun newDiskCache(): DiskCache?
