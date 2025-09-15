@@ -58,7 +58,7 @@ class NetworkFetcher(
                 // Return the image from the disk cache if the cache strategy agrees.
                 cacheResponse = snapshot.toNetworkResponseOrNull()
                 if (cacheResponse != null) {
-                    throwIfFailedResponseCode(cacheResponse)
+                    throwIfFailureResponseCode(cacheResponse)
 
                     readResult = cacheStrategy.value.read(cacheResponse, newRequest(), options)
                     if (readResult.response != null) {
@@ -83,7 +83,7 @@ class NetworkFetcher(
                 // Write the response to the disk cache then open a new snapshot.
                 snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, networkResponse)
 
-                throwIfFailedResponseCode(networkResponse)
+                throwIfFailureResponseCode(networkResponse)
 
                 if (snapshot != null) {
                     cacheResponse = snapshot!!.toNetworkResponseOrNull()
@@ -126,7 +126,7 @@ class NetworkFetcher(
         }
     }
 
-    private fun throwIfFailedResponseCode(networkResponse: NetworkResponse) {
+    private fun throwIfFailureResponseCode(networkResponse: NetworkResponse) {
         // Throw if the network response returns a non-200 (or 304) response.
         if (networkResponse.code !in 200 until 300 &&
             networkResponse.code != HTTP_RESPONSE_NOT_MODIFIED
