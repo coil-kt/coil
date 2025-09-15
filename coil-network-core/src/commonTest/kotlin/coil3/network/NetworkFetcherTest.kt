@@ -152,6 +152,54 @@ class NetworkFetcherTest : RobolectricTest() {
         fileSystem.checkNoOpenFiles()
     }
 
+    @Test
+    fun cached404ResponseThrows() = runTestAsync {
+        val url = "https://example.com/cached-404.jpg"
+
+        val fileSystem = FakeFileSystem()
+        val diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
+            .build()
+
+        // Pre-populate the disk cache with a cached 404 response.
+        val editor = diskCache.openEditor(url)!!
+        fileSystem.write(editor.metadata) {
+            CacheNetworkResponse.writeTo(NetworkResponse(code = 404), this)
+        }
+
+        // Write some data as well to ensure it's a complete entry.
+        fileSystem.write(editor.data) {
+            write(ByteArray(32))
+        }
+        editor.commit()
+
+        val networkClient = FakeNetworkClient(
+            respond = {
+                // Should not be invoked since we throw on cached 404 before network.
+                NetworkResponse(
+                    body = NetworkResponseBody(Buffer().apply { write(ByteArray(1)) }),
+                )
+            },
+        )
+
+        val fetcher = NetworkFetcher(
+            url = url,
+            options = Options(context),
+            networkClient = lazyOf(networkClient),
+            diskCache = lazyOf(diskCache),
+            cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
+            connectivityChecker = ConnectivityChecker.ONLINE,
+        )
+
+        assertFailsWith<HttpException> { fetcher.fetch() }
+        assertEquals(0, networkClient.requests.size)
+
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
+    }
+
     class FakeNetworkClient(
         private val respond: suspend (NetworkRequest) -> NetworkResponse,
     ) : NetworkClient {
