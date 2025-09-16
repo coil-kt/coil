@@ -12,7 +12,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko)
+addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
 androidLibrary(name = "coil3.test.composeuimultiplatform")
 
 kotlin {

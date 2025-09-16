@@ -12,7 +12,7 @@ plugins {
     id("androidx.baselineprofile")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko)
+addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
 androidLibrary(name = "coil3.compose.core") {
     dependencies {
         // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
