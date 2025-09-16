@@ -7,7 +7,7 @@ import kotlinx.browser.document
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     document.title = Title
-    ComposeViewport("ComposeTarget") {
+    ComposeViewport {
         App()
     }
 }
