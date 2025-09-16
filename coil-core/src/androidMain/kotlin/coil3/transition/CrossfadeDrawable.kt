@@ -115,6 +115,13 @@ class CrossfadeDrawable @JvmOverloads constructor(
         maxAlpha = alpha
     }
 
+    override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
+        val superChanged = super.setVisible(visible, restart)
+        val changedStart = start?.setVisible(visible, restart) == true
+        val changedEnd = end?.setVisible(visible, restart) == true
+        return superChanged || changedStart || changedEnd
+    }
+
     @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {

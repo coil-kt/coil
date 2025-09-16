@@ -117,6 +117,8 @@ SPLcoil3/ImageLoader$Builder;->build()Lcoil3/ImageLoader;
 SPLcoil3/ImageLoader$Builder;->diskCache(Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
 SPLcoil3/ImageLoader$Builder;->getExtras()Lcoil3/Extras$Builder;
 SPLcoil3/ImageLoader$Builder;->memoryCache(Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
+Lcoil3/ImageLoader$Builder$$ExternalSyntheticLambda0;
+SPLcoil3/ImageLoader$Builder$$ExternalSyntheticLambda0;-><init>()V
 Lcoil3/ImageLoadersKt;
 SPLcoil3/ImageLoadersKt;-><clinit>()V
 SPLcoil3/ImageLoadersKt;->getServiceLoaderEnabled(Lcoil3/RealImageLoader$Options;)Z
@@ -125,6 +127,7 @@ SPLcoil3/ImageLoaders_androidKt;-><clinit>()V
 SPLcoil3/ImageLoaders_androidKt;->getBitmapFactoryExifOrientationStrategy(Lcoil3/RealImageLoader$Options;)Lcoil3/decode/ExifOrientationStrategy;
 SPLcoil3/ImageLoaders_androidKt;->getBitmapFactoryMaxParallelism(Lcoil3/RealImageLoader$Options;)I
 SPLcoil3/ImageLoaders_androidKt;->getImageDecoderEnabled(Lcoil3/RealImageLoader$Options;)Z
+SPLcoil3/ImageLoaders_androidKt;->getMemoryCacheMaxSizePercentWhileInBackground(Lcoil3/RealImageLoader$Options;)D
 Lcoil3/Image_androidKt;
 SPLcoil3/Image_androidKt;->asImage$default(Landroid/graphics/Bitmap;ZILjava/lang/Object;)Lcoil3/BitmapImage;
 SPLcoil3/Image_androidKt;->asImage(Landroid/graphics/Bitmap;Z)Lcoil3/BitmapImage;
@@ -141,7 +144,7 @@ SPLcoil3/RealImageLoader;->getMemoryCache()Lcoil3/memory/MemoryCache;
 SPLcoil3/RealImageLoader;->getOptions()Lcoil3/RealImageLoader$Options;
 SPLcoil3/RealImageLoader;->onSuccess(Lcoil3/request/SuccessResult;Lcoil3/target/Target;Lcoil3/EventListener;)V
 Lcoil3/RealImageLoader$Options;
-SPLcoil3/RealImageLoader$Options;-><init>(Landroid/content/Context;Lcoil3/request/ImageRequest$Defaults;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/EventListener$Factory;Lcoil3/ComponentRegistry;Lcoil3/util/Logger;)V
+SPLcoil3/RealImageLoader$Options;-><init>(Landroid/content/Context;Lcoil3/request/ImageRequest$Defaults;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/EventListener$Factory;Lcoil3/ComponentRegistry;Lcoil3/util/Logger;)V
 SPLcoil3/RealImageLoader$Options;->getApplication()Landroid/content/Context;
 SPLcoil3/RealImageLoader$Options;->getComponentRegistry()Lcoil3/ComponentRegistry;
 SPLcoil3/RealImageLoader$Options;->getDefaults()Lcoil3/request/ImageRequest$Defaults;
@@ -402,7 +405,7 @@ SPLcoil3/intercept/EngineInterceptor;->access$getSystemCallbacks$p(Lcoil3/interc
 SPLcoil3/intercept/EngineInterceptor;->decode(Lcoil3/fetch/SourceFetchResult;Lcoil3/ComponentRegistry;Lcoil3/request/ImageRequest;Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil3/intercept/EngineInterceptor;->execute(Lcoil3/request/ImageRequest;Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 SPLcoil3/intercept/EngineInterceptor;->fetch(Lcoil3/ComponentRegistry;Lcoil3/request/ImageRequest;Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-SPLcoil3/intercept/EngineInterceptor;->intercept(Lcoil3/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HSPLcoil3/intercept/EngineInterceptor;->intercept(Lcoil3/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Lcoil3/intercept/EngineInterceptor$Companion;
 SPLcoil3/intercept/EngineInterceptor$Companion;-><init>()V
 SPLcoil3/intercept/EngineInterceptor$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -512,13 +515,14 @@ SPLcoil3/memory/RealMemoryCache;->set(Lcoil3/memory/MemoryCache$Key;Lcoil3/memor
 Lcoil3/memory/RealStrongMemoryCache;
 SPLcoil3/memory/RealStrongMemoryCache;-><init>(JLcoil3/memory/WeakMemoryCache;)V
 SPLcoil3/memory/RealStrongMemoryCache;->get(Lcoil3/memory/MemoryCache$Key;)Lcoil3/memory/MemoryCache$Value;
+SPLcoil3/memory/RealStrongMemoryCache;->getInitialMaxSize()J
 SPLcoil3/memory/RealStrongMemoryCache;->getMaxSize()J
 SPLcoil3/memory/RealStrongMemoryCache;->set(Lcoil3/memory/MemoryCache$Key;Lcoil3/Image;Ljava/util/Map;J)V
 Lcoil3/memory/RealStrongMemoryCache$InternalValue;
 SPLcoil3/memory/RealStrongMemoryCache$InternalValue;-><init>(Lcoil3/Image;Ljava/util/Map;J)V
 SPLcoil3/memory/RealStrongMemoryCache$InternalValue;->getSize()J
 Lcoil3/memory/RealStrongMemoryCache$cache$1;
-SPLcoil3/memory/RealStrongMemoryCache$cache$1;-><init>(JLcoil3/memory/RealStrongMemoryCache;)V
+SPLcoil3/memory/RealStrongMemoryCache$cache$1;-><init>(Lcoil3/memory/RealStrongMemoryCache;J)V
 SPLcoil3/memory/RealStrongMemoryCache$cache$1;->sizeOf(Lcoil3/memory/MemoryCache$Key;Lcoil3/memory/RealStrongMemoryCache$InternalValue;)J
 SPLcoil3/memory/RealStrongMemoryCache$cache$1;->sizeOf(Ljava/lang/Object;Ljava/lang/Object;)J
 Lcoil3/memory/RealWeakMemoryCache;
@@ -761,10 +765,15 @@ Lcoil3/transition/TransitionTarget;
 Lcoil3/util/AndroidSystemCallbacks;
 SPLcoil3/util/AndroidSystemCallbacks;-><clinit>()V
 SPLcoil3/util/AndroidSystemCallbacks;-><init>(Lcoil3/RealImageLoader;)V
+SPLcoil3/util/AndroidSystemCallbacks;->getImageLoader()Ljava/lang/ref/WeakReference;
 SPLcoil3/util/AndroidSystemCallbacks;->registerMemoryPressureCallbacks()V
+Lcoil3/util/AndroidSystemCallbacks$ActivityCallbacks;
+SPLcoil3/util/AndroidSystemCallbacks$ActivityCallbacks;-><init>(Lcoil3/util/AndroidSystemCallbacks;Lcoil3/RealImageLoader;)V
 Lcoil3/util/AndroidSystemCallbacks$Companion;
 SPLcoil3/util/AndroidSystemCallbacks$Companion;-><init>()V
 SPLcoil3/util/AndroidSystemCallbacks$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+Lcoil3/util/AndroidSystemCallbacks$ComponentCallbacks;
+SPLcoil3/util/AndroidSystemCallbacks$ComponentCallbacks;-><init>(Lcoil3/util/AndroidSystemCallbacks;)V
 Lcoil3/util/BitmapsKt;
 SPLcoil3/util/BitmapsKt;->getAllocationByteCountCompat(Landroid/graphics/Bitmap;)I
 SPLcoil3/util/BitmapsKt;->isHardware(Landroid/graphics/Bitmap$Config;)Z
@@ -781,6 +790,7 @@ SPLcoil3/util/Coroutines_nonJsCommonKt;->ioCoroutineDispatcher()Lkotlinx/corouti
 Lcoil3/util/DecoderServiceLoaderTarget;
 Lcoil3/util/DecoderServiceLoaderTarget$-CC;
 SPLcoil3/util/DecoderServiceLoaderTarget$-CC;->$default$priority(Lcoil3/util/DecoderServiceLoaderTarget;)I
+Lcoil3/util/DefaultActivityLifecycleCallbacks;
 Lcoil3/util/FetcherServiceLoaderTarget;
 Lcoil3/util/FetcherServiceLoaderTarget$-CC;
 SPLcoil3/util/FetcherServiceLoaderTarget$-CC;->$default$priority(Lcoil3/util/FetcherServiceLoaderTarget;)I

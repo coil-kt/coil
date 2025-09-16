@@ -30,6 +30,58 @@ class Uri internal constructor(
     override fun toString(): String {
         return data
     }
+
+    fun newBuilder() = Builder(
+        scheme = scheme,
+        authority = authority,
+        path = path,
+        query = query,
+        fragment = fragment,
+        separator = separator,
+    )
+
+    class Builder internal constructor(
+        private var scheme: String?,
+        private var authority: String?,
+        private var path: String?,
+        private var query: String?,
+        private var fragment: String?,
+        private var separator: String,
+    ) {
+
+        fun scheme(scheme: String?) = apply {
+            this.scheme = scheme
+        }
+
+        fun authority(authority: String?) = apply {
+            this.authority = authority
+        }
+
+        fun path(path: String?) = apply {
+            this.path = path
+        }
+
+        fun query(query: String?) = apply {
+            this.query = query
+        }
+
+        fun fragment(fragment: String?) = apply {
+            this.fragment = fragment
+        }
+
+        fun separator(separator: String) = apply {
+            this.separator = separator
+        }
+
+        fun build() = Uri(
+            scheme = scheme,
+            authority = authority,
+            path = path,
+            query = query,
+            fragment = fragment,
+            separator = separator,
+        )
+    }
 }
 
 /**

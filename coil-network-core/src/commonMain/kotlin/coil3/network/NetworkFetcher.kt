@@ -69,14 +69,28 @@ class NetworkFetcher(
                 }
             }
 
+            // Prevent executing requests on the main thread that could block due to a
+            // networking operation.
+            if (options.networkCachePolicy.readEnabled) {
+                assertNotOnMainThread()
+            }
+
             // Slow path: fetch the image from the network.
             val networkRequest = readResult?.request ?: newRequest()
-            var fetchResult = executeNetworkRequest(networkRequest) { response ->
+            var fetchResult = networkClient.value.executeRequest(networkRequest) { networkResponse ->
                 // Write the response to the disk cache then open a new snapshot.
-                snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, response)
+                snapshot = writeToDiskCache(snapshot, cacheResponse, networkRequest, networkResponse)
+
+                // Throw if the network response returns a non-200 (or 304) response.
+                if (networkResponse.code !in 200 until 300 &&
+                    networkResponse.code != HTTP_RESPONSE_NOT_MODIFIED
+                ) {
+                    throw HttpException(networkResponse)
+                }
+
                 if (snapshot != null) {
                     cacheResponse = snapshot!!.toNetworkResponseOrNull()
-                    return@executeNetworkRequest SourceFetchResult(
+                    return@executeRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
                         dataSource = DataSource.NETWORK,
@@ -84,22 +98,22 @@ class NetworkFetcher(
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
-                val responseBody = response.requireBody().readBuffer()
+                val responseBody = networkResponse.requireBody().readBuffer()
                 if (responseBody.size > 0) {
-                    return@executeNetworkRequest SourceFetchResult(
+                    return@executeRequest SourceFetchResult(
                         source = responseBody.toImageSource(),
-                        mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
+                        mimeType = getMimeType(url, networkResponse.headers[CONTENT_TYPE]),
                         dataSource = DataSource.NETWORK,
                     )
                 }
 
-                return@executeNetworkRequest null
+                return@executeRequest null
             }
 
             // Fallback: if the response body is empty, execute a new network request without the
             // cache headers.
             if (fetchResult == null) {
-                fetchResult = executeNetworkRequest(newRequest()) { response ->
+                fetchResult = networkClient.value.executeRequest(newRequest()) { response ->
                     SourceFetchResult(
                         source = response.requireBody().toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
@@ -186,24 +200,6 @@ class NetworkFetcher(
             body = options.httpBody,
             extras = options.extras,
         )
-    }
-
-    private suspend fun <T> executeNetworkRequest(
-        request: NetworkRequest,
-        block: suspend (NetworkResponse) -> T,
-    ): T {
-        // Prevent executing requests on the main thread that could block due to a
-        // networking operation.
-        if (options.networkCachePolicy.readEnabled) {
-            assertNotOnMainThread()
-        }
-
-        return networkClient.value.executeRequest(request) { response ->
-            if (response.code !in 200 until 300 && response.code != HTTP_RESPONSE_NOT_MODIFIED) {
-                throw HttpException(response)
-            }
-            block(response)
-        }
     }
 
     /**

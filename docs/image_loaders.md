@@ -59,8 +59,8 @@ Each `ImageLoader` keeps a memory cache of recently decoded `Bitmap`s as well as
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     .memoryCache {
-        MemoryCache.Builder(context)
-            .maxSizePercent(0.25)
+        MemoryCache.Builder()
+            .maxSizePercent(context, 0.25)
             .build()
     }
     .diskCache {

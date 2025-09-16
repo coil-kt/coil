@@ -1,37 +1,37 @@
 [versions]
 androidx-activity = "1.10.1"
-androidx-benchmark = "1.3.4"
-androidx-lifecycle = "2.8.7"
+androidx-benchmark = "1.4.1"
+androidx-lifecycle = "2.9.3"
 androidx-tracing-perfetto = "1.0.0"
 atomicfu = "0.29.0"
 coroutines = "1.10.2"
 dokka = "2.0.0"
-jetbrains-compose = "1.8.2"
-kotlin = "2.2.0"
-ktlint = "1.4.1"
+jetbrains-compose = "1.9.0"
+kotlin = "2.2.20"
+ktlint = "1.6.0"
 ktor2 = "2.3.13"
 ktor3 = "3.1.0"
 okhttp = "4.12.0"
-okio = "3.15.0"
-paparazzi = "1.3.5"
-roborazzi = "1.45.1"
-skiko = "0.9.21"
+okio = "3.16.0"
+paparazzi = "2.0.0-alpha02"
+roborazzi = "1.50.0"
+skiko = "0.9.22.2"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
-binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.18.0"
-poko = "dev.drewhamilton.poko:0.19.0"
-screenshot = "com.android.compose.screenshot:0.0.1-alpha10"
-spotless = "com.diffplug.spotless:7.0.4"
+binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.18.1"
+poko = "dev.drewhamilton.poko:0.20.0"
+screenshot = "com.android.compose.screenshot:0.0.1-alpha11"
+spotless = "com.diffplug.spotless:7.2.1"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.11.0"
+gradlePlugin-android = "com.android.tools.build:gradle:8.13.0"
 gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.33.0"
+gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.34.0"
 gradlePlugin-paparazzi = { module = "app.cash.paparazzi:paparazzi-gradle-plugin", version.ref = "paparazzi" }
 gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
@@ -39,34 +39,32 @@ androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.1"
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.3.4"
+androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.1"
-androidx-core = "androidx.core:core-ktx:1.15.0"
+androidx-core = "androidx.core:core-ktx:1.16.0"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.4.1"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
 androidx-recyclerview = "androidx.recyclerview:recyclerview:1.4.0"
-androidx-test-core = "androidx.test:core-ktx:1.6.1"
-androidx-test-espresso = "androidx.test.espresso:espresso-core:3.6.1"
-androidx-test-junit = "androidx.test.ext:junit-ktx:1.2.1"
-androidx-test-rules = "androidx.test:rules:1.6.1"
-androidx-test-runner = "androidx.test:runner:1.6.2"
+androidx-test-core = "androidx.test:core-ktx:1.7.0"
+androidx-test-espresso = "androidx.test.espresso:espresso-core:3.7.0"
+androidx-test-junit = "androidx.test.ext:junit-ktx:1.3.0"
+androidx-test-rules = "androidx.test:rules:1.7.0"
+androidx-test-runner = "androidx.test:runner:1.7.0"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 androidx-tracing-perfetto = { module = "androidx.tracing:tracing-perfetto", version.ref = "androidx-tracing-perfetto" }
 androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "androidx-tracing-perfetto" }
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
 
-compose-material-icons-core = "org.jetbrains.compose.material:material-icons-core:1.7.3"
-
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
-google-material = "com.google.android.material:material:1.12.0"
+google-material = "com.google.android.material:material:1.13.0"
 google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.37.3"
 
 junit = "junit:junit:4.13.2"
@@ -75,7 +73,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
-kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.0"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.1"
 kotlinx-io-okio = "org.jetbrains.kotlinx:kotlinx-io-okio:0.8.0"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
 
@@ -92,7 +90,7 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 okio-core = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
-robolectric = "org.robolectric:robolectric:4.15.1"
+robolectric = "org.robolectric:robolectric:4.16"
 
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
@@ -115,6 +113,8 @@ test-android = [
     "okio-fakefilesystem",
 ]
 test-common = [
+    # https://kotlinlang.slack.com/archives/CDFP59223/p1734964013996149
+    "coroutines-core",
     "coroutines-test",
     "kotlin-test",
     "okio-fakefilesystem",

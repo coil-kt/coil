@@ -5,6 +5,7 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import coil3.Extras
+import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.getExtra
 import coil3.gif.AnimatedImageDecoder.Companion.ENCODED_LOOP_COUNT
@@ -19,6 +20,15 @@ import coil3.request.Options
  * @see AnimatedImageDrawable.setRepeatCount
  */
 fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
+    if (SDK_INT >= 28) {
+        require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
+    } else {
+        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+    }
+    extras[repeatCountKey] = repeatCount
+}
+
+fun ImageLoader.Builder.repeatCount(repeatCount: Int) = apply {
     if (SDK_INT >= 28) {
         require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
     } else {
@@ -51,12 +61,15 @@ fun ImageRequest.Builder.animatedTransformation(
     extras[animatedTransformationKey] = animatedTransformation
 }
 
+@ExperimentalCoilApi
 val ImageRequest.animatedTransformation: AnimatedTransformation?
     get() = getExtra(animatedTransformationKey)
 
+@ExperimentalCoilApi
 val Options.animatedTransformation: AnimatedTransformation?
     get() = getExtra(animatedTransformationKey)
 
+@ExperimentalCoilApi
 val Extras.Key.Companion.animatedTransformation: Extras.Key<AnimatedTransformation?>
     get() = animatedTransformationKey
 

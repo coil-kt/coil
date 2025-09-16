@@ -10,8 +10,10 @@ import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 buildscript {
     repositories {
@@ -90,6 +92,11 @@ allprojects {
         }
     }
 
+    // https://issuetracker.google.com/issues/411739086?pli=1
+    tasks.withType<AbstractTestTask>().configureEach {
+        failOnNoDiscoveredTests = false
+    }
+
     apply(plugin = "com.diffplug.spotless")
 
     val configureSpotless: SpotlessExtension.() -> Unit = {
@@ -139,6 +146,15 @@ allprojects {
     }
 
     applyOkioJsTestWorkaround()
+
+    // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
+    tasks.withType<KotlinJsTest>().configureEach {
+        nodeJsArgs.add("--require")
+        val skikoMjsWorkaround = rootProject.layout.projectDirectory
+            .file("gradle/nodejs/registerSkikoMjsWorkaround.cjs")
+            .asFile
+        nodeJsArgs.add(skikoMjsWorkaround.absolutePath)
+    }
 }
 
 private val ktlintRules = buildMap {
@@ -215,7 +231,7 @@ fun Project.applyOkioJsTestWorkaround() {
             sourceSets {
                 targets.configureEach {
                     compilations.configureEach {
-                        if (platformType == KotlinPlatformType.js && name == "test") {
+                        if ((platformType == js || platformType == wasm) && name == "test") {
                             tasks
                                 .getByName(compileKotlinTaskName)
                                 .dependsOn(applyNodePolyfillPlugin)
@@ -229,3 +245,5 @@ fun Project.applyOkioJsTestWorkaround() {
         }
     }
 }
+
+apply(from = rootProject.file("gradle/verifySkikoVersionsMatch.gradle.kts"))

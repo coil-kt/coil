@@ -11,8 +11,8 @@ import okio.BufferedSource
  * Represents an SVG with mutable properties.
  *
  * NOTE: This interface is provided to enable custom SVG parsing/rendering implementations, however
- * it intentionally only provides hooks for the properties Coil uses. Additionally, these classes
- * are very likely to change in the future.
+ * it intentionally only provides hooks for the properties [SvgDecoder] uses. Additionally, these
+ * classes are very likely to change in the future.
  */
 @ExperimentalCoilApi
 interface Svg {

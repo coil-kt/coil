@@ -17,3 +17,6 @@ imageLoader.enqueue(request)
 ```
 
 See the [API documentation](/coil/api/coil-core/coil3.request/-image-request/) for more information.
+
+!!! Notes
+    In Coil 3.x `ImageRequest`'s platform-specific functions (e.g. `ImageRequest.Builder.target(ImageView)`) are implemented as extension functions and need to be imported separately.

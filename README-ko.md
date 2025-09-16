@@ -14,8 +14,8 @@
 Compose 라이브러리와 [네트워킹 라이브러리](https://coil-kt.github.io/coil/network/)를 불러오세요. :
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 ```
 
 이미지를 로드하려면 `AsyncImage` Composable을 사용하세요. :
@@ -27,7 +27,7 @@ AsyncImage(
 )
 ```
 
-Coil의 [전체 문서는 여기에서](https://coil-kt.github.io/coil/getting_started/)에서 확인하세요.
+Coil의 [전체 문서는 여기](https://coil-kt.github.io/coil/getting_started/)에서 확인하세요.
 
 ## 라이선스
 

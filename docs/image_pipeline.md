@@ -100,6 +100,67 @@ Decoders read an `ImageSource` and return an `Image`. Use this interface to add 
 
 See [Decoder](/coil/api/coil-core/coil3.decode/-decoder) for more information.
 
+## Custom ImageLoader and ImageRequest properties
+
+Coil supports attaching custom data to `ImageRequest`s and `ImageLoader`s through their `Extras`. `Extras` are a map of extra properties that are referenced via an `Extras.Key`.
+
+For example, say we want to support a custom timeout for each `ImageRequest`. We could add custom extension functions for it like so:
+
+```kotlin
+fun ImageRequest.Builder.timeout(timeout: Duration) = apply {
+    extras[timeoutKey] = timeout
+}
+
+fun ImageLoader.Builder.timeout(timeout: Duration) = apply {
+    extras[timeoutKey] = timeout
+}
+
+val ImageRequest.timeout: Duration
+    get() = getExtra(timeoutKey)
+
+val Options.timeout: Duration
+    get() = getExtra(timeoutKey)
+
+// NOTE: Extras.Key instances should be declared statically as they're compared with instance equality.
+private val timeoutKey = Extras.Key(default = Duration.INFINITE)
+```
+
+Then we can read the property inside a custom `Interceptor` that we'll register in our `ImageLoader`:
+
+```kotlin
+class TimeoutInterceptor : Interceptor {
+    override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
+        val timeout = chain.request.timeout
+        if (timeout.isFinite()) {
+            return withTimeout(timeout) {
+                chain.proceed(chain.request)
+            }
+        } else {
+            return chain.proceed(chain.request)
+        }
+    }
+}
+```
+
+Finally, we can set the property when creating our `ImageRequest`:
+
+```kotlin
+AsyncImage(
+    model = ImageRequest.Builder(PlatformContext.current)
+        .data("https://example.com/image.jpg")
+        .timeout(10.seconds)
+        .build(),
+    contentDescription = null,
+)
+```
+
+Additionally:
+
+- We can set a default timeout value via the `ImageLoader.Builder.timeout` extension function we defined.
+- We can read the timeout inside `Mapper`s, `Fetcher`s, and `Decoder`s via the `Options.timeout` extension function we defined.
+
+[Coil uses this pattern itself](https://github.com/coil-kt/coil/blob/main/coil-gif/src/main/java/coil3/gif/imageRequests.kt) to support custom request properties for GIFs in `coil-gif` as well as other extension libraries.
+
 ## Chaining components
 
 A useful property of Coil's image loader components is that they can be chained internally. For example, say you need to perform a network request to get the image URL that will be loaded.

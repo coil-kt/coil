@@ -58,6 +58,7 @@ public final class coil3/gif/ImageRequestsKt {
 	public static final fun getRepeatCount (Lcoil3/request/Options;)I
 	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun repeatCount (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
 	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 }
 

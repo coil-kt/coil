@@ -9,15 +9,15 @@ An image loading library for [Android](https://www.android.com/) and [Compose Mu
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md)
+Translations: [日本語](README-ja.md), [한국어](README-ko.md), [Русский](README-ru.md), [Svenska](README-sv.md), [Türkçe](README-tr.md), [中文](README-zh.md), [پارسی](README-fa.md), [O'zbekcha](README-uz.md)
 
 ## Quick Start
 
 Import the Compose library and a [networking library](https://coil-kt.github.io/coil/network/):
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 ```
 
 To load an image, use the `AsyncImage` composable:

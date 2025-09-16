@@ -1,10 +1,8 @@
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
-import org.gradle.kotlin.dsl.withType
+import coil3.applyJvm11OnlyToJvmTarget
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.application")
@@ -57,7 +55,7 @@ kotlin {
 
     androidTarget()
 
-    jvm("desktop")
+    jvm()
 
     js {
         outputModuleName = "coilSample"
@@ -88,17 +86,18 @@ kotlin {
         target.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            binaryOption("bundleId", "coil3")
         }
     }
 
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.samples.shared)
                 implementation(projects.coilCompose)
+                implementation(projects.samples.shared)
                 implementation(compose.components.resources)
                 implementation(compose.material3)
-                implementation(libs.compose.material.icons.core)
+                implementation(compose.materialIconsExtended)
             }
         }
         androidMain {
@@ -107,7 +106,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
             }
         }
-        named("desktopMain") {
+        jvmMain {
             dependencies {
                 implementation(compose.desktop.currentOs)
             }
@@ -132,11 +131,5 @@ afterEvaluate {
     }
 }
 
-// Compose 1.8.0 requires JVM 11.
-tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-}
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions.jvmTarget = JvmTarget.JVM_11
-}
+// Compose 1.8.0 requires JVM 11 only for the JVM target.
+applyJvm11OnlyToJvmTarget()

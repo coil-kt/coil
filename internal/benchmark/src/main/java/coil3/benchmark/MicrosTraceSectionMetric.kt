@@ -1,14 +1,14 @@
 package coil3.benchmark
 
+import android.annotation.SuppressLint
 import androidx.benchmark.macro.ExperimentalMetricApi
 import androidx.benchmark.macro.TraceMetric
-import androidx.benchmark.perfetto.ExperimentalPerfettoTraceProcessorApi
-import androidx.benchmark.perfetto.PerfettoTraceProcessor
+import androidx.benchmark.traceprocessor.TraceProcessor
 
 /**
  * TraceSectionMetric to give average/sum in microseconds measurements.
  */
-@OptIn(ExperimentalMetricApi::class, ExperimentalPerfettoTraceProcessorApi::class)
+@OptIn(ExperimentalMetricApi::class)
 class MicrosTraceSectionMetric(
     private val sectionName: String,
     private vararg val mode: Mode,
@@ -21,10 +21,10 @@ class MicrosTraceSectionMetric(
         Average
     }
 
-    @Suppress("RestrictedApi")
+    @SuppressLint("RestrictedApi")
     override fun getMeasurements(
         captureInfo: CaptureInfo,
-        traceSession: PerfettoTraceProcessor.Session,
+        traceSession: TraceProcessor.Session,
     ): List<Measurement> {
         val slices = traceSession.querySlices(
             sectionName,

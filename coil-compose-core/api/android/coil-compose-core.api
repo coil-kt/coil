@@ -161,6 +161,13 @@ public final class coil3/compose/ImagePainter_androidKt {
 	public static synthetic fun asPainter-55t9-rM$default (Lcoil3/Image;Landroid/content/Context;IILjava/lang/Object;)Landroidx/compose/ui/graphics/painter/Painter;
 }
 
+public final class coil3/compose/ImageRequestsKt {
+	public static final fun getUseExistingImageAsPlaceholder (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getUseExistingImageAsPlaceholder (Lcoil3/request/ImageRequest;)Z
+	public static final fun useExistingImageAsPlaceholder (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun useExistingImageAsPlaceholder (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+}
+
 public final class coil3/compose/LocalAsyncImageModelEqualityDelegateKt {
 	public static final fun getLocalAsyncImageModelEqualityDelegate ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
