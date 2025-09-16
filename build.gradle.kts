@@ -7,12 +7,12 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 buildscript {
