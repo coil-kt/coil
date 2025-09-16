@@ -1,12 +1,13 @@
 package sample.compose
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.CanvasBasedWindow
-import org.jetbrains.skiko.wasm.onWasmReady
+import androidx.compose.ui.window.ComposeViewport
+import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
-fun main() = onWasmReady {
-    CanvasBasedWindow(Title) {
+fun main() {
+    document.title = Title
+    ComposeViewport("ComposeTarget") {
         App()
     }
 }

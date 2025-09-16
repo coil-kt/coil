@@ -7,12 +7,13 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 buildscript {
     repositories {
@@ -145,6 +146,15 @@ allprojects {
     }
 
     applyOkioJsTestWorkaround()
+
+    // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
+    tasks.withType<KotlinJsTest>().configureEach {
+        nodeJsArgs.add("--require")
+        val skikoMjsWorkaround = rootProject.layout.projectDirectory
+            .file("gradle/nodejs/registerSkikoMjsWorkaround.cjs")
+            .asFile
+        nodeJsArgs.add(skikoMjsWorkaround.absolutePath)
+    }
 }
 
 private val ktlintRules = buildMap {
