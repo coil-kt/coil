@@ -5,11 +5,9 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
-/**
- * Simple [TimeSource] that can be manually advanced for tests.
- */
-class FakeTimeSource(initial: Duration = ZERO) : TimeSource {
-    private var current: Duration = initial
+class FakeTimeSource(
+    private var current: Duration = ZERO,
+) : TimeSource {
 
     override fun markNow(): TimeMark {
         val start = current
