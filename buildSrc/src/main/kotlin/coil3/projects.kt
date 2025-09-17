@@ -17,6 +17,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -79,6 +80,10 @@ fun Project.setupDokka(
         dokkaSourceSets.configureEach {
             jdkVersion.set(8)
             skipDeprecated.set(true)
+
+            if (name == "jvmCommonMain") {
+                analysisPlatform.set(KotlinPlatform.JVM)
+            }
 
             externalDocumentationLinks.register("android") {
                 url.set(uri("https://developer.android.com/reference/"))
