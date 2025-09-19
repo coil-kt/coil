@@ -49,10 +49,9 @@ fun Project.addAllMultiplatformTargets(
             if (enableWasm) {
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
-                    val packagePrefix = "coil-root" + this@addAllMultiplatformTargets.path.replace(":", "-")
-                    val skikoDirProvider = this@addAllMultiplatformTargets.rootProject.layout
+                    val skikoDirProvider = rootProject.layout
                         .buildDirectory
-                        .dir("wasm/packages/${packagePrefix}-test/kotlin")
+                        .dir("wasm/packages/coil-root${path.replace(":", "-")}-test/kotlin")
                         .map { it.asFile }
 
                     browser {
