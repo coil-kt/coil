@@ -30,7 +30,11 @@ fun Project.addAllMultiplatformTargets(
             jvm()
 
             js {
-                browser()
+                browser {
+                    testTask {
+                        enabled = false
+                    }
+                }
                 nodejs {
                     testTask {
                         useMocha {
@@ -45,7 +49,11 @@ fun Project.addAllMultiplatformTargets(
             if (enableWasm) {
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
-                    // TODO: Fix wasm tests.
+                    val skikoDirProvider = rootProject.layout
+                        .buildDirectory
+                        .dir("wasm/packages/coil-root${path.replace(":", "-")}-test/kotlin")
+                        .map { it.asFile }
+
                     browser {
                         testTask {
                             enabled = false
@@ -53,7 +61,23 @@ fun Project.addAllMultiplatformTargets(
                     }
                     nodejs {
                         testTask {
-                            enabled = false
+                            enabled = true
+                            doFirst {
+                                val skikoModule = skikoDirProvider.get().resolve("skiko.mjs")
+                                if (skikoModule.isFile) {
+                                    // The generated Skiko module disables its Node-specific loader
+                                    // with `if (false)`. Rewrite it so the Node path runs and the
+                                    // tests can load `skiko.wasm`.
+                                    val original = skikoModule.readText()
+                                    val patched = original.replaceFirst(
+                                        "if (false) {",
+                                        "if (ENVIRONMENT_IS_NODE) {"
+                                    )
+                                    if (patched != original) {
+                                        skikoModule.writeText(patched)
+                                    }
+                                }
+                            }
                         }
                     }
                     binaries.executable()
