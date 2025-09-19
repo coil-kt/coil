@@ -99,12 +99,14 @@ class CrossfadePainter(
 
         val isStartSpecified = startSize.isSpecified
         val isEndSpecified = endSize.isSpecified
-        if (isStartSpecified && isEndSpecified) {
-            return Size(
-                width = maxOf(startSize.width, endSize.width),
-                height = maxOf(startSize.height, endSize.height),
-            )
+
+        if (isEndSpecified) {
+            return endSize
         }
+        if (isStartSpecified) {
+            return startSize
+        }
+
         if (preferExactIntrinsicSize) {
             if (isStartSpecified) return startSize
             if (isEndSpecified) return endSize
