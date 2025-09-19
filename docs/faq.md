@@ -103,8 +103,11 @@ Then depend on the same artifacts with [the latest snapshot version](https://git
 To use Proguard with Coil, add the following rules to your config:
 
 ```
--keep class * extends coil3.util.DecoderServiceLoaderTarget { *; }
--keep class * extends coil3.util.FetcherServiceLoaderTarget { *; }
+-keep class coil3.util.DecoderServiceLoaderTarget { *; }
+-keep class coil3.util.FetcherServiceLoaderTarget { *; }
+-keep class coil3.util.ServiceLoaderComponentRegistry { *; }
+-keep class * implements coil3.util.DecoderServiceLoaderTarget { *; }
+-keep class * implements coil3.util.FetcherServiceLoaderTarget { *; }
 ```
 
 You may also need to add custom rules for Ktor, OkHttp, and Coroutines.
