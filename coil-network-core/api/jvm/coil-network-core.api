@@ -44,6 +44,18 @@ public final class coil3/network/ConnectivityCheckerKt {
 	public static final fun ConnectivityChecker (Lcoil3/PlatformContext;)Lcoil3/network/ConnectivityChecker;
 }
 
+public final class coil3/network/DeDupe2InFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
+	public synthetic fun <init> (JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getDelay-UwyO8pc ()J
+}
+
+public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
+	public fun <init> ()V
+	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class coil3/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lcoil3/network/NetworkResponse;)V
 	public final fun getResponse ()Lcoil3/network/NetworkResponse;
@@ -64,6 +76,15 @@ public final class coil3/network/ImageRequestsKt {
 	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
 }
 
+public abstract interface class coil3/network/InFlightRequestStrategy {
+	public static final field Companion Lcoil3/network/InFlightRequestStrategy$Companion;
+	public static final field DEFAULT Lcoil3/network/InFlightRequestStrategy;
+	public abstract fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/network/InFlightRequestStrategy$Companion {
+}
+
 public abstract interface class coil3/network/NetworkClient {
 	public abstract fun executeRequest (Lcoil3/network/NetworkRequest;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -74,13 +95,15 @@ public final class coil3/network/NetworkClientKt {
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;)V
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;Lkotlin/Lazy;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
-	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 }

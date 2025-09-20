@@ -1,9 +1,13 @@
 public final class coil3/network/ktor2/KtorNetworkFetcher {
 	public static final fun asNetworkClient (Lio/ktor/client/HttpClient;)Lcoil3/network/NetworkClient;
 	public static final fun factory ()Lcoil3/network/NetworkFetcher$Factory;
-	public static final fun factory (Lio/ktor/client/HttpClient;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final synthetic fun factory (Lio/ktor/client/HttpClient;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lio/ktor/client/HttpClient;Lcoil3/network/InFlightRequestStrategy;)Lcoil3/network/NetworkFetcher$Factory;
 	public static final fun factory (Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
-	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final synthetic fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
+	public static synthetic fun factory$default (Lio/ktor/client/HttpClient;Lcoil3/network/InFlightRequestStrategy;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
 	public static synthetic fun factory$default (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
+	public static synthetic fun factory$default (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
 }
 
