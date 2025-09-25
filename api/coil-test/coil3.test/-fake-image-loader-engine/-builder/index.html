@@ -1,0 +1,247 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Builder</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../../index.html">
+                    coil-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">3.4.0-SNAPSHOT
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":coil-test/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":coil-test/commonMain" data-filter=":coil-test/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    coil-root
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="coil-test::coil3.test/FakeImageLoaderEngine.Builder///PointingToDeclaration//1592408393">
+  <div class="breadcrumbs"><a href="../../../index.html">coil-test</a><span class="delimiter">/</span><a href="../../index.html">coil3.test</a><span class="delimiter">/</span><a href="../index.html">FakeImageLoaderEngine</a><span class="delimiter">/</span><span class="current">Builder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Builder</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1466391837%2FConstructors%2F1592408393" anchor-label="Builder" id="-1466391837%2FConstructors%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1466391837%2FConstructors%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">engine<span class="token operator">: </span><a href="../index.html">FakeImageLoaderEngine</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1721858177%2FFunctions%2F1592408393" anchor-label="addInterceptor" id="-1721858177%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-interceptor.html"><span>add</span><wbr><span><span>Interceptor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1721858177%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-interceptor.html"><span class="token function">addInterceptor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">interceptor<span class="token operator">: </span><a href="../-optional-interceptor/index.html">FakeImageLoaderEngine.OptionalInterceptor</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Add an <a href="../-optional-interceptor/index.html">OptionalInterceptor</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-664886871%2FFunctions%2F1592408393" anchor-label="build" id="-664886871%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build.html"><span><span>build</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-664886871%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">FakeImageLoaderEngine</a></div><div class="brief "><p class="paragraph">Create a new <a href="../index.html">FakeImageLoaderEngine</a> instance.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="164354012%2FFunctions%2F1592408393" anchor-label="clearInterceptors" id="164354012%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-interceptors.html"><span>clear</span><wbr><span><span>Interceptors</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="164354012%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="clear-interceptors.html"><span class="token function">clearInterceptors</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Remove all <a href="../-optional-interceptor/index.html">OptionalInterceptor</a>s.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1965895564%2FFunctions%2F1592408393" anchor-label="default" id="1965895564%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="default.html"><span><span>default</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1965895564%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="default.html"><span class="token function">default</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">image<span class="token operator">: </span><a href="../../../../coil-core/coil3/-image/index.html">Image</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Set a default <a href="../../../../coil-core/coil3/-image/index.html">Image</a> that will be returned if no <a href="../-optional-interceptor/index.html">OptionalInterceptor</a>s handle the request. If a default is not set, any requests not handled by an <a href="../-optional-interceptor/index.html">OptionalInterceptor</a> will throw an exception.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="default.html"><span class="token function">default</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">interceptor<span class="token operator">: </span><a href="../../../../coil-core/coil3.intercept/-interceptor/index.html">Interceptor</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Set the default <a href="../../../../coil-core/coil3.intercept/-interceptor/index.html">Interceptor</a> that will be called if no <a href="../-optional-interceptor/index.html">OptionalInterceptor</a>s handle the request. If a default is not set, any requests not handled by an <a href="../-optional-interceptor/index.html">OptionalInterceptor</a> will throw an exception.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1519077461%2FFunctions%2F1592408393" anchor-label="intercept" id="-1519077461%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="intercept.html"><span><span>intercept</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1519077461%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="intercept.html"><span class="token function">intercept</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter ">image<span class="token operator">: </span><a href="../../../../coil-core/coil3/-image/index.html">Image</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Add an interceptor that will return <a href="../../../../coil-core/coil3/-image/index.html">Image</a> if <a href="intercept.html">data</a> is equal to an incoming <a href="../../../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a>'s data.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="intercept.html"><span class="token function">intercept</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span>data<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">image<span class="token operator">: </span><a href="../../../../coil-core/coil3/-image/index.html">Image</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Add an interceptor that will return <a href="../../../../coil-core/coil3/-image/index.html">Image</a> if <a href="intercept.html">predicate</a> returns <code class="lang-kotlin">true</code>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="intercept.html"><span class="token function">intercept</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">predicate<span class="token operator">: </span><span class="token punctuation">(</span>data<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">interceptor<span class="token operator">: </span><a href="../-optional-interceptor/index.html">FakeImageLoaderEngine.OptionalInterceptor</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Add an interceptor that will call <a href="intercept.html">interceptor</a> if <a href="intercept.html">predicate</a> returns <code class="lang-kotlin">true</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="902748502%2FFunctions%2F1592408393" anchor-label="removeInterceptor" id="902748502%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-interceptor.html"><span>remove</span><wbr><span><span>Interceptor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="902748502%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remove-interceptor.html"><span class="token function">removeInterceptor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">interceptor<span class="token operator">: </span><a href="../-optional-interceptor/index.html">FakeImageLoaderEngine.OptionalInterceptor</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Remove <a href="remove-interceptor.html">interceptor</a> from the list of <a href="../-optional-interceptor/index.html">OptionalInterceptor</a>s.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="464465402%2FFunctions%2F1592408393" anchor-label="requestTransformer" id="464465402%2FFunctions%2F1592408393" data-filterable-set=":coil-test/commonMain"></a>
+          <div class="table-row" data-filterable-current=":coil-test/commonMain" data-filterable-set=":coil-test/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="request-transformer.html"><span>request</span><wbr><span><span>Transformer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="464465402%2FFunctions%2F1592408393"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":coil-test/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="request-transformer.html"><span class="token function">requestTransformer</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transformer<span class="token operator">: </span><a href="../-request-transformer/index.html">FakeImageLoaderEngine.RequestTransformer</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">FakeImageLoaderEngine.Builder</a></div><div class="brief "><p class="paragraph">Set a callback to modify an incoming <a href="../../../../coil-core/coil3.request/-image-request/index.html">ImageRequest</a> before it's handled by the <a href="../../../../coil-test/coil3.test/-fake-image-loader-engine/-builder/interceptors.html">interceptors</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
