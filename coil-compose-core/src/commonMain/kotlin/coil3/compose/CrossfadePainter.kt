@@ -45,6 +45,7 @@ class CrossfadePainter(
     val timeSource: TimeSource = TimeSource.Monotonic,
     val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false,
+    val preferEndFirstIntrinsicSize: Boolean = false
 ) : Painter() {
 
     private var invalidateTick by mutableIntStateOf(0)
@@ -99,12 +100,19 @@ class CrossfadePainter(
 
         val isStartSpecified = startSize.isSpecified
         val isEndSpecified = endSize.isSpecified
+
+        if (preferEndFirstIntrinsicSize) {
+            if (isEndSpecified) return endSize
+            if (isStartSpecified) return startSize
+        }
+
         if (isStartSpecified && isEndSpecified) {
             return Size(
                 width = maxOf(startSize.width, endSize.width),
                 height = maxOf(startSize.height, endSize.height),
             )
         }
+
         if (preferExactIntrinsicSize) {
             if (isStartSpecified) return startSize
             if (isEndSpecified) return endSize
