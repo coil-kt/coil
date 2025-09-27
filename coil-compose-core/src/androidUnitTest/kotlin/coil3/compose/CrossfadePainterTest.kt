@@ -15,10 +15,10 @@ import androidx.core.graphics.createBitmap
 import coil3.test.utils.FakeTimeSource
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.assertIsSimilarTo
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.test.runTest
 
 class CrossfadePainterTest : RobolectricTest() {
 
@@ -50,6 +50,34 @@ class CrossfadePainterTest : RobolectricTest() {
 
         assertEquals(Size(40f, 30f), preferExact.intrinsicSize)
         assertEquals(Size.Unspecified, preferUnspecified.intrinsicSize)
+    }
+
+    @Test
+    fun intrinsicSize_prefersEndFirstIntrinsicSize() {
+        val start = SolidColorPainter(Color.Red, Size(40f, 30f))
+        val end = SolidColorPainter(Color.Blue, Size(50f, 20f))
+
+        val painterEndPreferred = CrossfadePainter(
+            start = start,
+            end = end,
+            preferEndFirstIntrinsicSize = true,
+        )
+        assertEquals(Size(50f, 20f), painterEndPreferred.intrinsicSize)
+
+        val endUnspecified = SolidColorPainter(Color.Blue, Size.Unspecified)
+        val painterEndUnspecified = CrossfadePainter(
+            start = start,
+            end = endUnspecified,
+            preferEndFirstIntrinsicSize = true,
+        )
+        assertEquals(Size(40f, 30f), painterEndUnspecified.intrinsicSize)
+
+        val painterMaxPreferred = CrossfadePainter(
+            start = start,
+            end = end,
+            preferEndFirstIntrinsicSize = false,
+        )
+        assertEquals(Size(50f, 30f), painterMaxPreferred.intrinsicSize)
     }
 
     @Test
