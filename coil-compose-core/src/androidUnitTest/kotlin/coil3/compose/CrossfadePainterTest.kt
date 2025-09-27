@@ -15,10 +15,10 @@ import androidx.core.graphics.createBitmap
 import coil3.test.utils.FakeTimeSource
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.assertIsSimilarTo
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.test.runTest
 
 class CrossfadePainterTest : RobolectricTest() {
 

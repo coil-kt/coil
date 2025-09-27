@@ -38,7 +38,6 @@ val Extras.Key.Companion.useExistingImageAsPlaceholder: Extras.Key<Boolean>
 
 private val useExistingImageAsPlaceholderKey = Extras.Key(default = false)
 
-
 /**
  * Returns `true` if this request prefers the end painter's intrinsic size when
  * calculating the `CrossfadePainter`'s intrinsic size.
