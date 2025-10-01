@@ -26,7 +26,7 @@ jobs:
                   java-version: ${{ env.JAVA_VERSION }}
 
             - name: Check Gradle wrapper
-              uses: gradle/actions/wrapper-validation@v4
+              uses: gradle/actions/wrapper-validation@v5
 
             - name: Check style
               run: ./gradlew spotlessCheck
@@ -47,7 +47,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v4
+            - uses: gradle/actions/setup-gradle@v5
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -67,7 +67,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v4
+            - uses: gradle/actions/setup-gradle@v5
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -91,7 +91,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v4
+            - uses: gradle/actions/setup-gradle@v5
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -129,7 +129,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v4
+            - uses: gradle/actions/setup-gradle@v5
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -149,7 +149,7 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v4
+            - uses: gradle/actions/setup-gradle@v5
               continue-on-error: true
               timeout-minutes: 5
               with:
