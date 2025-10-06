@@ -51,6 +51,17 @@ class CrossfadePainter(
     val preferEndFirstIntrinsicSize: Boolean = false
 ) : Painter() {
 
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        start: Painter?,
+        end: Painter?,
+        contentScale: ContentScale = ContentScale.Fit,
+        duration: Duration = 200.milliseconds,
+        timeSource: TimeSource = TimeSource.Monotonic,
+        fadeStart: Boolean = true,
+        preferExactIntrinsicSize: Boolean = false,
+    ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize)
+
     private var invalidateTick by mutableIntStateOf(0)
     private var startTime: TimeMark? = null
     private var isDone = false
