@@ -35,6 +35,9 @@ import kotlin.time.TimeSource
  *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
  *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
  *  require an exact intrinsic size to scale the drawable.
+ * @param preferEndFirstIntrinsicSize Returns `true` if this request prefers the end painter's intrinsic size
+ * when calculating the `CrossfadePainter`'s intrinsic size.
+ * When enabled, the end painter's intrinsic size takes precedence.
  */
 @Stable
 class CrossfadePainter(
