@@ -395,17 +395,18 @@ private class AnimatedVideoDrawable(
 
     private fun createFrameRenderer(): FrameRenderer {
         if (SDK_INT < 29) {
-            return SoftwareFrameRenderer(intrinsicVideoWidth, intrinsicVideoHeight, ::drawVideoFrame)
-        }
-        return runCatching {
-            HardwareFrameRenderer(
+            return SoftwareFrameRenderer(
+                width = intrinsicVideoWidth,
+                height = intrinsicVideoHeight,
+                drawFrame = ::drawVideoFrame,
+            )
+        } else {
+            return HardwareFrameRenderer(
                 width = intrinsicVideoWidth,
                 height = intrinsicVideoHeight,
                 drawFrame = ::drawVideoFrame,
                 timeSource = timeSource,
             )
-        }.getOrElse {
-            SoftwareFrameRenderer(intrinsicVideoWidth, intrinsicVideoHeight, ::drawVideoFrame)
         }
     }
 
