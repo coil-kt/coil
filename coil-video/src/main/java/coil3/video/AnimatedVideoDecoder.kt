@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
-import android.graphics.ColorSpace
 import android.graphics.HardwareRenderer
 import android.graphics.Matrix
 import android.graphics.Paint
@@ -455,15 +454,16 @@ private class AnimatedVideoDrawable(
         private val imageListenerHandler = Handler(imageListenerThread.looper)
 
         private var currentBitmap: Bitmap? = null
+            set(value) {
+                field?.recycle()
+                field = value
+            }
 
         init {
             imageReader.setOnImageAvailableListener({ reader ->
                 reader.acquireLatestImage()?.use { image ->
                     image.hardwareBuffer?.use { buffer ->
-                        val colorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
-                        val hardwareBitmap = Bitmap.wrapHardwareBuffer(buffer, colorSpace)
-                        currentBitmap?.recycle()
-                        currentBitmap = hardwareBitmap
+                        currentBitmap = Bitmap.wrapHardwareBuffer(buffer, null)
                     }
                 }
             }, imageListenerHandler)
@@ -492,7 +492,6 @@ private class AnimatedVideoDrawable(
         }
 
         override fun close() {
-            currentBitmap?.recycle()
             currentBitmap = null
             renderer.stop()
             renderer.destroy()
