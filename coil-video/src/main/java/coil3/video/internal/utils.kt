@@ -5,6 +5,11 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.BitmapParams
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
+import kotlin.ExperimentalStdlibApi
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
+import okio.BufferedSource
+import okio.ByteString
 
 /** [MediaMetadataRetriever] doesn't implement [AutoCloseable] until API 29. */
 internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetriever) -> T): T {
@@ -50,3 +55,11 @@ internal fun MediaMetadataRetriever.getFrameAtIndex(
     frameIndex: Int,
     config: Bitmap.Config,
 ): Bitmap? = getFrameAtIndex(frameIndex, BitmapParams().apply { preferredConfig = config })
+
+@OptIn(ExperimentalStdlibApi::class)
+internal val CoroutineContext.dispatcher: CoroutineDispatcher?
+    get() = get(CoroutineDispatcher)
+
+internal fun BufferedSource.requestAndRangeEquals(offset: Long, bytes: ByteString): Boolean {
+    return request(offset + bytes.size) && rangeEquals(offset, bytes)
+}
