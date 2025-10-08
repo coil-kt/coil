@@ -37,6 +37,7 @@ import coil3.video.internal.FileHandleMediaDataSource
 import coil3.video.internal.getFrameAtIndex
 import coil3.video.internal.getFrameAtTime
 import coil3.video.internal.getScaledFrameAtTime
+import coil3.video.internal.isVideoResult
 import coil3.video.internal.use
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -278,12 +279,8 @@ class VideoFrameDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            if (!isApplicable(result.mimeType)) return null
+            if (!isVideoResult(result)) return null
             return VideoFrameDecoder(result.source, options)
-        }
-
-        private fun isApplicable(mimeType: String?): Boolean {
-            return mimeType != null && mimeType.startsWith("video/")
         }
     }
 }

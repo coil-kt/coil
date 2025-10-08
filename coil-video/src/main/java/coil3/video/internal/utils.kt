@@ -5,11 +5,12 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.BitmapParams
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
+import coil3.decode.DecodeUtils
+import coil3.fetch.SourceFetchResult
+import coil3.video.isVideo
 import kotlin.ExperimentalStdlibApi
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
-import okio.BufferedSource
-import okio.ByteString
 
 /** [MediaMetadataRetriever] doesn't implement [AutoCloseable] until API 29. */
 internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetriever) -> T): T {
@@ -59,3 +60,12 @@ internal fun MediaMetadataRetriever.getFrameAtIndex(
 @OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
     get() = get(CoroutineDispatcher)
+
+internal fun isVideoResult(result: SourceFetchResult): Boolean {
+    val mimeType = result.mimeType
+    if (mimeType != null && mimeType.startsWith("video/")) {
+        return true
+    }
+
+    return DecodeUtils.isVideo(result.source.source())
+}

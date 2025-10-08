@@ -31,12 +31,12 @@ import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.asImage
 import coil3.decode.DecodeResult
-import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.video.internal.dispatcher
+import coil3.video.internal.isVideoResult
 import coil3.video.internal.use
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
@@ -135,17 +135,8 @@ class VideoDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            if (!isApplicable(result)) return null
+            if (!isVideoResult(result)) return null
             return VideoDecoder(result.source, options)
-        }
-
-        private fun isApplicable(result: SourceFetchResult): Boolean {
-            val mimeType = result.mimeType
-            if (mimeType != null && mimeType.startsWith("video/")) {
-                return true
-            }
-
-            return DecodeUtils.isVideo(result.source.source())
         }
     }
 
