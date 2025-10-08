@@ -145,10 +145,7 @@ class VideoDecoder(
                 return true
             }
 
-            val headerIsVideo = result.source.source().use { buffered ->
-                runCatching { DecodeUtils.isVideo(buffered) }.getOrDefault(false)
-            }
-            return headerIsVideo
+            return DecodeUtils.isVideo(result.source.source())
         }
     }
 
