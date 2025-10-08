@@ -40,7 +40,6 @@ import coil3.video.internal.ByteStringMediaDataSource
 import coil3.video.internal.dispatcher
 import coil3.video.internal.isVideoResult
 import coil3.video.internal.use
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
 import kotlin.math.max
@@ -167,7 +166,7 @@ private class AnimatedVideoDrawable(
     private val frameRenderer: FrameRenderer = createFrameRenderer()
     private var renderJob: Job? = null
     private val invalidateRunnable = Runnable { invalidateSelf() }
-    private val animationCallbacks = CopyOnWriteArrayList<Animatable2Compat.AnimationCallback>()
+    private val animationCallbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     @Volatile
     private var isRunningInternal = false
@@ -360,7 +359,7 @@ private class AnimatedVideoDrawable(
     }
 
     override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
-        animationCallbacks.addIfAbsent(callback)
+        animationCallbacks.add(callback)
     }
 
     override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
