@@ -12,7 +12,6 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.RenderNode
-import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.hardware.HardwareBuffer
 import android.media.ImageReader
@@ -26,6 +25,7 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil3.DrawableImage
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
@@ -59,11 +59,11 @@ import kotlinx.coroutines.yield
 import okio.ByteString
 
 /**
- * A [Decoder] that plays back video content as an [Animatable] drawable.
+ * A [Decoder] that plays back video content as an animated drawable.
  */
 @RequiresApi(23)
 @ExperimentalCoilApi
-class VideoDecoder(
+class AnimatedVideoDecoder(
     private val source: ImageSource,
     private val options: Options,
 ) : Decoder {
@@ -78,7 +78,7 @@ class VideoDecoder(
                 "Unable to read video metadata."
             }
 
-            val drawable = VideoDrawable(
+            val drawable = AnimatedVideoDrawable(
                 videoBytes = data,
                 metadata = metadata,
                 dispatcher = dispatcher,
@@ -137,7 +137,7 @@ class VideoDecoder(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isVideoResult(result)) return null
-            return VideoDecoder(result.source, options)
+            return AnimatedVideoDecoder(result.source, options)
         }
     }
 
@@ -148,12 +148,12 @@ class VideoDecoder(
 }
 
 @RequiresApi(23)
-private class VideoDrawable(
+private class AnimatedVideoDrawable(
     private val videoBytes: ByteString,
     private val metadata: VideoMetadata,
     private val dispatcher: CoroutineDispatcher,
     private val timeSource: TimeSource = TimeSource.Monotonic,
-) : Drawable(), Animatable, DrawableImage.SizeProvider, AutoCloseable {
+) : Drawable(), Animatable2Compat, DrawableImage.SizeProvider, AutoCloseable {
     private val intrinsicVideoWidth = metadata.displayWidth
     private val intrinsicVideoHeight = metadata.displayHeight
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -165,6 +165,7 @@ private class VideoDrawable(
     private val frameRenderer: FrameRenderer = createFrameRenderer()
     private var renderJob: Job? = null
     private val invalidateRunnable = Runnable { invalidateSelf() }
+    private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     @Volatile
     private var isRunningInternal = false
@@ -220,6 +221,7 @@ private class VideoDrawable(
             }
         }
         renderJob = job
+        notifyAnimationStart()
     }
 
     override fun stop() {
@@ -233,6 +235,7 @@ private class VideoDrawable(
         renderJob?.cancel()
         renderJob = null
         unscheduleSelf(invalidateRunnable)
+        notifyAnimationEnd()
     }
 
     override fun isRunning(): Boolean = isRunningInternal
@@ -370,6 +373,24 @@ private class VideoDrawable(
         currentMediaDataSource?.close()
         retriever = null
         currentMediaDataSource = null
+    }
+
+    override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
+        callbacks.add(callback)
+    }
+
+    override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
+        return callbacks.remove(callback)
+    }
+
+    override fun clearAnimationCallbacks() = callbacks.clear()
+
+    private fun notifyAnimationStart() {
+        callbacks.forEach { it.onAnimationStart(this) }
+    }
+
+    private fun notifyAnimationEnd() {
+        callbacks.forEach { it.onAnimationEnd(this) }
     }
 
     private fun createFrameRenderer(): FrameRenderer {
