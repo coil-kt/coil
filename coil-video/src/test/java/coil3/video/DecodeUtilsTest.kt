@@ -2,6 +2,7 @@ package coil3.video
 
 import coil3.decode.DecodeUtils
 import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import okio.buffer
@@ -41,11 +42,7 @@ class DecodeUtilsTest : RobolectricTest() {
     fun doesNotDetectAnimatedGif() = assertNotVideoDetection("animated.gif")
 
     private fun assertVideoDetection(fileName: String) {
-        val url = requireNotNull(javaClass.classLoader?.getResource("video/$fileName")) {
-            "Missing test asset: $fileName"
-        }
-
-        url.openStream().use { stream ->
+        context.assets.open("video/$fileName").use { stream ->
             stream.source().buffer().use { source ->
                 assertTrue(
                     actual = DecodeUtils.isVideo(source),
@@ -56,11 +53,7 @@ class DecodeUtilsTest : RobolectricTest() {
     }
 
     private fun assertNotVideoDetection(fileName: String) {
-        val url = requireNotNull(javaClass.classLoader?.getResource("video/$fileName")) {
-            "Missing test asset: $fileName"
-        }
-
-        url.openStream().use { stream ->
+        context.assets.open("video/$fileName").use { stream ->
             stream.source().buffer().use { source ->
                 assertFalse(
                     actual = DecodeUtils.isVideo(source),
