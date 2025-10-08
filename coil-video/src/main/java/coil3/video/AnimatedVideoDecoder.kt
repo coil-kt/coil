@@ -190,6 +190,9 @@ private class AnimatedVideoDrawable(
         }
     }
 
+    override val size: Long
+        get() = videoBytes.size.toLong()
+
     override fun draw(canvas: Canvas) {
         synchronized(frameLock) {
             drawBounds.set(bounds)
@@ -243,27 +246,6 @@ private class AnimatedVideoDrawable(
     override fun getIntrinsicWidth(): Int = intrinsicVideoWidth
 
     override fun getIntrinsicHeight(): Int = intrinsicVideoHeight
-
-    override val size: Long
-        get() = videoBytes.size.toLong()
-
-    override fun invalidateSelf() {
-        if (!isReleased.get()) {
-            super.invalidateSelf()
-        }
-    }
-
-    override fun scheduleSelf(what: Runnable, `when`: Long) {
-        if (!isReleased.get()) {
-            super.scheduleSelf(what, `when`)
-        }
-    }
-
-    override fun unscheduleSelf(what: Runnable) {
-        if (!isReleased.get()) {
-            super.unscheduleSelf(what)
-        }
-    }
 
     private fun computeCurrentPositionUs(): Long {
         val elapsedUs = startReferenceMark.elapsedNow().inWholeMicroseconds
