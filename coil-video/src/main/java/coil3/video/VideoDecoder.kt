@@ -4,13 +4,18 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
+import android.graphics.ColorSpace
+import android.graphics.HardwareRenderer
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
+import android.graphics.RenderNode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.hardware.HardwareBuffer
+import android.media.ImageReader
 import android.media.MediaDataSource
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE
@@ -19,22 +24,26 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.os.Build.VERSION.SDK_INT
-import android.os.SystemClock
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.createBitmap
 import coil3.DrawableImage
 import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import coil3.video.internal.dispatcher
+import coil3.video.internal.requestAndRangeEquals
 import coil3.video.internal.use
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.coroutineContext
 import kotlin.math.max
 import kotlin.math.roundToLong
-import kotlin.coroutines.ContinuationInterceptor
-import kotlin.coroutines.coroutineContext
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,14 +57,6 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.yield
 import okio.ByteString
 import okio.ByteString.Companion.encodeUtf8
-import okio.ByteString.Companion.toByteString
-import okio.IOException
-import androidx.core.graphics.createBitmap
-import coil3.annotation.ExperimentalCoilApi
-import kotlin.time.TimeMark
-import kotlin.time.TimeSource
-import coil3.video.internal.dispatcher
-import coil3.video.internal.requestAndRangeEquals
 
 /**
  * A [Decoder] that plays back video content as an [Animatable] drawable.
@@ -150,7 +151,7 @@ private object VideoDetector {
     private val MP4_FTYP = "ftyp".encodeUtf8()
     private val OGG_SIGNATURE = "OggS".encodeUtf8()
     private val AVI_SIGNATURE = "AVI ".encodeUtf8()
-    private val EBML_SIGNATURE = ByteString.of(0x1A, 0x45, 0xDF.toByte(), 0xA3.toByte())
+    private val EBML_SIGNATURE = ByteString.of(0x1A.toByte(), 0x45.toByte(), 0xDF.toByte(), 0xA3.toByte())
     private val RIFF_SIGNATURE = "RIFF".encodeUtf8()
 
     fun isVideoSource(result: SourceFetchResult): Boolean {
@@ -185,13 +186,11 @@ private class VideoDrawable(
     private val intrinsicVideoHeight = metadata.displayHeight
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val drawBounds = Rect()
-    private val frameBitmap = createBitmap(intrinsicVideoWidth, intrinsicVideoHeight)
-    private val frameCanvas = Canvas(frameBitmap)
     private val frameLock = Any()
     private val isReleased = AtomicBoolean(false)
     private val tempMatrix = Matrix()
-    private val scopeJob = SupervisorJob()
-    private val scope = CoroutineScope(scopeJob + dispatcher)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val frameRenderer: FrameRenderer = createFrameRenderer()
     private var renderJob: Job? = null
     private val invalidateRunnable = Runnable { invalidateSelf() }
 
@@ -210,7 +209,9 @@ private class VideoDrawable(
     init {
         metadata.initialFrame?.let { initial ->
             synchronized(frameLock) {
-                frameCanvas.drawVideoFrame(initial)
+                frameRenderer.renderFrame(initial)
+                currentFrameUs = 0L
+                pendingFrameUs = 0L
             }
             initial.recycle()
         }
@@ -219,11 +220,7 @@ private class VideoDrawable(
     override fun draw(canvas: Canvas) {
         synchronized(frameLock) {
             drawBounds.set(bounds)
-            if (drawBounds.isEmpty) {
-                canvas.drawBitmap(frameBitmap, 0f, 0f, bitmapPaint)
-            } else {
-                canvas.drawBitmap(frameBitmap, null, drawBounds, bitmapPaint)
-            }
+            frameRenderer.draw(canvas, drawBounds, bitmapPaint)
         }
     }
 
@@ -238,11 +235,10 @@ private class VideoDrawable(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun getOpacity() = PixelFormat.TRANSLUCENT
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun start() {
-        if (isReleased.get()) return
-        if (isRunning) return
+        if (isReleased.get() || isRunning) return
         isRunningInternal = true
         startReferenceMark = timeSource.markNow()
         val job = scope.launch { renderLoop() }
@@ -328,7 +324,7 @@ private class VideoDrawable(
 
         try {
             synchronized(frameLock) {
-                frameCanvas.drawVideoFrame(frame)
+                frameRenderer.renderFrame(frame)
                 currentFrameUs = pendingFrameUs
             }
         } finally {
@@ -337,18 +333,12 @@ private class VideoDrawable(
         requestInvalidate()
     }
 
-    private fun requestInvalidate() {
-        if (isReleased.get()) return
-        unscheduleSelf(invalidateRunnable)
-        scheduleSelf(invalidateRunnable, SystemClock.uptimeMillis())
-    }
-
-    private fun Canvas.drawVideoFrame(frame: Bitmap) {
+    private fun drawVideoFrame(canvas: Canvas, frame: Bitmap) {
         val frameWidth = frame.width.toFloat()
         val frameHeight = frame.height.toFloat()
         if (frameWidth <= 0f || frameHeight <= 0f) return
 
-        drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
         val destWidth = intrinsicVideoWidth.toFloat()
         val destHeight = intrinsicVideoHeight.toFloat()
@@ -364,14 +354,13 @@ private class VideoDrawable(
             scaleY = destHeight / frameHeight
         }
 
-        val matrix = tempMatrix
-        matrix.reset()
-        matrix.preTranslate(-frameWidth / 2f, -frameHeight / 2f)
-        matrix.preScale(scaleX, scaleY)
-        matrix.preRotate(rotation.toFloat())
-        matrix.preTranslate(destWidth / 2f, destHeight / 2f)
+        tempMatrix.reset()
+        tempMatrix.preTranslate(-frameWidth / 2f, -frameHeight / 2f)
+        tempMatrix.preScale(scaleX, scaleY)
+        tempMatrix.preRotate(rotation.toFloat())
+        tempMatrix.preTranslate(destWidth / 2f, destHeight / 2f)
 
-        drawBitmap(frame, matrix, bitmapPaint)
+        canvas.drawBitmap(frame, tempMatrix, null)
     }
 
     private fun ensureRetriever(): MediaMetadataRetriever {
@@ -385,12 +374,22 @@ private class VideoDrawable(
         return newRetriever
     }
 
+    private fun requestInvalidate() {
+        if (isReleased.get()) return
+        unscheduleSelf(invalidateRunnable)
+        scheduleSelf(invalidateRunnable, 0L)
+    }
+
     override fun close() {
         if (!isReleased.compareAndSet(false, true)) return
 
         stop()
         scope.cancel()
+        renderJob = null
         unscheduleSelf(invalidateRunnable)
+        synchronized(frameLock) {
+            runCatching { frameRenderer.close() }
+        }
         if (SDK_INT >= 29) {
             retriever?.close()
         } else {
@@ -399,6 +398,128 @@ private class VideoDrawable(
         currentMediaDataSource?.close()
         retriever = null
         currentMediaDataSource = null
+    }
+
+    private fun createFrameRenderer(): FrameRenderer {
+        if (SDK_INT < 29) {
+            return SoftwareFrameRenderer(intrinsicVideoWidth, intrinsicVideoHeight, ::drawVideoFrame)
+        }
+        return runCatching {
+            HardwareFrameRenderer(
+                width = intrinsicVideoWidth,
+                height = intrinsicVideoHeight,
+                drawFrame = ::drawVideoFrame,
+                timeSource = timeSource,
+            )
+        }.getOrElse {
+            SoftwareFrameRenderer(intrinsicVideoWidth, intrinsicVideoHeight, ::drawVideoFrame)
+        }
+    }
+
+    private interface FrameRenderer : AutoCloseable {
+        fun renderFrame(frame: Bitmap)
+        fun draw(canvas: Canvas, bounds: Rect, paint: Paint)
+    }
+
+    private class SoftwareFrameRenderer(
+        width: Int,
+        height: Int,
+        private val drawFrame: (Canvas, Bitmap) -> Unit,
+    ) : FrameRenderer {
+        private val bitmap = createBitmap(width, height)
+        private val backingCanvas = Canvas(bitmap)
+
+        override fun renderFrame(frame: Bitmap) {
+            drawFrame(backingCanvas, frame)
+        }
+
+        override fun draw(canvas: Canvas, bounds: Rect, paint: Paint) {
+            if (bounds.isEmpty) {
+                canvas.drawBitmap(bitmap, 0f, 0f, paint)
+            } else {
+                canvas.drawBitmap(bitmap, null, bounds, paint)
+            }
+        }
+
+        override fun close() {
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
+    }
+
+    @RequiresApi(29)
+    private class HardwareFrameRenderer(
+        private val width: Int,
+        private val height: Int,
+        private val drawFrame: (Canvas, Bitmap) -> Unit,
+        timeSource: TimeSource,
+    ) : FrameRenderer {
+        private val imageReader = ImageReader.newInstance(
+            width,
+            height,
+            PixelFormat.RGBA_8888,
+            MAX_IMAGES,
+            HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE or HardwareBuffer.USAGE_GPU_COLOR_OUTPUT,
+        )
+        private val renderNode = RenderNode("CoilVideoDrawable").apply {
+            setPosition(0, 0, width, height)
+        }
+        private val renderer = HardwareRenderer().apply {
+            setSurface(imageReader.surface)
+            setContentRoot(renderNode)
+            isOpaque = false
+            start()
+        }
+        private var currentBitmap: Bitmap? = null
+        private val vsyncOriginMark: TimeMark = timeSource.markNow()
+
+        override fun renderFrame(frame: Bitmap) {
+            val recordingCanvas = renderNode.beginRecording(width, height)
+            try {
+                drawFrame(recordingCanvas, frame)
+            } finally {
+                renderNode.endRecording()
+            }
+
+            renderer.createRenderRequest()
+                .setVsyncTime(vsyncOriginMark.elapsedNow().inWholeNanoseconds)
+                .syncAndDraw()
+
+            imageReader.acquireLatestImage()?.use { image ->
+                val buffer = image.hardwareBuffer ?: return@use
+                val colorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
+                val hardwareBitmap = runCatching {
+                    Bitmap.wrapHardwareBuffer(buffer, colorSpace)
+                }.getOrNull()
+                buffer.close()
+                if (hardwareBitmap != null) {
+                    currentBitmap?.recycle()
+                    currentBitmap = hardwareBitmap
+                }
+            }
+        }
+
+        override fun draw(canvas: Canvas, bounds: Rect, paint: Paint) {
+            val bitmap = currentBitmap ?: return
+            if (bounds.isEmpty) {
+                canvas.drawBitmap(bitmap, 0f, 0f, paint)
+            } else {
+                canvas.drawBitmap(bitmap, null, bounds, paint)
+            }
+        }
+
+        override fun close() {
+            currentBitmap?.recycle()
+            currentBitmap = null
+            renderer.stop()
+            renderer.destroy()
+            imageReader.close()
+        }
+
+        private companion object {
+            private const val MAX_IMAGES = 2
+        }
     }
 }
 
