@@ -22,17 +22,16 @@ private const val MPEG_TS_PACKETS_TO_CHECK = 4L
 
 @ExperimentalCoilApi
 fun DecodeUtils.isVideo(source: BufferedSource): Boolean {
-    val peek = source.peek()
     return when {
-        peek.rangeEquals(0, OGG_SIGNATURE) -> true // OGG, WebM, Matroska cousins
-        peek.rangeEquals(0, EBML_SIGNATURE) -> true // Matroska/WebM
-        peek.rangeEquals(4, MP4_FTYP) -> true // MP4 family (MP4, MOV, 3GP, etc.)
-        peek.rangeEquals(0, RIFF_SIGNATURE) && peek.rangeEquals(8, AVI_SIGNATURE) -> true // AVI
-        peek.rangeEquals(0, FLV_SIGNATURE) -> true // FLV
-        peek.rangeEquals(0, MPEG_PROGRAM_SIGNATURE) -> true // MPEG program stream (MPG, VOB)
-        peek.rangeEquals(0, ASF_SIGNATURE) -> true // ASF / WMV / WMA containers
-        peek.rangeEquals(0, REAL_MEDIA_SIGNATURE) -> true // RealMedia
-        peek.isMpegTransportStream() -> true // MPEG transport stream (.ts)
+        source.rangeEquals(0, OGG_SIGNATURE) -> true // OGG, WebM, Matroska cousins
+        source.rangeEquals(0, EBML_SIGNATURE) -> true // Matroska/WebM
+        source.rangeEquals(4, MP4_FTYP) -> true // MP4 family (MP4, MOV, 3GP, etc.)
+        source.rangeEquals(0, RIFF_SIGNATURE) && source.rangeEquals(8, AVI_SIGNATURE) -> true // AVI
+        source.rangeEquals(0, FLV_SIGNATURE) -> true // FLV
+        source.rangeEquals(0, MPEG_PROGRAM_SIGNATURE) -> true // MPEG program stream (MPG, VOB)
+        source.rangeEquals(0, ASF_SIGNATURE) -> true // ASF / WMV / WMA containers
+        source.rangeEquals(0, REAL_MEDIA_SIGNATURE) -> true // RealMedia
+        source.isMpegTransportStream() -> true // MPEG transport stream (.ts)
         else -> false
     }
 }
