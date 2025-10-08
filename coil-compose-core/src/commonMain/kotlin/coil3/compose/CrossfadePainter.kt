@@ -35,6 +35,9 @@ import kotlin.time.TimeSource
  *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
  *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
  *  require an exact intrinsic size to scale the drawable.
+ * @param preferEndFirstIntrinsicSize Returns `true` if this request prefers the end painter's intrinsic size
+ * when calculating the `CrossfadePainter`'s intrinsic size.
+ * When enabled, the end painter's intrinsic size takes precedence.
  */
 @Stable
 class CrossfadePainter(
@@ -45,7 +48,19 @@ class CrossfadePainter(
     val timeSource: TimeSource = TimeSource.Monotonic,
     val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false,
+    val preferEndFirstIntrinsicSize: Boolean = false
 ) : Painter() {
+
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        start: Painter?,
+        end: Painter?,
+        contentScale: ContentScale = ContentScale.Fit,
+        duration: Duration = 200.milliseconds,
+        timeSource: TimeSource = TimeSource.Monotonic,
+        fadeStart: Boolean = true,
+        preferExactIntrinsicSize: Boolean = false,
+    ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize)
 
     private var invalidateTick by mutableIntStateOf(0)
     private var startTime: TimeMark? = null
@@ -99,12 +114,19 @@ class CrossfadePainter(
 
         val isStartSpecified = startSize.isSpecified
         val isEndSpecified = endSize.isSpecified
+
+        if (preferEndFirstIntrinsicSize) {
+            if (isEndSpecified) return endSize
+            if (isStartSpecified) return startSize
+        }
+
         if (isStartSpecified && isEndSpecified) {
             return Size(
                 width = maxOf(startSize.width, endSize.width),
                 height = maxOf(startSize.height, endSize.height),
             )
         }
+
         if (preferExactIntrinsicSize) {
             if (isStartSpecified) return startSize
             if (isEndSpecified) return endSize

@@ -53,6 +53,34 @@ class CrossfadePainterTest : RobolectricTest() {
     }
 
     @Test
+    fun intrinsicSize_prefersEndFirstIntrinsicSize() {
+        val start = SolidColorPainter(Color.Red, Size(40f, 30f))
+        val end = SolidColorPainter(Color.Blue, Size(50f, 20f))
+
+        val painterEndPreferred = CrossfadePainter(
+            start = start,
+            end = end,
+            preferEndFirstIntrinsicSize = true,
+        )
+        assertEquals(Size(50f, 20f), painterEndPreferred.intrinsicSize)
+
+        val endUnspecified = SolidColorPainter(Color.Blue, Size.Unspecified)
+        val painterEndUnspecified = CrossfadePainter(
+            start = start,
+            end = endUnspecified,
+            preferEndFirstIntrinsicSize = true,
+        )
+        assertEquals(Size(40f, 30f), painterEndUnspecified.intrinsicSize)
+
+        val painterMaxPreferred = CrossfadePainter(
+            start = start,
+            end = end,
+            preferEndFirstIntrinsicSize = false,
+        )
+        assertEquals(Size(50f, 30f), painterMaxPreferred.intrinsicSize)
+    }
+
+    @Test
     fun intrinsicSize_remainsStableAfterCrossfadeCompletes() {
         val start = SolidColorPainter(Color.Red, Size(24f, 24f))
         val end = SolidColorPainter(Color.Blue, Size(32f, 16f))

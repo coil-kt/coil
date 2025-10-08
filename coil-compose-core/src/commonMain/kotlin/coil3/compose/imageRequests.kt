@@ -37,3 +37,29 @@ val Extras.Key.Companion.useExistingImageAsPlaceholder: Extras.Key<Boolean>
     get() = useExistingImageAsPlaceholderKey
 
 private val useExistingImageAsPlaceholderKey = Extras.Key(default = false)
+
+/**
+ * Returns `true` if this request prefers the end painter's intrinsic size when
+ * calculating the `CrossfadePainter`'s intrinsic size.
+ *
+ * When enabled, the end painter's intrinsic size takes precedence.
+ */
+@ExperimentalCoilApi
+fun ImageRequest.Builder.preferEndFirstIntrinsicSize(enable: Boolean) = apply {
+    extras[preferEndFirstIntrinsicSizeKey] = enable
+}
+
+@ExperimentalCoilApi
+fun ImageLoader.Builder.preferEndFirstIntrinsicSize(enable: Boolean) = apply {
+    extras[preferEndFirstIntrinsicSizeKey] = enable
+}
+
+@ExperimentalCoilApi
+val ImageRequest.preferEndFirstIntrinsicSize: Boolean
+    get() = getExtra(preferEndFirstIntrinsicSizeKey)
+
+@ExperimentalCoilApi
+val Extras.Key.Companion.preferEndFirstIntrinsicSize: Extras.Key<Boolean>
+    get() = preferEndFirstIntrinsicSizeKey
+
+private val preferEndFirstIntrinsicSizeKey = Extras.Key(default = false)
