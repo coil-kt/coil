@@ -31,12 +31,12 @@ import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.asImage
 import coil3.decode.DecodeResult
+import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.video.internal.dispatcher
-import coil3.video.internal.requestAndRangeEquals
 import coil3.video.internal.use
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
@@ -56,7 +56,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.yield
 import okio.ByteString
-import okio.ByteString.Companion.encodeUtf8
 
 /**
  * A [Decoder] that plays back video content as an [Animatable] drawable.
@@ -136,42 +135,27 @@ class VideoDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            if (!VideoDetector.isVideoSource(result)) return null
+            if (!isApplicable(result)) return null
             return VideoDecoder(result.source, options)
+        }
+
+        private fun isApplicable(result: SourceFetchResult): Boolean {
+            val mimeType = result.mimeType
+            if (mimeType != null && mimeType.startsWith("video/")) {
+                return true
+            }
+
+            if (DecodeUtils.isVideo(result.source.source())) {
+                return true
+            }
+
+            return false
         }
     }
 
     private companion object {
         private const val DEFAULT_FRAME_RATE = 30f
         private const val DEFAULT_DURATION_US = 1_000_000L
-    }
-}
-
-private object VideoDetector {
-    private val MP4_FTYP = "ftyp".encodeUtf8()
-    private val OGG_SIGNATURE = "OggS".encodeUtf8()
-    private val AVI_SIGNATURE = "AVI ".encodeUtf8()
-    private val EBML_SIGNATURE = ByteString.of(0x1A.toByte(), 0x45.toByte(), 0xDF.toByte(), 0xA3.toByte())
-    private val RIFF_SIGNATURE = "RIFF".encodeUtf8()
-
-    fun isVideoSource(result: SourceFetchResult): Boolean {
-        val mimeType = result.mimeType
-        if (mimeType != null && mimeType.startsWith("video/")) {
-            return true
-        }
-
-        return hasVideoHeader(result.source)
-    }
-
-    private fun hasVideoHeader(source: ImageSource): Boolean {
-        val peek = source.source().peek()
-        return when {
-            peek.requestAndRangeEquals(0, OGG_SIGNATURE) -> true
-            peek.requestAndRangeEquals(0, EBML_SIGNATURE) -> true
-            peek.requestAndRangeEquals(4, MP4_FTYP) -> true
-            peek.requestAndRangeEquals(0, RIFF_SIGNATURE) && peek.requestAndRangeEquals(8, AVI_SIGNATURE) -> true
-            else -> false
-        }
     }
 }
 
@@ -442,9 +426,7 @@ private class VideoDrawable(
         }
 
         override fun close() {
-            if (!bitmap.isRecycled) {
-                bitmap.recycle()
-            }
+            bitmap.recycle()
         }
     }
 
@@ -462,7 +444,7 @@ private class VideoDrawable(
             MAX_IMAGES,
             HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE or HardwareBuffer.USAGE_GPU_COLOR_OUTPUT,
         )
-        private val renderNode = RenderNode("CoilVideoDrawable").apply {
+        private val renderNode = RenderNode("VideoDrawable").apply {
             setPosition(0, 0, width, height)
         }
         private val renderer = HardwareRenderer().apply {
@@ -471,8 +453,9 @@ private class VideoDrawable(
             isOpaque = false
             start()
         }
+        private val vsyncOriginMark = timeSource.markNow()
+
         private var currentBitmap: Bitmap? = null
-        private val vsyncOriginMark: TimeMark = timeSource.markNow()
 
         override fun renderFrame(frame: Bitmap) {
             val recordingCanvas = renderNode.beginRecording(width, height)
@@ -566,7 +549,5 @@ private class ByteStringMediaDataSource(
 
     override fun getSize() = data.size.toLong()
 
-    override fun close() {
-        // Nothing to close.
-    }
+    override fun close() {}
 }

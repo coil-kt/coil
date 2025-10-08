@@ -59,7 +59,3 @@ internal fun MediaMetadataRetriever.getFrameAtIndex(
 @OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
     get() = get(CoroutineDispatcher)
-
-internal fun BufferedSource.requestAndRangeEquals(offset: Long, bytes: ByteString): Boolean {
-    return request(offset + bytes.size) && rangeEquals(offset, bytes)
-}
