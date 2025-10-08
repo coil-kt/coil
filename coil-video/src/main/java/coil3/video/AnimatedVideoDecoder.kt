@@ -23,6 +23,8 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.os.Build.VERSION.SDK_INT
+import android.os.Handler
+import android.os.HandlerThread
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -39,6 +41,7 @@ import coil3.video.internal.ByteStringMediaDataSource
 import coil3.video.internal.dispatcher
 import coil3.video.internal.isVideoResult
 import coil3.video.internal.use
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
 import kotlin.math.max
@@ -165,7 +168,7 @@ private class AnimatedVideoDrawable(
     private val frameRenderer: FrameRenderer = createFrameRenderer()
     private var renderJob: Job? = null
     private val invalidateRunnable = Runnable { invalidateSelf() }
-    private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
+    private val animationCallbacks = CopyOnWriteArrayList<Animatable2Compat.AnimationCallback>()
 
     @Volatile
     private var isRunningInternal = false
@@ -358,21 +361,23 @@ private class AnimatedVideoDrawable(
     }
 
     override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
-        callbacks.add(callback)
+        animationCallbacks.addIfAbsent(callback)
     }
 
     override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
-        return callbacks.remove(callback)
+        return animationCallbacks.remove(callback)
     }
 
-    override fun clearAnimationCallbacks() = callbacks.clear()
+    override fun clearAnimationCallbacks() {
+        animationCallbacks.clear()
+    }
 
     private fun notifyAnimationStart() {
-        callbacks.forEach { it.onAnimationStart(this) }
+        animationCallbacks.forEach { it.onAnimationStart(this) }
     }
 
     private fun notifyAnimationEnd() {
-        callbacks.forEach { it.onAnimationEnd(this) }
+        animationCallbacks.forEach { it.onAnimationEnd(this) }
     }
 
     private fun createFrameRenderer(): FrameRenderer {
@@ -446,8 +451,23 @@ private class AnimatedVideoDrawable(
             start()
         }
         private val vsyncOriginMark = timeSource.markNow()
+        private val imageListenerThread = HandlerThread("AnimatedVideoDrawableImageReader").apply { start() }
+        private val imageListenerHandler = Handler(imageListenerThread.looper)
 
         private var currentBitmap: Bitmap? = null
+
+        init {
+            imageReader.setOnImageAvailableListener({ reader ->
+                reader.acquireLatestImage()?.use { image ->
+                    image.hardwareBuffer?.use { buffer ->
+                        val colorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
+                        val hardwareBitmap = Bitmap.wrapHardwareBuffer(buffer, colorSpace)
+                        currentBitmap?.recycle()
+                        currentBitmap = hardwareBitmap
+                    }
+                }
+            }, imageListenerHandler)
+        }
 
         override fun renderFrame(frame: Bitmap) {
             val recordingCanvas = renderNode.beginRecording(width, height)
@@ -460,19 +480,6 @@ private class AnimatedVideoDrawable(
             renderer.createRenderRequest()
                 .setVsyncTime(vsyncOriginMark.elapsedNow().inWholeNanoseconds)
                 .syncAndDraw()
-
-            imageReader.acquireLatestImage()?.use { image ->
-                val buffer = image.hardwareBuffer ?: return@use
-                val colorSpace = ColorSpace.get(ColorSpace.Named.SRGB)
-                val hardwareBitmap = runCatching {
-                    Bitmap.wrapHardwareBuffer(buffer, colorSpace)
-                }.getOrNull()
-                buffer.close()
-                if (hardwareBitmap != null) {
-                    currentBitmap?.recycle()
-                    currentBitmap = hardwareBitmap
-                }
-            }
         }
 
         override fun draw(canvas: Canvas, bounds: Rect, paint: Paint) {
@@ -489,7 +496,9 @@ private class AnimatedVideoDrawable(
             currentBitmap = null
             renderer.stop()
             renderer.destroy()
+            imageReader.setOnImageAvailableListener(null, null)
             imageReader.close()
+            imageListenerThread.quitSafely()
         }
 
         private companion object {
