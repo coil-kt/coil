@@ -34,6 +34,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -62,9 +63,16 @@ internal class RealImageLoader(
     private val shutdown = atomic(false)
 
     override fun enqueue(request: ImageRequest): Disposable {
-        // Start executing the request on the main thread.
-        val job = scope.async(options.mainCoroutineContextLazy.value) {
-            execute(request, REQUEST_TYPE_ENQUEUE)
+        val job = if (!needsExecuteOnMainDispatcher(request)) {
+            // Fast path: skip dispatching to the main thread.
+            scope.async(start = CoroutineStart.UNDISPATCHED) {
+                execute(request, REQUEST_TYPE_ENQUEUE)
+            }
+        } else {
+            // Start executing the request on the main thread.
+            scope.async(options.mainCoroutineContextLazy.value) {
+                execute(request, REQUEST_TYPE_ENQUEUE)
+            }
         }
 
         // Update the current request attached to the view and return a new disposable.
