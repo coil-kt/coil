@@ -7,7 +7,7 @@
 - **易于使用**：Coil 的 API 利用 Kotlin 的语言功能实现简单性并减少样板代码。
 - **现代**：Coil 是 Kotlin 优先的，可与包括 Compose、Coroutines、Okio、OkHttp 和 Ktor 在内的现代库互操作。
 
-Coil 是 Co**routine **I**mage **L**oader 的缩写。
+Coil 是 **Co**routine **I**mage **L**oader 的缩写。
 
 ## 快速入门
 
