@@ -74,7 +74,7 @@ public final class coil3/network/NetworkClientKt {
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;)V
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;Ljava/util/HashMap;Lkotlinx/coroutines/sync/Mutex;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

@@ -76,7 +76,7 @@ final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.net
 }
 
 final class coil3.network/NetworkFetcher : coil3.fetch/Fetcher { // coil3.network/NetworkFetcher|null[0]
-    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker){}[0]
+    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker, kotlin.collections/HashMap<kotlin/String, kotlinx.coroutines/CompletableDeferred<coil3.fetch/SourceFetchResult>>, kotlinx.coroutines.sync/Mutex) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker;kotlin.collections.HashMap<kotlin.String,kotlinx.coroutines.CompletableDeferred<coil3.fetch.SourceFetchResult>>;kotlinx.coroutines.sync.Mutex){}[0]
 
     final fun getMimeType(kotlin/String, kotlin/String?): kotlin/String? // coil3.network/NetworkFetcher.getMimeType|getMimeType(kotlin.String;kotlin.String?){}[0]
     final suspend fun fetch(): coil3.fetch/FetchResult // coil3.network/NetworkFetcher.fetch|fetch(){}[0]
