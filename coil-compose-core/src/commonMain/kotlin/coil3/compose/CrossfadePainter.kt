@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
@@ -14,6 +15,8 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
+import androidx.compose.ui.unit.IntSize
+import coil3.compose.internal.toIntSize
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
@@ -38,6 +41,7 @@ import kotlin.time.TimeSource
  * @param preferEndFirstIntrinsicSize Returns `true` if this request prefers the end painter's intrinsic size
  * when calculating the `CrossfadePainter`'s intrinsic size.
  * When enabled, the end painter's intrinsic size takes precedence.
+ * @param alignment Optional alignment parameter used to place the painters in the given bounds.
  */
 @Stable
 class CrossfadePainter(
@@ -48,7 +52,8 @@ class CrossfadePainter(
     val timeSource: TimeSource = TimeSource.Monotonic,
     val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false,
-    val preferEndFirstIntrinsicSize: Boolean = false
+    val preferEndFirstIntrinsicSize: Boolean = false,
+    val alignment: Alignment = Alignment.Center
 ) : Painter() {
 
     @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
@@ -60,7 +65,7 @@ class CrossfadePainter(
         timeSource: TimeSource = TimeSource.Monotonic,
         fadeStart: Boolean = true,
         preferExactIntrinsicSize: Boolean = false,
-    ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize)
+    ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize, Alignment.Center)
 
     private var invalidateTick by mutableIntStateOf(0)
     private var startTime: TimeMark? = null
@@ -144,9 +149,14 @@ class CrossfadePainter(
             if (size.isUnspecified || size.isEmpty()) {
                 draw(drawSize, alpha, colorFilter)
             } else {
+                val (dx, dy) = alignment.align(
+                    size = drawSize.toIntSize(),
+                    space = size.toIntSize(),
+                    layoutDirection = layoutDirection,
+                )
                 inset(
-                    horizontal = (size.width - drawSize.width) / 2,
-                    vertical = (size.height - drawSize.height) / 2,
+                    horizontal = dx.toFloat(),
+                    vertical = dy.toFloat(),
                 ) {
                     draw(drawSize, alpha, colorFilter)
                 }
