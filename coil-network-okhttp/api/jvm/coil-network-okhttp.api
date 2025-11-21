@@ -3,9 +3,11 @@ public final class coil3/network/okhttp/OkHttpNetworkFetcher {
 	public static final fun factory ()Lcoil3/network/NetworkFetcher$Factory;
 	public static final fun factory (Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
 	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)Lcoil3/network/NetworkFetcher$Factory;
-	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkFetcher$Factory;
+	public static final synthetic fun factory (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkFetcher$Factory;
 	public static final fun factory (Lokhttp3/Call$Factory;)Lcoil3/network/NetworkFetcher$Factory;
 	public static synthetic fun factory$default (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
+	public static synthetic fun factory$default (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
 	public static synthetic fun factory$default (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/network/NetworkFetcher$Factory;
 }
 
