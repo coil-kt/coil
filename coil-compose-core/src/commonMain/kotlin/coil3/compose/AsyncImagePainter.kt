@@ -149,7 +149,7 @@ private fun rememberAsyncImagePainter(
 }
 
 /**
- * A [Painter] that that executes an [ImageRequest] asynchronously and renders the [ImageResult].
+ * A [Painter] that executes an [ImageRequest] asynchronously and renders the [ImageResult].
  */
 @Stable
 class AsyncImagePainter internal constructor(
