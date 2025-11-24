@@ -2,14 +2,16 @@ package coil3
 
 import android.app.Application
 import coil3.test.utils.RobolectricTest
+import coil3.test.utils.ViewTestActivity
 import coil3.test.utils.context
+import coil3.test.utils.launchActivity
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.atomicfu.atomic
 import org.junit.After
 import org.junit.Test
-import org.robolectric.annotation.Config
 
 class SingletonImageLoaderAndroidTest : RobolectricTest() {
 
@@ -19,7 +21,6 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
     }
 
     @Test
-    @Config(application = TestApplication::class)
     fun `application factory is invoked exactly once`() {
         assertFalse((context.applicationContext as TestApplication).isInitialized)
 
@@ -33,7 +34,6 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
     }
 
     @Test
-    @Config(application = TestApplication::class)
     fun `setImageLoader preempts application factory`() {
         val factory = TestSingletonImageLoaderFactory(context)
 
@@ -46,6 +46,30 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
 
         assertTrue(factory.isInitialized)
         assertFalse((context.applicationContext as TestApplication).isInitialized)
+    }
+
+    @Test
+    fun `GIVEN activity context, WHEN image loader is set, THEN it uses application context`() {
+        // GIVEN
+        var capturedContext: PlatformContext? = null
+        val factory = SingletonImageLoader.Factory { ctx ->
+            capturedContext = ctx
+            ImageLoader(context = capturedContext)
+        }
+
+        SingletonImageLoader.setSafe(factory)
+
+        // WHEN
+        launchActivity { activity: ViewTestActivity ->
+            SingletonImageLoader.get(activity)
+        }
+
+        // THEN
+        assertEquals(
+            expected = context.applicationContext,
+            actual = capturedContext,
+            message = "Expected factory to receive Application context, not Activity"
+        )
     }
 }
 
