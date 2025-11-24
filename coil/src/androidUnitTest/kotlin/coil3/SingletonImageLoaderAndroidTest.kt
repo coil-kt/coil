@@ -12,6 +12,7 @@ import kotlin.test.assertTrue
 import kotlinx.atomicfu.atomic
 import org.junit.After
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class SingletonImageLoaderAndroidTest : RobolectricTest() {
 
@@ -21,6 +22,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
     }
 
     @Test
+    @Config(application = TestApplication::class)
     fun `application factory is invoked exactly once`() {
         assertFalse((context.applicationContext as TestApplication).isInitialized)
 
@@ -34,6 +36,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
     }
 
     @Test
+    @Config(application = TestApplication::class)
     fun `setImageLoader preempts application factory`() {
         val factory = TestSingletonImageLoaderFactory(context)
 
@@ -49,6 +52,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
     }
 
     @Test
+    @Config(application = TestApplication::class)
     fun `GIVEN activity context, WHEN image loader is set, THEN it uses application context`() {
         // GIVEN
         var capturedContext: PlatformContext? = null
