@@ -10,7 +10,7 @@ concurrency:
     cancel-in-progress: true
 env:
     CI: true
-    JAVA_VERSION: 17
+    JAVA_VERSION: 21
     ORG_GRADLE_IDE_DOWNLOADJAVADOC: false
     ORG_GRADLE_IDE_DOWNLOADSOURCES: false
 jobs:
