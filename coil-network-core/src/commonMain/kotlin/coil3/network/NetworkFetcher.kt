@@ -22,6 +22,9 @@ import coil3.network.internal.requireBody
 import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import coil3.util.MimeTypeMap
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.Buffer
 import okio.FileSystem
 import okio.IOException
@@ -36,9 +39,23 @@ class NetworkFetcher(
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
     private val connectivityChecker: ConnectivityChecker,
+    private val pendingRequests: HashMap<String, CompletableDeferred<SourceFetchResult>>,
+    private val mutex: Mutex,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
+        val requestKey = generateRequestKey(url, options)
+
+        val newDeferred = CompletableDeferred<SourceFetchResult>()
+        val deferred = mutex.withLock {
+            pendingRequests[requestKey] ?: newDeferred.also {
+                pendingRequests[requestKey] = it
+            }
+        }
+        if (deferred !== newDeferred) {
+            return deferred.await()
+        }
+
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
@@ -48,11 +65,13 @@ class NetworkFetcher(
                 // Always return files with empty metadata as it's likely they've been written
                 // to the disk cache manually.
                 if (fileSystem.metadata(snapshot.metadata).size == 0L) {
-                    return SourceFetchResult(
+                    val result = SourceFetchResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, null),
                         dataSource = DataSource.DISK,
                     )
+                    deferred.complete(result)
+                    return result
                 }
 
                 // Return the image from the disk cache if the cache strategy agrees.
@@ -62,11 +81,13 @@ class NetworkFetcher(
 
                     readResult = cacheStrategy.value.read(cacheResponse, newRequest(), options)
                     if (readResult.response != null) {
-                        return SourceFetchResult(
+                        val result = SourceFetchResult(
                             source = snapshot.toImageSource(),
                             mimeType = getMimeType(url, readResult.response.headers[CONTENT_TYPE]),
                             dataSource = DataSource.DISK,
                         )
+                        deferred.complete(result)
+                        return result
                     }
                 }
             }
@@ -87,21 +108,25 @@ class NetworkFetcher(
 
                 if (snapshot != null) {
                     cacheResponse = snapshot!!.toNetworkResponseOrNull()
-                    return@executeRequest SourceFetchResult(
+                    val result = SourceFetchResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse?.headers?.get(CONTENT_TYPE)),
                         dataSource = DataSource.NETWORK,
                     )
+                    deferred.complete(result)
+                    return@executeRequest result
                 }
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
                 val responseBody = networkResponse.requireBody().readBuffer()
                 if (responseBody.size > 0) {
-                    return@executeRequest SourceFetchResult(
+                    val result = SourceFetchResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, networkResponse.headers[CONTENT_TYPE]),
                         dataSource = DataSource.NETWORK,
                     )
+                    deferred.complete(result)
+                    return@executeRequest result
                 }
 
                 return@executeRequest null
@@ -111,18 +136,27 @@ class NetworkFetcher(
             // cache headers.
             if (fetchResult == null) {
                 fetchResult = networkClient.value.executeRequest(newRequest()) { response ->
-                    SourceFetchResult(
+                    val result = SourceFetchResult(
                         source = response.requireBody().toImageSource(),
                         mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
                         dataSource = DataSource.NETWORK,
                     )
+                    deferred.complete(result)
+                    result
                 }
             }
 
             return fetchResult
         } catch (e: Exception) {
             snapshot?.closeQuietly()
+            deferred.completeExceptionally(e)
             throw e
+        } finally {
+            mutex.withLock {
+                if (pendingRequests[requestKey] === deferred) {
+                    pendingRequests.remove(requestKey)
+                }
+            }
         }
     }
 
@@ -208,6 +242,28 @@ class NetworkFetcher(
         )
     }
 
+    private fun generateRequestKey(url: String, options: Options): String {
+        return buildString {
+            append(url)
+            append('|')
+            append(options.httpMethod)
+            append('|')
+            append(options.httpBody?.hashCode() ?: 0)
+            append('|')
+            val headers = options.httpHeaders.asMap()
+                .flatMap { (name, values) -> values.map { value -> name to value } }
+                .sortedBy { it.first }
+                .joinToString(separator = ",") { "${it.first}:${it.second}" }
+            append(headers)
+            append('|')
+            append(options.networkCachePolicy)
+            append('|')
+            append(options.diskCachePolicy)
+            append('|')
+            append(options.diskCacheKey)
+        }
+    }
+
     /**
      * Parse the response's `content-type` header.
      *
@@ -269,6 +325,8 @@ class NetworkFetcher(
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
+        private val pendingRequests = HashMap<String, CompletableDeferred<SourceFetchResult>>()
+        private val mutex = Mutex()
 
         override fun create(
             data: Uri,
@@ -283,6 +341,8 @@ class NetworkFetcher(
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
                 connectivityChecker = connectivityCheckerLazy.get(options.context),
+                pendingRequests = pendingRequests,
+                mutex = mutex,
             )
         }
 
