@@ -11,6 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlinx.coroutines.sync.Mutex
 import okio.Buffer
 import okio.ByteString.Companion.toByteString
 import okio.fakefilesystem.FakeFileSystem
@@ -50,6 +51,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(null),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker(context),
+            pendingRequests = hashMapOf(),
+            mutex = Mutex()
         ).fetch()
 
         assertIs<SourceFetchResult>(result)
@@ -89,6 +92,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            pendingRequests = hashMapOf(),
+            mutex = Mutex()
         )
 
         // A 400 response throws, but should still be cached.
@@ -140,6 +145,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            pendingRequests = hashMapOf(),
+            mutex = Mutex()
         )
 
         // A 500 response throws and should not be cached.
@@ -191,6 +198,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            pendingRequests = hashMapOf(),
+            mutex = Mutex()
         )
 
         assertFailsWith<HttpException> { fetcher.fetch() }
