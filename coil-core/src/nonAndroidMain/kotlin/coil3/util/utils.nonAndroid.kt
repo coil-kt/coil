@@ -40,6 +40,7 @@ internal fun Bitmap.Companion.makeFromImage(
         dstWidth = dstWidth,
         dstHeight = dstHeight,
         scale = options.scale,
+        maxSize = options.maxBitmapSize,
     )
 
     // Only upscale the image if the options require an exact size.

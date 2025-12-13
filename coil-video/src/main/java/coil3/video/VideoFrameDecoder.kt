@@ -80,6 +80,7 @@ class VideoFrameDecoder(
                 dstWidth = dstWidth,
                 dstHeight = dstHeight,
                 scale = options.scale,
+                maxSize = options.maxBitmapSize,
             )
             val scale = if (options.precision == Precision.INEXACT) {
                 rawScale.coerceAtMost(1.0)
