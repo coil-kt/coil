@@ -341,7 +341,34 @@ class RealImageLoaderAndroidTest {
             srcHeight = 4965,
             dstWidth = maxBitmapSize.width.pxOrElse { throw IllegalStateException() },
             dstHeight = maxBitmapSize.height.pxOrElse { throw IllegalStateException() },
-            scale = Scale.FIT
+            scale = Scale.FIT,
+            maxSize = maxBitmapSize,
+        )
+        val expectedWidth = (multiplier * 9052).roundToInt()
+        val expectedHeight = (multiplier * 4965).roundToInt()
+        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+    }
+
+    @Test
+    fun veryLargeImageWithFill() = runTest {
+        val request = ImageRequest.Builder(context)
+            .data(R.drawable.very_large)
+            .scale(Scale.FILL)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+
+        assertIs<SuccessResult>(result)
+        val image = assertIs<BitmapImage>(result.image)
+        val maxBitmapSize = Extras.Key.maxBitmapSize.default
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = 9052,
+            srcHeight = 4965,
+            dstWidth = maxBitmapSize.width.pxOrElse { throw IllegalStateException() },
+            dstHeight = maxBitmapSize.height.pxOrElse { throw IllegalStateException() },
+            scale = Scale.FILL,
+            maxSize = maxBitmapSize,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()

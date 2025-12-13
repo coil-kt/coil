@@ -22,6 +22,7 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
+import coil3.size.Size
 import coil3.util.component1
 import coil3.util.component2
 import coil3.util.isHardware
@@ -60,6 +61,7 @@ class StaticImageDecoder(
                         dstWidth = dstWidth,
                         dstHeight = dstHeight,
                         scale = options.scale,
+                        maxSize = options.maxBitmapSize,
                     )
 
                     // Set the target size if the image is larger than the requested dimensions
