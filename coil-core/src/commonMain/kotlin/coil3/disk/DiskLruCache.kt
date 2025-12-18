@@ -164,7 +164,7 @@ internal class DiskLruCache(
         }
     }
 
-    fun initialize() = synchronized(lock) {
+    fun initialize(): Unit = synchronized(lock) {
         if (initialized) return
 
         // If a temporary file exists, delete it.
@@ -318,7 +318,7 @@ internal class DiskLruCache(
     /**
      * Writes [lruEntries] to a new journal file. This replaces the current journal if it exists.
      */
-    private fun writeJournal() = synchronized(lock) {
+    private fun writeJournal(): Unit = synchronized(lock) {
         journalWriter?.close()
 
         fileSystem.write(journalFileTmp) {
@@ -442,7 +442,7 @@ internal class DiskLruCache(
         return size
     }
 
-    private fun completeEdit(editor: Editor, success: Boolean) = synchronized(lock) {
+    private fun completeEdit(editor: Editor, success: Boolean): Unit = synchronized(lock) {
         val entry = editor.entry
         check(entry.currentEditor == editor)
 
@@ -524,14 +524,14 @@ internal class DiskLruCache(
         initialize()
 
         val entry = lruEntries[key] ?: return false
-        val removed = removeEntry(entry)
-        if (removed && size <= maxSize) {
+        removeEntry(entry)
+        if (size <= maxSize) {
             mostRecentTrimFailed = false
         }
-        return removed
+        return true
     }
 
-    private fun removeEntry(entry: Entry): Boolean {
+    private fun removeEntry(entry: Entry) {
         // If we can't delete files that are still open, mark this entry as a zombie so its files
         // will be deleted when those files are closed.
         if (entry.lockingSnapshotCount > 0) {
@@ -546,7 +546,6 @@ internal class DiskLruCache(
         }
         if (entry.lockingSnapshotCount > 0 || entry.currentEditor != null) {
             entry.zombie = true
-            return true
         }
 
         for (i in 0 until valueCount) {
@@ -568,8 +567,6 @@ internal class DiskLruCache(
         if (journalRewriteRequired()) {
             launchCleanup()
         }
-
-        return true
     }
 
     private fun checkNotClosed() {
@@ -577,7 +574,7 @@ internal class DiskLruCache(
     }
 
     /** Closes this cache. Stored values will remain on the filesystem. */
-    override fun close() = synchronized(lock) {
+    override fun close(): Unit = synchronized(lock) {
         if (!initialized || closed) {
             closed = true
             return
@@ -596,7 +593,7 @@ internal class DiskLruCache(
         closed = true
     }
 
-    fun flush() = synchronized(lock) {
+    fun flush(): Unit = synchronized(lock) {
         if (!initialized) return
 
         checkNotClosed()
@@ -635,7 +632,7 @@ internal class DiskLruCache(
      * Deletes all stored values from the cache. In-flight edits will complete normally but their
      * values will not be stored.
      */
-    fun evictAll() = synchronized(lock) {
+    fun evictAll(): Unit = synchronized(lock) {
         initialize()
         // Copying for concurrent iteration.
         for (entry in lruEntries.values.toTypedArray()) {
