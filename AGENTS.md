@@ -8,7 +8,7 @@
 ## Build, Test, and Development Commands
 - `./gradlew build` – compile every module and produce distributables.
 - `./gradlew check` – run unit tests and verification tasks across targets.
-- `./gradlew apiCheck` – verify binary compatibility for public APIs.
+- `./gradlew checkLegacyAbi` – verify binary compatibility for public APIs.
 - `./gradlew spotlessApply` / `spotlessCheck` – format Kotlin + KTS sources or validate formatting.
 - Samples: `./gradlew :samples:view:installDebug` (Android) or `./gradlew :samples:compose:run` (Desktop preview).
 
@@ -24,7 +24,7 @@
 
 ## Commit & Pull Request Guidelines
 - Write commits in imperative mood, ideally Conventional Commits (e.g., `feat: add gif sample`).
-- Before pushing, run `./test.sh`, `spotlessCheck`, and `apiCheck` when APIs change.
+- Before pushing, run `./test.sh`, `spotlessCheck`, and `checkLegacyAbi` when APIs change.
 - PRs should describe intent, link related issues, and include screenshots or GIFs for visual updates.
 
 ## Security & Configuration Tips

@@ -5,11 +5,15 @@ import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
-import kotlinx.validation.ApiValidationExtension
-import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -35,21 +39,9 @@ buildscript {
 plugins {
     alias(libs.plugins.baselineProfile) apply false
     alias(libs.plugins.poko) apply false
-    alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.spotless)
     // https://github.com/gradle/gradle/issues/20084#issuecomment-1060822638
     id("org.jetbrains.dokka")
-}
-
-extensions.configure<ApiValidationExtension> {
-    nonPublicMarkers += "coil3/annotation/InternalCoilApi"
-    ignoredProjects += project.subprojects.mapNotNull { project ->
-        if (project.name in publicModules) null else project.name
-    }
-    @OptIn(ExperimentalBCVApi::class)
-    klib {
-        enabled = true
-    }
 }
 
 dokka {
@@ -141,6 +133,33 @@ allprojects {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlinx" && requested.name == "atomicfu") {
                 useVersion(libs.versions.atomicfu.get())
+            }
+        }
+    }
+
+    if (project.name in publicModules) {
+        @OptIn(ExperimentalAbiValidation::class)
+        plugins.withType<KotlinBasePlugin> {
+            extensions.configure<KotlinProjectExtension> {
+                fun AbiValidationVariantSpec.configure() = filters {
+                    excluded {
+                        annotatedWith.add("coil3.annotation.InternalCoilApi")
+                    }
+                }
+
+                // Unfortunately the 'enabled' property doesn't share a common interface.
+                val singleTargetExtension = extensions.findByType<AbiValidationExtension>()
+                if (singleTargetExtension != null) {
+                    singleTargetExtension.apply {
+                        enabled = true
+                        configure()
+                    }
+                } else {
+                    extensions.configure<AbiValidationMultiplatformExtension> {
+                        enabled = true
+                        configure()
+                    }
+                }
             }
         }
     }

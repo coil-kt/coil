@@ -19,7 +19,6 @@ skiko = "0.9.22.2"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
-binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.18.1"
 poko = "dev.drewhamilton.poko:0.21.0"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha12"
 spotless = "com.diffplug.spotless:8.1.0"

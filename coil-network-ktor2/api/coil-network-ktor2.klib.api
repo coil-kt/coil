@@ -6,9 +6,6 @@
 // - Show declarations: true
 
 // Library unique name: <io.coil-kt.coil3:coil-network-ktor2>
-final val coil3.network.ktor2.internal/initHook // coil3.network.ktor2.internal/initHook|{}initHook[0]
-    final fun <get-initHook>(): kotlin/Any // coil3.network.ktor2.internal/initHook.<get-initHook>|<get-initHook>(){}[0]
-
 final fun (io.ktor.client/HttpClient).coil3.network.ktor2/asNetworkClient(): coil3.network/NetworkClient // coil3.network.ktor2/asNetworkClient|asNetworkClient@io.ktor.client.HttpClient(){}[0]
 final fun coil3.network.ktor2/KtorNetworkFetcherFactory(): coil3.network/NetworkFetcher.Factory // coil3.network.ktor2/KtorNetworkFetcherFactory|KtorNetworkFetcherFactory(){}[0]
 final fun coil3.network.ktor2/KtorNetworkFetcherFactory(io.ktor.client/HttpClient): coil3.network/NetworkFetcher.Factory // coil3.network.ktor2/KtorNetworkFetcherFactory|KtorNetworkFetcherFactory(io.ktor.client.HttpClient){}[0]
