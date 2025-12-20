@@ -546,6 +546,7 @@ internal class DiskLruCache(
         }
         if (entry.lockingSnapshotCount > 0 || entry.currentEditor != null) {
             entry.zombie = true
+            return
         }
 
         for (i in 0 until valueCount) {
