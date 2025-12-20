@@ -215,7 +215,7 @@ private fun <T : BaseExtension> Project.androidBase(
             arguments += "-progressive"
 
             // Enable Java default method generation.
-            arguments += "-Xjvm-default=all"
+            arguments += "-jvm-default=no-compatibility"
 
             // Generate smaller bytecode by not generating runtime not-null assertions.
             arguments += "-Xno-call-assertions"
