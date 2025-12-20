@@ -1,0 +1,49 @@
+public final class coil3/video/ImageRequestsKt {
+	public static final fun getPreferVideoFrameEmbeddedThumbnail (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getPreferVideoFrameEmbeddedThumbnail (Lcoil3/request/Options;)Z
+	public static final fun getVideoFrameIndex (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFrameIndex (Lcoil3/request/ImageRequest;)I
+	public static final fun getVideoFrameIndex (Lcoil3/request/Options;)I
+	public static final fun getVideoFrameMicros (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFrameMicros (Lcoil3/request/ImageRequest;)J
+	public static final fun getVideoFrameMicros (Lcoil3/request/Options;)J
+	public static final fun getVideoFrameOption (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFrameOption (Lcoil3/request/ImageRequest;)I
+	public static final fun getVideoFrameOption (Lcoil3/request/Options;)I
+	public static final fun getVideoFramePercent (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getVideoFramePercent (Lcoil3/request/ImageRequest;)D
+	public static final fun getVideoFramePercent (Lcoil3/request/Options;)D
+	public static final fun preferVideoFrameEmbeddedThumbnailKey (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameIndex (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameMicros (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameMillis (Lcoil3/request/ImageRequest$Builder;J)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFrameOption (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
+	public static final fun videoFramePercent (Lcoil3/request/ImageRequest$Builder;D)Lcoil3/request/ImageRequest$Builder;
+}
+
+public final class coil3/video/MediaDataSourceFetcher : coil3/fetch/Fetcher {
+	public fun <init> (Landroid/media/MediaDataSource;Lcoil3/request/Options;)V
+	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/video/MediaDataSourceFetcher$Factory : coil3/fetch/Fetcher$Factory {
+	public fun <init> ()V
+	public fun create (Landroid/media/MediaDataSource;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
+	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
+}
+
+public final class coil3/video/MediaDataSourceFetcher$MediaSourceMetadata : coil3/decode/ImageSource$Metadata {
+	public fun <init> (Landroid/media/MediaDataSource;)V
+	public final fun getMediaDataSource ()Landroid/media/MediaDataSource;
+}
+
+public final class coil3/video/VideoFrameDecoder : coil3/decode/Decoder {
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/video/VideoFrameDecoder$Factory : coil3/decode/Decoder$Factory {
+	public fun <init> ()V
+	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
