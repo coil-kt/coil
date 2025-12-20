@@ -8,14 +8,11 @@ import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
@@ -164,8 +161,6 @@ allprojects {
         }
     }
 
-    applyOkioJsTestWorkaround()
-
     // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
     tasks.withType<KotlinJsTest>().configureEach {
         nodeJsArgs.add("--require")
@@ -217,52 +212,6 @@ private val ktlintRules = buildMap {
     put("ktlint_standard_property-wrapping", "disabled")
     put("ktlint_standard_statement-wrapping", "disabled")
     put("ktlint_standard_wrapping", "disabled")
-}
-
-// https://github.com/square/okio/issues/1163
-fun Project.applyOkioJsTestWorkaround() {
-    if (":samples" in displayName) {
-        // The polyfills cause issues with the samples.
-        return
-    }
-
-    plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        val applyNodePolyfillPlugin by lazy {
-            tasks.register("applyNodePolyfillPlugin") {
-                val applyPluginFile = projectDir
-                    .resolve("webpack.config.d/applyNodePolyfillPlugin.js")
-                onlyIf {
-                    !applyPluginFile.exists()
-                }
-                doLast {
-                    applyPluginFile.parentFile.mkdirs()
-                    applyPluginFile.writeText(
-                        """
-                        const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-                        config.plugins.push(new NodePolyfillPlugin());
-                        """.trimIndent(),
-                    )
-                }
-            }
-        }
-
-        extensions.configure<KotlinMultiplatformExtension> {
-            sourceSets {
-                targets.configureEach {
-                    compilations.configureEach {
-                        if ((platformType == js || platformType == wasm) && name == "test") {
-                            tasks
-                                .getByName(compileKotlinTaskName)
-                                .dependsOn(applyNodePolyfillPlugin)
-                            dependencies {
-                                implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 apply(from = rootProject.file("gradle/verifySkikoVersionsMatch.gradle.kts"))
