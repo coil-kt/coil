@@ -86,9 +86,7 @@ object SingletonImageLoader {
     private fun newImageLoader(context: PlatformContext): ImageLoader {
         // Local storage to ensure newImageLoader is invoked at most once.
         var imageLoader: ImageLoader? = null
-        // No impact on non-Android platforms, still uses
-        // same context, but for Android it uses applicationContext when possible.
-        val applicationContext = context.toApplicationContext()
+        val applicationContext = context.applicationContext()
 
         return reference.updateAndGet { value ->
             when {
@@ -118,7 +116,7 @@ object SingletonImageLoader {
     }
 }
 
-internal expect fun PlatformContext.toApplicationContext(): PlatformContext
+internal expect fun PlatformContext.applicationContext(): PlatformContext
 
 internal expect fun PlatformContext.applicationImageLoaderFactory(): Factory?
 

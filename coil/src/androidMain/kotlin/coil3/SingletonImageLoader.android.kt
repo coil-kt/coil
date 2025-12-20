@@ -9,9 +9,9 @@ internal actual fun PlatformContext.applicationImageLoaderFactory(): SingletonIm
  * Otherwise returns the platform context as is.
  * @return PlatformContext's applicationContext for Android.
  */
-internal actual fun PlatformContext.toApplicationContext(): PlatformContext =
+internal actual fun PlatformContext.applicationContext(): PlatformContext =
     try {
-        this.applicationContext as PlatformContext
+        this.applicationContext
     } catch (exception: Exception) {
         // Return the platform context as is just in case.
         this
