@@ -15,6 +15,15 @@ abstract fun interface coil3.network/ConnectivityChecker { // coil3.network/Conn
     }
 }
 
+abstract fun interface coil3.network/RequestKeyGenerator { // coil3.network/RequestKeyGenerator|null[0]
+    abstract fun generate(kotlin/String, coil3.request/Options): kotlin/String // coil3.network/RequestKeyGenerator.generate|generate(kotlin.String;coil3.request.Options){}[0]
+
+    final object Companion { // coil3.network/RequestKeyGenerator.Companion|null[0]
+        final val DEFAULT // coil3.network/RequestKeyGenerator.Companion.DEFAULT|{}DEFAULT[0]
+            final fun <get-DEFAULT>(): coil3.network/RequestKeyGenerator // coil3.network/RequestKeyGenerator.Companion.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+    }
+}
+
 abstract interface coil3.network/CacheStrategy { // coil3.network/CacheStrategy|null[0]
     abstract suspend fun read(coil3.network/NetworkResponse, coil3.network/NetworkRequest, coil3.request/Options): coil3.network/CacheStrategy.ReadResult // coil3.network/CacheStrategy.read|read(coil3.network.NetworkResponse;coil3.network.NetworkRequest;coil3.request.Options){}[0]
     abstract suspend fun write(coil3.network/NetworkResponse?, coil3.network/NetworkRequest, coil3.network/NetworkResponse, coil3.request/Options): coil3.network/CacheStrategy.WriteResult // coil3.network/CacheStrategy.write|write(coil3.network.NetworkResponse?;coil3.network.NetworkRequest;coil3.network.NetworkResponse;coil3.request.Options){}[0]
@@ -76,12 +85,12 @@ final class coil3.network/HttpException : kotlin/RuntimeException { // coil3.net
 }
 
 final class coil3.network/NetworkFetcher : coil3.fetch/Fetcher { // coil3.network/NetworkFetcher|null[0]
-    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker, kotlin.collections/HashMap<kotlin/String, kotlinx.coroutines/CompletableDeferred<coil3.fetch/SourceFetchResult>>, kotlinx.coroutines.sync/Mutex) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker;kotlin.collections.HashMap<kotlin.String,kotlinx.coroutines.CompletableDeferred<coil3.fetch.SourceFetchResult>>;kotlinx.coroutines.sync.Mutex){}[0]
+    constructor <init>(kotlin/String, coil3.request/Options, kotlin/Lazy<coil3.network/NetworkClient>, kotlin/Lazy<coil3.disk/DiskCache?>, kotlin/Lazy<coil3.network/CacheStrategy>, coil3.network/ConnectivityChecker, coil3.network/RequestKeyGenerator, coil3.network.internal/PendingRequests) // coil3.network/NetworkFetcher.<init>|<init>(kotlin.String;coil3.request.Options;kotlin.Lazy<coil3.network.NetworkClient>;kotlin.Lazy<coil3.disk.DiskCache?>;kotlin.Lazy<coil3.network.CacheStrategy>;coil3.network.ConnectivityChecker;coil3.network.RequestKeyGenerator;coil3.network.internal.PendingRequests){}[0]
 
     final suspend fun fetch(): coil3.fetch/FetchResult // coil3.network/NetworkFetcher.fetch|fetch(){}[0]
 
     final class Factory : coil3.fetch/Fetcher.Factory<coil3/Uri> { // coil3.network/NetworkFetcher.Factory|null[0]
-        constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy> = ..., kotlin/Function1<coil3/PlatformContext, coil3.network/ConnectivityChecker> = ...) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>;kotlin.Function1<coil3.PlatformContext,coil3.network.ConnectivityChecker>){}[0]
+        constructor <init>(kotlin/Function0<coil3.network/NetworkClient>, kotlin/Function0<coil3.network/CacheStrategy> = ..., kotlin/Function1<coil3/PlatformContext, coil3.network/ConnectivityChecker> = ..., coil3.network/RequestKeyGenerator = ...) // coil3.network/NetworkFetcher.Factory.<init>|<init>(kotlin.Function0<coil3.network.NetworkClient>;kotlin.Function0<coil3.network.CacheStrategy>;kotlin.Function1<coil3.PlatformContext,coil3.network.ConnectivityChecker>;coil3.network.RequestKeyGenerator){}[0]
 
         final fun create(coil3/Uri, coil3.request/Options, coil3/ImageLoader): coil3.fetch/Fetcher? // coil3.network/NetworkFetcher.Factory.create|create(coil3.Uri;coil3.request.Options;coil3.ImageLoader){}[0]
     }

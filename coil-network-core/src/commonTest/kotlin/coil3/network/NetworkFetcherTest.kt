@@ -3,6 +3,7 @@ package coil3.network
 import coil3.Extras
 import coil3.disk.DiskCache
 import coil3.fetch.SourceFetchResult
+import coil3.network.internal.PendingRequests
 import coil3.request.Options
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -11,7 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
-import kotlinx.coroutines.sync.Mutex
 import okio.Buffer
 import okio.ByteString.Companion.toByteString
 import okio.fakefilesystem.FakeFileSystem
@@ -51,8 +51,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(null),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker(context),
-            pendingRequests = hashMapOf(),
-            mutex = Mutex()
+            requestKeyGenerator = RequestKeyGenerator.DEFAULT,
+            pendingRequests = PendingRequests(),
         ).fetch()
 
         assertIs<SourceFetchResult>(result)
@@ -92,8 +92,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
-            pendingRequests = hashMapOf(),
-            mutex = Mutex()
+            requestKeyGenerator = RequestKeyGenerator.DEFAULT,
+            pendingRequests = PendingRequests(),
         )
 
         // A 400 response throws, but should still be cached.
@@ -145,8 +145,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
-            pendingRequests = hashMapOf(),
-            mutex = Mutex()
+            requestKeyGenerator = RequestKeyGenerator.DEFAULT,
+            pendingRequests = PendingRequests(),
         )
 
         // A 500 response throws and should not be cached.
@@ -198,8 +198,8 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
-            pendingRequests = hashMapOf(),
-            mutex = Mutex()
+            requestKeyGenerator = RequestKeyGenerator.DEFAULT,
+            pendingRequests = PendingRequests(),
         )
 
         assertFailsWith<HttpException> { fetcher.fetch() }
