@@ -1,3 +1,4 @@
+import coil3.addNodePolyfillWebpackPlugin
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
 import coil3.applyJvm11OnlyToJvmTarget
@@ -112,6 +113,8 @@ kotlin {
             }
         }
     }
+
+    addNodePolyfillWebpackPlugin()
 }
 
 // https://youtrack.jetbrains.com/issue/KT-56025
