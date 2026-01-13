@@ -1,5 +1,7 @@
 package coil3
 
+import coil3.key.Keyer
+
 /**
  * Create a new [ImageLoader] without configuration.
  */
@@ -30,3 +32,19 @@ internal val RealImageLoader.Options.serviceLoaderEnabled: Boolean
 private val serviceLoaderEnabledKey = Extras.Key(default = true)
 
 // endregion
+
+/**
+ * Enables the default [Keyer]. This means that data types that don't have a registered [Keyer]
+ * will have a memory cache key created for them using [Any.toString].
+ *
+ * If disabled (the default), images will not be cached if they do not have a registered [Keyer]
+ * for the associated data type.
+ */
+fun ImageLoader.Builder.defaultKeyerEnabled(enable: Boolean) = apply {
+    extras[defaultKeyerEnabledKey] = enable
+}
+
+internal val RealImageLoader.Options.defaultKeyerEnabled: Boolean
+    get() = defaults.extras.getOrDefault(defaultKeyerEnabledKey)
+
+private val defaultKeyerEnabledKey = Extras.Key(default = false)
