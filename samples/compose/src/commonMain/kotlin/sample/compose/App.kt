@@ -1,7 +1,9 @@
 package sample.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -13,8 +15,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,8 +44,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
@@ -197,17 +205,35 @@ private fun DetailScreen(
     screen: Screen.Detail,
     padding: PaddingValues,
 ) {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalPlatformContext.current)
-            .data(screen.image.uri)
-            .placeholderMemoryCacheKey(screen.placeholder)
-            .extras(screen.image.extras)
-            .build(),
-        contentDescription = null,
+    // Test case for https://github.com/coil-kt/coil/issues/3282
+    // The error and loading composables should fill the 200.dp size, but they
+    // render at their intrinsic size (24.dp for Icon) instead.
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding),
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        // Use an invalid URL to trigger the error state and demonstrate the bug.
+        SubcomposeAsyncImage(
+            model = "https://invalid.url.test/image.jpg",
+            contentDescription = null,
+            loading = {
+                CircularProgressIndicator()
+            },
+            error = {
+                // This Box should fill the 200.dp container.
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Red),
+                )
+            },
+            modifier = Modifier
+                .size(200.dp)
+                .background(Color.Gray),
+        )
+    }
 }
 
 @Composable
