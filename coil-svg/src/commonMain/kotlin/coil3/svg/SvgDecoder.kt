@@ -102,6 +102,7 @@ class SvgDecoder(
                 dstWidth = dstWidth.toFloat(),
                 dstHeight = dstHeight.toFloat(),
                 scale = options.scale,
+                maxSize = options.maxBitmapSize,
             )
             bitmapWidth = (multiplier * svgWidth).toInt()
             bitmapHeight = (multiplier * svgHeight).toInt()

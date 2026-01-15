@@ -60,6 +60,7 @@ class StaticImageDecoder(
                         dstWidth = dstWidth,
                         dstHeight = dstHeight,
                         scale = options.scale,
+                        maxSize = options.maxBitmapSize,
                     )
 
                     // Set the target size if the image is larger than the requested dimensions

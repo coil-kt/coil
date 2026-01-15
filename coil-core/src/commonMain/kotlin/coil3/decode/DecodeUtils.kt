@@ -43,13 +43,27 @@ object DecodeUtils {
         dstWidth: Int,
         dstHeight: Int,
         scale: Scale,
+        maxSize: Size = Size.ORIGINAL,
     ): Double {
-        val widthPercent = dstWidth / srcWidth.toDouble()
-        val heightPercent = dstHeight / srcHeight.toDouble()
-        return when (scale) {
+        val srcWidthDouble = srcWidth.toDouble()
+        val srcHeightDouble = srcHeight.toDouble()
+        val widthPercent = dstWidth / srcWidthDouble
+        val heightPercent = dstHeight / srcHeightDouble
+        var percent = when (scale) {
             Scale.FILL -> maxOf(widthPercent, heightPercent)
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
+        if (maxSize.width is Dimension.Pixels) {
+            val maxWidth = maxSize.width.px
+            val maxWidthPercent = maxWidth / srcWidthDouble
+            percent = percent.coerceAtMost(maxWidthPercent)
+        }
+        if (maxSize.height is Dimension.Pixels) {
+            val maxHeight = maxSize.height.px
+            val maxHeightPercent = maxHeight / srcHeightDouble
+            percent = percent.coerceAtMost(maxHeightPercent)
+        }
+        return percent
     }
 
     /** @see computeSizeMultiplier */
@@ -60,13 +74,25 @@ object DecodeUtils {
         dstWidth: Float,
         dstHeight: Float,
         scale: Scale,
+        maxSize: Size = Size.ORIGINAL,
     ): Float {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
-        return when (scale) {
+        var percent = when (scale) {
             Scale.FILL -> maxOf(widthPercent, heightPercent)
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
+        if (maxSize.width is Dimension.Pixels) {
+            val maxWidth = maxSize.width.px
+            val maxWidthPercent = maxWidth / srcWidth
+            percent = percent.coerceAtMost(maxWidthPercent)
+        }
+        if (maxSize.height is Dimension.Pixels) {
+            val maxHeight = maxSize.height.px
+            val maxHeightPercent = maxHeight / srcHeight
+            percent = percent.coerceAtMost(maxHeightPercent)
+        }
+        return percent
     }
 
     /** @see computeSizeMultiplier */
@@ -77,13 +103,25 @@ object DecodeUtils {
         dstWidth: Double,
         dstHeight: Double,
         scale: Scale,
+        maxSize: Size = Size.ORIGINAL,
     ): Double {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
-        return when (scale) {
+        var percent = when (scale) {
             Scale.FILL -> maxOf(widthPercent, heightPercent)
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
+        if (maxSize.width is Dimension.Pixels) {
+            val maxWidth = maxSize.width.px
+            val maxWidthPercent = maxWidth / srcWidth
+            percent = percent.coerceAtMost(maxWidthPercent)
+        }
+        if (maxSize.height is Dimension.Pixels) {
+            val maxHeight = maxSize.height.px
+            val maxHeightPercent = maxHeight / srcHeight
+            percent = percent.coerceAtMost(maxHeightPercent)
+        }
+        return percent
     }
 
     /**
