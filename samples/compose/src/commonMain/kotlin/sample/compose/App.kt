@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -295,62 +296,68 @@ private fun ListScreen(
  */
 @Composable
 private fun Issue3260Screen(padding: PaddingValues) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding)
             .padding(horizontal = 16.dp),
     ) {
-        Text(
-            text = "Issue #3260: AsyncImage clips sibling content with IntrinsicSize.Max",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 16.dp),
-        )
-
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth(),
-        ) {
+        items(10) { index ->
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(16.dp),
+                    .fillParentMaxWidth(),
             ) {
-                Image(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
+                Text(
+                    text = "Issue #3260: AsyncImage clips sibling content with IntrinsicSize.Max (Item ${index + 1})",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 16.dp),
                 )
 
-                VerticalDivider(
+                Row(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .align(Alignment.CenterHorizontally)
-                        .width(1.dp)
-                )
-            }
-            Column {
-                AsyncImage(
-                    model = "https://picsum.photos/200/200",
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(100.dp),
-                )
-                // This text is NOT rendered due to the bug
+                        .height(IntrinsicSize.Max)
+                        .fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(16.dp),
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                        )
+
+                        VerticalDivider(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .align(Alignment.CenterHorizontally)
+                                .width(1.dp)
+                        )
+                    }
+                    Column {
+                        AsyncImage(
+                            model = "https://picsum.photos/200/200",
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(100.dp),
+                        )
+                        Text(
+                            text = "This text should be visible!",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                }
+
                 Text(
-                    text = "This text should be visible!",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = "If you see red text above saying 'This text should be visible!', the bug is fixed. " +
+                        "If you only see the image with no text below it, the bug is present.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 16.dp),
                 )
             }
         }
-
-        Text(
-            text = "If you see red text above saying 'This text should be visible!', the bug is fixed. " +
-                "If you only see the image with no text below it, the bug is present.",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(vertical = 16.dp),
-        )
     }
 }
 
