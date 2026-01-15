@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.ColorFilter
@@ -181,6 +182,7 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
+    internal var alignment = Alignment.Center
 
     internal var _input: Input? = input
         set(value) {
@@ -309,7 +311,7 @@ class AsyncImagePainter internal constructor(
         val previous = stateFlow.value
         val current = transform(state)
         stateFlow.value = current
-        painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
+        painter = maybeNewCrossfadePainter(previous, current, contentScale, alignment) ?: current.painter
 
         // Manually forget and remember the old/new painters.
         if (previous.painter !== current.painter) {
@@ -418,4 +420,5 @@ internal expect fun maybeNewCrossfadePainter(
     previous: State,
     current: State,
     contentScale: ContentScale,
+    alignment: Alignment,
 ): CrossfadePainter?
