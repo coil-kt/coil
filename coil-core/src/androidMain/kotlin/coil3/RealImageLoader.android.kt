@@ -5,7 +5,6 @@ import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.ExifOrientationStrategy.Companion.RESPECT_PERFORMANCE
 import coil3.decode.StaticImageDecoder
 import coil3.fetch.AssetUriFetcher
-import coil3.fetch.BitmapFetcher
 import coil3.fetch.ContentUriFetcher
 import coil3.fetch.DrawableFetcher
 import coil3.fetch.ResourceUriFetcher
@@ -84,7 +83,6 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     add(ContentUriFetcher.Factory())
     add(ResourceUriFetcher.Factory())
     add(DrawableFetcher.Factory())
-    add(BitmapFetcher.Factory())
 
     // Decoders
     val parallelismLock = Semaphore(options.bitmapFactoryMaxParallelism)

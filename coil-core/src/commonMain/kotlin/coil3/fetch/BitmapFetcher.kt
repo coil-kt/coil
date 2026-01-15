@@ -1,20 +1,18 @@
 package coil3.fetch
 
-import android.graphics.Bitmap
+import coil3.Bitmap
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.request.Options
-import coil3.util.toDrawable
 
 internal class BitmapFetcher(
     private val data: Bitmap,
-    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
         return ImageFetchResult(
-            image = data.toDrawable(options.context).asImage(),
+            image = data.asImage(),
             isSampled = false,
             dataSource = DataSource.MEMORY,
         )
@@ -23,7 +21,7 @@ internal class BitmapFetcher(
     class Factory : Fetcher.Factory<Bitmap> {
 
         override fun create(data: Bitmap, options: Options, imageLoader: ImageLoader): Fetcher {
-            return BitmapFetcher(data, options)
+            return BitmapFetcher(data)
         }
     }
 }
