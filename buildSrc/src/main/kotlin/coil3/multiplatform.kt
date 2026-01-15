@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.targets.js.npm.NpmDependency
 
 fun Project.addAllMultiplatformTargets(
     skikoVersion: Provider<String>,
@@ -98,6 +99,7 @@ fun Project.addAllMultiplatformTargets(
             }
         }
 
+        addNodePolyfillWebpackPlugin(enableWasm)
         applyKotlinJsImplicitDependencyWorkaround(enableWasm)
         createSkikoWasmJsRuntimeDependency(skikoVersion)
     }
@@ -140,6 +142,30 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround(enableWasm: Boolean = true
             named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
             named("wasmJsBrowserProductionLibraryDistribution").configure(configureWasmJs)
             named("wasmJsNodeProductionLibraryDistribution").configure(configureWasmJs)
+        }
+    }
+}
+
+// https://github.com/square/okio/issues/1163
+fun Project.addNodePolyfillWebpackPlugin(
+    enableWasm: Boolean = true,
+) {
+    extensions.configure<KotlinMultiplatformExtension> {
+        val nodePolyfillPlugin = NpmDependency(
+            project.objects,
+            NpmDependency.Scope.DEV,
+            "node-polyfill-webpack-plugin",
+            "^2.0.1",
+        )
+        sourceSets {
+            getByName("jsMain").dependencies {
+                implementation(nodePolyfillPlugin)
+            }
+            if (enableWasm) {
+                getByName("wasmJsMain").dependencies {
+                    implementation(nodePolyfillPlugin)
+                }
+            }
         }
     }
 }
