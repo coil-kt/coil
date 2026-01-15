@@ -1,6 +1,7 @@
 package coil3
 
 import coil3.disk.DiskCache
+import coil3.fetch.BitmapFetcher
 import coil3.fetch.ByteArrayFetcher
 import coil3.fetch.DataUriFetcher
 import coil3.fetch.FileUriFetcher
@@ -301,6 +302,7 @@ internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.
         .add(FileUriFetcher.Factory())
         .add(ByteArrayFetcher.Factory())
         .add(DataUriFetcher.Factory())
+        .add(BitmapFetcher.Factory())
 }
 
 private const val TAG = "RealImageLoader"
