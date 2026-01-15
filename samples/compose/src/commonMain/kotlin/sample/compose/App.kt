@@ -2,10 +2,16 @@ package sample.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -15,6 +21,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -31,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -40,6 +51,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
@@ -85,12 +97,12 @@ fun App(
         colorScheme = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
         val screen by viewModel.screen.collectAsState()
-        val isDetail = screen is Screen.Detail
+        val showBackButton = screen is Screen.Detail || screen is Screen.Issue3260
         Scaffold(
             topBar = {
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
-                    backEnabled = isDetail,
+                    backEnabled = showBackButton,
                     onScreenChange = { viewModel.screen.value = it },
                     onAssetTypeChange = { viewModel.assetType.value = it },
                     onBackPressed = { viewModel.onBackPressed() },
@@ -106,7 +118,7 @@ fun App(
             },
             modifier = Modifier.testTagsAsResourceId(true),
         )
-        BackHandler(enabled = isDetail) {
+        BackHandler(enabled = showBackButton) {
             viewModel.onBackPressed()
         }
     }
@@ -131,6 +143,10 @@ private fun Toolbar(
             }
         },
         actions = {
+            IconButton(
+                onClick = { onScreenChange(Screen.Issue3260) },
+                content = { Text("BUG") },
+            )
             IconButton(
                 onClick = { onScreenChange(resourceDetailScreen) },
                 content = { Text("Res") },
@@ -178,6 +194,9 @@ private fun ScaffoldContent(
                 screen = screen,
                 padding = padding,
             )
+        }
+        is Screen.Issue3260 -> {
+            Issue3260Screen(padding = padding)
         }
         is Screen.List -> {
             ListScreen(
@@ -264,6 +283,74 @@ private fun ListScreen(
                     .clickable { onImageClick(image, placeholder) },
             )
         }
+    }
+}
+
+/**
+ * Reproduction screen for https://github.com/coil-kt/coil/issues/3260
+ *
+ * When using AsyncImage in a Column that's a sibling to another Column within a Row
+ * with height(IntrinsicSize.Max), content below the AsyncImage fails to render.
+ * The Text "This text should be visible!" is not rendered due to the bug.
+ */
+@Composable
+private fun Issue3260Screen(padding: PaddingValues) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .padding(horizontal = 16.dp),
+    ) {
+        Text(
+            text = "Issue #3260: AsyncImage clips sibling content with IntrinsicSize.Max",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(vertical = 16.dp),
+        )
+
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Max)
+                .fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(16.dp),
+            ) {
+                Image(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                )
+
+                VerticalDivider(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .align(Alignment.CenterHorizontally)
+                        .width(1.dp)
+                )
+            }
+            Column {
+                AsyncImage(
+                    model = "https://picsum.photos/200/200",
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp),
+                )
+                // This text is NOT rendered due to the bug
+                Text(
+                    text = "This text should be visible!",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+
+        Text(
+            text = "If you see red text above saying 'This text should be visible!', the bug is fixed. " +
+                "If you only see the image with no text below it, the bug is present.",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(vertical = 16.dp),
+        )
     }
 }
 
