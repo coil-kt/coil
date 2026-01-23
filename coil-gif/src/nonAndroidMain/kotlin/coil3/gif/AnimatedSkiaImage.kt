@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import coil3.Canvas
 import coil3.Image
+import coil3.gif.internal.awaitFrame
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.TimeMark
@@ -12,6 +13,7 @@ import kotlin.time.TimeSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.AnimationFrameInfo
 import org.jetbrains.skia.Bitmap
@@ -216,10 +218,17 @@ internal class AnimatedSkiaImage(
     private fun Canvas.drawFrame(frameIndex: Int) {
         animatedTransformation?.transform(this)
 
-        // If frame is not yet decoded, skip drawing this frame.
-        // The pre-buffering should handle most cases, and the frame will
-        // be drawn in the next draw call once decoded.
-        frames[frameIndex]?.let { frameBytes ->
+        val frameBytes = frames[frameIndex] ?: run {
+            // Frame not yet decoded - try to block and wait for it
+            awaitFrame {
+                while (frames[frameIndex] == null) {
+                    delay(1)
+                }
+                frames[frameIndex]
+            }
+        }
+
+        if (frameBytes != null) {
             drawImage(
                 image = org.jetbrains.skia.Image.makeRaster(
                     imageInfo = codec.imageInfo,
@@ -230,6 +239,7 @@ internal class AnimatedSkiaImage(
                 top = 0f,
             )
         }
+        // On JS, frameBytes may be null - skip this frame (pre-buffering should handle most cases)
     }
 }
 
