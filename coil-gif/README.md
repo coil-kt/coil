@@ -1,8 +1,6 @@
 # Gifs
 
-**This feature is only available on Android.**
-
-Unlike Glide, GIFs are not supported by default. However, Coil has an extension library to support them.
+Coil supports animated GIFs, WebP, and HEIF images across all platforms.
 
 To add GIF support, import the extension library:
 
@@ -10,11 +8,32 @@ To add GIF support, import the extension library:
 implementation("io.coil-kt.coil3:coil-gif:3.3.0")
 ```
 
-And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
+And that's it! The `ImageLoader` will automatically detect any animated images using their file headers and decode them correctly.
 
-Optionally, you can manually add the decoder to your component registry when constructing your `ImageLoader`:
+## Platform Support
+
+| Decoder | Platforms | Formats |
+|---------|-----------|---------|
+| `AnimatedImageDecoder` | Android 28+ | GIF, WebP, HEIF |
+| `GifDecoder` | Android (all versions) | GIF only |
+| `AnimatedSkiaImageDecoder` | iOS, macOS, Desktop, Web | GIF, WebP |
+
+## Usage
+
+The recommended approach is to use `AnimatedImageDecoderFactory()`, which automatically selects the appropriate decoder for each platform:
 
 ```kotlin
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        add(AnimatedImageDecoderFactory())
+    }
+    .build()
+```
+
+Alternatively, you can manually add a specific decoder:
+
+```kotlin
+// Android
 val imageLoader = ImageLoader.Builder(context)
     .components {
         if (SDK_INT >= 28) {
@@ -24,9 +43,21 @@ val imageLoader = ImageLoader.Builder(context)
         }
     }
     .build()
+
+// Non-Android (iOS, Desktop, Web)
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        add(AnimatedSkiaImageDecoder.Factory())
+    }
+    .build()
 ```
 
-To transform the pixel data of each frame of a GIF, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
+## Transformations
 
-!!! Note
-    Coil includes two separate decoders to support decoding GIFs. `GifDecoder` supports all API levels, but is slower. `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API which is only available on API 28 and above. `AnimatedImageDecoder` is faster than `GifDecoder` and supports decoding animated WebP images and animated HEIF image sequences.
+To transform the pixel data of each frame of an animated image, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation). This works on all platforms.
+
+## Notes
+
+- `GifDecoder` supports all Android API levels but is slower than `AnimatedImageDecoder`.
+- `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API (API 28+) and supports animated WebP and HEIF.
+- `AnimatedSkiaImageDecoder` uses Skia for decoding and is available on non-Android platforms.
