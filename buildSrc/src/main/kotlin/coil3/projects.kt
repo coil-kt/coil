@@ -100,7 +100,6 @@ fun Project.setupDokka(
             }
             externalDocumentationLinks.register("datetime") {
                 url.set(uri("https://kotlinlang.org/api/kotlinx-datetime/"))
-                packageListUrl.set(uri("https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/package-list"))
             }
             externalDocumentationLinks.register("okio") {
                 url.set(uri("https://square.github.io/okio/3.x/okio/"))
