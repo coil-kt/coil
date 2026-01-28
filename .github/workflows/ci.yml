@@ -52,7 +52,7 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                  cache-cleanup: true
 
             - name: Unit tests
               run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
@@ -72,7 +72,7 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                  cache-cleanup: true
 
             - name: Unit tests
               run: ./gradlew iosSimulatorArm64Test macosArm64Test
@@ -96,7 +96,7 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                  cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
@@ -134,7 +134,7 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                  cache-cleanup: true
 
             - name: Build Compose and View samples
               run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
@@ -154,7 +154,7 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
+                  cache-cleanup: true
 
             - name: Build iOS sample
               run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
