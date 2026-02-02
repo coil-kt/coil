@@ -1,6 +1,6 @@
 import coil3.addAllMultiplatformTargets
 import coil3.compileSdk
-import coil3.kmpAndroidLibrary
+import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
 
 plugins {
@@ -12,7 +12,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-kmpAndroidLibrary()
+multiplatformAndroidLibrary()
 
 kotlin {
     androidLibrary {

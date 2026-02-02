@@ -1,6 +1,6 @@
 import coil3.applyCoilHierarchyTemplate
 import coil3.compileSdk
-import coil3.kmpAndroidLibrary
+import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
 
 plugins {
@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-kmpAndroidLibrary()
+multiplatformAndroidLibrary()
 
 kotlin {
     applyCoilHierarchyTemplate()

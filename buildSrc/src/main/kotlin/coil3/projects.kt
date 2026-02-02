@@ -21,7 +21,7 @@ import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.androidOnlyLibrary(
+fun Project.androidLibrary(
     name: String,
     config: Boolean = false,
     action: LibraryExtension.() -> Unit = {},
@@ -58,7 +58,7 @@ fun Project.androidOnlyLibrary(
     action()
 }
 
-fun Project.kmpAndroidLibrary() {
+fun Project.multiplatformAndroidLibrary() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {

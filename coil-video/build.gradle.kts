@@ -1,11 +1,11 @@
-import coil3.androidOnlyLibrary
+import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
     id("kotlin-android")
 }
 
-androidOnlyLibrary(name = "coil3.video")
+androidLibrary(name = "coil3.video")
 
 dependencies {
     api(projects.coilCore)
