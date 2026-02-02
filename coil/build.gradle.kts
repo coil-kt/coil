@@ -1,16 +1,53 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.singleton")
+kmpAndroidLibrary()
 
 kotlin {
+    androidLibrary {
+        namespace = "coil3.singleton"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -23,13 +60,13 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        androidUnitTest {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

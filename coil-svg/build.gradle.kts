@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 import coil3.skikoAwtRuntimeDependency
 
 plugins {
@@ -9,7 +9,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.svg")
+androidOnlyLibrary(name = "coil3.svg")
 
 kotlin {
     sourceSets {
@@ -41,13 +41,13 @@ kotlin {
                 implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }
-        androidUnitTest {
+        named("androidUnitTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        named("androidInstrumentedTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

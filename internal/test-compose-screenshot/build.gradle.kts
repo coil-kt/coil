@@ -1,4 +1,4 @@
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.screenshot)
 }
 
-androidLibrary(name = "coil3.test.composescreenshot") {
+androidOnlyLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
     }

@@ -18,6 +18,7 @@ roborazzi = "1.56.0"
 skiko = "0.9.22.2"
 
 [plugins]
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version = "8.13.2" }
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 poko = "dev.drewhamilton.poko:0.21.1"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha13"

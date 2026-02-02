@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
@@ -9,7 +9,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.test.utils")
+androidOnlyLibrary(name = "coil3.test.utils")
 
 kotlin {
     sourceSets {

@@ -1,8 +1,10 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -10,9 +12,44 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-androidLibrary(name = "coil3.test.roborazzi")
+kmpAndroidLibrary()
 
 kotlin {
+    androidLibrary {
+        namespace = "coil3.test.roborazzi"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+    }
+
     sourceSets {
         commonTest.dependencies {
             implementation(projects.coilCore)
@@ -20,7 +57,7 @@ kotlin {
             implementation(projects.coilTest)
             implementation(projects.internal.testUtils)
         }
-        androidUnitTest.dependencies {
+        getByName("androidHostTest").dependencies {
             implementation(libs.bundles.test.jvm)
             implementation(libs.roborazzi.compose)
             implementation(libs.roborazzi.core)

@@ -18,9 +18,11 @@ fun Project.addAllMultiplatformTargets(
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
 
+            // The new Android KMP plugin creates the Android target automatically.
+            val isAndroidKmpLibrary = plugins.hasPlugin("com.android.kotlin.multiplatform.library")
             val isAndroidApp = plugins.hasPlugin("com.android.application")
             val isAndroidLibrary = plugins.hasPlugin("com.android.library")
-            if (isAndroidApp || isAndroidLibrary) {
+            if (!isAndroidKmpLibrary && (isAndroidApp || isAndroidLibrary)) {
                 androidTarget {
                     if (isAndroidLibrary) {
                         publishLibraryVariants("release")

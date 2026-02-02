@@ -1,4 +1,4 @@
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
@@ -8,7 +8,7 @@ plugins {
     id("app.cash.paparazzi")
 }
 
-androidLibrary(name = "coil3.test.paparazzi")
+androidOnlyLibrary(name = "coil3.test.paparazzi")
 
 dependencies {
     api(projects.coilCore)

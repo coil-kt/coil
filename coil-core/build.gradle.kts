@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
@@ -10,7 +10,9 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.core") {
+androidOnlyLibrary(name = "coil3.core")
+
+android {
     defaultConfig {
         consumerProguardFiles("shrinker-rules.pro")
     }
@@ -47,13 +49,13 @@ kotlin {
                 api(libs.androidx.lifecycle.runtime)
             }
         }
-        androidUnitTest {
+        named("androidUnitTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        named("androidInstrumentedTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

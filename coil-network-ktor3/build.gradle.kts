@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
@@ -8,7 +8,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.network.ktor3")
+androidOnlyLibrary(name = "coil3.network.ktor3")
 
 kotlin {
     sourceSets {
@@ -31,7 +31,7 @@ kotlin {
                 implementation(libs.ktor3.mock)
             }
         }
-        androidUnitTest {
+        named("androidUnitTest") {
             dependencies {
                 implementation(libs.bundles.test.jvm)
             }

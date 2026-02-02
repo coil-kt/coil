@@ -1,11 +1,11 @@
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 
 plugins {
     id("com.android.library")
     id("kotlin-android")
 }
 
-androidLibrary(name = "coil3.gif")
+androidOnlyLibrary(name = "coil3.gif")
 
 dependencies {
     api(projects.coilCore)

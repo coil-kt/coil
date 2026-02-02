@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.androidOnlyLibrary
 import coil3.applyJvm11OnlyToJvmTarget
 
 plugins {
@@ -13,11 +13,11 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-androidLibrary(name = "coil3.compose.core") {
-    dependencies {
-        // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-        debugImplementation(libs.androidx.compose.ui.test.manifest)
-    }
+androidOnlyLibrary(name = "coil3.compose.core")
+
+// https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+dependencies {
+    "debugImplementation"(libs.androidx.compose.ui.test.manifest)
 }
 
 kotlin {
@@ -39,13 +39,13 @@ kotlin {
                 implementation(libs.google.drawablepainter)
             }
         }
-        androidUnitTest {
+        named("androidUnitTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        named("androidInstrumentedTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

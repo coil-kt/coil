@@ -21,7 +21,7 @@ import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.androidLibrary(
+fun Project.androidOnlyLibrary(
     name: String,
     config: Boolean = false,
     action: LibraryExtension.() -> Unit = {},
@@ -56,6 +56,72 @@ fun Project.androidLibrary(
         }
     }
     action()
+}
+
+fun Project.kmpAndroidLibrary() {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinMultiplatformExtension> {
+            sourceSets.configureEach {
+                languageSettings {
+                    optIn("coil3.annotation.DelicateCoilApi")
+                    optIn("coil3.annotation.ExperimentalCoilApi")
+                    optIn("coil3.annotation.InternalCoilApi")
+                }
+            }
+
+            targets.configureEach {
+                compilations.configureEach {
+                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
+                    @Suppress("DEPRECATION")
+                    compilerOptions.configure {
+                        val arguments = listOf(
+                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                            "-progressive",
+                            // https://youtrack.jetbrains.com/issue/KT-61573
+                            "-Xexpect-actual-classes",
+                        )
+                        freeCompilerArgs.addAll(arguments)
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
+
+            val arguments = mutableListOf<String>()
+
+            // https://kotlinlang.org/docs/compiler-reference.html#progressive
+            arguments += "-progressive"
+
+            // Enable Java default method generation.
+            arguments += "-jvm-default=no-compatibility"
+
+            // Generate smaller bytecode by not generating runtime not-null assertions.
+            arguments += "-Xno-call-assertions"
+            arguments += "-Xno-param-assertions"
+            arguments += "-Xno-receiver-assertions"
+
+            if (project.name != "benchmark") {
+                arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
+                arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
+                arguments += "-opt-in=coil3.annotation.InternalCoilApi"
+            }
+
+            freeCompilerArgs.addAll(arguments)
+        }
+    }
+
+    if (project.name in publicModules) {
+        apply(plugin = "org.jetbrains.dokka")
+        apply(plugin = "com.vanniktech.maven.publish.base")
+        setupDokka()
+        setupPublishing {
+            configure(KotlinMultiplatform(Dokka("dokkaGenerate")))
+        }
+    }
 }
 
 fun Project.setupPublishing(
