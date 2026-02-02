@@ -19,6 +19,8 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun Project.androidLibrary(
@@ -58,32 +60,72 @@ fun Project.androidLibrary(
     action()
 }
 
-fun Project.multiplatformAndroidLibrary() {
+fun Project.multiplatformAndroidLibrary(
+    name: String,
+    action: KotlinMultiplatformAndroidLibraryTarget.() -> Unit = {},
+) {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        extensions.configure<KotlinMultiplatformExtension> {
-            sourceSets.configureEach {
-                languageSettings {
-                    optIn("coil3.annotation.DelicateCoilApi")
-                    optIn("coil3.annotation.ExperimentalCoilApi")
-                    optIn("coil3.annotation.InternalCoilApi")
+        val kmpExtension = extensions.getByType<KotlinMultiplatformExtension>()
+
+        kmpExtension.sourceSets.configureEach {
+            languageSettings {
+                optIn("coil3.annotation.DelicateCoilApi")
+                optIn("coil3.annotation.ExperimentalCoilApi")
+                optIn("coil3.annotation.InternalCoilApi")
+            }
+        }
+
+        kmpExtension.targets.configureEach {
+            compilations.configureEach {
+                // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
+                @Suppress("DEPRECATION")
+                compilerOptions.configure {
+                    val arguments = listOf(
+                        // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                        "-progressive",
+                        // https://youtrack.jetbrains.com/issue/KT-61573
+                        "-Xexpect-actual-classes",
+                    )
+                    freeCompilerArgs.addAll(arguments)
                 }
+            }
+        }
+
+        kmpExtension.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+            namespace = name
+            compileSdk = project.compileSdk
+            minSdk = project.minSdk
+
+            withHostTest {
+                isIncludeAndroidResources = true
             }
 
-            targets.configureEach {
-                compilations.configureEach {
-                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
-                    @Suppress("DEPRECATION")
-                    compilerOptions.configure {
-                        val arguments = listOf(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                        freeCompilerArgs.addAll(arguments)
-                    }
-                }
+            withDeviceTest {
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
+
+            lint {
+                warningsAsErrors = true
+                disable += listOf(
+                    "ComposableNaming",
+                    "UnknownIssueId",
+                    "UnsafeOptInUsageWarning",
+                    "UnusedResources",
+                    "UseSdkSuppress",
+                    "VectorPath",
+                    "VectorRaster",
+                )
+            }
+
+            packaging {
+                resources.pickFirsts += listOf(
+                    "META-INF/AL2.0",
+                    "META-INF/LGPL2.1",
+                    "META-INF/*kotlin_module",
+                )
+            }
+
+            action()
         }
     }
 

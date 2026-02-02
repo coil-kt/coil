@@ -1,6 +1,4 @@
 import coil3.addAllMultiplatformTargets
-import coil3.compileSdk
-import coil3.minSdk
 import coil3.multiplatformAndroidLibrary
 
 plugins {
@@ -9,40 +7,13 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-multiplatformAndroidLibrary()
+multiplatformAndroidLibrary(name = "sample.common") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
-    androidLibrary {
-        namespace = "sample.common"
-        compileSdk = project.compileSdk
-        minSdk = project.minSdk
-
-        androidResources {
-            enable = true
-        }
-
-        lint {
-            warningsAsErrors = true
-            disable += listOf(
-                "ComposableNaming",
-                "UnknownIssueId",
-                "UnsafeOptInUsageWarning",
-                "UnusedResources",
-                "UseSdkSuppress",
-                "VectorPath",
-                "VectorRaster",
-            )
-        }
-
-        packaging {
-            resources.pickFirsts += listOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/*kotlin_module",
-            )
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {

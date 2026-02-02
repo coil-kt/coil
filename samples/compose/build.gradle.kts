@@ -1,8 +1,6 @@
 import coil3.addNodePolyfillWebpackPlugin
 import coil3.applyCoilHierarchyTemplate
 import coil3.applyJvm11OnlyToJvmTarget
-import coil3.compileSdk
-import coil3.minSdk
 import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -14,7 +12,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-multiplatformAndroidLibrary()
+multiplatformAndroidLibrary(name = "sample.compose")
 
 compose {
     desktop {
@@ -35,33 +33,6 @@ compose {
 
 kotlin {
     applyCoilHierarchyTemplate()
-
-    androidLibrary {
-        namespace = "sample.compose"
-        compileSdk = project.compileSdk
-        minSdk = project.minSdk
-
-        lint {
-            warningsAsErrors = true
-            disable += listOf(
-                "ComposableNaming",
-                "UnknownIssueId",
-                "UnsafeOptInUsageWarning",
-                "UnusedResources",
-                "UseSdkSuppress",
-                "VectorPath",
-                "VectorRaster",
-            )
-        }
-
-        packaging {
-            resources.pickFirsts += listOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/*kotlin_module",
-            )
-        }
-    }
 
     jvm()
 

@@ -1,6 +1,4 @@
 import coil3.applyCoilHierarchyTemplate
-import coil3.compileSdk
-import coil3.minSdk
 import coil3.multiplatformAndroidLibrary
 
 plugins {
@@ -9,45 +7,10 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-multiplatformAndroidLibrary()
+multiplatformAndroidLibrary(name = "coil3.network.okhttp")
 
 kotlin {
     applyCoilHierarchyTemplate()
-
-    androidLibrary {
-        namespace = "coil3.network.okhttp"
-        compileSdk = project.compileSdk
-        minSdk = project.minSdk
-
-        withHostTest {
-            isIncludeAndroidResources = true
-        }
-
-        withDeviceTest {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-
-        lint {
-            warningsAsErrors = true
-            disable += listOf(
-                "ComposableNaming",
-                "UnknownIssueId",
-                "UnsafeOptInUsageWarning",
-                "UnusedResources",
-                "UseSdkSuppress",
-                "VectorPath",
-                "VectorRaster",
-            )
-        }
-
-        packaging {
-            resources.pickFirsts += listOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/*kotlin_module",
-            )
-        }
-    }
 
     jvm()
 

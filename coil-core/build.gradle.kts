@@ -1,6 +1,4 @@
 import coil3.addAllMultiplatformTargets
-import coil3.compileSdk
-import coil3.minSdk
 import coil3.multiplatformAndroidLibrary
 
 plugins {
@@ -12,53 +10,17 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-multiplatformAndroidLibrary()
+multiplatformAndroidLibrary(name = "coil3.core") {
+    androidResources {
+        enable = true
+    }
+    optimization {
+        consumerKeepRules.publish = true
+        consumerKeepRules.files += project.file("shrinker-rules.pro")
+    }
+}
 
 kotlin {
-    androidLibrary {
-        namespace = "coil3.core"
-        compileSdk = project.compileSdk
-        minSdk = project.minSdk
-
-        androidResources {
-            enable = true
-        }
-
-        withHostTest {
-            isIncludeAndroidResources = true
-        }
-
-        withDeviceTest {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-
-        lint {
-            warningsAsErrors = true
-            disable += listOf(
-                "ComposableNaming",
-                "UnknownIssueId",
-                "UnsafeOptInUsageWarning",
-                "UnusedResources",
-                "UseSdkSuppress",
-                "VectorPath",
-                "VectorRaster",
-            )
-        }
-
-        packaging {
-            resources.pickFirsts += listOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/*kotlin_module",
-            )
-        }
-
-        optimization {
-            consumerKeepRules.publish = true
-            consumerKeepRules.files.add(project.file("shrinker-rules.pro"))
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {
