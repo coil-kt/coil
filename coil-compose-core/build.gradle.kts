@@ -1,8 +1,8 @@
 import coil3.addAllMultiplatformTargets
 import coil3.applyJvm11OnlyToJvmTarget
 import coil3.compileSdk
-import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
+import coil3.multiplatformAndroidLibrary
 
 plugins {
     id("com.android.kotlin.multiplatform.library")

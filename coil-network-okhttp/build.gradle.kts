@@ -1,7 +1,7 @@
 import coil3.applyCoilHierarchyTemplate
 import coil3.compileSdk
-import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
+import coil3.multiplatformAndroidLibrary
 
 plugins {
     id("com.android.kotlin.multiplatform.library")

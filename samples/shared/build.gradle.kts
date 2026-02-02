@@ -1,7 +1,7 @@
 import coil3.addAllMultiplatformTargets
 import coil3.compileSdk
-import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
+import coil3.multiplatformAndroidLibrary
 
 plugins {
     id("com.android.kotlin.multiplatform.library")
@@ -16,6 +16,10 @@ kotlin {
         namespace = "sample.common"
         compileSdk = project.compileSdk
         minSdk = project.minSdk
+
+        androidResources {
+            enable = true
+        }
 
         lint {
             warningsAsErrors = true

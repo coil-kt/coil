@@ -1,7 +1,7 @@
 import coil3.addAllMultiplatformTargets
 import coil3.compileSdk
-import coil3.multiplatformAndroidLibrary
 import coil3.minSdk
+import coil3.multiplatformAndroidLibrary
 import coil3.skikoAwtRuntimeDependency
 
 plugins {

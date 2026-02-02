@@ -38,6 +38,7 @@ include(
     "internal:test-roborazzi",
     "internal:test-utils",
     "samples:compose",
+    "samples:compose-android",
     "samples:shared",
     "samples:view",
 )
