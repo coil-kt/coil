@@ -1,17 +1,54 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidOnlyLibrary
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 import coil3.skikoAwtRuntimeDependency
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidOnlyLibrary(name = "coil3.svg")
+kmpAndroidLibrary()
 
 kotlin {
+    androidLibrary {
+        namespace = "coil3.svg"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -41,13 +78,13 @@ kotlin {
                 implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }
-        named("androidUnitTest") {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        named("androidInstrumentedTest") {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

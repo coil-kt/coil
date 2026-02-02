@@ -1,24 +1,64 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidOnlyLibrary
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
     id("dev.drewhamilton.poko")
-    id("androidx.baselineprofile")
+    id("androidx.baselineprofile.consumer")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidOnlyLibrary(name = "coil3.core")
-
-android {
-    defaultConfig {
-        consumerProguardFiles("shrinker-rules.pro")
-    }
-}
+kmpAndroidLibrary()
 
 kotlin {
+    androidLibrary {
+        namespace = "coil3.core"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        androidResources {
+            enable = true
+        }
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+
+        optimization {
+            consumerKeepRules.publish = true
+            consumerKeepRules.files.add(project.file("shrinker-rules.pro"))
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -49,13 +89,13 @@ kotlin {
                 api(libs.androidx.lifecycle.runtime)
             }
         }
-        named("androidUnitTest") {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        named("androidInstrumentedTest") {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
@@ -76,8 +116,9 @@ baselineProfile {
         exclude("coil3.svg.**")
         exclude("coil3.video.**")
     }
-}
-
-dependencies {
-    baselineProfile(projects.internal.benchmark)
+    variants {
+        create("androidMain") {
+            from(project(":internal:benchmark"))
+        }
+    }
 }

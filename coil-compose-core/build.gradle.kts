@@ -1,26 +1,63 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidOnlyLibrary
 import coil3.applyJvm11OnlyToJvmTarget
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
     id("dev.drewhamilton.poko")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("androidx.baselineprofile")
+    id("androidx.baselineprofile.consumer")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-androidOnlyLibrary(name = "coil3.compose.core")
+kmpAndroidLibrary()
 
 // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
 dependencies {
-    "debugImplementation"(libs.androidx.compose.ui.test.manifest)
+    "androidMainRuntimeOnly"(libs.androidx.compose.ui.test.manifest)
 }
 
 kotlin {
+    androidLibrary {
+        namespace = "coil3.compose.core"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -39,13 +76,13 @@ kotlin {
                 implementation(libs.google.drawablepainter)
             }
         }
-        named("androidUnitTest") {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        named("androidInstrumentedTest") {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
@@ -62,10 +99,11 @@ baselineProfile {
     filter {
         include("coil3.compose.**")
     }
-}
-
-dependencies {
-    baselineProfile(projects.internal.benchmark)
+    variants {
+        create("androidMain") {
+            from(project(":internal:benchmark"))
+        }
+    }
 }
 
 // Compose 1.8.0 requires JVM 11 only for the JVM target.

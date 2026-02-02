@@ -52,8 +52,12 @@ private fun KotlinHierarchyBuilder.groupNonJsCommon() {
 
 private fun KotlinHierarchyBuilder.groupJvmCommon() {
     group("jvmCommon") {
-        withAndroidTarget()
-        withJvm()
+        // Use withCompilations predicate to match Android targets from both
+        // the old plugin (androidTarget()) and the new plugin (com.android.kotlin.multiplatform.library)
+        withCompilations { compilation ->
+            compilation.target.platformType.name == "androidJvm" ||
+                compilation.target.platformType.name == "jvm"
+        }
     }
 }
 

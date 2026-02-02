@@ -1,15 +1,44 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidOnlyLibrary
+import coil3.compileSdk
+import coil3.kmpAndroidLibrary
+import coil3.minSdk
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidOnlyLibrary(name = "sample.common", config = true)
+kmpAndroidLibrary()
 
 kotlin {
+    androidLibrary {
+        namespace = "sample.common"
+        compileSdk = project.compileSdk
+        minSdk = project.minSdk
+
+        lint {
+            warningsAsErrors = true
+            disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
+                "UnsafeOptInUsageWarning",
+                "UnusedResources",
+                "UseSdkSuppress",
+                "VectorPath",
+                "VectorRaster",
+            )
+        }
+
+        packaging {
+            resources.pickFirsts += listOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*kotlin_module",
+            )
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -47,16 +76,6 @@ kotlin {
         named("wasmJsMain") {
             dependencies {
                 api(projects.coilNetworkKtor3)
-            }
-        }
-    }
-}
-
-android {
-    sourceSets {
-        getByName("main") {
-            assets {
-                srcDirs("src/commonMain/resources")
             }
         }
     }
