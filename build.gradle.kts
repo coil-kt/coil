@@ -3,18 +3,17 @@ import coil3.groupId
 import coil3.publicModules
 import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
-import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     repositories {
@@ -88,7 +87,7 @@ allprojects {
 
     apply(plugin = "com.diffplug.spotless")
 
-    val configureSpotless: SpotlessExtension.() -> Unit = {
+    extensions.configure<SpotlessExtension> {
         kotlin {
             target("**/*.kt", "**/*.kts")
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(ktlintRules)
@@ -98,11 +97,10 @@ allprojects {
         }
     }
 
-    if (project === rootProject) {
-        spotless { predeclareDeps() }
-        extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
-    } else {
-        extensions.configure(configureSpotless)
+    tasks.configureEach {
+        if (name.startsWith("spotless")) {
+            notCompatibleWithConfigurationCache("https://github.com/diffplug/spotless/issues/2459")
+        }
     }
 
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {

@@ -167,7 +167,7 @@ abstract class LinkSkikoBuiltinsTask @Inject constructor() : DefaultTask() {
 
         for ((bits, cType) in typeMap) {
             for ((suffix, orderConst) in memoryOrders) {
-                builder.appendLine("__attribute__((visibility(\"default\"))) $cType __aarch64_ldadd${bits}_${suffix}($cType value, $cType *ptr) {")
+                builder.appendLine("__attribute__((visibility(\"default\"))) $cType __aarch64_ldadd${bits}_$suffix($cType value, $cType *ptr) {")
                 builder.appendLine("    return __atomic_fetch_add(ptr, value, $orderConst);")
                 builder.appendLine("}")
                 builder.appendLine()
