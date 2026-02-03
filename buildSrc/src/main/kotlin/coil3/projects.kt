@@ -16,12 +16,82 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+private val DISABLED_LINT_RULES = listOf(
+    "ComposableNaming",
+    "UnknownIssueId",
+    "UnsafeOptInUsageWarning",
+    "UnusedResources",
+    "UseSdkSuppress",
+    "VectorPath",
+    "VectorRaster",
+)
+
+private val RESOURCES_PICK_FIRSTS = listOf(
+    "META-INF/AL2.0",
+    "META-INF/LGPL2.1",
+    "META-INF/*kotlin_module",
+)
+
+private fun Project.configureKotlinMultiplatform() {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinMultiplatformExtension> {
+            sourceSets.configureEach {
+                languageSettings {
+                    optIn("coil3.annotation.DelicateCoilApi")
+                    optIn("coil3.annotation.ExperimentalCoilApi")
+                    optIn("coil3.annotation.InternalCoilApi")
+                }
+            }
+            targets.configureEach {
+                compilations.configureEach {
+                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
+                    @Suppress("DEPRECATION")
+                    compilerOptions.configure {
+                        freeCompilerArgs.addAll(
+                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                            "-progressive",
+                            // https://youtrack.jetbrains.com/issue/KT-61573
+                            "-Xexpect-actual-classes",
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun Project.configureKotlinCompile() {
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
+
+            val arguments = mutableListOf(
+                // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                "-progressive",
+                // Enable Java default method generation.
+                "-jvm-default=no-compatibility",
+                // Generate smaller bytecode by not generating runtime not-null assertions.
+                "-Xno-call-assertions",
+                "-Xno-param-assertions",
+                "-Xno-receiver-assertions",
+            )
+
+            if (project.name != "benchmark") {
+                arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
+                arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
+                arguments += "-opt-in=coil3.annotation.InternalCoilApi"
+            }
+
+            freeCompilerArgs.addAll(arguments)
+        }
+    }
+}
 
 fun Project.androidLibrary(
     name: String,
@@ -64,95 +134,35 @@ fun Project.multiplatformAndroidLibrary(
     name: String,
     action: KotlinMultiplatformAndroidLibraryTarget.() -> Unit = {},
 ) {
+    configureKotlinMultiplatform()
+    configureKotlinCompile()
+
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        val kmpExtension = extensions.getByType<KotlinMultiplatformExtension>()
+        extensions.configure<KotlinMultiplatformExtension> {
+            targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+                namespace = name
+                compileSdk = project.compileSdk
+                minSdk = project.minSdk
 
-        kmpExtension.sourceSets.configureEach {
-            languageSettings {
-                optIn("coil3.annotation.DelicateCoilApi")
-                optIn("coil3.annotation.ExperimentalCoilApi")
-                optIn("coil3.annotation.InternalCoilApi")
-            }
-        }
-
-        kmpExtension.targets.configureEach {
-            compilations.configureEach {
-                // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
-                @Suppress("DEPRECATION")
-                compilerOptions.configure {
-                    val arguments = listOf(
-                        // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                        "-progressive",
-                        // https://youtrack.jetbrains.com/issue/KT-61573
-                        "-Xexpect-actual-classes",
-                    )
-                    freeCompilerArgs.addAll(arguments)
+                withHostTest {
+                    isIncludeAndroidResources = true
                 }
+
+                withDeviceTest {
+                    instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                }
+
+                lint {
+                    warningsAsErrors = true
+                    disable += DISABLED_LINT_RULES
+                }
+
+                packaging {
+                    resources.pickFirsts += RESOURCES_PICK_FIRSTS
+                }
+
+                action()
             }
-        }
-
-        kmpExtension.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
-            namespace = name
-            compileSdk = project.compileSdk
-            minSdk = project.minSdk
-
-            withHostTest {
-                isIncludeAndroidResources = true
-            }
-
-            withDeviceTest {
-                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            }
-
-            lint {
-                warningsAsErrors = true
-                disable += listOf(
-                    "ComposableNaming",
-                    "UnknownIssueId",
-                    "UnsafeOptInUsageWarning",
-                    "UnusedResources",
-                    "UseSdkSuppress",
-                    "VectorPath",
-                    "VectorRaster",
-                )
-            }
-
-            packaging {
-                resources.pickFirsts += listOf(
-                    "META-INF/AL2.0",
-                    "META-INF/LGPL2.1",
-                    "META-INF/*kotlin_module",
-                )
-            }
-
-            action()
-        }
-    }
-
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
-
-            val arguments = mutableListOf<String>()
-
-            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-            arguments += "-progressive"
-
-            // Enable Java default method generation.
-            arguments += "-jvm-default=no-compatibility"
-
-            // Generate smaller bytecode by not generating runtime not-null assertions.
-            arguments += "-Xno-call-assertions"
-            arguments += "-Xno-param-assertions"
-            arguments += "-Xno-receiver-assertions"
-
-            if (project.name != "benchmark") {
-                arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
-                arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
-                arguments += "-opt-in=coil3.annotation.InternalCoilApi"
-            }
-
-            freeCompilerArgs.addAll(arguments)
         }
     }
 
@@ -254,6 +264,9 @@ private fun <T : BaseExtension> Project.androidBase(
     name: String,
     action: T.() -> Unit,
 ) {
+    configureKotlinMultiplatform()
+    configureKotlinCompile()
+
     android<T> {
         namespace = name
         compileSdkVersion(project.compileSdk)
@@ -263,80 +276,16 @@ private fun <T : BaseExtension> Project.androidBase(
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         packagingOptions {
-            resources.pickFirsts += listOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/*kotlin_module",
-            )
+            resources.pickFirsts += RESOURCES_PICK_FIRSTS
         }
         testOptions {
             unitTests.isIncludeAndroidResources = true
         }
         lint {
             warningsAsErrors = true
-            disable += listOf(
-                "ComposableNaming",
-                "UnknownIssueId",
-                "UnsafeOptInUsageWarning",
-                "UnusedResources",
-                "UseSdkSuppress",
-                "VectorPath",
-                "VectorRaster",
-            )
+            disable += DISABLED_LINT_RULES
         }
         action()
-    }
-    plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        extensions.configure<KotlinMultiplatformExtension> {
-            sourceSets.configureEach {
-                languageSettings {
-                    optIn("coil3.annotation.DelicateCoilApi")
-                    optIn("coil3.annotation.ExperimentalCoilApi")
-                    optIn("coil3.annotation.InternalCoilApi")
-                }
-            }
-            targets.configureEach {
-                compilations.configureEach {
-                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
-                    @Suppress("DEPRECATION")
-                    compilerOptions.configure {
-                        val arguments = listOf(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                        freeCompilerArgs.addAll(arguments)
-                    }
-                }
-            }
-        }
-    }
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
-
-            val arguments = mutableListOf<String>()
-
-            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-            arguments += "-progressive"
-
-            // Enable Java default method generation.
-            arguments += "-jvm-default=no-compatibility"
-
-            // Generate smaller bytecode by not generating runtime not-null assertions.
-            arguments += "-Xno-call-assertions"
-            arguments += "-Xno-param-assertions"
-            arguments += "-Xno-receiver-assertions"
-
-            if (project.name != "benchmark") {
-                arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
-                arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
-                arguments += "-opt-in=coil3.annotation.InternalCoilApi"
-            }
-
-            freeCompilerArgs.addAll(arguments)
-        }
     }
 }
 
