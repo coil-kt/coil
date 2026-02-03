@@ -55,7 +55,7 @@ jobs:
                   cache-cleanup: true
 
             - name: Unit tests
-              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
+              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziAndroidHostTest verifyRoborazziJvm
 
     unit-tests-macos:
         name: Unit tests (macOS)
