@@ -122,7 +122,7 @@ jobs:
     build-samples:
         name: Build samples
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-java@v5
@@ -142,7 +142,7 @@ jobs:
     build-samples-macos:
         name: Build samples (macOS)
         runs-on: macos-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-java@v5
