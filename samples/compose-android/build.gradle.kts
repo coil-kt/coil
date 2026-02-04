@@ -1,8 +1,10 @@
 import coil3.androidApplication
+import coil3.applyJvm11OnlyToJvmTarget
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -37,3 +39,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
+
+// Compose 1.8.0 requires JVM 11 only for the JVM target.
+applyJvm11OnlyToJvmTarget()
