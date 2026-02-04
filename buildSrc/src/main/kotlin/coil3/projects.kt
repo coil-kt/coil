@@ -32,7 +32,7 @@ private val DISABLED_LINT_RULES = listOf(
     "VectorRaster",
 )
 
-private val RESOURCES_PICK_FIRSTS = listOf(
+private val RESOURCE_DUPLICATE_OVERRIDES = listOf(
     "META-INF/AL2.0",
     "META-INF/LGPL2.1",
     "META-INF/*kotlin_module",
@@ -48,19 +48,13 @@ private fun Project.configureKotlinMultiplatform() {
                     optIn("coil3.annotation.InternalCoilApi")
                 }
             }
-            targets.configureEach {
-                compilations.configureEach {
-                    // https://youtrack.jetbrains.com/issue/KT-61573#focus=Comments-27-9822729.0-0
-                    @Suppress("DEPRECATION")
-                    compilerOptions.configure {
-                        freeCompilerArgs.addAll(
-                            // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                            "-progressive",
-                            // https://youtrack.jetbrains.com/issue/KT-61573
-                            "-Xexpect-actual-classes",
-                        )
-                    }
-                }
+            compilerOptions {
+                freeCompilerArgs.addAll(
+                    // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                    "-progressive",
+                    // https://youtrack.jetbrains.com/issue/KT-61573
+                    "-Xexpect-actual-classes",
+                )
             }
         }
     }
@@ -158,7 +152,7 @@ fun Project.multiplatformAndroidLibrary(
                 }
 
                 packaging {
-                    resources.pickFirsts += RESOURCES_PICK_FIRSTS
+                    resources.pickFirsts += RESOURCE_DUPLICATE_OVERRIDES
                 }
 
                 action()
@@ -276,7 +270,7 @@ private fun <T : BaseExtension> Project.androidBase(
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         packagingOptions {
-            resources.pickFirsts += RESOURCES_PICK_FIRSTS
+            resources.pickFirsts += RESOURCE_DUPLICATE_OVERRIDES
         }
         testOptions {
             unitTests.isIncludeAndroidResources = true
