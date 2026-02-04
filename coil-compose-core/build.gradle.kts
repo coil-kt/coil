@@ -15,11 +15,6 @@ plugins {
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
 multiplatformAndroidLibrary(name = "coil3.compose.core")
 
-// https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-dependencies {
-    "androidMainRuntimeOnly"(libs.androidx.compose.ui.test.manifest)
-}
-
 kotlin {
     sourceSets {
         commonMain {
