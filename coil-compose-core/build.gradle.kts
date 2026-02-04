@@ -6,9 +6,9 @@ plugins {
     id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
-    id("dev.drewhamilton.poko")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.drewhamilton.poko")
     id("androidx.baselineprofile.consumer")
 }
 
