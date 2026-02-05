@@ -7,12 +7,14 @@ import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -63,7 +65,7 @@ allprojects {
     group = groupId
     version = versionName
 
-    // Target JVM 8.
+    // Target JVM 11.
     tasks.withType<JavaCompile>().configureEach {
         sourceCompatibility = JavaVersion.VERSION_11.toString()
         targetCompatibility = JavaVersion.VERSION_11.toString()
@@ -73,16 +75,21 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
-    // Uninstall test APKs after running instrumentation tests.
-    tasks.configureEach {
-        if (name == "connectedDebugAndroidTest") {
-            finalizedBy("uninstallDebugAndroidTest")
-        }
+    // Target Kotlin 2.1.
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_1
     }
 
     // https://issuetracker.google.com/issues/411739086?pli=1
     tasks.withType<AbstractTestTask>().configureEach {
         failOnNoDiscoveredTests = false
+    }
+
+    // Uninstall test APKs after running instrumentation tests.
+    tasks.configureEach {
+        if (name == "connectedDebugAndroidTest") {
+            finalizedBy("uninstallDebugAndroidTest")
+        }
     }
 
     apply(plugin = "com.diffplug.spotless")

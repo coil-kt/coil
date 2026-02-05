@@ -49,12 +49,8 @@ private fun Project.configureKotlinMultiplatform() {
                 }
             }
             compilerOptions {
-                freeCompilerArgs.addAll(
-                    // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                    "-progressive",
-                    // https://youtrack.jetbrains.com/issue/KT-61573
-                    "-Xexpect-actual-classes",
-                )
+                // https://youtrack.jetbrains.com/issue/KT-61573
+                freeCompilerArgs.add("-Xexpect-actual-classes")
             }
         }
     }
@@ -66,8 +62,6 @@ private fun Project.configureKotlinCompile() {
             allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
             val arguments = mutableListOf(
-                // https://kotlinlang.org/docs/compiler-reference.html#progressive
-                "-progressive",
                 // Enable Java default method generation.
                 "-jvm-default=no-compatibility",
                 // Generate smaller bytecode by not generating runtime not-null assertions.

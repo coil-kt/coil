@@ -8,6 +8,7 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import coil3.toUri
 import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -17,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 class DataUriFetcherTest : RobolectricTest() {
     private val fetcher = DataUriFetcher.Factory()
 
+    @OptIn(ExperimentalEncodingApi::class)
     @Test
     fun basic() = runTest {
         val uri = "data:image/png;base64,$IMAGE_DATA".toUri()
