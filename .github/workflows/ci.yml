@@ -137,7 +137,11 @@ jobs:
                   cache-cleanup: true
 
             - name: Build Compose and View samples
-              run: ./gradlew samples:compose:assemble samples:compose-android:assembleDebug samples:view:assembleDebug -Pandroid.aapt2.daemon.poolSize=0
+              # Run the tasks separately to work around mergeDebugResources getting stuck.
+              run: |
+                    ./gradlew samples:compose:assemble
+                    ./gradlew samples:compose-android:assembleDebug
+                    ./gradlew samples:view:assembleDebug
 
     build-samples-macos:
         name: Build samples (macOS)
