@@ -1,5 +1,4 @@
 import coil3.addAllMultiplatformTargets
-import coil3.applyJvm11OnlyToJvmTarget
 import coil3.multiplatformAndroidLibrary
 
 plugins {
@@ -23,6 +22,3 @@ kotlin {
         }
     }
 }
-
-// Compose 1.8.0 requires JVM 11 only for the JVM target.
-applyJvm11OnlyToJvmTarget()

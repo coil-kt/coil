@@ -1,6 +1,5 @@
 import coil3.addNodePolyfillWebpackPlugin
 import coil3.applyCoilHierarchyTemplate
-import coil3.applyJvm11OnlyToJvmTarget
 import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -111,6 +110,3 @@ afterEvaluate {
         named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }
-
-// Compose 1.8.0 requires JVM 11 only for the JVM target.
-applyJvm11OnlyToJvmTarget()

@@ -52,20 +52,6 @@ val Project.versionCode: Int
 val Project.enableComposeMetrics: Boolean
     get() = booleanProperty("enableComposeMetrics") { false }
 
-// Compose 1.8.0 requires JVM 11 only for the JVM target.
-fun Project.applyJvm11OnlyToJvmTarget() {
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        when {
-            name.contains("kotlinjvm", ignoreCase = true) -> {
-                compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-            }
-            name.contains("kotlinandroid", ignoreCase = true) -> {
-                compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
-            }
-        }
-    }
-}
-
 private fun Project.intProperty(
     name: String,
     default: () -> Int = { error("unknown property: $name") },

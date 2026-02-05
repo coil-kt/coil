@@ -4,7 +4,7 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 plugins {
     id("com.android.test")
     id("kotlin-android")
-    id("androidx.baselineprofile")
+    id("androidx.baselineprofile.producer")
 }
 
 androidTest(name = "coil3.benchmark", config = true) {

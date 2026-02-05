@@ -65,12 +65,12 @@ allprojects {
 
     // Target JVM 8.
     tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+        sourceCompatibility = JavaVersion.VERSION_11.toString()
+        targetCompatibility = JavaVersion.VERSION_11.toString()
         options.compilerArgs = options.compilerArgs + "-Xlint:-options"
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget = JvmTarget.JVM_1_8
+        compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
     // Uninstall test APKs after running instrumentation tests.

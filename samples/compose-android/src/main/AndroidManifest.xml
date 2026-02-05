@@ -20,7 +20,7 @@
             tools:targetApi="q"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name="sample.compose.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
