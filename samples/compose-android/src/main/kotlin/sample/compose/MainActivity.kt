@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sample.common.AndroidMainViewModel
-import sample.common.BuildConfig
 import sample.common.enableEdgeToEdge
+import sample.compose.android.BuildConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

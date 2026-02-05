@@ -1,13 +1,17 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "sample.common", config = true)
+multiplatformAndroidLibrary(name = "sample.common") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
     sourceSets {
@@ -47,16 +51,6 @@ kotlin {
         named("wasmJsMain") {
             dependencies {
                 api(projects.coilNetworkKtor3)
-            }
-        }
-    }
-}
-
-android {
-    sourceSets {
-        getByName("main") {
-            assets {
-                srcDirs("src/commonMain/resources")
             }
         }
     }

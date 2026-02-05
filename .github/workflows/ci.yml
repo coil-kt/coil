@@ -55,7 +55,7 @@ jobs:
                   cache-cleanup: true
 
             - name: Unit tests
-              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziDebug verifyRoborazziJvm
+              run: ./gradlew allTests testDebugUnitTest validateDebugScreenshotTest verifyPaparazziDebug verifyRoborazziAndroidHostTest verifyRoborazziJvm
 
     unit-tests-macos:
         name: Unit tests (macOS)
@@ -122,7 +122,7 @@ jobs:
     build-samples:
         name: Build samples
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-java@v5
@@ -137,12 +137,16 @@ jobs:
                   cache-cleanup: true
 
             - name: Build Compose and View samples
-              run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
+              # Run the tasks separately to work around mergeDebugResources hanging.
+              run: |
+                    ./gradlew samples:compose:assemble
+                    ./gradlew samples:compose-android:assembleDebug
+                    ./gradlew samples:view:assembleDebug
 
     build-samples-macos:
         name: Build samples (macOS)
         runs-on: macos-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-java@v5

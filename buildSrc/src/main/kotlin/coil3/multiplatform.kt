@@ -18,16 +18,6 @@ fun Project.addAllMultiplatformTargets(
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
 
-            val isAndroidApp = plugins.hasPlugin("com.android.application")
-            val isAndroidLibrary = plugins.hasPlugin("com.android.library")
-            if (isAndroidApp || isAndroidLibrary) {
-                androidTarget {
-                    if (isAndroidLibrary) {
-                        publishLibraryVariants("release")
-                    }
-                }
-            }
-
             jvm()
 
             js {

@@ -1,18 +1,22 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
     id("dev.drewhamilton.poko")
-    id("androidx.baselineprofile")
+    id("androidx.baselineprofile.consumer")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.core") {
-    defaultConfig {
-        consumerProguardFiles("shrinker-rules.pro")
+multiplatformAndroidLibrary(name = "coil3.core") {
+    androidResources {
+        enable = true
+    }
+    optimization {
+        consumerKeepRules.publish = true
+        consumerKeepRules.files += project.file("shrinker-rules.pro")
     }
 }
 
@@ -47,13 +51,13 @@ kotlin {
                 api(libs.androidx.lifecycle.runtime)
             }
         }
-        androidUnitTest {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
@@ -74,8 +78,9 @@ baselineProfile {
         exclude("coil3.svg.**")
         exclude("coil3.video.**")
     }
-}
-
-dependencies {
-    baselineProfile(projects.internal.benchmark)
+    variants {
+        create("androidMain") {
+            from(project(":internal:benchmark"))
+        }
+    }
 }

@@ -25,5 +25,8 @@ site
 *.xcuserstate
 **/xcuserdata
 
+# Claude
+settings.local.json
+
 # https://github.com/square/okio/issues/1163
 **/webpack.config.d/applyNodePolyfillPlugin.js

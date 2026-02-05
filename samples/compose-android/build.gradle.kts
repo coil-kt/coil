@@ -3,9 +3,14 @@ import coil3.androidApplication
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-androidApplication(name = "sample.view") {
+androidApplication(name = "sample.compose.android") {
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             isDebuggable = false
@@ -25,16 +30,11 @@ androidApplication(name = "sample.view") {
             signingConfig = signingConfigs["debug"]
         }
     }
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
-    }
 }
 
 dependencies {
+    implementation(projects.samples.compose)
     implementation(projects.samples.shared)
-
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

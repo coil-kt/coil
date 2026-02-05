@@ -1,15 +1,19 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
     id("dev.drewhamilton.poko")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.test.utils")
+multiplatformAndroidLibrary(name = "coil3.test.utils") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
     sourceSets {

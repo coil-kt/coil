@@ -1,18 +1,17 @@
-import coil3.androidLibrary
 import coil3.applyCoilHierarchyTemplate
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-androidLibrary(name = "coil3.network.okhttp")
+multiplatformAndroidLibrary(name = "coil3.network.okhttp")
 
 kotlin {
     applyCoilHierarchyTemplate()
 
-    androidTarget()
     jvm()
 
     sourceSets {
@@ -30,12 +29,12 @@ kotlin {
                 implementation(libs.okhttp.mockwebserver)
             }
         }
-        androidUnitTest {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(libs.bundles.test.jvm)
             }
         }
-        androidInstrumentedTest {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)

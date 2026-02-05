@@ -1,14 +1,14 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.network.ktor3")
+multiplatformAndroidLibrary(name = "coil3.network.ktor3")
 
 kotlin {
     sourceSets {
@@ -31,7 +31,7 @@ kotlin {
                 implementation(libs.ktor3.mock)
             }
         }
-        androidUnitTest {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(libs.bundles.test.jvm)
             }

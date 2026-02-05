@@ -1,11 +1,10 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
-import coil3.applyJvm11OnlyToJvmTarget
+import coil3.multiplatformAndroidLibrary
 import coil3.skikoAwtRuntimeDependency
 import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
     id("org.jetbrains.compose")
@@ -13,7 +12,7 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-androidLibrary(name = "coil3.test.composeuimultiplatform")
+multiplatformAndroidLibrary(name = "coil3.test.composeuimultiplatform")
 
 kotlin {
     sourceSets {
@@ -39,6 +38,3 @@ kotlin {
         }
     }
 }
-
-// Compose 1.8.0 requires JVM 11 only for the JVM target.
-applyJvm11OnlyToJvmTarget()

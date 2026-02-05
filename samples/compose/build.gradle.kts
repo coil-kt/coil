@@ -1,38 +1,17 @@
 import coil3.addNodePolyfillWebpackPlugin
-import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
-import coil3.applyJvm11OnlyToJvmTarget
+import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    id("com.android.application")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-androidApplication(name = "sample.compose") {
-    buildTypes {
-        release {
-            isDebuggable = false
-            isMinifyEnabled = false
-            isShrinkResources = false
-            signingConfig = signingConfigs["debug"]
-        }
-        create("minifiedRelease") {
-            isDebuggable = false
-            isMinifyEnabled = true
-            isShrinkResources = true
-            matchingFallbacks += "release"
-            proguardFiles(
-                "../shared/shrinker-rules.pro",
-                "../shared/shrinker-rules-android.pro",
-            )
-            signingConfig = signingConfigs["debug"]
-        }
-    }
-}
+multiplatformAndroidLibrary(name = "sample.compose")
 
 compose {
     desktop {
@@ -53,8 +32,6 @@ compose {
 
 kotlin {
     applyCoilHierarchyTemplate()
-
-    androidTarget()
 
     jvm()
 
@@ -133,6 +110,3 @@ afterEvaluate {
         named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }
-
-// Compose 1.8.0 requires JVM 11 only for the JVM target.
-applyJvm11OnlyToJvmTarget()

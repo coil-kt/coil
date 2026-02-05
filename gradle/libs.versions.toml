@@ -1,13 +1,14 @@
 [versions]
+android-gradle-plugin = "9.0.0"
 androidx-activity = "1.10.1"
-androidx-benchmark = "1.4.1"
+androidx-benchmark = "1.5.0-alpha02"
 androidx-lifecycle = "2.9.4"
 androidx-tracing-perfetto = "1.0.1"
 atomicfu = "0.31.0"
 coroutines = "1.10.2"
 dokka = "2.1.0"
 jetbrains-compose = "1.9.3"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ktlint = "1.6.0"
 ktor2 = "2.3.13"
 ktor3 = "3.1.0"
@@ -19,12 +20,13 @@ skiko = "0.9.22.2"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
+baselineProfileConsumer = { id = "androidx.baselineprofile.consumer", version.ref = "androidx-benchmark" }
 poko = "dev.drewhamilton.poko:0.21.1"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha13"
 spotless = "com.diffplug.spotless:8.2.1"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.13.2"
+gradlePlugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 gradlePlugin-atomicFu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }

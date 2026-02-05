@@ -1,14 +1,14 @@
 import coil3.addAllMultiplatformTargets
-import coil3.androidLibrary
+import coil3.multiplatformAndroidLibrary
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
 addAllMultiplatformTargets(libs.versions.skiko)
-androidLibrary(name = "coil3.network.cachecontrol")
+multiplatformAndroidLibrary(name = "coil3.network.cachecontrol")
 
 kotlin {
     sourceSets {
@@ -25,7 +25,7 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        androidUnitTest {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(libs.bundles.test.jvm)
             }
