@@ -7,6 +7,7 @@ import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
@@ -71,6 +72,14 @@ allprojects {
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
+    }
+
+    plugins.withType<KotlinBasePlugin> {
+        extensions.configure<KotlinProjectExtension> {
+            compilerOptions {
+                languageVersion = KotlinVersion.KOTLIN_2_2
+            }
+        }
     }
 
     // Uninstall test APKs after running instrumentation tests.
