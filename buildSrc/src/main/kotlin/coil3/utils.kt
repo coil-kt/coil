@@ -2,9 +2,6 @@ package coil3
 
 import kotlin.math.pow
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 val publicModules = setOf(
     "coil",
