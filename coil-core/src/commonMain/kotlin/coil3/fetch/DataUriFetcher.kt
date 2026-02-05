@@ -6,6 +6,7 @@ import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
 import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import okio.Buffer
 
 /**
@@ -16,6 +17,7 @@ internal class DataUriFetcher(
     private val options: Options,
 ) : Fetcher {
 
+    @OptIn(ExperimentalEncodingApi::class)
     override suspend fun fetch(): FetchResult {
         val tagIndex = uri.toString().indexOf(BASE64_TAG)
         check(tagIndex != -1) { "invalid data uri: $uri" }
