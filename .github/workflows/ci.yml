@@ -139,9 +139,10 @@ jobs:
             - name: Build Compose and View samples
               # Run the tasks separately to work around mergeDebugResources hanging.
               run: |
-                    ./gradlew samples:compose:assemble
-                    ./gradlew samples:compose-android:assembleDebug
-                    ./gradlew samples:view:assembleDebug
+                    GRADLE_ARGS=(--no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Pkotlin.native.jvmArgs=-Xmx4g)
+                    ./gradlew samples:compose:assemble "${GRADLE_ARGS[@]}"
+                    ./gradlew samples:compose-android:assembleDebug "${GRADLE_ARGS[@]}"
+                    ./gradlew samples:view:assembleDebug "${GRADLE_ARGS[@]}"
 
     build-samples-macos:
         name: Build samples (macOS)
