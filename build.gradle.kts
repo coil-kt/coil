@@ -9,12 +9,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -75,10 +75,9 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
-    tasks.withType<KotlinCompilationTask<*>>().configureEach {
-        compilerOptions {
-            languageVersion = KotlinVersion.KOTLIN_2_2
-        }
+    // Target Kotlin 2.1.
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_1
     }
 
     // Uninstall test APKs after running instrumentation tests.
@@ -86,11 +85,6 @@ allprojects {
         if (name == "connectedDebugAndroidTest") {
             finalizedBy("uninstallDebugAndroidTest")
         }
-    }
-
-    // https://issuetracker.google.com/issues/411739086?pli=1
-    tasks.withType<AbstractTestTask>().configureEach {
-        failOnNoDiscoveredTests = false
     }
 
     apply(plugin = "com.diffplug.spotless")
