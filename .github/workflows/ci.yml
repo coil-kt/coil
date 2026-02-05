@@ -137,7 +137,7 @@ jobs:
                   cache-cleanup: true
 
             - name: Build Compose and View samples
-              # Run the tasks separately to work around mergeDebugResources getting stuck.
+              # Run the tasks separately to work around mergeDebugResources hanging.
               run: |
                     ./gradlew samples:compose:assemble
                     ./gradlew samples:compose-android:assembleDebug
