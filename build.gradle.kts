@@ -65,7 +65,7 @@ allprojects {
     group = groupId
     version = versionName
 
-    // Target JVM 8.
+    // Target JVM 11.
     tasks.withType<JavaCompile>().configureEach {
         sourceCompatibility = JavaVersion.VERSION_11.toString()
         targetCompatibility = JavaVersion.VERSION_11.toString()
