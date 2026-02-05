@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
@@ -74,11 +75,9 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
-    plugins.withType<KotlinBasePlugin> {
-        extensions.configure<KotlinProjectExtension> {
-            compilerOptions {
-                languageVersion = KotlinVersion.KOTLIN_2_2
-            }
+    tasks.withType<KotlinCompilationTask<*>>().configureEach {
+        compilerOptions {
+            languageVersion = KotlinVersion.KOTLIN_2_2
         }
     }
 
