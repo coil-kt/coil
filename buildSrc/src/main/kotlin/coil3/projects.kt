@@ -191,6 +191,13 @@ fun Project.setupDokka(
                 analysisPlatform.set(KotlinPlatform.JVM)
             }
 
+            // Suppress the 'main' source set for non-multiplatform Android
+            // libraries to avoid conflicting with the 'release' source set.
+            // https://github.com/Kotlin/dokka/issues/3701
+            if (name == "main" && !project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+                suppress.set(true)
+            }
+
             externalDocumentationLinks.register("android") {
                 url.set(uri("https://developer.android.com/reference/"))
             }
