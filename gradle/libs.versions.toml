@@ -16,6 +16,7 @@ okio = "3.16.4"
 paparazzi = "2.0.0-alpha04"
 roborazzi = "1.56.0"
 skiko = "0.9.22.2"
+lint = "31.13.2"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
@@ -99,6 +100,11 @@ roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
 
 svg = "com.caverock:androidsvg-aar:1.4"
+
+lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
+lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }
+lint-core = { module = "com.android.tools.lint:lint", version.ref = "lint" }
+lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
 
 [bundles]
 test-android = [
