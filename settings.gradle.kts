@@ -23,6 +23,7 @@ include(
     "coil-network-okhttp",
     "coil-network-cache-control",
     "coil-gif",
+    "coil-lint",
     "coil-svg",
     "coil-video",
     "coil-bom",
