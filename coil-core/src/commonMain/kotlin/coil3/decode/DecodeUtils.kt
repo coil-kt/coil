@@ -32,6 +32,16 @@ object DecodeUtils {
         }.coerceAtLeast(1)
     }
 
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Int,
+        srcHeight: Int,
+        dstWidth: Int,
+        dstHeight: Int,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale)
+
     /**
      * Calculate the percentage to multiply the source dimensions by to fit/fill the destination
      * dimensions while preserving aspect ratio.
@@ -66,6 +76,16 @@ object DecodeUtils {
         return percent
     }
 
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Float,
+        srcHeight: Float,
+        dstWidth: Float,
+        dstHeight: Float,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale)
+
     /** @see computeSizeMultiplier */
     @JvmStatic
     fun computeSizeMultiplier(
@@ -94,6 +114,16 @@ object DecodeUtils {
         }
         return percent
     }
+
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Double,
+        srcHeight: Double,
+        dstWidth: Double,
+        dstHeight: Double,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale)
 
     /** @see computeSizeMultiplier */
     @JvmStatic

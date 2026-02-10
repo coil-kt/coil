@@ -350,6 +350,7 @@ class RealImageLoaderAndroidTest {
         assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/pull/3259 */
     @Test
     fun veryLargeImageWithFill() = runTest {
         val request = ImageRequest.Builder(context)
@@ -374,6 +375,25 @@ class RealImageLoaderAndroidTest {
         val expectedHeight = (multiplier * 4965).roundToInt()
         assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
         assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/pull/3259 */
+    @Test
+    fun veryLargeImageWithFill() = runTest {
+        val request = ImageRequest.Builder(context)
+            .data(R.drawable.very_large)
+            .scale(Scale.FILL)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+
+        assertIs<SuccessResult>(result)
+        val image = assertIs<BitmapImage>(result.image)
+        val maxBitmapSize = Extras.Key.maxBitmapSize.default
+        val maxWidth = maxBitmapSize.width.pxOrElse { Int.MAX_VALUE }
+        val maxHeight = maxBitmapSize.height.pxOrElse { Int.MAX_VALUE }
+        assertTrue(image.bitmap.width <= maxWidth, "width too big: ${image.bitmap.width}")
+        assertTrue(image.bitmap.height <= maxHeight, "height too big: ${image.bitmap.height}")
     }
 
     @Test
