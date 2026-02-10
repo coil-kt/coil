@@ -957,9 +957,9 @@ final value class coil3.util/IntPair { // coil3.util/IntPair|null[0]
 final object coil3.decode/DecodeUtils { // coil3.decode/DecodeUtils|null[0]
     final fun calculateInSampleSize(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Int // coil3.decode/DecodeUtils.calculateInSampleSize|calculateInSampleSize(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
     final fun computeDstSize(kotlin/Int, kotlin/Int, coil3.size/Size, coil3.size/Scale, coil3.size/Size): coil3.util/IntPair // coil3.decode/DecodeUtils.computeDstSize|computeDstSize(kotlin.Int;kotlin.Int;coil3.size.Size;coil3.size.Scale;coil3.size.Size){}[0]
-    final fun computeSizeMultiplier(kotlin/Double, kotlin/Double, kotlin/Double, kotlin/Double, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Double;kotlin.Double;kotlin.Double;kotlin.Double;coil3.size.Scale){}[0]
-    final fun computeSizeMultiplier(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float, coil3.size/Scale): kotlin/Float // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float;coil3.size.Scale){}[0]
-    final fun computeSizeMultiplier(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale){}[0]
+    final fun computeSizeMultiplier(kotlin/Double, kotlin/Double, kotlin/Double, kotlin/Double, coil3.size/Scale, coil3.size/Size = ...): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Double;kotlin.Double;kotlin.Double;kotlin.Double;coil3.size.Scale;coil3.size.Size){}[0]
+    final fun computeSizeMultiplier(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float, coil3.size/Scale, coil3.size/Size = ...): kotlin/Float // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float;coil3.size.Scale;coil3.size.Size){}[0]
+    final fun computeSizeMultiplier(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, coil3.size/Scale, coil3.size/Size = ...): kotlin/Double // coil3.decode/DecodeUtils.computeSizeMultiplier|computeSizeMultiplier(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;coil3.size.Scale;coil3.size.Size){}[0]
 }
 
 final object coil3.request/NullRequestData { // coil3.request/NullRequestData|null[0]
