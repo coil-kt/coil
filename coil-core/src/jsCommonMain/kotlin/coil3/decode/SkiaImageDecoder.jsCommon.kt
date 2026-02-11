@@ -47,7 +47,7 @@ internal actual suspend fun decodeBitmap(
 
 // try to read a size directly for PNG and JPEG images.
 // It is faster than Image.makeFromEncoded(bytes)
-internal fun getOriginalSize(bytes: ByteArray): Pair<Int, Int> { //(w,h)
+internal fun getOriginalSize(bytes: ByteArray): Pair<Int, Int> { // (w,h)
     val pngSize = getPngSizeOrNull(bytes)
     if (pngSize != null) return pngSize
 

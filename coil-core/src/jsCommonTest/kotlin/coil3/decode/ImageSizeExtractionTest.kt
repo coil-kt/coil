@@ -4,12 +4,8 @@ import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import okio.ByteString.Companion.decodeBase64
-import org.jetbrains.skia.Data
 
 class ImageSizeExtractionTest {
     private val jpeg = (
