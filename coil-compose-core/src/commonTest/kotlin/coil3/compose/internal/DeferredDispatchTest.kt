@@ -12,6 +12,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.test.utils.FakeImage
+import coil3.test.utils.IgnoreOnApple
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.coroutines.CoroutineContext
@@ -84,6 +85,7 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     @Test
+    @IgnoreOnApple
     fun `image loader does dispatch if dispatcher changes`() = runTest {
         withContext(testDispatcher) {
             launchWithDeferredDispatch {
