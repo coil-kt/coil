@@ -11,6 +11,7 @@ import coil3.decode.ResourceMetadata
 import coil3.pathSegments
 import coil3.request.Options
 import coil3.request.bitmapConfig
+import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.util.DrawableUtils
 import coil3.util.MIME_TYPE_XML
@@ -57,6 +58,7 @@ internal class ResourceUriFetcher(
                         config = options.bitmapConfig,
                         size = options.size,
                         scale = options.scale,
+                        maxSize = options.maxBitmapSize,
                         allowInexactSize = options.precision == Precision.INEXACT,
                     ).toDrawable(context)
                 } else {

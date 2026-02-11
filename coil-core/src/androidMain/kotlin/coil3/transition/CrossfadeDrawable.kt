@@ -17,6 +17,7 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil3.decode.DecodeUtils
 import coil3.request.DEFAULT_CROSSFADE_MILLIS
 import coil3.size.Scale
+import coil3.size.Size
 import coil3.util.forEachIndices
 import kotlin.math.roundToInt
 
@@ -256,7 +257,14 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
         val targetWidth = targetBounds.width()
         val targetHeight = targetBounds.height()
-        val multiplier = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale)
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = width,
+            srcHeight = height,
+            dstWidth = targetWidth,
+            dstHeight = targetHeight,
+            scale = scale,
+            maxSize = Size.ORIGINAL,
+        )
         val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
         val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 

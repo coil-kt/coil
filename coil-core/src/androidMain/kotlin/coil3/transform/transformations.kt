@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Shader
 import coil3.decode.DecodeUtils
 import coil3.size.Scale
+import coil3.size.Size
 
 /**
  * Create a [Paint] that draws [input] centered and scaled to fit inside the output dimensions.
@@ -23,6 +24,7 @@ internal fun newScaledShaderPaint(
         dstWidth = outputWidth,
         dstHeight = outputHeight,
         scale = Scale.FILL,
+        maxSize = Size.ORIGINAL,
     ).toFloat()
     val dx = (outputWidth - multiplier * input.width) / 2
     val dy = (outputHeight - multiplier * input.height) / 2

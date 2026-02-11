@@ -34,12 +34,15 @@ internal object DrawableUtils {
         config: Bitmap.Config,
         size: Size,
         scale: Scale,
+        maxSize: Size,
         allowInexactSize: Boolean,
     ): Bitmap {
         // Fast path: return the underlying bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (isConfigValid(bitmap, config) && isSizeValid(allowInexactSize, bitmap, size, scale)) {
+            if (isConfigValid(bitmap, config) &&
+                isSizeValid(allowInexactSize, bitmap, size, scale, maxSize)
+            ) {
                 return bitmap
             }
         }
@@ -53,7 +56,7 @@ internal object DrawableUtils {
             srcHeight = srcHeight,
             targetSize = size,
             scale = scale,
-            maxSize = Size.ORIGINAL,
+            maxSize = maxSize,
         )
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
@@ -61,6 +64,7 @@ internal object DrawableUtils {
             dstWidth = dstWidth,
             dstHeight = dstHeight,
             scale = scale,
+            maxSize = maxSize,
         )
         val bitmapWidth = (multiplier * srcWidth).roundToInt()
         val bitmapHeight = (multiplier * srcHeight).roundToInt()
@@ -83,7 +87,8 @@ internal object DrawableUtils {
         allowInexactSize: Boolean,
         bitmap: Bitmap,
         size: Size,
-        scale: Scale
+        scale: Scale,
+        maxSize: Size,
     ): Boolean {
         if (allowInexactSize) {
             // Any size is valid.
@@ -95,14 +100,15 @@ internal object DrawableUtils {
                 srcHeight = bitmap.height,
                 targetSize = size,
                 scale = scale,
-                maxSize = Size.ORIGINAL,
+                maxSize = maxSize,
             )
             return DecodeUtils.computeSizeMultiplier(
                 srcWidth = bitmap.width,
                 srcHeight = bitmap.height,
                 dstWidth = dstWidth,
                 dstHeight = dstHeight,
-                scale = scale
+                scale = scale,
+                maxSize = maxSize,
             ) == 1.0
         }
     }

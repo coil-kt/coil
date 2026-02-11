@@ -6,6 +6,7 @@ import coil3.asImage
 import coil3.decode.DataSource
 import coil3.request.Options
 import coil3.request.bitmapConfig
+import coil3.request.maxBitmapSize
 import coil3.size.Precision
 import coil3.util.DrawableUtils
 import coil3.util.isVector
@@ -25,6 +26,7 @@ internal class DrawableFetcher(
                     config = options.bitmapConfig,
                     size = options.size,
                     scale = options.scale,
+                    maxSize = options.maxBitmapSize,
                     allowInexactSize = options.precision == Precision.INEXACT,
                 ).toDrawable(options.context)
             } else {
