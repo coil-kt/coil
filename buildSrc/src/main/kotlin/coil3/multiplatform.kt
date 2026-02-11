@@ -33,11 +33,12 @@ fun Project.addAllMultiplatformTargets(
             js {
                 browser {
                     testTask {
-                        enabled = false
+                        useKarma { useChromeHeadless() }
                     }
                 }
                 nodejs {
                     testTask {
+                        enabled = false
                         useMocha {
                             timeout = "60s"
                         }
@@ -57,12 +58,12 @@ fun Project.addAllMultiplatformTargets(
 
                     browser {
                         testTask {
-                            enabled = false
+                            useKarma { useChromeHeadless() }
                         }
                     }
                     nodejs {
                         testTask {
-                            enabled = true
+                            enabled = false
                             doFirst {
                                 val skikoModule = skikoDirProvider.get().resolve("skiko.mjs")
                                 if (skikoModule.isFile) {
