@@ -33,7 +33,7 @@ object DecodeUtils {
     }
 
     @Deprecated(
-        message = "Migrate to the variant that accepts 'maxSize'.",
+        message = "Migrate to the variant that accepts a 'maxSize'.",
         replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
         level = DeprecationLevel.WARNING,
     )
@@ -77,7 +77,7 @@ object DecodeUtils {
     }
 
     @Deprecated(
-        message = "Migrate to the variant that accepts 'maxSize'.",
+        message = "Migrate to the variant that accepts a 'maxSize'.",
         replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
         level = DeprecationLevel.WARNING,
     )
@@ -118,7 +118,7 @@ object DecodeUtils {
     }
 
     @Deprecated(
-        message = "Migrate to the variant that accepts 'maxSize'.",
+        message = "Migrate to the variant that accepts a 'maxSize'.",
         replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
         level = DeprecationLevel.WARNING,
     )
