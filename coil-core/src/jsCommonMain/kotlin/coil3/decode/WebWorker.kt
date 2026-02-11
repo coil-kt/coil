@@ -6,7 +6,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsAny
+import kotlin.js.JsArray
 import kotlin.js.js
+import kotlin.js.set
 import kotlin.js.unsafeCast
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -147,7 +149,9 @@ private suspend fun decodeBytesToBitmap(
     worker.addEventListener("message", responseListener)
     worker.addEventListener("error", errorListener)
 
-    worker.postMessage(WebWorkerRequest(id, bytes.toInt8Array(), width, height))
+    val buffer = bytes.toInt8Array().buffer
+    val transfer = JsArray<JsAny>().apply { set(0, buffer) }
+    worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
 
     continuation.invokeOnCancellation {
         worker.removeEventListener("message", responseListener)
@@ -157,10 +161,10 @@ private suspend fun decodeBytesToBitmap(
 
 private fun WebWorkerRequest(
     id: String,
-    arr: Int8Array,
+    buffer: ArrayBuffer,
     width: Int,
     height: Int,
-): JsAny = js("({ id: id, data: arr, w: width, h: height })")
+): JsAny = js("({ id: id, data: buffer, w: width, h: height })")
 
 internal external interface WebWorkerResponse : JsAny {
     val id: String
