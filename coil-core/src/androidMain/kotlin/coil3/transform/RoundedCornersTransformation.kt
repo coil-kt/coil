@@ -83,6 +83,7 @@ class RoundedCornersTransformation(
             dstWidth = size.width.pxOrElse { Int.MIN_VALUE },
             dstHeight = size.height.pxOrElse { Int.MIN_VALUE },
             scale = Scale.FILL,
+            maxSize = Size.ORIGINAL,
         )
         val outputWidth = (multiplier * input.width).roundToInt()
         val outputHeight = (multiplier * input.height).roundToInt()

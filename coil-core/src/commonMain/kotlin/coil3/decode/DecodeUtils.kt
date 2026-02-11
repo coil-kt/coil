@@ -32,6 +32,20 @@ object DecodeUtils {
         }.coerceAtLeast(1)
     }
 
+    @Deprecated(
+        message = "Migrate to the variant that accepts a 'maxSize'.",
+        replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
+        level = DeprecationLevel.WARNING,
+    )
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Int,
+        srcHeight: Int,
+        dstWidth: Int,
+        dstHeight: Int,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)
+
     /**
      * Calculate the percentage to multiply the source dimensions by to fit/fill the destination
      * dimensions while preserving aspect ratio.
@@ -43,28 +57,38 @@ object DecodeUtils {
         dstWidth: Int,
         dstHeight: Int,
         scale: Scale,
-        maxSize: Size = Size.ORIGINAL,
+        maxSize: Size,
     ): Double {
-        val srcWidthDouble = srcWidth.toDouble()
-        val srcHeightDouble = srcHeight.toDouble()
-        val widthPercent = dstWidth / srcWidthDouble
-        val heightPercent = dstHeight / srcHeightDouble
+        val widthPercent = dstWidth / srcWidth.toDouble()
+        val heightPercent = dstHeight / srcHeight.toDouble()
         var percent = when (scale) {
             Scale.FILL -> maxOf(widthPercent, heightPercent)
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
         if (maxSize.width is Dimension.Pixels) {
-            val maxWidth = maxSize.width.px
-            val maxWidthPercent = maxWidth / srcWidthDouble
+            val maxWidthPercent = maxSize.width.px / srcWidth.toDouble()
             percent = percent.coerceAtMost(maxWidthPercent)
         }
         if (maxSize.height is Dimension.Pixels) {
-            val maxHeight = maxSize.height.px
-            val maxHeightPercent = maxHeight / srcHeightDouble
+            val maxHeightPercent = maxSize.height.px / srcHeight.toDouble()
             percent = percent.coerceAtMost(maxHeightPercent)
         }
         return percent
     }
+
+    @Deprecated(
+        message = "Migrate to the variant that accepts a 'maxSize'.",
+        replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
+        level = DeprecationLevel.WARNING,
+    )
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Float,
+        srcHeight: Float,
+        dstWidth: Float,
+        dstHeight: Float,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)
 
     /** @see computeSizeMultiplier */
     @JvmStatic
@@ -74,7 +98,7 @@ object DecodeUtils {
         dstWidth: Float,
         dstHeight: Float,
         scale: Scale,
-        maxSize: Size = Size.ORIGINAL,
+        maxSize: Size,
     ): Float {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
@@ -83,17 +107,29 @@ object DecodeUtils {
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
         if (maxSize.width is Dimension.Pixels) {
-            val maxWidth = maxSize.width.px
-            val maxWidthPercent = maxWidth / srcWidth
+            val maxWidthPercent = maxSize.width.px / srcWidth
             percent = percent.coerceAtMost(maxWidthPercent)
         }
         if (maxSize.height is Dimension.Pixels) {
-            val maxHeight = maxSize.height.px
-            val maxHeightPercent = maxHeight / srcHeight
+            val maxHeightPercent = maxSize.height.px / srcHeight
             percent = percent.coerceAtMost(maxHeightPercent)
         }
         return percent
     }
+
+    @Deprecated(
+        message = "Migrate to the variant that accepts a 'maxSize'.",
+        replaceWith = ReplaceWith("computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)"),
+        level = DeprecationLevel.WARNING,
+    )
+    @JvmStatic
+    fun computeSizeMultiplier(
+        srcWidth: Double,
+        srcHeight: Double,
+        dstWidth: Double,
+        dstHeight: Double,
+        scale: Scale,
+    ) = computeSizeMultiplier(srcWidth, srcHeight, dstWidth, dstHeight, scale, Size.ORIGINAL)
 
     /** @see computeSizeMultiplier */
     @JvmStatic
@@ -103,7 +139,7 @@ object DecodeUtils {
         dstWidth: Double,
         dstHeight: Double,
         scale: Scale,
-        maxSize: Size = Size.ORIGINAL,
+        maxSize: Size,
     ): Double {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
@@ -112,13 +148,11 @@ object DecodeUtils {
             Scale.FIT -> minOf(widthPercent, heightPercent)
         }
         if (maxSize.width is Dimension.Pixels) {
-            val maxWidth = maxSize.width.px
-            val maxWidthPercent = maxWidth / srcWidth
+            val maxWidthPercent = maxSize.width.px / srcWidth
             percent = percent.coerceAtMost(maxWidthPercent)
         }
         if (maxSize.height is Dimension.Pixels) {
-            val maxHeight = maxSize.height.px
-            val maxHeightPercent = maxHeight / srcHeight
+            val maxHeightPercent = maxSize.height.px / srcHeight
             percent = percent.coerceAtMost(maxHeightPercent)
         }
         return percent

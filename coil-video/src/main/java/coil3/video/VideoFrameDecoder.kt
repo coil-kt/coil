@@ -155,6 +155,7 @@ class VideoFrameDecoder(
                 dstWidth = bitmap.width,
                 dstHeight = bitmap.height,
                 scale = options.scale,
+                maxSize = options.maxBitmapSize,
             ) < 1.0
         } else {
             // We were unable to determine the original size of the video. Assume it is sampled.
@@ -196,6 +197,7 @@ class VideoFrameDecoder(
             dstWidth = size.width.pxOrElse { inBitmap.width },
             dstHeight = size.height.pxOrElse { inBitmap.height },
             scale = options.scale,
+            maxSize = options.maxBitmapSize,
         ).toFloat()
         val dstWidth = (scale * inBitmap.width).roundToInt()
         val dstHeight = (scale * inBitmap.height).roundToInt()
@@ -229,6 +231,7 @@ class VideoFrameDecoder(
             dstWidth = size.width.pxOrElse { bitmap.width },
             dstHeight = size.height.pxOrElse { bitmap.height },
             scale = options.scale,
+            maxSize = options.maxBitmapSize,
         )
         return multiplier == 1.0
     }
