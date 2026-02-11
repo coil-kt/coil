@@ -40,6 +40,11 @@ kotlin {
                 api(libs.skiko)
             }
         }
+        named("jsCommonMain") {
+            dependencies {
+                implementation(libs.kotlinx.browser)
+            }
+        }
         androidMain {
             dependencies {
                 implementation(libs.androidx.annotation)

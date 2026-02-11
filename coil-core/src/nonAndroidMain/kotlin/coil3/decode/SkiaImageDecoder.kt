@@ -17,22 +17,7 @@ class SkiaImageDecoder(
     override suspend fun decode(): DecodeResult {
         // https://github.com/JetBrains/skiko/issues/741
         val bytes = source.source().use { it.readByteArray() }
-        val image = Image.makeFromEncoded(bytes)
-
-        val isSampled: Boolean
-        val bitmap: Bitmap
-        try {
-            bitmap = Bitmap.makeFromImage(image, options)
-            bitmap.setImmutable()
-            isSampled = bitmap.width < image.width || bitmap.height < image.height
-        } finally {
-            image.close()
-        }
-
-        return DecodeResult(
-            image = bitmap.asImage(),
-            isSampled = isSampled,
-        )
+        return decodeBitmap(options, bytes)
     }
 
     class Factory : Decoder.Factory {
@@ -45,4 +30,25 @@ class SkiaImageDecoder(
             return SkiaImageDecoder(result.source, options)
         }
     }
+}
+
+internal expect suspend fun decodeBitmap(options: Options, bytes: ByteArray): DecodeResult
+
+internal fun decodeBitmapSync(options: Options, bytes: ByteArray): DecodeResult {
+    val image = Image.makeFromEncoded(bytes)
+
+    val isSampled: Boolean
+    val bitmap: Bitmap
+    try {
+        bitmap = Bitmap.makeFromImage(image, options)
+        bitmap.setImmutable()
+        isSampled = bitmap.width < image.width || bitmap.height < image.height
+    } finally {
+        image.close()
+    }
+
+    return DecodeResult(
+        image = bitmap.asImage(),
+        isSampled = isSampled,
+    )
 }
