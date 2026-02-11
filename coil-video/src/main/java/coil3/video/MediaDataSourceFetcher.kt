@@ -1,7 +1,6 @@
 package coil3.video
 
 import android.media.MediaDataSource
-import androidx.annotation.RequiresApi
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
@@ -14,7 +13,6 @@ import okio.Source
 import okio.Timeout
 import okio.buffer
 
-@RequiresApi(23)
 class MediaDataSourceFetcher(
     private val data: MediaDataSource,
     private val options: Options,
@@ -77,6 +75,5 @@ class MediaDataSourceFetcher(
         }
     }
 
-    @RequiresApi(23)
     class MediaSourceMetadata(val mediaDataSource: MediaDataSource) : ImageSource.Metadata()
 }
