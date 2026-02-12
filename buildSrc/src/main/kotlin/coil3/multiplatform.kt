@@ -17,21 +17,23 @@ fun Project.addAllMultiplatformTargets(
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
+            val sharedKarmaConfigDirectory = rootProject.projectDir.resolve("karma.config.d")
 
             jvm()
 
             js {
                 browser {
                     testTask {
-                        useKarma { useChromeHeadless() }
+                        useKarma {
+                            useChromeHeadless()
+                            useConfigDirectory(sharedKarmaConfigDirectory)
+                        }
                     }
                 }
                 nodejs {
                     testTask {
+                        // Compose Multiplatform is not supported on nodejs.
                         enabled = false
-                        useMocha {
-                            timeout = "60s"
-                        }
                     }
                 }
                 binaries.executable()
@@ -45,31 +47,38 @@ fun Project.addAllMultiplatformTargets(
                         .buildDirectory
                         .dir("wasm/packages/coil-root${path.replace(":", "-")}-test/kotlin")
                         .map { it.asFile }
+                    val wasmTestModuleProvider = skikoDirProvider.map {
+                        it.resolve("coil-root${path.replace(":", "-")}-test.uninstantiated.mjs")
+                    }
 
                     browser {
                         testTask {
-                            useKarma { useChromeHeadless() }
+                            useKarma {
+                                useChromeHeadless()
+                                useConfigDirectory(sharedKarmaConfigDirectory)
+                            }
+                            doFirst {
+                                val wasmTestModule = wasmTestModuleProvider.get()
+                                if (wasmTestModule.isFile) {
+                                    // Kotlin/Wasm checks `process.release.name` to detect Node.js.
+                                    // When webpack injects a browser `process` shim without `release`,
+                                    // this throws and leaves Karma browser tests stuck idle.
+                                    val original = wasmTestModule.readText()
+                                    val patched = original.replace(
+                                        "(process.release.name === 'node')",
+                                        "(process.release && process.release.name === 'node')",
+                                    )
+                                    if (patched != original) {
+                                        wasmTestModule.writeText(patched)
+                                    }
+                                }
+                            }
                         }
                     }
                     nodejs {
                         testTask {
+                            // Compose Multiplatform is not supported on nodejs.
                             enabled = false
-                            doFirst {
-                                val skikoModule = skikoDirProvider.get().resolve("skiko.mjs")
-                                if (skikoModule.isFile) {
-                                    // The generated Skiko module disables its Node-specific loader
-                                    // with `if (false)`. Rewrite it so the Node path runs and the
-                                    // tests can load `skiko.wasm`.
-                                    val original = skikoModule.readText()
-                                    val patched = original.replaceFirst(
-                                        "if (false) {",
-                                        "if (ENVIRONMENT_IS_NODE) {"
-                                    )
-                                    if (patched != original) {
-                                        skikoModule.writeText(patched)
-                                    }
-                                }
-                            }
                         }
                     }
                     binaries.executable()
