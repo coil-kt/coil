@@ -2,7 +2,6 @@ import coil3.androidApplication
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }

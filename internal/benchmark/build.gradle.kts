@@ -3,7 +3,6 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
     id("com.android.test")
-    id("kotlin-android")
     id("androidx.baselineprofile.producer")
 }
 

@@ -17,9 +17,10 @@ fun Project.addAllMultiplatformTargets(
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             applyCoilHierarchyTemplate()
-            val sharedKarmaConfigDirectory = rootProject.projectDir.resolve("karma.config.d")
 
             jvm()
+
+            val sharedKarmaConfigDirectory = rootProject.projectDir.resolve("karma.config.d")
 
             js {
                 browser {
