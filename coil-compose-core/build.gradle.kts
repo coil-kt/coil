@@ -19,7 +19,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
-                api(compose.foundation)
+                api(libs.compose.foundation)
             }
         }
         commonTest {
@@ -43,7 +43,7 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
-                implementation(compose.desktop.uiTestJUnit4)
+                implementation(libs.compose.ui.test.junit4)
             }
         }
     }
