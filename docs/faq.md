@@ -78,7 +78,7 @@ Gradle (`.gradle`):
 ```groovy
 allprojects {
     repositories {
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
     }
 }
 ```
@@ -88,7 +88,7 @@ Gradle Kotlin DSL (`.gradle.kts`):
 ```kotlin
 allprojects {
     repositories {
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
     }
 }
 ```
