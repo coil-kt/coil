@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -27,7 +26,6 @@ buildscript {
         classpath(libs.gradlePlugin.atomicFu)
         classpath(libs.gradlePlugin.jetbrainsCompose)
         classpath(libs.gradlePlugin.composeCompiler)
-        classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
         classpath(libs.gradlePlugin.roborazzi)
@@ -104,12 +102,6 @@ allprojects {
         }
     }
 
-    tasks.configureEach {
-        if (name.startsWith("spotless")) {
-            notCompatibleWithConfigurationCache("https://github.com/diffplug/spotless/issues/2459")
-        }
-    }
-
     plugins.withId("org.jetbrains.kotlin.plugin.compose") {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
             stabilityConfigurationFiles.add {
@@ -140,30 +132,7 @@ allprojects {
     }
 
     if (project.name in publicModules) {
-        @OptIn(ExperimentalAbiValidation::class)
-        plugins.withType<KotlinBasePlugin> {
-            extensions.configure<KotlinProjectExtension> {
-                fun AbiValidationVariantSpec.configure() = filters {
-                    excluded {
-                        annotatedWith.add("coil3.annotation.InternalCoilApi")
-                    }
-                }
-
-                // Unfortunately the 'enabled' property doesn't share a common interface.
-                val singleTargetExtension = extensions.findByType<AbiValidationExtension>()
-                if (singleTargetExtension != null) {
-                    singleTargetExtension.apply {
-                        enabled = true
-                        configure()
-                    }
-                } else {
-                    extensions.configure<AbiValidationMultiplatformExtension> {
-                        enabled = true
-                        configure()
-                    }
-                }
-            }
-        }
+        configureAbiValidation()
     }
 
     // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
@@ -173,6 +142,52 @@ allprojects {
             .file("gradle/nodejs/registerSkikoMjsWorkaround.cjs")
             .asFile
         nodeJsArgs.add(skikoMjsWorkaround.absolutePath)
+    }
+}
+
+fun configureAbiValidation() {
+    @OptIn(ExperimentalAbiValidation::class)
+    fun Project.configureKotlinProject() {
+        extensions.configure<KotlinProjectExtension> {
+            fun AbiValidationVariantSpec.configure() = filters {
+                excluded {
+                    annotatedWith.add("coil3.annotation.InternalCoilApi")
+                }
+            }
+
+            // Unfortunately the 'enabled' property doesn't share a common interface.
+            extensions.findByType<AbiValidationExtension>()?.apply {
+                enabled = true
+                configure()
+            }
+            extensions.findByType<AbiValidationMultiplatformExtension>()?.apply {
+                enabled = true
+                configure()
+            }
+        }
+    }
+
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        configureKotlinProject()
+    }
+    pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            configureKotlinProject()
+        }
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        configureKotlinProject()
+    }
+
+    // Built-in Kotlin Android wires the Kotlin extension during Android plugin application.
+    pluginManager.withPlugin("com.android.application") {
+        configureKotlinProject()
+    }
+    pluginManager.withPlugin("com.android.library") {
+        configureKotlinProject()
+    }
+    pluginManager.withPlugin("com.android.test") {
+        configureKotlinProject()
     }
 }
 

@@ -2,7 +2,6 @@ import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
     alias(libs.plugins.screenshot)

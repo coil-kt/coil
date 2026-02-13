@@ -2,7 +2,6 @@ import coil3.androidApplication
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
 }
 
 androidApplication(name = "sample.view") {
