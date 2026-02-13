@@ -1,5 +1,6 @@
 import coil3.addNodePolyfillWebpackPlugin
 import coil3.applyCoilHierarchyTemplate
+import coil3.composeDesktopCurrentOsDependency
 import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -73,9 +74,9 @@ kotlin {
             dependencies {
                 implementation(projects.coilCompose)
                 implementation(projects.samples.shared)
-                implementation(compose.components.resources)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
+                implementation(libs.compose.components.resources)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.material.icons.extended)
             }
         }
         androidMain {
@@ -86,7 +87,7 @@ kotlin {
         }
         jvmMain {
             dependencies {
-                implementation(compose.desktop.currentOs)
+                implementation(composeDesktopCurrentOsDependency())
             }
         }
     }
