@@ -7,7 +7,9 @@ androidx-tracing-perfetto = "1.0.1"
 atomicfu = "0.31.0"
 coroutines = "1.10.2"
 dokka = "2.2.0-Beta"
-jetbrains-compose = "1.10.0"
+jetbrains-compose = "1.10.1"
+jetbrains-compose-material3 = "1.9.0"
+jetbrains-compose-material-icons-extended = "1.7.3"
 kotlin = "2.3.10"
 ktlint = "1.8.0"
 ktor2 = "2.3.13"
@@ -17,7 +19,7 @@ okhttp = "4.12.0"
 okio = "3.16.4"
 paparazzi = "2.0.0-alpha04"
 roborazzi = "1.59.0"
-skiko = "0.9.37.3"
+skiko = "0.9.37.4"
 
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
@@ -65,6 +67,13 @@ androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-anima
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrains-compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "jetbrains-compose-material-icons-extended" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-compose-material3" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "jetbrains-compose" }
+compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jetbrains-compose" }
 
 google-material = "com.google.android.material:material:1.13.0"
 google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.37.3"

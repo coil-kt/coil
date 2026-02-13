@@ -1,7 +1,6 @@
 import coil3.addAllMultiplatformTargets
 import coil3.multiplatformAndroidLibrary
 import coil3.skikoAwtRuntimeDependency
-import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
     id("com.android.kotlin.multiplatform.library")
@@ -20,20 +19,19 @@ kotlin {
             dependencies {
                 implementation(projects.coil)
                 implementation(projects.coilComposeCore)
-                implementation(compose.components.resources)
+                implementation(libs.compose.components.resources)
             }
         }
         commonTest {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
-                @OptIn(ExperimentalComposeLibrary::class)
-                implementation(compose.uiTest)
+                implementation(libs.compose.ui.test)
             }
         }
         jvmTest {
             dependencies {
-                implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
+                implementation(skikoAwtRuntimeDependency())
             }
         }
     }
