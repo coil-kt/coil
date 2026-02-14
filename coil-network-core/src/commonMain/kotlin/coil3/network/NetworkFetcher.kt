@@ -36,9 +36,16 @@ class NetworkFetcher(
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
     private val connectivityChecker: ConnectivityChecker,
+    private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
+        return inFlightRequestStrategy.value.apply(safeDiskCacheKey) {
+            doFetch()
+        }
+    }
+
+    private suspend fun doFetch(): FetchResult {
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
@@ -258,6 +265,9 @@ class NetworkFetcher(
     private val diskCacheKey: String
         get() = options.diskCacheKey ?: url
 
+    private val safeDiskCacheKey: String
+        get() = options.diskCacheKey?.let { StringBuilder(it).toString() } ?: url
+
     private val fileSystem: FileSystem
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
@@ -265,10 +275,20 @@ class NetworkFetcher(
         networkClient: () -> NetworkClient,
         cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
     ) : Fetcher.Factory<Uri> {
+
+        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+        constructor(
+            networkClient: () -> NetworkClient,
+            cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
+            connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        ) : this(networkClient, cacheStrategy, connectivityChecker)
+
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
+        private val inFlightRequestStrategyLazy = lazy(inFlightRequestStrategy)
 
         override fun create(
             data: Uri,
@@ -282,6 +302,7 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
+                inFlightRequestStrategy = inFlightRequestStrategyLazy,
                 connectivityChecker = connectivityCheckerLazy.get(options.context),
             )
         }
