@@ -16,7 +16,7 @@ lint = "32.0.1"
 okhttp = "4.12.0"
 okio = "3.16.4"
 paparazzi = "2.0.0-alpha04"
-roborazzi = "1.58.0"
+roborazzi = "1.59.0"
 skiko = "0.9.22.2"
 
 [plugins]
