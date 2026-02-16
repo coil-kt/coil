@@ -9,7 +9,6 @@ import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
-import coil3.benchmark.BuildConfig.PROJECT
 import coil3.benchmark.MicrosTraceSectionMetric.Mode.Average
 import coil3.benchmark.MicrosTraceSectionMetric.Mode.Sum
 import org.junit.Rule
@@ -34,7 +33,7 @@ class ScrollBenchmark {
 
     private fun benchmark(compilationMode: CompilationMode) {
         benchmarkRule.measureRepeated(
-            packageName = "sample.$PROJECT",
+            packageName = TARGET_PACKAGE_NAME,
             metrics = listOf(
                 FrameTimingMetric(),
                 StartupTimingMetric(),

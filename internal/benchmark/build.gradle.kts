@@ -7,10 +7,11 @@ plugins {
 }
 
 androidTest(name = "coil3.benchmark", config = true) {
-    val targetProject = System.getProperty("project", "compose")
+    val targetProject = System.getProperty("project", "compose-android")
     defaultConfig {
         minSdk = 28
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
         // Enables Composition Tracing for benchmarks
         // testInstrumentationRunnerArguments["androidx.benchmark.fullTracing.enable"] = "true"
