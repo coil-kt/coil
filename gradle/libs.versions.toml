@@ -1,6 +1,6 @@
 [versions]
 android-gradle-plugin = "9.0.1"
-androidx-activity = "1.10.1"
+androidx-activity = "1.12.4"
 androidx-benchmark = "1.5.0-alpha02"
 androidx-lifecycle = "2.9.4"
 androidx-tracing-perfetto = "1.0.1"
