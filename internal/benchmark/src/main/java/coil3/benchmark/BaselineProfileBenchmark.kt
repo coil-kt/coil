@@ -7,7 +7,6 @@ import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import coil3.benchmark.BuildConfig.PROJECT
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,7 +34,7 @@ class BaselineProfileBenchmark {
 
     private fun startup(compilationMode: CompilationMode) {
         benchmarkRule.measureRepeated(
-            packageName = "sample.$PROJECT",
+            packageName = TARGET_PACKAGE_NAME,
             metrics = listOf(
                 FrameTimingMetric(),
                 StartupTimingMetric(),

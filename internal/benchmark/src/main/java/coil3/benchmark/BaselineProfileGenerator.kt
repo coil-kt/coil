@@ -20,13 +20,13 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() = baselineProfileRule.collect(
-        packageName = "sample.$PROJECT",
+        packageName = TARGET_PACKAGE_NAME,
     ) {
         pressHome()
         startActivityAndWait()
         UiDevice.getInstance(getInstrumentation())
             .findObject(
-                if (PROJECT == "compose") {
+                if (PROJECT.startsWith("compose")) {
                     By.res("list")
                 } else {
                     By.res(packageName, "list")
