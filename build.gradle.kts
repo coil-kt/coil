@@ -196,6 +196,7 @@ private val ktlintRules = buildMap {
 
     put("ktlint_standard_annotation", "disabled")
     put("ktlint_standard_blank-line-before-declaration", "disabled")
+    put("ktlint_standard_blank-line-between-when-conditions", "disabled")
     put("ktlint_standard_class-signature", "disabled")
     put("ktlint_standard_filename", "disabled")
     put("ktlint_standard_function-expression-body", "disabled")
