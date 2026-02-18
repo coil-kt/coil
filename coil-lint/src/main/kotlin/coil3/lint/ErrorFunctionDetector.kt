@@ -37,8 +37,8 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
             scope = node,
             location = context.getLocation(node),
             message = "Using `kotlin.error()` inside `ImageRequest.Builder`. " +
-                "Did you mean to use Coil's `error()` extension function to set an error drawable? " +
-                "Consider importing `coil3.request.error` instead.",
+                "Did you mean to use Coil's `error()` extension function to set an error image? " +
+                "If yes, import `coil3.request.error` instead.",
         )
     }
 
@@ -72,15 +72,17 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
                     val receiverType = lambdaParent.receiverType?.canonicalText
                     val methodName = lambdaParent.methodName
 
-                    // Check for ImageView.load { } or AsyncImage calls
-                    if (methodName == "load" || methodName == "AsyncImage" || methodName == "SubcomposeAsyncImage") {
+                    // Check for ImageView.load { }
+                    if (receiverType?.contains("ImageView") == true && methodName == "load") {
                         return true
                     }
 
-                    // Check for ImageRequest.Builder { } or ImageRequest.Builder().apply { }
+                    // Check for ImageRequest.Builder { }
                     if (receiverType?.contains("ImageRequest.Builder") == true) {
                         return true
                     }
+
+                    // Check for ImageRequest.Builder().apply { }
                     if (receiverType?.contains("ImageRequest\$Builder") == true) {
                         return true
                     }
@@ -88,7 +90,7 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
                     // Check if the lambda is the trailing lambda of a function that returns/uses ImageRequest.Builder
                     val resolvedMethod = lambdaParent.resolve()
                     if (resolvedMethod != null) {
-                        val returnType = resolvedMethod.returnType?.canonicalText ?: ""
+                        val returnType = resolvedMethod.returnType?.canonicalText.orEmpty()
                         if (returnType.contains("ImageRequest.Builder") || returnType.contains("ImageRequest\$Builder")) {
                             return true
                         }
@@ -113,17 +115,18 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
             id = "CoilErrorFunction",
             briefDescription = "Kotlin stdlib `error()` used inside ImageRequest.Builder",
             explanation = """
-                Using Kotlin's stdlib `error()` function inside an `ImageRequest.Builder` lambda \
-                (such as in `imageView.load { }` or `AsyncImage`) will throw an `IllegalStateException` \
-                at runtime instead of setting an error drawable.
+                Using Kotlin's stdlib `error()` function inside an `ImageRequest.Builder` lambda
+                (such as in `ImageView.load { }`) will throw an `IllegalStateException`
+                at runtime instead of setting an error image.
 
-                This is likely a mistake caused by IDE auto-import selecting the wrong function. \
-                Use Coil's `error(drawable)` extension function instead to set an error placeholder.
+                This is likely a mistake caused by not importing `coil3.request.error`.
+                By default, the compiler will resolve the `error()`function call to
+                `kotlin.error()` if `coil3.request.error` is not imported.
 
                 **Wrong:**
                 ```kotlin
                 imageView.load(url) {
-                    error(R.drawable.error) // This is kotlin.error() - throws exception!
+                    error(R.drawable.error) // This is kotlin.error() - throws an exception!
                 }
                 ```
 
@@ -132,7 +135,7 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
                 import coil3.request.error
 
                 imageView.load(url) {
-                    error(R.drawable.error) // This is coil3.request.error() - sets error drawable
+                    error(R.drawable.error) // This is coil3.request.error() - sets the error image.
                 }
                 ```
             """.trimIndent(),

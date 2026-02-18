@@ -1,6 +1,5 @@
 import coil3.setupPublishing
 import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
 import org.gradle.api.attributes.java.TargetJvmVersion
 
 plugins {
@@ -9,11 +8,7 @@ plugins {
 }
 
 setupPublishing {
-    configure(JavaLibrary(javadocJar = JavadocJar.Empty()))
-}
-
-kotlin {
-    jvmToolchain(17)
+    configure(JavaLibrary())
 }
 
 // Lint dependencies require JVM 11+, so we must request JVM 17 compatible dependencies.
@@ -29,9 +24,9 @@ dependencies {
     compileOnly(libs.lint.api)
     compileOnly(libs.lint.checks)
 
+    testImplementation(libs.junit)
     testImplementation(libs.lint.core)
     testImplementation(libs.lint.tests)
-    testImplementation(libs.junit)
 }
 
 tasks.jar {
