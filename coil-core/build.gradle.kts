@@ -89,3 +89,9 @@ baselineProfile {
         }
     }
 }
+
+dependencies {
+    lintPublish(projects.coilLint) {
+        isTransitive = false
+    }
+}
