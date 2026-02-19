@@ -28,10 +28,10 @@ fun KtorNetworkFetcherFactory(
 @JvmName("factory")
 fun KtorNetworkFetcherFactory(
     httpClient: HttpClient,
-    concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED
+    concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED,
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient.asNetworkClient() },
-    concurrentRequestStrategy = { concurrentRequestStrategy }
+    concurrentRequestStrategy = { concurrentRequestStrategy },
 )
 
 @JvmName("factory")
@@ -58,12 +58,12 @@ fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient = { HttpClient() },
     cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
-    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED }
+    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient().asNetworkClient() },
     cacheStrategy = cacheStrategy,
     connectivityChecker = connectivityChecker,
-    concurrentRequestStrategy = concurrentRequestStrategy
+    concurrentRequestStrategy = concurrentRequestStrategy,
 )
 
 fun HttpClient.asNetworkClient(): NetworkClient {

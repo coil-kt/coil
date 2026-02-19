@@ -50,7 +50,7 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(null),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = lazyOf(ConnectivityChecker(context)),
-            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED)
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
         ).fetch()
 
         assertIs<SourceFetchResult>(result)

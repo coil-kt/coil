@@ -38,7 +38,7 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
         path: String,
         responseBody: ByteString,
         options: Options,
-        concurrentRequestStrategy: ConcurrentRequestStrategy
+        concurrentRequestStrategy: ConcurrentRequestStrategy,
     ): NetworkFetcher {
         server.enqueue(MockResponse().setBody(Buffer().apply { write(responseBody) }))
         val client = OkHttpClient()

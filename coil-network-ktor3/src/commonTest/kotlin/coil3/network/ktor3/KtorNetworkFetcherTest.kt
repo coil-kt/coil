@@ -21,7 +21,7 @@ class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
         path: String,
         responseBody: ByteString,
         options: Options,
-        concurrentRequestStrategy: ConcurrentRequestStrategy
+        concurrentRequestStrategy: ConcurrentRequestStrategy,
     ): NetworkFetcher {
         val client = HttpClient(MockEngine) {
             engine {
