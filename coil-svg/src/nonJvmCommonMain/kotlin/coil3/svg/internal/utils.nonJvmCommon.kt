@@ -4,5 +4,5 @@ import kotlin.coroutines.CoroutineContext
 
 internal actual suspend inline fun <T> runInterruptible(
     context: CoroutineContext,
-    block: () -> T
+    block: () -> T,
 ): T = block()

@@ -196,7 +196,7 @@ class EventListenerTest {
     }
 
     private suspend fun ImageLoader.testEnqueue(
-        builder: ImageRequest.Builder.() -> Unit
+        builder: ImageRequest.Builder.() -> Unit,
     ) = suspendCancellableCoroutine { continuation ->
         val request = ImageRequest.Builder(context)
             .size(100, 100)
@@ -204,7 +204,7 @@ class EventListenerTest {
             .listener(
                 onSuccess = { _, _ -> continuation.resume(Unit) },
                 onError = { _, result -> continuation.resumeWithException(result.throwable) },
-                onCancel = { continuation.resumeWithException(CancellationException()) }
+                onCancel = { continuation.resumeWithException(CancellationException()) },
             )
             .apply(builder)
             .build()

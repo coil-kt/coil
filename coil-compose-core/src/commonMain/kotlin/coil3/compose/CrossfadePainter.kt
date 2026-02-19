@@ -48,7 +48,7 @@ class CrossfadePainter(
     val timeSource: TimeSource = TimeSource.Monotonic,
     val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false,
-    val preferEndFirstIntrinsicSize: Boolean = false
+    val preferEndFirstIntrinsicSize: Boolean = false,
 ) : Painter() {
 
     @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)

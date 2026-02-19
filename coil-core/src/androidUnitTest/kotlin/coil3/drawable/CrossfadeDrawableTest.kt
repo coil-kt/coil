@@ -169,7 +169,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
         val drawable1 = CrossfadeDrawable(
             start = ColorDrawable(),
             end = createBitmap(100, 100).toDrawable(context),
-            preferExactIntrinsicSize = false
+            preferExactIntrinsicSize = false,
         )
 
         assertEquals(-1, drawable1.intrinsicWidth)
@@ -178,7 +178,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
         val drawable2 = CrossfadeDrawable(
             start = null,
             end = createBitmap(100, 100).toDrawable(context),
-            preferExactIntrinsicSize = false
+            preferExactIntrinsicSize = false,
         )
 
         assertEquals(100, drawable2.intrinsicWidth)
@@ -190,7 +190,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
         val drawable1 = CrossfadeDrawable(
             start = ColorDrawable(),
             end = createBitmap(100, 100).toDrawable(context),
-            preferExactIntrinsicSize = true
+            preferExactIntrinsicSize = true,
         )
 
         assertEquals(100, drawable1.intrinsicWidth)
@@ -199,7 +199,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
         val drawable2 = CrossfadeDrawable(
             start = null,
             end = createBitmap(100, 100).toDrawable(context),
-            preferExactIntrinsicSize = true
+            preferExactIntrinsicSize = true,
         )
 
         assertEquals(100, drawable2.intrinsicWidth)
@@ -208,7 +208,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
 
     private class TestDrawable(
         private val width: Int,
-        private val height: Int
+        private val height: Int,
     ) : ColorDrawable() {
         var mutated = false
             private set
@@ -220,7 +220,7 @@ class CrossfadeDrawableTest : RobolectricTest() {
 
     private inner class TestBitmapDrawable(
         private val width: Int,
-        private val height: Int
+        private val height: Int,
     ) : BitmapDrawable(context.resources, createBitmap(width, height)) {
         var mutated = false
             private set

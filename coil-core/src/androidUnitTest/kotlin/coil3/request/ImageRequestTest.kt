@@ -68,7 +68,7 @@ class ImageRequestTest : RobolectricTest() {
             precision = Precision.EXACT,
             extras = Extras.Builder()
                 .set(Extras.Key.transitionFactory, CrossfadeTransition.Factory())
-                .build()
+                .build(),
         )
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)

@@ -29,7 +29,7 @@ interface Disposable {
  * A disposable for one-shot image requests.
  */
 internal class OneShotDisposable(
-    override val job: Deferred<ImageResult>
+    override val job: Deferred<ImageResult>,
 ) : Disposable {
 
     override val isDisposed: Boolean

@@ -60,11 +60,11 @@ class SystemCallbacksTest {
 
         memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-                .toDrawable(context).asImage()
+                .toDrawable(context).asImage(),
         )
         memoryCache[MemoryCache.Key("2")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-                .toDrawable(context).asImage()
+                .toDrawable(context).asImage(),
         )
 
         assertEquals(8_000_000, memoryCache.size)

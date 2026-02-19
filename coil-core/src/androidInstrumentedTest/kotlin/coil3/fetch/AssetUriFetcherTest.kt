@@ -35,8 +35,8 @@ class AssetUriFetcherTest {
             fetcherFactory.create(
                 data = uri,
                 options = Options(context),
-                imageLoader = ImageLoader(context)
-            )
+                imageLoader = ImageLoader(context),
+            ),
         ).fetch()
 
         assertIs<SourceFetchResult>(result)

@@ -41,12 +41,12 @@ class CrossfadeTransitionTest : RobolectricTest() {
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
                 assertEquals(drawable, result.asDrawable(context.resources))
-            }
+            },
         )
         val result = SuccessResult(
             image = drawable.asImage(),
             request = createRequest(context),
-            dataSource = DataSource.MEMORY_CACHE
+            dataSource = DataSource.MEMORY_CACHE,
         )
         transitionFactory.create(target, result).transition()
 
@@ -68,12 +68,12 @@ class CrossfadeTransitionTest : RobolectricTest() {
 
                 // Stop the transition early to simulate the end of the animation.
                 crossfadeDrawable.stop()
-            }
+            },
         )
         val result = SuccessResult(
             image = drawable.asImage(),
             request = createRequest(context),
-            dataSource = DataSource.DISK
+            dataSource = DataSource.DISK,
         )
         transitionFactory.create(target, result).transition()
 
@@ -91,13 +91,13 @@ class CrossfadeTransitionTest : RobolectricTest() {
                     assertFalse(onSuccessCalled)
                     assertIsNot<CrossfadeDrawable>(error?.asDrawable(context.resources))
                     onSuccessCalled = true
-                }
+                },
             ),
             result = ErrorResult(
                 image = drawable.asImage(),
                 request = createRequest(context),
-                throwable = Throwable()
-            )
+                throwable = Throwable(),
+            ),
         ).transition()
 
         assertTrue(onSuccessCalled)
@@ -107,7 +107,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
         imageView: ImageView = ImageView(context),
         crossinline onStart: (placeholder: Image?) -> Unit = { fail() },
         crossinline onError: (error: Image?) -> Unit = { fail() },
-        crossinline onSuccess: (result: Image) -> Unit = { fail() }
+        crossinline onSuccess: (result: Image) -> Unit = { fail() },
     ) = object : TransitionTarget {
         override val view = imageView
         override val drawable: Drawable? get() = imageView.drawable

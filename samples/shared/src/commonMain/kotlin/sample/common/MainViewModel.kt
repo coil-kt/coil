@@ -94,7 +94,7 @@ private class RealMainViewModel(
                 uri = url,
                 color = color,
                 width = image.getValue("width").jsonPrimitive.content.toInt(),
-                height = image.getValue("height").jsonPrimitive.content.toInt()
+                height = image.getValue("height").jsonPrimitive.content.toInt(),
             )
         }
     }

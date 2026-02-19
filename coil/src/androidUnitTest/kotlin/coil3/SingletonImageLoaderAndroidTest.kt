@@ -72,7 +72,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
         assertEquals(
             expected = context.applicationContext,
             actual = capturedContext,
-            message = "Expected factory to receive Application context, not Activity"
+            message = "Expected factory to receive Application context, not Activity",
         )
     }
 }

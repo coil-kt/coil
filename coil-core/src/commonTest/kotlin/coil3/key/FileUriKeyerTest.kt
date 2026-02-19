@@ -40,7 +40,7 @@ class FileUriKeyerTest : RobolectricTest() {
         val options = options.copy(
             extras = options.extras.newBuilder()
                 .set(Extras.Key.addLastModifiedToFileCacheKey, true)
-                .build()
+                .build(),
         )
 
         file.setLastModified(1234L)
@@ -61,7 +61,7 @@ class FileUriKeyerTest : RobolectricTest() {
         val options = options.copy(
             extras = options.extras.newBuilder()
                 .set(Extras.Key.addLastModifiedToFileCacheKey, false)
-                .build()
+                .build(),
         )
 
         file.setLastModified(1234L)

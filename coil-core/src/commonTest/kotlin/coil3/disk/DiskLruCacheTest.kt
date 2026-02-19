@@ -149,8 +149,10 @@ class DiskLruCacheTest {
             assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
-            key = ("this_is_way_too_long_this_is_way_too_long_this_is_way_too_long_" +
-                "this_is_way_too_long_this_is_way_too_long_this_is_way_too_long")
+            key = (
+                "this_is_way_too_long_this_is_way_too_long_this_is_way_too_long_" +
+                "this_is_way_too_long_this_is_way_too_long_this_is_way_too_long"
+            )
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was too long.")
         } catch (iae: IllegalArgumentException) {
@@ -160,8 +162,10 @@ class DiskLruCacheTest {
         // Test valid cases.
 
         // Exactly 120.
-        key = ("0123456789012345678901234567890123456789012345678901234567890123456789" +
-            "01234567890123456789012345678901234567890123456789")
+        key = (
+            "0123456789012345678901234567890123456789012345678901234567890123456789" +
+            "01234567890123456789012345678901234567890123456789"
+        )
         cache.edit(key)!!.abort()
         // Contains all valid characters.
         key = "abcdefghijklmnopqrstuvwxyz_0123456789"
@@ -405,7 +409,8 @@ class DiskLruCacheTest {
                 |100
                 |2
                 |
-                |CLEAN k1 1 1""".trimMargin() // no trailing newline
+                |CLEAN k1 1 1
+""".trimMargin(), // no trailing newline
             )
         }
         createNewCache()
@@ -1626,8 +1631,10 @@ class DiskLruCacheTest {
     }
 
     private fun createJournal(vararg bodyLines: String) {
-        createJournalWithHeader(DiskLruCache.MAGIC, DiskLruCache.VERSION, "100",
-            "2", "", *bodyLines)
+        createJournalWithHeader(
+            DiskLruCache.MAGIC, DiskLruCache.VERSION, "100",
+            "2", "", *bodyLines,
+        )
     }
 
     @Suppress("SameParameterValue")
@@ -1637,7 +1644,7 @@ class DiskLruCacheTest {
         appVersion: String,
         valueCount: String,
         blank: String,
-        vararg bodyLines: String
+        vararg bodyLines: String,
     ) {
         fileSystem.write(journalFile) {
             writeUtf8(
@@ -1647,7 +1654,8 @@ class DiskLruCacheTest {
                 |$appVersion
                 |$valueCount
                 |$blank
-                |""".trimMargin()
+                |
+""".trimMargin(),
             )
             for (line in bodyLines) {
                 writeUtf8(line)

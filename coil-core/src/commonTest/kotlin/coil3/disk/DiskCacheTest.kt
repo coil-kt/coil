@@ -55,11 +55,11 @@ class DiskCacheTest {
         diskCache.openSnapshot("test")!!.use { snapshot ->
             assertEquals(
                 12345,
-                diskCache.fileSystem.read(snapshot.metadata) { readUtf8LineStrict().toLong() }
+                diskCache.fileSystem.read(snapshot.metadata) { readUtf8LineStrict().toLong() },
             )
             assertEquals(
                 54321,
-                diskCache.fileSystem.read(snapshot.data) { readUtf8LineStrict().toLong() }
+                diskCache.fileSystem.read(snapshot.data) { readUtf8LineStrict().toLong() },
             )
         }
     }

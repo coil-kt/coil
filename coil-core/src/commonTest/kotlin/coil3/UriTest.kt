@@ -118,8 +118,10 @@ class UriTest {
 
     @Test
     fun complex() {
-        val uri = ("https://images.unsplash.com/photo-1550939810-cb345b2f4ad7?ixlib=rb-1.2.1&q=80" +
-            "&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ").toUri()
+        val uri = (
+            "https://images.unsplash.com/photo-1550939810-cb345b2f4ad7?ixlib=rb-1.2.1&q=80" +
+            "&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ"
+        ).toUri()
         assertEquals("https", uri.scheme)
         assertEquals("images.unsplash.com", uri.authority)
         assertEquals("/photo-1550939810-cb345b2f4ad7", uri.path)
