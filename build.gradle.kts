@@ -133,6 +133,7 @@ allprojects {
 
     if (project.name in publicModules) {
         configureAbiValidation()
+        configureAndroidLegacyAbiValidation()
     }
 
     // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
@@ -145,50 +146,80 @@ allprojects {
     }
 }
 
-fun configureAbiValidation() {
-    @OptIn(ExperimentalAbiValidation::class)
-    fun Project.configureKotlinProject() {
-        extensions.configure<KotlinProjectExtension> {
-            fun AbiValidationVariantSpec.configure() = filters {
-                excluded {
-                    annotatedWith.add("coil3.annotation.InternalCoilApi")
+@OptIn(ExperimentalAbiValidation::class)
+fun Project.configureAbiValidation() {
+    afterEvaluate {
+        val kotlinExtension = extensions.findByType<KotlinProjectExtension>() ?: return@afterEvaluate
+
+        fun AbiValidationVariantSpec.configureVariant() = filters {
+            excluded {
+                annotatedWith.add("coil3.annotation.InternalCoilApi")
+            }
+        }
+
+        // Unfortunately the 'enabled' property doesn't share a common interface.
+        kotlinExtension.extensions.findByType<AbiValidationExtension>()?.apply {
+            enabled.set(true)
+            configureVariant()
+        }
+        kotlinExtension.extensions.findByType<AbiValidationMultiplatformExtension>()?.apply {
+            enabled.set(true)
+            configureVariant()
+        }
+    }
+}
+
+fun Project.configureAndroidLegacyAbiValidation() {
+    plugins.withId("com.android.kotlin.multiplatform.library") {
+        afterEvaluate {
+            tasks
+                .matching { it.name == "dumpLegacyAbi" || it.name.startsWith("dumpLegacyAbi") }
+                .configureEach {
+                    tasks.findByName("compileAndroidMain")?.let { dependsOn(it) }
+                    configureAndroidLegacyAbiDumpInput(this@configureAndroidLegacyAbiValidation)
                 }
-            }
-
-            // Unfortunately the 'enabled' property doesn't share a common interface.
-            extensions.findByType<AbiValidationExtension>()?.apply {
-                enabled = true
-                configure()
-            }
-            extensions.findByType<AbiValidationMultiplatformExtension>()?.apply {
-                enabled = true
-                configure()
-            }
         }
     }
+}
 
-    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-        configureKotlinProject()
-    }
-    pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
-        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            configureKotlinProject()
-        }
-    }
-    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-        configureKotlinProject()
+private fun Task.configureAndroidLegacyAbiDumpInput(project: Project) {
+    val dumpTaskClass = javaClass
+    val getJvm = runCatching { dumpTaskClass.getMethod("getJvm") }.getOrNull() ?: return
+    val jvmProperty = getJvm.invoke(this)
+
+    val propertyClass = jvmProperty.javaClass
+    val get = propertyClass.getMethod("get")
+    val set = propertyClass.getMethod("set", Iterable::class.java)
+
+    val existingEntries = mutableListOf<Any>()
+    val currentEntries = get.invoke(jvmProperty)
+    if (currentEntries is Iterable<*>) {
+        currentEntries.filterNotNullTo(existingEntries)
+    } else {
+        return
     }
 
-    // Built-in Kotlin Android wires the Kotlin extension during Android plugin application.
-    pluginManager.withPlugin("com.android.application") {
-        configureKotlinProject()
-    }
-    pluginManager.withPlugin("com.android.library") {
-        configureKotlinProject()
-    }
-    pluginManager.withPlugin("com.android.test") {
-        configureKotlinProject()
-    }
+    val entryClass = existingEntries.firstOrNull()?.javaClass
+        ?: runCatching {
+            dumpTaskClass.classLoader.loadClass(
+                $$"org.jetbrains.kotlin.gradle.tasks.abi.KotlinLegacyAbiDumpTaskImpl$JvmTargetInfo",
+            )
+        }.getOrNull()
+        ?: return
+
+    val getSubdirectoryName = entryClass.getMethod("getSubdirectoryName")
+    if (existingEntries.any { getSubdirectoryName.invoke(it) == "android" }) return
+
+    val constructor = entryClass.getConstructor(String::class.java, FileCollection::class.java)
+    val androidClasses = project.files(
+        project.layout.buildDirectory.dir("classes/kotlin/android/main"),
+        project.layout.buildDirectory.dir("classes/java/android/main"),
+        project.layout.buildDirectory.dir("intermediates/javac/androidMain/classes"),
+    )
+    val androidEntry = constructor.newInstance("android", androidClasses)
+
+    existingEntries.add(androidEntry)
+    set.invoke(jvmProperty, existingEntries)
 }
 
 private val ktlintRules = buildMap {

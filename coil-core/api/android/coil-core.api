@@ -360,12 +360,12 @@ public final class coil3/decode/DecodeUtils {
 	public static final field INSTANCE Lcoil3/decode/DecodeUtils;
 	public static final fun calculateInSampleSize (IIIILcoil3/size/Scale;)I
 	public static final fun computeDstSize-sEdh43o (IILcoil3/size/Size;Lcoil3/size/Scale;Lcoil3/size/Size;)J
+	public static final fun computeSizeMultiplier (DDDDLcoil3/size/Scale;)D
 	public static final fun computeSizeMultiplier (DDDDLcoil3/size/Scale;Lcoil3/size/Size;)D
+	public static final fun computeSizeMultiplier (FFFFLcoil3/size/Scale;)F
 	public static final fun computeSizeMultiplier (FFFFLcoil3/size/Scale;Lcoil3/size/Size;)F
+	public static final fun computeSizeMultiplier (IIIILcoil3/size/Scale;)D
 	public static final fun computeSizeMultiplier (IIIILcoil3/size/Scale;Lcoil3/size/Size;)D
-	public static synthetic fun computeSizeMultiplier$default (DDDDLcoil3/size/Scale;Lcoil3/size/Size;ILjava/lang/Object;)D
-	public static synthetic fun computeSizeMultiplier$default (FFFFLcoil3/size/Scale;Lcoil3/size/Size;ILjava/lang/Object;)F
-	public static synthetic fun computeSizeMultiplier$default (IIIILcoil3/size/Scale;Lcoil3/size/Size;ILjava/lang/Object;)D
 }
 
 public abstract interface class coil3/decode/Decoder {
