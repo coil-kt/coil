@@ -18,6 +18,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
@@ -150,6 +152,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         val inFlightRequestStrategy = DeDupeInFlightRequestStrategy()
 
         val results = mutableListOf<FetchResult>()
+        val resultsLock = Mutex()
         launch {
             for (i in 1..10) {
                 launch {
@@ -160,7 +163,9 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
                     ).fetch()
                     assertIs<SourceFetchResult>(result)
                     result.source.close()
-                    results.add(result)
+                    resultsLock.withLock {
+                        results.add(result)
+                    }
                 }
             }
         }.join()

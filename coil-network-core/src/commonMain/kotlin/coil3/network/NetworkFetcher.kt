@@ -39,6 +39,24 @@ class NetworkFetcher(
     private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
 ) : Fetcher {
 
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        url: String,
+        options: Options,
+        networkClient: Lazy<NetworkClient>,
+        diskCache: Lazy<DiskCache?>,
+        cacheStrategy: Lazy<CacheStrategy>,
+        connectivityChecker: ConnectivityChecker,
+    ) : this(
+        url = url,
+        options = options,
+        networkClient = networkClient,
+        diskCache = diskCache,
+        cacheStrategy = cacheStrategy,
+        connectivityChecker = connectivityChecker,
+        inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
+    )
+
     override suspend fun fetch(): FetchResult {
         return inFlightRequestStrategy.value.apply(safeDiskCacheKey) {
             doFetch()
@@ -302,8 +320,8 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
-                inFlightRequestStrategy = inFlightRequestStrategyLazy,
                 connectivityChecker = connectivityCheckerLazy.get(options.context),
+                inFlightRequestStrategy = inFlightRequestStrategyLazy,
             )
         }
 

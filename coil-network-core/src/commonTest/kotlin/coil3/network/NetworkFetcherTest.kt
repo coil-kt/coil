@@ -90,6 +90,7 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
         )
 
         // A 400 response throws, but should still be cached.
@@ -141,6 +142,7 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
         )
 
         // A 500 response throws and should not be cached.
@@ -192,6 +194,7 @@ class NetworkFetcherTest : RobolectricTest() {
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
             connectivityChecker = ConnectivityChecker.ONLINE,
+            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
         )
 
         assertFailsWith<HttpException> { fetcher.fetch() }
