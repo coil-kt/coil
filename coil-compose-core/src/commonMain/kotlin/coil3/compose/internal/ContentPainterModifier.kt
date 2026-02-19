@@ -77,6 +77,7 @@ internal data class ContentPainterElement(
         painter.contentScale = contentScale
         painter.filterQuality = filterQuality
         painter.previewHandler = previewHandler
+        painter.alignment = alignment
         painter._input = input
 
         return ContentPainterNode(
@@ -101,6 +102,7 @@ internal data class ContentPainterElement(
         painter.contentScale = contentScale
         painter.filterQuality = filterQuality
         painter.previewHandler = previewHandler
+        painter.alignment = alignment
         painter._input = input
 
         val intrinsicsChanged = previousIntrinsics != painter.intrinsicSize
