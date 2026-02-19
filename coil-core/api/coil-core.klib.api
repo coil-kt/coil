@@ -19,6 +19,10 @@ open annotation class coil3.annotation/InternalCoilApi : kotlin/Annotation { // 
     constructor <init>() // coil3.annotation/InternalCoilApi.<init>|<init>(){}[0]
 }
 
+open annotation class coil3.annotation/Poko : kotlin/Annotation { // coil3.annotation/Poko|null[0]
+    constructor <init>() // coil3.annotation/Poko.<init>|<init>(){}[0]
+}
+
 final enum class coil3.decode/DataSource : kotlin/Enum<coil3.decode/DataSource> { // coil3.decode/DataSource|null[0]
     enum entry DISK // coil3.decode/DataSource.DISK|null[0]
     enum entry MEMORY // coil3.decode/DataSource.MEMORY|null[0]
@@ -117,6 +121,12 @@ abstract fun interface coil3.size/SizeResolver { // coil3.size/SizeResolver|null
         final val ORIGINAL // coil3.size/SizeResolver.Companion.ORIGINAL|{}ORIGINAL[0]
             final fun <get-ORIGINAL>(): coil3.size/SizeResolver // coil3.size/SizeResolver.Companion.ORIGINAL.<get-ORIGINAL>|<get-ORIGINAL>(){}[0]
     }
+}
+
+abstract interface <#A: kotlin/Any> coil3.util/FetcherServiceLoaderTarget { // coil3.util/FetcherServiceLoaderTarget|null[0]
+    abstract fun factory(): coil3.fetch/Fetcher.Factory<#A>? // coil3.util/FetcherServiceLoaderTarget.factory|factory(){}[0]
+    abstract fun type(): kotlin.reflect/KClass<#A>? // coil3.util/FetcherServiceLoaderTarget.type|type(){}[0]
+    open fun priority(): kotlin/Int // coil3.util/FetcherServiceLoaderTarget.priority|priority(){}[0]
 }
 
 abstract interface coil3.disk/DiskCache { // coil3.disk/DiskCache|null[0]
@@ -242,6 +252,11 @@ abstract interface coil3.target/Target { // coil3.target/Target|null[0]
     open fun onError(coil3/Image?) // coil3.target/Target.onError|onError(coil3.Image?){}[0]
     open fun onStart(coil3/Image?) // coil3.target/Target.onStart|onStart(coil3.Image?){}[0]
     open fun onSuccess(coil3/Image) // coil3.target/Target.onSuccess|onSuccess(coil3.Image){}[0]
+}
+
+abstract interface coil3.util/DecoderServiceLoaderTarget { // coil3.util/DecoderServiceLoaderTarget|null[0]
+    abstract fun factory(): coil3.decode/Decoder.Factory? // coil3.util/DecoderServiceLoaderTarget.factory|factory(){}[0]
+    open fun priority(): kotlin/Int // coil3.util/DecoderServiceLoaderTarget.priority|priority(){}[0]
 }
 
 abstract interface coil3.util/Logger { // coil3.util/Logger|null[0]
@@ -969,6 +984,21 @@ final object coil3.request/NullRequestData { // coil3.request/NullRequestData|nu
     final fun equals(kotlin/Any?): kotlin/Boolean // coil3.request/NullRequestData.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // coil3.request/NullRequestData.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // coil3.request/NullRequestData.toString|toString(){}[0]
+}
+
+final object coil3.util/MimeTypeMap { // coil3.util/MimeTypeMap|null[0]
+    final fun getMimeTypeFromExtension(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromExtension|getMimeTypeFromExtension(kotlin.String){}[0]
+    final fun getMimeTypeFromUrl(kotlin/String): kotlin/String? // coil3.util/MimeTypeMap.getMimeTypeFromUrl|getMimeTypeFromUrl(kotlin.String){}[0]
+}
+
+final object coil3.util/ServiceLoaderComponentRegistry { // coil3.util/ServiceLoaderComponentRegistry|null[0]
+    final val decoders // coil3.util/ServiceLoaderComponentRegistry.decoders|{}decoders[0]
+        final fun <get-decoders>(): kotlin.collections/List<coil3.util/DecoderServiceLoaderTarget> // coil3.util/ServiceLoaderComponentRegistry.decoders.<get-decoders>|<get-decoders>(){}[0]
+    final val fetchers // coil3.util/ServiceLoaderComponentRegistry.fetchers|{}fetchers[0]
+        final fun <get-fetchers>(): kotlin.collections/List<coil3.util/FetcherServiceLoaderTarget<*>> // coil3.util/ServiceLoaderComponentRegistry.fetchers.<get-fetchers>|<get-fetchers>(){}[0]
+
+    final fun register(coil3.util/DecoderServiceLoaderTarget) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.DecoderServiceLoaderTarget){}[0]
+    final fun register(coil3.util/FetcherServiceLoaderTarget<*>) // coil3.util/ServiceLoaderComponentRegistry.register|register(coil3.util.FetcherServiceLoaderTarget<*>){}[0]
 }
 
 final val coil3.request/addLastModifiedToFileCacheKey // coil3.request/addLastModifiedToFileCacheKey|@coil3.Extras.Key.Companion{}addLastModifiedToFileCacheKey[0]

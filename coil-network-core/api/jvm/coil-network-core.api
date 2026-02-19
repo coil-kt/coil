@@ -1,3 +1,9 @@
+public final class coil3/network/CacheNetworkResponse {
+	public static final field INSTANCE Lcoil3/network/CacheNetworkResponse;
+	public final fun readFrom (Lokio/BufferedSource;)Lcoil3/network/NetworkResponse;
+	public final fun writeTo (Lcoil3/network/NetworkResponse;Lokio/BufferedSink;)V
+}
+
 public abstract interface class coil3/network/CacheStrategy {
 	public static final field Companion Lcoil3/network/CacheStrategy$Companion;
 	public static final field DEFAULT Lcoil3/network/CacheStrategy;
@@ -44,13 +50,6 @@ public final class coil3/network/ConnectivityCheckerKt {
 	public static final fun ConnectivityChecker (Lcoil3/PlatformContext;)Lcoil3/network/ConnectivityChecker;
 }
 
-public final class coil3/network/DeDupe2InFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
-	public synthetic fun <init> (JILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (JLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getDelay-UwyO8pc ()J
-}
-
 public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
 	public fun <init> ()V
 	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -95,8 +94,10 @@ public final class coil3/network/NetworkClientKt {
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {
+	public synthetic fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;)V
 	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;Lcoil3/network/ConnectivityChecker;Lkotlin/Lazy;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getMimeType (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {

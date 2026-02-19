@@ -257,6 +257,9 @@ public abstract interface annotation class coil3/annotation/ExperimentalCoilApi 
 public abstract interface annotation class coil3/annotation/InternalCoilApi : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class coil3/annotation/Poko : java/lang/annotation/Annotation {
+}
+
 public final class coil3/decode/BlackholeDecoder : coil3/decode/Decoder {
 	public fun <init> (Lkotlin/jvm/functions/Function0;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -873,6 +876,17 @@ public final class coil3/util/DebugLogger : coil3/util/Logger {
 	public fun setMinLevel (Lcoil3/util/Logger$Level;)V
 }
 
+public abstract interface class coil3/util/DecoderServiceLoaderTarget {
+	public abstract fun factory ()Lcoil3/decode/Decoder$Factory;
+	public fun priority ()I
+}
+
+public abstract interface class coil3/util/FetcherServiceLoaderTarget {
+	public abstract fun factory ()Lcoil3/fetch/Fetcher$Factory;
+	public fun priority ()I
+	public abstract fun type ()Lkotlin/reflect/KClass;
+}
+
 public final class coil3/util/IntPair {
 	public static final synthetic fun box-impl (J)Lcoil3/util/IntPair;
 	public static fun constructor-impl (II)J
@@ -909,5 +923,19 @@ public final class coil3/util/LoggingKt {
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Lcoil3/util/Logger$Level;Lkotlin/jvm/functions/Function0;)V
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;)V
 	public static final fun log (Lcoil3/util/Logger;Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class coil3/util/MimeTypeMap {
+	public static final field INSTANCE Lcoil3/util/MimeTypeMap;
+	public final fun getMimeTypeFromExtension (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getMimeTypeFromUrl (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class coil3/util/ServiceLoaderComponentRegistry {
+	public static final field INSTANCE Lcoil3/util/ServiceLoaderComponentRegistry;
+	public final fun getDecoders ()Ljava/util/List;
+	public final fun getFetchers ()Ljava/util/List;
+	public final fun register (Lcoil3/util/DecoderServiceLoaderTarget;)V
+	public final fun register (Lcoil3/util/FetcherServiceLoaderTarget;)V
 }
 
