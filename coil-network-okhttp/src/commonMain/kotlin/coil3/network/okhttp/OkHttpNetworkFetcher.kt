@@ -56,8 +56,8 @@ fun OkHttpNetworkFetcherFactory(
 fun OkHttpNetworkFetcherFactory(
     callFactory: () -> Call.Factory = ::OkHttpClient,
     cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
-    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
 ) = NetworkFetcher.Factory(
     networkClient = { callFactory().asNetworkClient() },
     cacheStrategy = cacheStrategy,
