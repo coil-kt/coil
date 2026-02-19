@@ -189,6 +189,6 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         path: String = "image.jpg",
         responseBody: ByteString = ByteString.EMPTY,
         options: Options = Options(context),
-        concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED
+        concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED,
     ): NetworkFetcher
 }
