@@ -239,8 +239,8 @@ private val ktlintRules = buildMap {
     put("ktlint_standard_no-empty-first-line-in-class-body", "disabled")
     put("ktlint_standard_spacing-between-declarations-with-annotations", "disabled")
     put("ktlint_standard_string-template-indent", "disabled")
-    put("ktlint_standard_trailing-comma-on-call-site", "disabled")
-    put("ktlint_standard_trailing-comma-on-declaration-site", "disabled")
+    put("ktlint_standard_trailing-comma-on-call-site", "enabled")
+    put("ktlint_standard_trailing-comma-on-declaration-site", "enabled")
     put("ktlint_standard_try-catch-finally-spacing", "disabled")
 
     put("ktlint_standard_backing-property-naming", "disabled")
@@ -263,7 +263,7 @@ private val ktlintRules = buildMap {
     put("ktlint_standard_parameter-list-wrapping", "disabled")
     put("ktlint_standard_property-wrapping", "disabled")
     put("ktlint_standard_statement-wrapping", "disabled")
-    put("ktlint_standard_wrapping", "disabled")
+    put("ktlint_standard_wrapping", "enabled")
 }
 
 apply(from = rootProject.file("gradle/verifySkikoVersionsMatch.gradle.kts"))

@@ -21,6 +21,6 @@ internal actual fun convertImageToBitmap(
         "Converting image of type ${image::class.simpleName} " +
             "to apply transformations: $transformations is not currently supported on" +
             "non-Android platforms. Set ImageRequest.Builder.allowConversionToBitmap(false) to " +
-            "skip applying these transformations."
+            "skip applying these transformations.",
     )
 }

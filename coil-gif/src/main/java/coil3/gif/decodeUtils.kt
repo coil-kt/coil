@@ -59,7 +59,9 @@ fun DecodeUtils.isHeif(source: BufferedSource): Boolean {
  */
 fun DecodeUtils.isAnimatedHeif(source: BufferedSource): Boolean {
     return isHeif(source) &&
-        (source.rangeEquals(8, HEIF_HEADER_MSF1) ||
+        (
+            source.rangeEquals(8, HEIF_HEADER_MSF1) ||
             source.rangeEquals(8, HEIF_HEADER_HEVC) ||
-            source.rangeEquals(8, HEIF_HEADER_HEVX))
+            source.rangeEquals(8, HEIF_HEADER_HEVX)
+        )
 }

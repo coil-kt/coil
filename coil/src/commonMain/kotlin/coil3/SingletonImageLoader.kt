@@ -93,9 +93,11 @@ object SingletonImageLoader {
                 imageLoader != null -> imageLoader
                 else -> {
                     val applicationContext = context.applicationContext()
-                    ((value as? Factory)?.newImageLoader(applicationContext)
+                    (
+                        (value as? Factory)?.newImageLoader(applicationContext)
                         ?: (applicationContext as? Factory)?.newImageLoader(applicationContext)
-                        ?: DefaultSingletonImageLoaderFactory.newImageLoader(applicationContext))
+                        ?: DefaultSingletonImageLoaderFactory.newImageLoader(applicationContext)
+                    )
                         .also { imageLoader = it }
                 }
             }

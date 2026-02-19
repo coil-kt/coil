@@ -231,7 +231,7 @@ private fun ListScreen(
                     start = padding.calculateStartPadding(layoutDirection),
                     top = padding.calculateTopPadding(),
                     end = padding.calculateEndPadding(layoutDirection),
-                )
+                ),
             )
             .testTag("list"),
     ) {

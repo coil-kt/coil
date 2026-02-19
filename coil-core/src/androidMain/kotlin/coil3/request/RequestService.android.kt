@@ -228,7 +228,8 @@ internal class AndroidRequestService(
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
         if (target is ViewTarget<*> &&
-            target.view.run { isAttachedToWindow && !isHardwareAccelerated }) {
+            target.view.run { isAttachedToWindow && !isHardwareAccelerated }
+        ) {
             return false
         }
 
@@ -243,8 +244,10 @@ internal class AndroidRequestService(
         val validForTransformations = request.transformations.isEmpty() ||
             request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
         val validForHardware = !request.bitmapConfig.isHardware ||
-            (isConfigValidForHardware(request, request.bitmapConfig) &&
-                hardwareBitmapService.allowHardwareMainThread(size))
+            (
+                isConfigValidForHardware(request, request.bitmapConfig) &&
+                hardwareBitmapService.allowHardwareMainThread(size)
+            )
         return validForTransformations && validForHardware
     }
 

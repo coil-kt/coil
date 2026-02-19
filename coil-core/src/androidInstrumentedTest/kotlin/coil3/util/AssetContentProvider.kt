@@ -22,7 +22,7 @@ class AssetContentProvider : ContentProvider() {
 
     override fun insert(
         uri: Uri,
-        values: ContentValues?
+        values: ContentValues?,
     ): Uri? = null
 
     override fun query(
@@ -30,7 +30,7 @@ class AssetContentProvider : ContentProvider() {
         projection: Array<String>?,
         selection: String?,
         selectionArgs: Array<String>?,
-        sortOrder: String?
+        sortOrder: String?,
     ): Cursor {
         // Copy the file out of the private assets directory.
         val context = checkNotNull(context)
@@ -50,13 +50,13 @@ class AssetContentProvider : ContentProvider() {
         uri: Uri,
         values: ContentValues?,
         selection: String?,
-        selectionArgs: Array<String>?
+        selectionArgs: Array<String>?,
     ) = 0
 
     override fun delete(
         uri: Uri,
         selection: String?,
-        selectionArgs: Array<String>?
+        selectionArgs: Array<String>?,
     ) = 0
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor = openFileHelper(uri, mode)

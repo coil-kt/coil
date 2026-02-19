@@ -38,7 +38,7 @@ internal actual fun maybeNewCrossfadePainter(
             duration = crossfadeMillis.milliseconds,
             fadeStart = !result.isPlaceholderCached,
             preferExactIntrinsicSize = false,
-            preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize
+            preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
         )
     } else {
         return null

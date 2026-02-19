@@ -25,7 +25,8 @@ internal expect fun println(level: Logger.Level, tag: String, message: String)
 internal val DataSource.emoji: String
     get() = when (this) {
         DataSource.MEMORY_CACHE,
-        DataSource.MEMORY -> "🧠"
+        DataSource.MEMORY,
+        -> "🧠"
         DataSource.DISK -> "💾"
         DataSource.NETWORK -> "☁️"
     }
@@ -74,11 +75,11 @@ internal fun ComponentRegistry.key(
 }
 
 internal fun ComponentRegistry.Builder.addFirst(
-    pair: Pair<Fetcher.Factory<*>, KClass<*>>?
+    pair: Pair<Fetcher.Factory<*>, KClass<*>>?,
 ) = apply { if (pair != null) lazyFetcherFactories.add(0) { listOf(pair) } }
 
 internal fun ComponentRegistry.Builder.addFirst(
-    factory: Decoder.Factory?
+    factory: Decoder.Factory?,
 ) = apply { if (factory != null) lazyDecoderFactories.add(0) { listOf(factory) } }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"

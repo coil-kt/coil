@@ -18,7 +18,7 @@ class MicrosTraceSectionMetric(
 
     enum class Mode {
         Sum,
-        Average
+        Average,
     }
 
     @SuppressLint("RestrictedApi")

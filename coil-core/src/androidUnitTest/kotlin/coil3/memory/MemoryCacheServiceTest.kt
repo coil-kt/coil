@@ -114,42 +114,54 @@ class MemoryCacheServiceTest : RobolectricTest() {
             scale(Scale.FILL)
         }
         val cached = createBitmap()
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(200, 200)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(200, 200),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(150, 50)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(150, 50),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(100, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(100, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(50, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(50, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(50, 50)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(50, 50),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = request,
-            size = Size(400, 200)
-        ))
+            size = Size(400, 200),
+        ),
+        )
     }
 
     @Test
@@ -161,42 +173,54 @@ class MemoryCacheServiceTest : RobolectricTest() {
             scale(Scale.FIT)
         }
         val cached = createBitmap()
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(200, 200)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(200, 200),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(150, 50)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(150, 50),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(100, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(100, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(50, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(50, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = Size(50, 50)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(50, 50),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = request,
-            size = Size(400, 800)
-        ))
+            size = Size(400, 800),
+        ),
+        )
     }
 
     @Test
@@ -210,7 +234,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
                 precision(Precision.INEXACT)
                 scale(Scale.FILL)
             },
-            size = Size(200, 200)
+            size = Size(200, 200),
         )
         assertTrue(isValid)
     }
@@ -227,7 +251,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
                     allowHardware(false)
                     scale(Scale.FILL)
                 },
-                size = Size(100, 100)
+                size = Size(100, 100),
             )
         }
 
@@ -240,129 +264,155 @@ class MemoryCacheServiceTest : RobolectricTest() {
     @Test
     fun `isCacheValueValid - exact precision`() {
         val service = newService()
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = Size(50, 50)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(50, 50),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(50, 50)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(50, 50),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = Size(100, 50)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(100, 50),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(100, 50)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(100, 50),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = Size(100, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(100, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(100, 100)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(100, 100),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = Size(400, 200)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(400, 200),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(400, 800)
-        ))
+            size = Size(400, 800),
+        ),
+        )
     }
 
     @Test
     fun `isCacheValueValid - one pixel off`() {
         val service = newService()
-        assertTrue(service.isCacheValueValid(
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(245, 600)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(245, 600),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = Size(245, 600)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(245, 600),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 243, height = 595),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = Size(245, 600)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(245, 600),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 243, height = 595),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = Size(245, 600)
-        ))
+            size = Size(245, 600),
+        ),
+        )
         // Regression test: https://github.com/coil-kt/coil/issues/817
-        assertTrue(service.isCacheValueValid(
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 175, height = 117),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = Size(176, 176)
-        ))
+            size = Size(176, 176),
+        ),
+        )
     }
 
     @Test
@@ -371,64 +421,76 @@ class MemoryCacheServiceTest : RobolectricTest() {
         val key = newMemoryCacheKey(
             key = "key",
             transformations = listOf(CircleCropTransformation()),
-            size = Size(1000, 500) // The size of the previous request.
+            size = Size(1000, 500), // The size of the previous request.
         )
         val value = MemoryCache.Value(
             image = createBitmap(width = 200, height = 200)
                 .toDrawable(context).asImage(), // The small cached bitmap.
-            extras = mapOf(EXTRA_IS_SAMPLED to true)
+            extras = mapOf(EXTRA_IS_SAMPLED to true),
         )
         val request = createRequest(context)
 
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).build(),
             size = Size(650, 400),
-            scale = Scale.FIT
-        ))
+            scale = Scale.FIT,
+        ),
+        )
 
-        assertTrue(service.isCacheValueValid(
+        assertTrue(
+            service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).build(),
             size = Size(1000, 500),
-            scale = Scale.FIT
-        ))
+            scale = Scale.FIT,
+        ),
+        )
 
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).build(),
             size = Size(1500, 1000),
-            scale = Scale.FIT
-        ))
+            scale = Scale.FIT,
+        ),
+        )
 
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).build(),
             size = Size(800, 500),
-            scale = Scale.FIT
-        ))
+            scale = Scale.FIT,
+        ),
+        )
     }
 
     @Test
     fun `isCacheValueValid - Size_ORIGINAL`() {
         val service = newService()
 
-        assertFalse(service.isCacheValueValid(
+        assertFalse(
+            service.isCacheValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = createRequest(context),
-            size = Size.ORIGINAL
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size.ORIGINAL,
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = false,
             request = createRequest(context),
-            size = Size.ORIGINAL
-        ))
+            size = Size.ORIGINAL,
+        ),
+        )
     }
 
     @Test
@@ -438,49 +500,62 @@ class MemoryCacheServiceTest : RobolectricTest() {
             precision(Precision.INEXACT)
         }
 
-        assertTrue(service.isCacheValueValid(
+        assertTrue(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(400, Dimension.Undefined)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(400, Dimension.Undefined),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Undefined, 200)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(Dimension.Undefined, 200),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(450, Dimension.Undefined)
-        ))
-        assertFalse(service.isCacheValueValid(
+            size = Size(450, Dimension.Undefined),
+        ),
+        )
+        assertFalse(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Undefined, 250)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(Dimension.Undefined, 250),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(450, Dimension.Undefined)
-        ))
-        assertTrue(service.isCacheValueValid(
+            size = Size(450, Dimension.Undefined),
+        ),
+        )
+        assertTrue(
+            service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(Dimension.Undefined, 250)
-        ))
+            size = Size(Dimension.Undefined, 250),
+        ),
+        )
     }
 
     @Test
     fun `isCacheValueValid - maxBitmapSize is respected`() {
         val service = newService()
 
-        assertTrue(service.isCacheValueValid(
+        assertTrue(
+            service.isCacheValueValid(
             request = createRequest(context) {
                 precision(Precision.INEXACT)
                 maxBitmapSize(Size(100, 150))
@@ -488,14 +563,15 @@ class MemoryCacheServiceTest : RobolectricTest() {
             cached = createBitmap(width = 200, height = 200),
             isSampled = true,
             size = Size(400, 400),
-        ))
+        ),
+        )
     }
 
     private fun MemoryCacheService.isCacheValueValid(
         request: ImageRequest,
         cached: Bitmap,
         isSampled: Boolean,
-        size: Size
+        size: Size,
     ) = isCacheValueValid(
         request = request,
         cacheKey = MemoryCache.Key("key"),
@@ -504,7 +580,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
             extras = mapOf(EXTRA_IS_SAMPLED to isSampled),
         ),
         size = size,
-        scale = request.scale
+        scale = request.scale,
     )
 
     private fun createFakeTransformations(): List<Transformation> {
@@ -516,7 +592,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
             object : Transformation() {
                 override val cacheKey = "key2"
                 override suspend fun transform(input: Bitmap, size: Size) = fail()
-            }
+            },
         )
     }
 
@@ -537,7 +613,7 @@ class MemoryCacheServiceTest : RobolectricTest() {
         return MemoryCacheService(
             imageLoader = imageLoader,
             requestService = RequestService(imageLoader, systemCallbacks, null),
-            logger = null
+            logger = null,
         )
     }
 

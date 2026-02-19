@@ -16,14 +16,14 @@ expect val context: PlatformContext
 
 fun runTestMain(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ) = runTest(context) {
     withContext(Dispatchers.Main.immediate, block)
 }
 
 fun runTestAsync(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ) = runTest(context) {
     withContext(Dispatchers.Default, block)
 }

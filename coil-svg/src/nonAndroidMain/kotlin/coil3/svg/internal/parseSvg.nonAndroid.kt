@@ -53,7 +53,8 @@ private value class SkiaSvg(
     private fun SVGLength?.toFloat(): Float {
         return when (this?.unit) {
             SVGLengthUnit.NUMBER,
-            SVGLengthUnit.PX -> value
+            SVGLengthUnit.PX,
+            -> value
             else -> -1f
         }
     }

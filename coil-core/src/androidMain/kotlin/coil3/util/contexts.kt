@@ -78,12 +78,16 @@ internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes @Drawabl
     if (SDK_INT < 24) {
         when (parser.name) {
             "vector" -> {
-                return VectorDrawableCompat.createFromXmlInner(resources, parser,
-                    Xml.asAttributeSet(parser), theme)
+                return VectorDrawableCompat.createFromXmlInner(
+                    resources, parser,
+                    Xml.asAttributeSet(parser), theme,
+                )
             }
             "animated-vector" -> {
-                return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources,
-                    parser, Xml.asAttributeSet(parser), theme)
+                return AnimatedVectorDrawableCompat.createFromXmlInner(
+                    this, resources,
+                    parser, Xml.asAttributeSet(parser), theme,
+                )
             }
         }
     }

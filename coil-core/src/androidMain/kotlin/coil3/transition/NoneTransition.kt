@@ -9,7 +9,7 @@ import coil3.request.SuccessResult
  */
 internal class NoneTransition(
     private val target: TransitionTarget,
-    private val result: ImageResult
+    private val result: ImageResult,
 ) : Transition {
 
     override fun transition() {

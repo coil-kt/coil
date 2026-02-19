@@ -67,7 +67,7 @@ private object ThrowingFileSystem : FileSystem() {
     private fun throwReadWriteIsUnsupported(): Nothing {
         throw UnsupportedOperationException(
             "Javascript does not have access to the device's file system and cannot read from or " +
-                "write to it. If you are running on Node.js use 'NodeJsFileSystem' instead."
+                "write to it. If you are running on Node.js use 'NodeJsFileSystem' instead.",
         )
     }
 }

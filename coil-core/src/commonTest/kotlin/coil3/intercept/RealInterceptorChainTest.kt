@@ -149,7 +149,7 @@ class RealInterceptorChainTests : RobolectricTest() {
 
     private suspend fun testChain(
         request: ImageRequest,
-        interceptors: List<Interceptor>
+        interceptors: List<Interceptor>,
     ): ImageResult {
         val size = Size(100, 100)
         val chain = RealInterceptorChain(
@@ -159,7 +159,7 @@ class RealInterceptorChainTests : RobolectricTest() {
             request = request,
             size = size,
             eventListener = EventListener.NONE,
-            isPlaceholderCached = false
+            isPlaceholderCached = false,
         )
         return chain.withRequest(request).proceed()
     }

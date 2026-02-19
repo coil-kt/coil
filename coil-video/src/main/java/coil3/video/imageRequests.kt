@@ -128,10 +128,12 @@ private val videoFramePercentKey = Extras.Key(default = -1.0)
  * @see MediaMetadataRetriever
  */
 fun ImageRequest.Builder.videoFrameOption(option: Int) = apply {
-    require(option == OPTION_PREVIOUS_SYNC ||
+    require(
+        option == OPTION_PREVIOUS_SYNC ||
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
-        option == OPTION_CLOSEST) { "Invalid video frame option: $option." }
+        option == OPTION_CLOSEST,
+    ) { "Invalid video frame option: $option." }
     memoryCacheKeyExtra("coil#videoFrameOption", option.toString())
     extras[videoFrameOptionKey] = option
 }

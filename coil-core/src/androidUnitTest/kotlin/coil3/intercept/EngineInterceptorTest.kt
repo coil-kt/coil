@@ -38,7 +38,7 @@ class EngineInterceptorTest : RobolectricTest() {
                 image = image,
                 isSampled = false,
                 dataSource = DataSource.MEMORY,
-                diskCacheKey = null
+                diskCacheKey = null,
             ),
             request = ImageRequest.Builder(context)
                 .data(Unit)

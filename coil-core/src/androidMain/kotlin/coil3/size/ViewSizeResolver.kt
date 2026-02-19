@@ -17,7 +17,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 @JvmOverloads
 fun <T : View> ViewSizeResolver(
     view: T,
-    subtractPadding: Boolean = true
+    subtractPadding: Boolean = true,
 ): ViewSizeResolver<T> = RealViewSizeResolver(view, subtractPadding)
 
 /**
@@ -73,13 +73,13 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     private fun getWidth() = getDimension(
         paramSize = view.layoutParams?.width ?: -1,
         viewSize = view.width,
-        paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0
+        paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
     )
 
     private fun getHeight() = getDimension(
         paramSize = view.layoutParams?.height ?: -1,
         viewSize = view.height,
-        paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0
+        paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
     )
 
     private fun getDimension(paramSize: Int, viewSize: Int, paddingSize: Int): Dimension? {

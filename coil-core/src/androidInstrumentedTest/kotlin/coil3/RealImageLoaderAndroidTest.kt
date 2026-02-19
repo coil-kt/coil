@@ -236,7 +236,7 @@ class RealImageLoaderAndroidTest {
                         check(drawable === fallback)
                         hasCalledTargetOnError = true
                     },
-                    onSuccess = { throw IllegalStateException() }
+                    onSuccess = { throw IllegalStateException() },
                 )
                 .listener(
                     onStart = { throw IllegalStateException() },
@@ -248,7 +248,7 @@ class RealImageLoaderAndroidTest {
                         } else {
                             continuation.resumeWithException(result.throwable)
                         }
-                    }
+                    },
                 )
                 .build()
             imageLoader.enqueue(request)
@@ -278,12 +278,12 @@ class RealImageLoaderAndroidTest {
                     onSuccess = {
                         // The same drawable should be returned since the drawable is valid for this request.
                         assertEquals(bitmap, (it as BitmapImage).bitmap)
-                    }
+                    },
                 )
                 .listener(
                     onSuccess = { _, _ -> continuation.resume(Unit) },
                     onError = { _, result -> continuation.resumeWithException(result.throwable) },
-                    onCancel = { continuation.cancel() }
+                    onCancel = { continuation.cancel() },
                 )
                 .build()
             imageLoader.enqueue(request)
@@ -423,7 +423,7 @@ class RealImageLoaderAndroidTest {
             srcHeight = 4965,
             dstWidth = 9052,
             dstHeight = imageView.height,
-            scale = Scale.FIT
+            scale = Scale.FIT,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
@@ -458,7 +458,7 @@ class RealImageLoaderAndroidTest {
             srcHeight = 4965,
             dstWidth = imageView.width,
             dstHeight = 4965,
-            scale = Scale.FIT
+            scale = Scale.FIT,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
@@ -485,7 +485,7 @@ class RealImageLoaderAndroidTest {
                 .listener(
                     onSuccess = { _, _ -> continuation.resume(Unit) },
                     onError = { _, result -> continuation.resumeWithException(result.throwable) },
-                    onCancel = { continuation.resumeWithException(CancellationException()) }
+                    onCancel = { continuation.resumeWithException(CancellationException()) },
                 )
                 .build()
             imageLoader.enqueue(request)
@@ -518,7 +518,7 @@ class RealImageLoaderAndroidTest {
 
     private fun copyNormalImageAssetToCacheDir(
         fileSystem: FileSystem,
-        directory: Path
+        directory: Path,
     ): File {
         val path = directory / IMAGE
         val source = context.assets.open(IMAGE).source()
