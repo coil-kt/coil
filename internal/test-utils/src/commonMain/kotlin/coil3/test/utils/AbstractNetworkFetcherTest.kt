@@ -159,7 +159,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
                     val result = newFetcher(
                         path = path,
                         responseBody = ByteArray(expectedSize).toByteString(),
-                        concurrentRequestStrategy = concurrentRequestStrategy
+                        concurrentRequestStrategy = concurrentRequestStrategy,
                     ).fetch()
                     assertIs<SourceFetchResult>(result)
                     result.source.close()
@@ -171,14 +171,14 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         }.join()
 
         assertEquals(
-            1,
-            results.filterIsInstance<SourceFetchResult>()
+            expected = 1,
+            actual = results.filterIsInstance<SourceFetchResult>()
                 .count { it.dataSource == DataSource.NETWORK },
         )
 
         assertEquals(
-            9,
-            results.filterIsInstance<SourceFetchResult>()
+            expected = 9,
+            actual = results.filterIsInstance<SourceFetchResult>()
                 .count { it.dataSource == DataSource.DISK },
         )
     }
