@@ -4,8 +4,8 @@ package coil3.network.okhttp
 
 import coil3.PlatformContext
 import coil3.network.CacheStrategy
+import coil3.network.ConcurrentRequestStrategy
 import coil3.network.ConnectivityChecker
-import coil3.network.InFlightRequestStrategy
 import coil3.network.NetworkClient
 import coil3.network.NetworkFetcher
 import coil3.network.okhttp.internal.CallFactoryNetworkClient
@@ -56,13 +56,13 @@ fun OkHttpNetworkFetcherFactory(
 fun OkHttpNetworkFetcherFactory(
     callFactory: () -> Call.Factory = ::OkHttpClient,
     cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
-    inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
+    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
 ) = NetworkFetcher.Factory(
     networkClient = { callFactory().asNetworkClient() },
     cacheStrategy = cacheStrategy,
     connectivityChecker = connectivityChecker,
-    inFlightRequestStrategy = inFlightRequestStrategy,
+    concurrentRequestStrategy = concurrentRequestStrategy,
 )
 
 fun Call.Factory.asNetworkClient(): NetworkClient {

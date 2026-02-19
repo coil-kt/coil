@@ -49,8 +49,8 @@ class NetworkFetcherTest : RobolectricTest() {
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(null),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
-            connectivityChecker = ConnectivityChecker(context),
-            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT)
+            connectivityChecker = lazyOf(ConnectivityChecker(context)),
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED)
         ).fetch()
 
         assertIs<SourceFetchResult>(result)
@@ -89,8 +89,8 @@ class NetworkFetcherTest : RobolectricTest() {
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
-            connectivityChecker = ConnectivityChecker.ONLINE,
-            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
+            connectivityChecker = lazyOf(ConnectivityChecker.ONLINE),
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
         )
 
         // A 400 response throws, but should still be cached.
@@ -141,8 +141,8 @@ class NetworkFetcherTest : RobolectricTest() {
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
-            connectivityChecker = ConnectivityChecker.ONLINE,
-            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
+            connectivityChecker = lazyOf(ConnectivityChecker.ONLINE),
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
         )
 
         // A 500 response throws and should not be cached.
@@ -193,8 +193,8 @@ class NetworkFetcherTest : RobolectricTest() {
             networkClient = lazyOf(networkClient),
             diskCache = lazyOf(diskCache),
             cacheStrategy = lazyOf(CacheStrategy.DEFAULT),
-            connectivityChecker = ConnectivityChecker.ONLINE,
-            inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
+            connectivityChecker = lazyOf(ConnectivityChecker.ONLINE),
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
         )
 
         assertFailsWith<HttpException> { fetcher.fetch() }

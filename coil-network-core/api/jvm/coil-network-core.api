@@ -37,6 +37,15 @@ public final class coil3/network/CacheStrategy$WriteResult {
 public final class coil3/network/CacheStrategy$WriteResult$Companion {
 }
 
+public abstract interface class coil3/network/ConcurrentRequestStrategy {
+	public static final field Companion Lcoil3/network/ConcurrentRequestStrategy$Companion;
+	public static final field DEFAULT Lcoil3/network/ConcurrentRequestStrategy;
+	public abstract fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil3/network/ConcurrentRequestStrategy$Companion {
+}
+
 public abstract interface class coil3/network/ConnectivityChecker {
 	public static final field Companion Lcoil3/network/ConnectivityChecker$Companion;
 	public static final field ONLINE Lcoil3/network/ConnectivityChecker;
@@ -50,7 +59,7 @@ public final class coil3/network/ConnectivityCheckerKt {
 	public static final fun ConnectivityChecker (Lcoil3/PlatformContext;)Lcoil3/network/ConnectivityChecker;
 }
 
-public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/InFlightRequestStrategy {
+public final class coil3/network/DeDupeInFlightRequestStrategy : coil3/network/ConcurrentRequestStrategy {
 	public fun <init> ()V
 	public fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -73,15 +82,6 @@ public final class coil3/network/ImageRequestsKt {
 	public static final fun httpBody (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkRequestBody;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpHeaders (Lcoil3/request/ImageRequest$Builder;Lcoil3/network/NetworkHeaders;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
-}
-
-public abstract interface class coil3/network/InFlightRequestStrategy {
-	public static final field Companion Lcoil3/network/InFlightRequestStrategy$Companion;
-	public static final field DEFAULT Lcoil3/network/InFlightRequestStrategy;
-	public abstract fun apply (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/network/InFlightRequestStrategy$Companion {
 }
 
 public abstract interface class coil3/network/NetworkClient {

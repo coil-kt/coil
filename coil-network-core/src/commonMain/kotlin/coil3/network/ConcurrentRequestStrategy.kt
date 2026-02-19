@@ -2,7 +2,6 @@ package coil3.network
 
 import coil3.annotation.ExperimentalCoilApi
 import coil3.fetch.FetchResult
-import coil3.network.InFlightRequestStrategy.Companion.DEFAULT
 import kotlin.jvm.JvmField
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
@@ -11,21 +10,20 @@ import kotlinx.coroutines.channels.Channel
 /**
  * Coordinates concurrent requests for the same key.
  *
- * Implementations can reduce duplicate work by running [block] once and making
+ * Implementations can reduce duplicate work by running `block` once and making
  * other callers wait for that result.
  */
 @ExperimentalCoilApi
-interface InFlightRequestStrategy {
+interface ConcurrentRequestStrategy {
     suspend fun apply(key: String, block: suspend () -> FetchResult): FetchResult
 
     companion object {
-        /** Runs [block] immediately with no request coordination. */
-        @JvmField
-        val DEFAULT: InFlightRequestStrategy = DefaultInFlightRequestStrategy()
+        /** Runs `block` immediately with no request coordination. */
+        @JvmField val UNCOORDINATED: ConcurrentRequestStrategy = UncoordinatedConcurrentRequestStrategy()
     }
 }
 
-internal class DefaultInFlightRequestStrategy : InFlightRequestStrategy {
+private class UncoordinatedConcurrentRequestStrategy : ConcurrentRequestStrategy {
     override suspend fun apply(
         key: String,
         block: suspend () -> FetchResult,
@@ -35,13 +33,13 @@ internal class DefaultInFlightRequestStrategy : InFlightRequestStrategy {
 /**
  * De-duplicates concurrent requests for the same key.
  *
- * The first caller executes [block]. If it succeeds, all waiters are released
+ * The first caller executes `block`. If it succeeds, all waiters are released
  * so they can continue (for example, by reading from cache). If it fails or is
- * cancelled, one waiter is resumed to retry [block].
+ * canceled, one waiter is resumed to retry `block`.
  */
 @ExperimentalCoilApi
-class DeDupeInFlightRequestStrategy : InFlightRequestStrategy {
-    private val inFlightRequests = mutableMapOf<String, Request>()
+class DeDupeConcurrentRequestStrategy : ConcurrentRequestStrategy {
+    private val concurrentRequests = mutableMapOf<String, Request>()
     private val lock = SynchronizedObject()
 
     override suspend fun apply(
@@ -50,7 +48,7 @@ class DeDupeInFlightRequestStrategy : InFlightRequestStrategy {
     ): FetchResult {
         var shouldWait = true
         val request = synchronized(lock) {
-            inFlightRequests.getOrPut(key) {
+            concurrentRequests.getOrPut(key) {
                 shouldWait = false
                 Request()
             }
@@ -70,7 +68,7 @@ class DeDupeInFlightRequestStrategy : InFlightRequestStrategy {
         } finally {
             request.release {
                 synchronized(lock) {
-                    inFlightRequests.remove(key)
+                    concurrentRequests -= key
                 }
             }
         }

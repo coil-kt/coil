@@ -5,8 +5,8 @@ import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.fetch.FetchResult
 import coil3.fetch.SourceFetchResult
-import coil3.network.DeDupeInFlightRequestStrategy
-import coil3.network.InFlightRequestStrategy
+import coil3.network.ConcurrentRequestStrategy
+import coil3.network.DeDupeConcurrentRequestStrategy
 import coil3.network.NetworkFetcher
 import coil3.request.Options
 import kotlin.test.AfterTest
@@ -149,7 +149,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
     fun dedupe_multiple_requests() = runTestAsync {
         val expectedSize = 1_000
         val path = "image.jpg"
-        val inFlightRequestStrategy = DeDupeInFlightRequestStrategy()
+        val concurrentRequestStrategy = DeDupeConcurrentRequestStrategy()
 
         val results = mutableListOf<FetchResult>()
         val resultsLock = Mutex()
@@ -159,7 +159,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
                     val result = newFetcher(
                         path = path,
                         responseBody = ByteArray(expectedSize).toByteString(),
-                        inFlightRequestStrategy = inFlightRequestStrategy
+                        concurrentRequestStrategy = concurrentRequestStrategy
                     ).fetch()
                     assertIs<SourceFetchResult>(result)
                     result.source.close()
@@ -189,6 +189,6 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         path: String = "image.jpg",
         responseBody: ByteString = ByteString.EMPTY,
         options: Options = Options(context),
-        inFlightRequestStrategy: InFlightRequestStrategy = InFlightRequestStrategy.DEFAULT
+        concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED
     ): NetworkFetcher
 }

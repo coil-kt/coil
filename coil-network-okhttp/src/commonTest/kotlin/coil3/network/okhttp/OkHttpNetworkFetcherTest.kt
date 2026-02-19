@@ -1,6 +1,6 @@
 package coil3.network.okhttp
 
-import coil3.network.InFlightRequestStrategy
+import coil3.network.ConcurrentRequestStrategy
 import coil3.network.NetworkFetcher
 import coil3.request.Options
 import coil3.test.utils.AbstractNetworkFetcherTest
@@ -38,13 +38,13 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
         path: String,
         responseBody: ByteString,
         options: Options,
-        inFlightRequestStrategy: InFlightRequestStrategy
+        concurrentRequestStrategy: ConcurrentRequestStrategy
     ): NetworkFetcher {
         server.enqueue(MockResponse().setBody(Buffer().apply { write(responseBody) }))
         val client = OkHttpClient()
         val factory = OkHttpNetworkFetcherFactory(
             callFactory = { client },
-            inFlightRequestStrategy = { inFlightRequestStrategy },
+            concurrentRequestStrategy = { concurrentRequestStrategy },
         )
         return assertIs(factory.create(url(path).toUri(), options, imageLoader))
     }

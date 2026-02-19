@@ -1,6 +1,6 @@
 package coil3.network.ktor2
 
-import coil3.network.InFlightRequestStrategy
+import coil3.network.ConcurrentRequestStrategy
 import coil3.network.NetworkFetcher
 import coil3.request.Options
 import coil3.test.utils.AbstractNetworkFetcherTest
@@ -21,7 +21,7 @@ class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
         path: String,
         responseBody: ByteString,
         options: Options,
-        inFlightRequestStrategy: InFlightRequestStrategy
+        concurrentRequestStrategy: ConcurrentRequestStrategy
     ): NetworkFetcher {
         val client = HttpClient(MockEngine) {
             engine {
@@ -30,7 +30,7 @@ class KtorNetworkFetcherTest : AbstractNetworkFetcherTest() {
                 }
             }
         }
-        val factory = KtorNetworkFetcherFactory(client, inFlightRequestStrategy)
+        val factory = KtorNetworkFetcherFactory(client, concurrentRequestStrategy)
         return assertIs(factory.create(url(path).toUri(), options, imageLoader))
     }
 }

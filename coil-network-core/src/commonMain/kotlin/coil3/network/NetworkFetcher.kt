@@ -35,8 +35,8 @@ class NetworkFetcher(
     private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
-    private val connectivityChecker: ConnectivityChecker,
-    private val inFlightRequestStrategy: Lazy<InFlightRequestStrategy>,
+    private val connectivityChecker: Lazy<ConnectivityChecker>,
+    private val concurrentRequestStrategy: Lazy<ConcurrentRequestStrategy>,
 ) : Fetcher {
 
     @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
@@ -53,14 +53,12 @@ class NetworkFetcher(
         networkClient = networkClient,
         diskCache = diskCache,
         cacheStrategy = cacheStrategy,
-        connectivityChecker = connectivityChecker,
-        inFlightRequestStrategy = lazyOf(InFlightRequestStrategy.DEFAULT),
+        connectivityChecker = lazyOf(connectivityChecker),
+        concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
     )
 
     override suspend fun fetch(): FetchResult {
-        return inFlightRequestStrategy.value.apply(safeDiskCacheKey) {
-            doFetch()
-        }
+        return concurrentRequestStrategy.value.apply(diskCacheKey, ::doFetch)
     }
 
     private suspend fun doFetch(): FetchResult {
@@ -208,7 +206,7 @@ class NetworkFetcher(
     private fun newRequest(): NetworkRequest {
         val headers = options.httpHeaders.newBuilder()
         val diskRead = options.diskCachePolicy.readEnabled
-        val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.isOnline()
+        val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.value.isOnline()
         when {
             !networkRead && diskRead -> {
                 headers[CACHE_CONTROL] = "only-if-cached, max-stale=2147483647"
@@ -283,9 +281,6 @@ class NetworkFetcher(
     private val diskCacheKey: String
         get() = options.diskCacheKey ?: url
 
-    private val safeDiskCacheKey: String
-        get() = options.diskCacheKey?.let { StringBuilder(it).toString() } ?: url
-
     private val fileSystem: FileSystem
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
@@ -293,20 +288,24 @@ class NetworkFetcher(
         networkClient: () -> NetworkClient,
         cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
-        inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT },
+        concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
     ) : Fetcher.Factory<Uri> {
 
-        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
         constructor(
             networkClient: () -> NetworkClient,
             cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
             connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
-        ) : this(networkClient, cacheStrategy, connectivityChecker)
+        ) : this(
+            networkClient = networkClient,
+            cacheStrategy = cacheStrategy,
+            connectivityChecker = connectivityChecker,
+            concurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
+        )
 
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
-        private val inFlightRequestStrategyLazy = lazy(inFlightRequestStrategy)
+        private val concurrentRequestStrategyLazy = lazy(concurrentRequestStrategy)
 
         override fun create(
             data: Uri,
@@ -320,8 +319,8 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
-                connectivityChecker = connectivityCheckerLazy.get(options.context),
-                inFlightRequestStrategy = inFlightRequestStrategyLazy,
+                connectivityChecker = lazyOf(connectivityCheckerLazy.get(options.context)),
+                concurrentRequestStrategy = concurrentRequestStrategyLazy,
             )
         }
 

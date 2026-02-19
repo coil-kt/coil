@@ -4,8 +4,8 @@ package coil3.network.ktor2
 
 import coil3.PlatformContext
 import coil3.network.CacheStrategy
+import coil3.network.ConcurrentRequestStrategy
 import coil3.network.ConnectivityChecker
-import coil3.network.InFlightRequestStrategy
 import coil3.network.NetworkClient
 import coil3.network.NetworkFetcher
 import coil3.network.ktor2.internal.KtorNetworkClient
@@ -28,10 +28,10 @@ fun KtorNetworkFetcherFactory(
 @JvmName("factory")
 fun KtorNetworkFetcherFactory(
     httpClient: HttpClient,
-    inFlightRequestStrategy: InFlightRequestStrategy = InFlightRequestStrategy.DEFAULT
+    concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient.asNetworkClient() },
-    inFlightRequestStrategy = { inFlightRequestStrategy }
+    concurrentRequestStrategy = { concurrentRequestStrategy }
 )
 
 @JvmName("factory")
@@ -58,12 +58,12 @@ fun KtorNetworkFetcherFactory(
     httpClient: () -> HttpClient = { HttpClient() },
     cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
     connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
-    inFlightRequestStrategy: () -> InFlightRequestStrategy = { InFlightRequestStrategy.DEFAULT }
+    concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED }
 ) = NetworkFetcher.Factory(
     networkClient = { httpClient().asNetworkClient() },
     cacheStrategy = cacheStrategy,
     connectivityChecker = connectivityChecker,
-    inFlightRequestStrategy = inFlightRequestStrategy
+    concurrentRequestStrategy = concurrentRequestStrategy
 )
 
 fun HttpClient.asNetworkClient(): NetworkClient {
