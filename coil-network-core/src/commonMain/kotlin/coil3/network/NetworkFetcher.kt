@@ -291,6 +291,7 @@ class NetworkFetcher(
         concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
     ) : Fetcher.Factory<Uri> {
 
+        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
         constructor(
             networkClient: () -> NetworkClient,
             cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
