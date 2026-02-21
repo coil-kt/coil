@@ -35,10 +35,33 @@ class NetworkFetcher(
     private val networkClient: Lazy<NetworkClient>,
     private val diskCache: Lazy<DiskCache?>,
     private val cacheStrategy: Lazy<CacheStrategy>,
-    private val connectivityChecker: ConnectivityChecker,
+    private val connectivityChecker: Lazy<ConnectivityChecker>,
+    private val concurrentRequestStrategy: Lazy<ConcurrentRequestStrategy>,
 ) : Fetcher {
 
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        url: String,
+        options: Options,
+        networkClient: Lazy<NetworkClient>,
+        diskCache: Lazy<DiskCache?>,
+        cacheStrategy: Lazy<CacheStrategy>,
+        connectivityChecker: ConnectivityChecker,
+    ) : this(
+        url = url,
+        options = options,
+        networkClient = networkClient,
+        diskCache = diskCache,
+        cacheStrategy = cacheStrategy,
+        connectivityChecker = lazyOf(connectivityChecker),
+        concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
+    )
+
     override suspend fun fetch(): FetchResult {
+        return concurrentRequestStrategy.value.apply(diskCacheKey, ::doFetch)
+    }
+
+    private suspend fun doFetch(): FetchResult {
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
@@ -183,7 +206,7 @@ class NetworkFetcher(
     private fun newRequest(): NetworkRequest {
         val headers = options.httpHeaders.newBuilder()
         val diskRead = options.diskCachePolicy.readEnabled
-        val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.isOnline()
+        val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.value.isOnline()
         when {
             !networkRead && diskRead -> {
                 headers[CACHE_CONTROL] = "only-if-cached, max-stale=2147483647"
@@ -265,10 +288,25 @@ class NetworkFetcher(
         networkClient: () -> NetworkClient,
         cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
         connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        concurrentRequestStrategy: () -> ConcurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
     ) : Fetcher.Factory<Uri> {
+
+        @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+        constructor(
+            networkClient: () -> NetworkClient,
+            cacheStrategy: () -> CacheStrategy = { CacheStrategy.DEFAULT },
+            connectivityChecker: (PlatformContext) -> ConnectivityChecker = ::ConnectivityChecker,
+        ) : this(
+            networkClient = networkClient,
+            cacheStrategy = cacheStrategy,
+            connectivityChecker = connectivityChecker,
+            concurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
+        )
+
         private val networkClientLazy = lazy(networkClient)
         private val cacheStrategyLazy = lazy(cacheStrategy)
         private val connectivityCheckerLazy = singleParameterLazy(connectivityChecker)
+        private val concurrentRequestStrategyLazy = lazy(concurrentRequestStrategy)
 
         override fun create(
             data: Uri,
@@ -282,7 +320,8 @@ class NetworkFetcher(
                 networkClient = networkClientLazy,
                 diskCache = lazy { imageLoader.diskCache },
                 cacheStrategy = cacheStrategyLazy,
-                connectivityChecker = connectivityCheckerLazy.get(options.context),
+                connectivityChecker = lazyOf(connectivityCheckerLazy.get(options.context)),
+                concurrentRequestStrategy = concurrentRequestStrategyLazy,
             )
         }
 
