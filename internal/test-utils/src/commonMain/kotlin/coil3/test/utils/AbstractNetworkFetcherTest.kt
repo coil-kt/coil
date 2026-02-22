@@ -1,8 +1,12 @@
 package coil3.test.utils
 
 import coil3.ImageLoader
+import coil3.decode.DataSource
 import coil3.disk.DiskCache
+import coil3.fetch.FetchResult
 import coil3.fetch.SourceFetchResult
+import coil3.network.ConcurrentRequestStrategy
+import coil3.network.DeDupeConcurrentRequestStrategy
 import coil3.network.NetworkFetcher
 import coil3.request.Options
 import kotlin.test.AfterTest
@@ -13,6 +17,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.blackholeSink
@@ -138,11 +145,50 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         }
     }
 
+    @Test
+    fun dedupe_multiple_requests() = runTestAsync {
+        val expectedSize = 1_000
+        val path = "image.jpg"
+        val concurrentRequestStrategy = DeDupeConcurrentRequestStrategy()
+
+        val results = mutableListOf<FetchResult>()
+        val resultsLock = Mutex()
+        launch {
+            for (i in 1..10) {
+                launch {
+                    val result = newFetcher(
+                        path = path,
+                        responseBody = ByteArray(expectedSize).toByteString(),
+                        concurrentRequestStrategy = concurrentRequestStrategy,
+                    ).fetch()
+                    assertIs<SourceFetchResult>(result)
+                    result.source.close()
+                    resultsLock.withLock {
+                        results.add(result)
+                    }
+                }
+            }
+        }.join()
+
+        assertEquals(
+            expected = 1,
+            actual = results.filterIsInstance<SourceFetchResult>()
+                .count { it.dataSource == DataSource.NETWORK },
+        )
+
+        assertEquals(
+            expected = 9,
+            actual = results.filterIsInstance<SourceFetchResult>()
+                .count { it.dataSource == DataSource.DISK },
+        )
+    }
+
     abstract fun url(path: String): String
 
     abstract fun newFetcher(
         path: String = "image.jpg",
         responseBody: ByteString = ByteString.EMPTY,
         options: Options = Options(context),
+        concurrentRequestStrategy: ConcurrentRequestStrategy = ConcurrentRequestStrategy.UNCOORDINATED,
     ): NetworkFetcher
 }
