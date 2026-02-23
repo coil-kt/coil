@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.4.0] - Unreleased
+
+- **New**: Add `ConcurrentRequestStrategy` to support combining in-flight network requests for the same key. ([#2995](https://github.com/coil-kt/coil/pull/2995), [#3326](https://github.com/coil-kt/coil/pull/3326))
+    - `DeDupeConcurrentRequestStrategy` enables this behavior and lets waiters wait for the results of an in-flight network request.
+        - This behavior is experimental and is currently disabled by default.
+        - Currently, requests are always combined based on their `diskCacheKey`.
+    - `OkHttpNetworkFetcherFactory`, `KtorNetworkFetcherFactory`, and `NetworkFetcher.Factory` now accept `concurrentRequestStrategy`.
+- **New**: Decode images on JS/WASM using a web worker to avoid blocking the browser main thread. ([#3305](https://github.com/coil-kt/coil/pull/3305))
+- **New**: Add support for Linux native targets (`linuxX64` and `linuxArm64`) for non-Compose multiplatform artifacts. ([#3054](https://github.com/coil-kt/coil/pull/3054))
+- **New**: Add Compose-only APIs to improve transitions between subsequent requests. ([#3141](https://github.com/coil-kt/coil/pull/3141), [#3175](https://github.com/coil-kt/coil/pull/3175))
+    - `ImageRequest.Builder.useExistingImageAsPlaceholder` enables crossfading from the previous image when no placeholder is set.
+    - `ImageRequest.Builder.preferEndFirstIntrinsicSize` lets `CrossfadePainter` prefer the end painter's intrinsic size.
+- **New**: Add `ImageLoader.Builder.repeatCount(Int)` in `coil-gif` to set a global animated image repeat count. ([#3143](https://github.com/coil-kt/coil/pull/3143))
+- **New**: Add support for preferring embedded video thumbnails in `coil-video`. ([#3107](https://github.com/coil-kt/coil/pull/3107))
+- **New**: Publish `coil-lint` with `coil-core` and add a lint check to catch accidental `kotlin.error()` calls in `ImageRequest.Builder` blocks. ([#3304](https://github.com/coil-kt/coil/pull/3304))
+- Set Kotlin language version to 2.1. ([#3302](https://github.com/coil-kt/coil/pull/3302))
+- Make `BitmapFetcher` available in common code. ([#3286](https://github.com/coil-kt/coil/pull/3286))
+- Use `applicationContext` when creating the singleton `ImageLoader` on Android. ([#3246](https://github.com/coil-kt/coil/pull/3246))
+- Cache eligible non-2xx HTTP responses by default (e.g. `404`) and stop caching non-cacheable responses (e.g. `500`). ([#3137](https://github.com/coil-kt/coil/pull/3137), [#3139](https://github.com/coil-kt/coil/pull/3139))
+- Fix potential race condition when consuming OkHttp response bodies. ([#3186](https://github.com/coil-kt/coil/pull/3186))
+- Fix `maxBitmapSize` edge case to prevent oversized bitmap crashes on Android. ([#3259](https://github.com/coil-kt/coil/pull/3259))
+- Update Kotlin to 2.3.10.
+- Update Compose to 1.9.3.
+- Update Okio to 3.16.4.
+- Update Skiko to 0.9.22.2.
+- Update `kotlinx-io-okio` to 0.9.0.
+- Update `androidx.core` to 1.16.0.
+- Update `androidx.lifecycle` to 2.9.4.
+- Update `androidx.exifinterface` to 1.4.2.
+
 ## [3.3.0] - July 22, 2025
 
 - **New**: Introduce a new API to limit `MemoryCache.maxSize` on Android while the app is backgrounded.
