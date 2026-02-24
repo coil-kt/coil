@@ -3,7 +3,7 @@
 To add support for [Compose UI](https://www.jetbrains.com/compose-multiplatform/), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+implementation("io.coil-kt.coil3:coil-compose:3.4.0")
 ```
 
 Then use the `AsyncImage` composable to load and display an image:

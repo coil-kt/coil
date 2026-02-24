@@ -18,7 +18,7 @@ SPLcoil3/compose/AsyncImagePainter;->access$toState(Lcoil3/compose/AsyncImagePai
 SPLcoil3/compose/AsyncImagePainter;->access$updateRequest(Lcoil3/compose/AsyncImagePainter;Lcoil3/request/ImageRequest;Z)Lcoil3/request/ImageRequest;
 SPLcoil3/compose/AsyncImagePainter;->access$updateState(Lcoil3/compose/AsyncImagePainter;Lcoil3/compose/AsyncImagePainter$State;)V
 SPLcoil3/compose/AsyncImagePainter;->getIntrinsicSize-NH-jbRc()J
-SPLcoil3/compose/AsyncImagePainter;->getPainter()Landroidx/compose/ui/graphics/painter/Painter;
+HSPLcoil3/compose/AsyncImagePainter;->getPainter()Landroidx/compose/ui/graphics/painter/Painter;
 SPLcoil3/compose/AsyncImagePainter;->getPreviewHandler$coil_compose_core()Lcoil3/compose/AsyncImagePreviewHandler;
 SPLcoil3/compose/AsyncImagePainter;->getScope$coil_compose_core()Lkotlinx/coroutines/CoroutineScope;
 SPLcoil3/compose/AsyncImagePainter;->launchJob()V
@@ -99,7 +99,7 @@ SPLcoil3/compose/CrossfadePainter;-><clinit>()V
 SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZZ)V
 SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLcoil3/compose/CrossfadePainter;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/layout/ContentScale;JLkotlin/time/TimeSource;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
-SPLcoil3/compose/CrossfadePainter;->computeDrawSize-x8L_9b0(JJ)J
+HSPLcoil3/compose/CrossfadePainter;->computeDrawSize-x8L_9b0(JJ)J
 SPLcoil3/compose/CrossfadePainter;->computeIntrinsicSize-xjbvk4A(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;)J
 HSPLcoil3/compose/CrossfadePainter;->drawPainter(Landroidx/compose/ui/graphics/drawscope/DrawScope;Landroidx/compose/ui/graphics/painter/Painter;F)V
 SPLcoil3/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
@@ -131,7 +131,7 @@ Lcoil3/compose/internal/AbstractContentPainterNode;
 SPLcoil3/compose/internal/AbstractContentPainterNode;-><clinit>()V
 SPLcoil3/compose/internal/AbstractContentPainterNode;-><init>(Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ZLjava/lang/String;Lcoil3/compose/ConstraintsSizeResolver;)V
 SPLcoil3/compose/internal/AbstractContentPainterNode;->applySemantics(Landroidx/compose/ui/semantics/SemanticsPropertyReceiver;)V
-SPLcoil3/compose/internal/AbstractContentPainterNode;->calculateScaledSize-E7KxVPU(J)J
+HSPLcoil3/compose/internal/AbstractContentPainterNode;->calculateScaledSize-E7KxVPU(J)J
 HSPLcoil3/compose/internal/AbstractContentPainterNode;->draw(Landroidx/compose/ui/graphics/drawscope/ContentDrawScope;)V
 SPLcoil3/compose/internal/AbstractContentPainterNode;->getConstraintSizeResolver()Lcoil3/compose/ConstraintsSizeResolver;
 SPLcoil3/compose/internal/AbstractContentPainterNode;->getContentDescription()Ljava/lang/String;

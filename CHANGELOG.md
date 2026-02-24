@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.4.0] - Unreleased
+## [3.4.0] - February 24, 2026
 
 - **New**: Add `ConcurrentRequestStrategy` to support combining in-flight network requests for the same key. ([#2995](https://github.com/coil-kt/coil/pull/2995), [#3326](https://github.com/coil-kt/coil/pull/3326))
     - `DeDupeConcurrentRequestStrategy` enables this behavior and lets waiters wait for the results of an in-flight network request.
