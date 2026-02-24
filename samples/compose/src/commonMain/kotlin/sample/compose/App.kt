@@ -29,7 +29,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -85,20 +87,29 @@ fun App(
         colorScheme = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
         val screen by viewModel.screen.collectAsState()
-        val isDetail = screen is Screen.Detail
+        var showDirectSvgScreen by rememberSaveable { mutableStateOf(false) }
+        val isDetail = screen is Screen.Detail || showDirectSvgScreen
         Scaffold(
             topBar = {
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
                     backEnabled = isDetail,
+                    onSvgClick = { showDirectSvgScreen = true },
                     onScreenChange = { viewModel.screen.value = it },
                     onAssetTypeChange = { viewModel.assetType.value = it },
-                    onBackPressed = { viewModel.onBackPressed() },
+                    onBackPressed = {
+                        if (showDirectSvgScreen) {
+                            showDirectSvgScreen = false
+                        } else {
+                            viewModel.onBackPressed()
+                        }
+                    },
                 )
             },
             content = { padding ->
                 ScaffoldContent(
                     screen = screen,
+                    showDirectSvgScreen = showDirectSvgScreen,
                     onScreenChange = { viewModel.screen.value = it },
                     images = viewModel.images.collectAsState().value,
                     padding = padding,
@@ -107,7 +118,11 @@ fun App(
             modifier = Modifier.testTagsAsResourceId(true),
         )
         BackHandler(enabled = isDetail) {
-            viewModel.onBackPressed()
+            if (showDirectSvgScreen) {
+                showDirectSvgScreen = false
+            } else {
+                viewModel.onBackPressed()
+            }
         }
     }
 }
@@ -117,6 +132,7 @@ fun App(
 private fun Toolbar(
     assetType: AssetType,
     backEnabled: Boolean,
+    onSvgClick: () -> Unit,
     onScreenChange: (Screen) -> Unit,
     onAssetTypeChange: (AssetType) -> Unit,
     onBackPressed: () -> Unit,
@@ -131,6 +147,10 @@ private fun Toolbar(
             }
         },
         actions = {
+            IconButton(
+                onClick = onSvgClick,
+                content = { Text("SVG") },
+            )
             IconButton(
                 onClick = { onScreenChange(resourceDetailScreen) },
                 content = { Text("Res") },
@@ -162,6 +182,7 @@ private fun BackIconButton(
 @Composable
 private fun ScaffoldContent(
     screen: Screen,
+    showDirectSvgScreen: Boolean,
     onScreenChange: (Screen) -> Unit,
     images: List<Image>,
     padding: PaddingValues,
@@ -172,14 +193,19 @@ private fun ScaffoldContent(
         LazyStaggeredGridState()
     }
 
-    when (screen) {
-        is Screen.Detail -> {
+    when {
+        showDirectSvgScreen -> {
+            DirectSvgScreen(
+                padding = padding,
+            )
+        }
+        screen is Screen.Detail -> {
             DetailScreen(
                 screen = screen,
                 padding = padding,
             )
         }
-        is Screen.List -> {
+        screen is Screen.List -> {
             ListScreen(
                 gridState = gridState,
                 images = images,
@@ -190,6 +216,19 @@ private fun ScaffoldContent(
             )
         }
     }
+}
+
+@Composable
+private fun DirectSvgScreen(
+    padding: PaddingValues,
+) {
+    DirectSvgRenderer(
+        svg = DirectSvgContent,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .testTag("direct_svg"),
+    )
 }
 
 @Composable
@@ -269,6 +308,13 @@ private fun ListScreen(
 
 const val Title = "Coil"
 
+private const val DirectSvgContent = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="640" height="240" viewBox="0 0 640 240">
+      <rect width="640" height="240" fill="#f2f2f2"/>
+      <text x="24" y="150" font-size="96" fill="#111111">Coil SVG Text</text>
+    </svg>
+"""
+
 private val darkColors = darkColorScheme(
     background = Color(0xFF141218),
     surface = Color(0xFF141218),
@@ -319,4 +365,11 @@ expect fun containerSize(): IntSize
 expect fun BackHandler(
     enabled: Boolean = true,
     onBack: () -> Unit,
+)
+
+@Composable
+expect fun DirectSvgRenderer(
+    svg: String,
+    modifier: Modifier = Modifier,
+    onClose: () -> Unit = {},
 )
