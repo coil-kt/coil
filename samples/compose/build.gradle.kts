@@ -12,7 +12,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-multiplatformAndroidLibrary(name = "sample.compose")
+multiplatformAndroidLibrary(name = "sample.compose") {
+    androidResources {
+        enable = true
+    }
+}
 
 compose {
     desktop {
