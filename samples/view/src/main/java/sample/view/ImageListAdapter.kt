@@ -19,6 +19,7 @@ import coil3.util.component2
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
+import sample.common.extras
 import sample.view.ImageListAdapter.ViewHolder
 
 class ImageListAdapter(
@@ -47,7 +48,7 @@ class ImageListAdapter(
             load(item.uri) {
                 placeholder(item.color.toDrawable())
                 error(Color.RED.toDrawable())
-                extras.setAll(item.extras)
+                extras(item.extras)
                 listener { _, result -> placeholder = result.memoryCacheKey }
             }
 
