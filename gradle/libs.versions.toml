@@ -24,7 +24,7 @@ baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-ben
 baselineProfileConsumer = { id = "androidx.baselineprofile.consumer", version.ref = "androidx-benchmark" }
 poko = "dev.drewhamilton.poko:0.21.2"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha13"
-spotless = "com.diffplug.spotless:8.2.1"
+spotless = "com.diffplug.spotless:8.3.0"
 
 [libraries]
 gradlePlugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
