@@ -55,7 +55,10 @@ internal fun getOriginalSize(bytes: ByteArray): Pair<Int, Int> { // (w,h)
     val jpegSize = getJpegSizeOrNull(bytes)
     if (jpegSize != null) return jpegSize
 
-    // Fallback for WebP and others
+    val webpSize = getWebpSizeOrNull(bytes)
+    if (webpSize != null) return webpSize
+
+    // Fallback for others
     val image = Image.makeFromEncoded(bytes)
     return image.width to image.height
 }
@@ -94,10 +97,60 @@ internal fun getJpegSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
     return null
 }
 
+internal fun getWebpSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
+    if (bytes.size < 30) return null
+
+    // check "RIFF" and "WEBP" signatures
+    if (
+        int32(bytes[0], bytes[1], bytes[2], bytes[3]) != 0x5249_4646u ||
+        int32(bytes[8], bytes[9], bytes[10], bytes[11]) != 0x5745_4250u
+    ) {
+        return null
+    }
+
+    val chunkType = int32(bytes[12], bytes[13], bytes[14], bytes[15])
+
+    return when (chunkType) {
+        0x5650_3858u -> { // "VP8X" (Extended WebP)
+            val w = int24LE(bytes[24], bytes[25], bytes[26]).toInt() + 1
+            val h = int24LE(bytes[27], bytes[28], bytes[29]).toInt() + 1
+            w to h
+        }
+        0x5650_3820u -> { // "VP8" (Lossy WebP)
+            // Check Sync Code "0x9D 0x01 0x2A"
+            if (bytes[23].asInt() != 0x9Du || bytes[24].asInt() != 0x01u || bytes[25].asInt() != 0x2Au) return null
+            val w = (int16LE(bytes[26], bytes[27]) and 0x3FFFu).toInt()
+            val h = (int16LE(bytes[28], bytes[29]) and 0x3FFFu).toInt()
+            w to h
+        }
+        0x5650_384Cu -> { // "VP8L" (Lossless WebP)
+            // Check Lossless
+            if (bytes[20].asInt() != 0x2Fu) return null
+            val bits = int32LE(bytes[21], bytes[22], bytes[23], bytes[24])
+            val w = (bits and 0x3FFFu).toInt() + 1
+            val h = ((bits shr 14) and 0x3FFFu).toInt() + 1
+            w to h
+        }
+        else -> null
+    }
+}
+
 private fun int16(b1: Byte, b2: Byte): UInt =
     (b1.asInt() shl 8) or b2.asInt()
 
+private fun int24(b1: Byte, b2: Byte, b3: Byte): UInt =
+    (b1.asInt() shl 16) or (b2.asInt() shl 8) or b3.asInt()
+
 private fun int32(b1: Byte, b2: Byte, b3: Byte, b4: Byte): UInt =
     (int16(b1, b2) shl 16) or int16(b3, b4)
+
+private fun int16LE(b1: Byte, b2: Byte): UInt =
+    int16(b2, b1)
+
+private fun int24LE(b1: Byte, b2: Byte, b3: Byte): UInt =
+    int24(b3, b2, b1)
+
+private fun int32LE(b1: Byte, b2: Byte, b3: Byte, b4: Byte): UInt =
+    int32(b4, b3, b2, b1)
 
 private fun Byte.asInt() = this.toUInt() and 0xFFu
