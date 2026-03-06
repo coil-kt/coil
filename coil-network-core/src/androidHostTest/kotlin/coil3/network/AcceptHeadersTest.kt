@@ -22,7 +22,7 @@ import org.robolectric.annotation.Implements
 class AcceptHeadersTest : RobolectricTest() {
 
     @AfterTest
-    fun tearDown(){
+    fun tearDown() {
         CustomShadowImageDecoder.clearSupportedMimeTypes()
     }
 
