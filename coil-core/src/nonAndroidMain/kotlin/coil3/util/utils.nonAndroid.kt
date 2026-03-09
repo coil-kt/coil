@@ -9,7 +9,7 @@ import coil3.size.Precision
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Image as SkiaImage
-import org.jetbrains.skia.Rect
+import org.jetbrains.skia.SamplingMode
 import org.jetbrains.skia.impl.use
 
 internal actual fun println(
@@ -56,8 +56,17 @@ internal fun Bitmap.Companion.makeFromImage(
     Canvas(bitmap).use { canvas ->
         canvas.drawImageRect(
             image = image,
-            src = Rect.makeWH(srcWidth.toFloat(), srcHeight.toFloat()),
-            dst = Rect.makeWH(outWidth.toFloat(), outHeight.toFloat()),
+            srcLeft = 0f,
+            srcTop = 0f,
+            srcRight = srcWidth.toFloat(),
+            srcBottom = srcHeight.toFloat(),
+            dstLeft = 0f,
+            dstTop = 0f,
+            dstRight = outWidth.toFloat(),
+            dstBottom = outHeight.toFloat(),
+            samplingMode = SamplingMode.DEFAULT,
+            paint = null,
+            strict = true,
         )
     }
     return bitmap
