@@ -73,9 +73,9 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
-    // Target Kotlin 2.3.
+    // Target Kotlin 2.1.
     tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_3
+        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_1
     }
 
     // https://issuetracker.google.com/issues/411739086?pli=1
