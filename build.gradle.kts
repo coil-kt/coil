@@ -73,9 +73,9 @@ allprojects {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
     }
 
-    // Target Kotlin 2.1.
+    // Target Kotlin 2.3.
     tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_1
+        compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_3
     }
 
     // https://issuetracker.google.com/issues/411739086?pli=1
@@ -152,7 +152,7 @@ fun Project.configureAbiValidation() {
         val kotlinExtension = extensions.findByType<KotlinProjectExtension>() ?: return@afterEvaluate
 
         fun AbiValidationVariantSpec.configureVariant() = filters {
-            excluded {
+            exclude {
                 annotatedWith.add("coil3.annotation.InternalCoilApi")
             }
         }
