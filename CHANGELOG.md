@@ -21,7 +21,7 @@
 - Cache eligible non-2xx HTTP responses by default (e.g. `404`) and stop caching non-cacheable responses (e.g. `500`). ([#3137](https://github.com/coil-kt/coil/pull/3137), [#3139](https://github.com/coil-kt/coil/pull/3139))
 - Fix potential race condition when consuming OkHttp response bodies. ([#3186](https://github.com/coil-kt/coil/pull/3186))
 - Fix `maxBitmapSize` edge case to prevent oversized bitmap crashes on Android. ([#3259](https://github.com/coil-kt/coil/pull/3259))
-- Update Kotlin to 2.3.10.
+- Update Kotlin to 2.3.20-RC3.
 - Update Compose to 1.9.3.
 - Update Okio to 3.16.4.
 - Update Skiko to 0.9.22.2.
