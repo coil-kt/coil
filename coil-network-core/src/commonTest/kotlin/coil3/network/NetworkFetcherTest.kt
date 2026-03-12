@@ -3,6 +3,8 @@ package coil3.network
 import coil3.Extras
 import coil3.disk.DiskCache
 import coil3.fetch.SourceFetchResult
+import coil3.network.internal.getPlatformHeaders
+import coil3.network.internal.plus
 import coil3.request.Options
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -18,7 +20,7 @@ import okio.fakefilesystem.FakeFileSystem
 class NetworkFetcherTest : RobolectricTest() {
 
     @Test
-    fun networkRequestParamsArePassedThrough() = runTestAsync {
+    fun networkRequestParamsAreUsedInFinalRequest() = runTestAsync {
         val expectedSize = 1_000
         val url = "https://example.com/image.jpg"
         val method = "POST"
@@ -55,7 +57,7 @@ class NetworkFetcherTest : RobolectricTest() {
 
         assertIs<SourceFetchResult>(result)
 
-        val expected = NetworkRequest(url, method, headers, body, options.extras)
+        val expected = NetworkRequest(url, method, getPlatformHeaders() + headers, body, options.extras)
 
         assertEquals(expected, networkClient.requests.single())
     }

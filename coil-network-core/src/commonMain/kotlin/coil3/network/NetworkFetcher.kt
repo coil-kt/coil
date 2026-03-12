@@ -17,6 +17,8 @@ import coil3.network.internal.MIME_TYPE_TEXT_PLAIN
 import coil3.network.internal.abortQuietly
 import coil3.network.internal.assertNotOnMainThread
 import coil3.network.internal.closeQuietly
+import coil3.network.internal.getPlatformHeaders
+import coil3.network.internal.plus
 import coil3.network.internal.readBuffer
 import coil3.network.internal.requireBody
 import coil3.network.internal.singleParameterLazy
@@ -204,7 +206,8 @@ class NetworkFetcher(
     }
 
     private fun newRequest(): NetworkRequest {
-        val headers = options.httpHeaders.newBuilder()
+        // We get default platform headers, but they can be overridden by user-set ones
+        val headers = getPlatformHeaders().plus(options.httpHeaders).newBuilder()
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled && connectivityChecker.value.isOnline()
         when {
