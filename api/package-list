@@ -1,0 +1,53 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:coil3.svg/SvgImage///PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/index.html
+$dokka.location:coil3.svg/SvgImage/SvgImage/#com.caverock.androidsvg.SVG#com.caverock.androidsvg.RenderOptions?#kotlin.Int#kotlin.Int/PointingToDeclaration/coil-svg/coil3.svg/[android]-svg-image/-svg-image.html
+$dokka.location:coil3.svg/SvgImage/SvgImage/#org.jetbrains.skia.svg.SVGDOM#kotlin.Int#kotlin.Int/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/-svg-image.html
+$dokka.location:coil3.svg/SvgImage/draw/#android.graphics.Canvas/PointingToDeclaration/coil-svg/coil3.svg/[android]-svg-image/draw.html
+$dokka.location:coil3.svg/SvgImage/draw/#org.jetbrains.skia.Canvas/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/draw.html
+$dokka.location:coil3.svg/SvgImage/height/#/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/height.html
+$dokka.location:coil3.svg/SvgImage/renderOptions/#/PointingToDeclaration/coil-svg/coil3.svg/[android]-svg-image/render-options.html
+$dokka.location:coil3.svg/SvgImage/shareable/#/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/shareable.html
+$dokka.location:coil3.svg/SvgImage/size/#/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/size.html
+$dokka.location:coil3.svg/SvgImage/svg/#/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/svg.html
+$dokka.location:coil3.svg/SvgImage/width/#/PointingToDeclaration/coil-svg/coil3.svg/[non-android]-svg-image/width.html
+module:coil
+coil3
+module:coil-compose
+coil3.compose
+module:coil-compose-core
+coil3.compose
+module:coil-core
+coil3
+coil3.annotation
+coil3.decode
+coil3.disk
+coil3.fetch
+coil3.intercept
+coil3.key
+coil3.map
+coil3.memory
+coil3.request
+coil3.size
+coil3.target
+coil3.transform
+coil3.transition
+coil3.util
+module:coil-gif
+coil3.gif
+module:coil-network-cache-control
+coil3.network.cachecontrol
+module:coil-network-core
+coil3.network
+module:coil-network-ktor2
+coil3.network.ktor2
+module:coil-network-ktor3
+coil3.network.ktor3
+module:coil-network-okhttp
+coil3.network.okhttp
+module:coil-svg
+coil3.svg
+module:coil-test
+coil3.test
+module:coil-video
+coil3.video
