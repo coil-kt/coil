@@ -1,6 +1,9 @@
 package coil3.compose
 
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.View
+import android.widget.LinearLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsAtLeast
@@ -36,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.BitmapImage
+import coil3.ColorImage
 import coil3.EventListener
 import coil3.Extras
 import coil3.ImageLoader
@@ -524,6 +531,69 @@ class AsyncImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.red_rectangle)
+    }
+
+    @Test
+    fun previewMultipleCompositionRoots() {
+        val previewHandler = AsyncImagePreviewHandler {
+            ColorImage(Color.Red.toArgb(), width = 100, height = 100)
+        }
+
+        composeTestRule.runOnUiThread {
+            val activity = composeTestRule.activity
+            val container = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            }
+
+            repeat(3) { index ->
+                container.addView(
+                    ComposeView(activity).apply {
+                        layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                        setContent {
+                            CompositionLocalProvider(LocalInspectionMode provides true) {
+                                CompositionLocalProvider(
+                                    LocalAsyncImagePreviewHandler provides previewHandler,
+                                ) {
+                                    val painter = rememberAsyncImagePainter(
+                                        model = "https://example.com/image",
+                                        imageLoader = imageLoader,
+                                    )
+                                    val state by painter.state.collectAsState()
+
+                                    if (state is State.Success) {
+                                        Image(
+                                            painter = painter,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(64.dp)
+                                                .testTag("preview_success_$index"),
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(64.dp)
+                                                .testTag("preview_loading_$index"),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
+                )
+            }
+
+            activity.setContentView(container)
+        }
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(0, requestTracker.startedRequests)
+        repeat(3) { index ->
+            composeTestRule.onNodeWithTag("preview_success_$index")
+                .assertExists()
+                .assertIsDisplayed()
+        }
     }
 
     @Test
