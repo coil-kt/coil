@@ -1,4 +1,5 @@
 import coil3.addAllMultiplatformTargets
+import coil3.composeDesktopCurrentOsDependency
 import coil3.multiplatformAndroidLibrary
 
 plugins {
@@ -25,12 +26,12 @@ kotlin {
             implementation(libs.roborazzi.compose)
             implementation(libs.roborazzi.core)
             implementation(libs.roborazzi.junit)
-            implementation(compose.desktop.uiTestJUnit4)
+            implementation(libs.compose.ui.test.junit4)
         }
         jvmTest.dependencies {
             implementation(libs.roborazzi.compose.desktop)
-            implementation(compose.desktop.currentOs)
-            implementation(compose.desktop.uiTestJUnit4)
+            implementation(composeDesktopCurrentOsDependency())
+            implementation(libs.compose.ui.test.junit4)
         }
     }
 }
