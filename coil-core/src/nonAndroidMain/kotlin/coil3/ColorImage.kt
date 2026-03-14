@@ -2,6 +2,7 @@ package coil3
 
 import coil3.annotation.Poko
 import org.jetbrains.skia.Paint
+import org.jetbrains.skia.Rect
 
 @Poko
 actual class ColorImage actual constructor(
@@ -12,6 +13,7 @@ actual class ColorImage actual constructor(
     actual override val shareable: Boolean,
 ) : Image {
     private var lazyPaint: Paint? = null
+    private var lazyRect: Rect? = null
 
     actual override fun draw(canvas: Canvas) {
         val paint = lazyPaint ?: run {
@@ -20,7 +22,11 @@ actual class ColorImage actual constructor(
                 .also { lazyPaint = it }
         }
         if (width >= 0 && height >= 0) {
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+            val rect = lazyRect ?: run {
+                Rect.makeWH(width.toFloat(), height.toFloat())
+                    .also { lazyRect = it }
+            }
+            canvas.drawRect(rect, paint)
         } else {
             canvas.drawPaint(paint)
         }
