@@ -152,7 +152,7 @@ fun Project.configureAbiValidation() {
         val kotlinExtension = extensions.findByType<KotlinProjectExtension>() ?: return@afterEvaluate
 
         fun AbiValidationVariantSpec.configureVariant() = filters {
-            excluded {
+            exclude {
                 annotatedWith.add("coil3.annotation.InternalCoilApi")
             }
         }
