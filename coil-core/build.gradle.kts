@@ -74,7 +74,6 @@ kotlin {
 baselineProfile {
     mergeIntoMain = true
     saveInSrc = true
-    baselineProfileOutputDir = "."
     filter {
         include("coil3.**")
         exclude("coil3.compose.**")
