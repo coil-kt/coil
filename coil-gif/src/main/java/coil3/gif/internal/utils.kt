@@ -22,7 +22,6 @@ internal val PixelOpacity.flag: Int
         PixelOpacity.OPAQUE -> PixelFormat.OPAQUE
     }
 
-@RequiresApi(23)
 internal fun animatable2CallbackOf(
     onStart: (() -> Unit)?,
     onEnd: (() -> Unit)?,

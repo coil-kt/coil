@@ -1,10 +1,8 @@
 package coil3.video.internal
 
 import android.media.MediaDataSource
-import androidx.annotation.RequiresApi
 import okio.FileHandle
 
-@RequiresApi(23)
 internal class FileHandleMediaDataSource(
     private val handle: FileHandle,
 ) : MediaDataSource() {
