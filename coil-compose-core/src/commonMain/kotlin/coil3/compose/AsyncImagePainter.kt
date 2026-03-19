@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
@@ -137,13 +138,37 @@ private fun rememberAsyncImagePainter(
     validateRequest(request)
 
     val input = Input(state.imageLoader, request, state.modelEqualityDelegate)
-    val painter = remember { AsyncImagePainter(input) }
+    val previewHandler = previewHandler()
+    val painter = if (previewHandler != null) {
+        remember(input, previewHandler, contentScale, filterQuality) {
+            val previewRequest = request.newBuilder()
+                .apply {
+                    if (request.defined.sizeResolver == null) {
+                        size(SizeResolver.ORIGINAL)
+                    }
+                    if (request.defined.scale == null) {
+                        scale(contentScale.toScale())
+                    }
+                    if (request.defined.precision == null) {
+                        precision(Precision.INEXACT)
+                    }
+                    coroutineContext(EmptyCoroutineContext)
+                }
+                .build()
+            val previewState = runBlocking {
+                previewHandler.handle(state.imageLoader, previewRequest)
+            }
+            AsyncImagePainter(input, previewState)
+        }
+    } else {
+        remember { AsyncImagePainter(input) }
+    }
     painter.scope = rememberCoroutineScope()
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
     painter.filterQuality = filterQuality
-    painter.previewHandler = previewHandler()
+    painter.previewHandler = previewHandler
     painter._input = input
     return painter
 }
@@ -154,8 +179,9 @@ private fun rememberAsyncImagePainter(
 @Stable
 class AsyncImagePainter internal constructor(
     input: Input,
+    initialState: State = State.Empty,
 ) : Painter(), RememberObserver {
-    private var painter: Painter? by mutableStateOf(null)
+    private var painter: Painter? by mutableStateOf(initialState.painter)
     private var alpha: Float = DefaultAlpha
     private var colorFilter: ColorFilter? = null
 
@@ -196,7 +222,7 @@ class AsyncImagePainter internal constructor(
     private val inputFlow: MutableStateFlow<Input> = MutableStateFlow(input)
     val input: StateFlow<Input> = inputFlow.asStateFlow()
 
-    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(State.Empty)
+    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(initialState)
     val state: StateFlow<State> = stateFlow.asStateFlow()
 
     override val intrinsicSize: Size
@@ -219,7 +245,11 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
-        launchJob()
+        if (previewHandler != null && stateFlow.value !is State.Empty) {
+            onState?.invoke(stateFlow.value)
+        } else {
+            launchJob()
+        }
         isRemembered = true
     }
 
