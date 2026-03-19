@@ -97,6 +97,7 @@ internal class AndroidRequestService(
             request.scale,
             request.precision,
             request.diskCacheKey,
+            request.diskCacheKeyExtras,
             request.fileSystem,
             request.memoryCachePolicy,
             request.diskCachePolicy,
