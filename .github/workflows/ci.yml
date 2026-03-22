@@ -198,7 +198,9 @@ jobs:
                   python-version: '3.x'
 
             - name: Deploy docs
+              # Place resource restrictions on this task so it doesn't crash.
               run: |
+                  GRADLE_ARGS=(--no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g" -Pkotlin.native.jvmArgs=-Xmx4g)
                   git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
                   pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
                   ./deploy_docs.sh
