@@ -222,6 +222,18 @@ class UriTest {
     }
 
     @Test
+    fun windowsUncPath() {
+        val uri = "\\\\192.168.31.68\\Photos\\sample.jpeg".toUri(separator = "\\")
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals("//192.168.31.68/Photos/sample.jpeg", uri.path)
+        assertEquals("\\\\192.168.31.68\\Photos\\sample.jpeg", uri.filePath)
+        assertEquals(listOf("192.168.31.68", "Photos", "sample.jpeg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
     fun multipleSchemeSegments() {
         // This format is used for Compose multiplatform resources on Android/JVM.
         val uri = "jar:file:/outer/path/test.apk!/internal/path/1.png".toUri()

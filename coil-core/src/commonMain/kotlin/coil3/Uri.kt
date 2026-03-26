@@ -169,11 +169,16 @@ val Uri.pathSegments: List<String>
  */
 val Uri.filePath: String?
     get() {
+        val path = path ?: return null
         val pathSegments = pathSegments
         if (pathSegments.isEmpty()) {
             return null
         } else {
-            val prefix = if (path!!.startsWith(separator)) separator else ""
+            val prefix = when {
+                path.startsWith("//") && separator != "/" -> separator + separator
+                path.startsWith("/") && pathSegments.firstOrNull()?.endsWith(':') != true -> separator
+                else -> ""
+            }
             return pathSegments.joinToString(prefix = prefix, separator = separator)
         }
     }
