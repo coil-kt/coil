@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.util.trace
 import coil3.Image
 import coil3.ImageLoader
@@ -179,6 +180,7 @@ class AsyncImagePainter internal constructor(
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
+    internal var alignment: Alignment = Alignment.Center
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
 
@@ -309,7 +311,7 @@ class AsyncImagePainter internal constructor(
         val previous = stateFlow.value
         val current = transform(state)
         stateFlow.value = current
-        painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
+        painter = maybeNewCrossfadePainter(previous, current, contentScale, alignment) ?: current.painter
 
         // Manually forget and remember the old/new painters.
         if (previous.painter !== current.painter) {
@@ -418,4 +420,5 @@ internal expect fun maybeNewCrossfadePainter(
     previous: State,
     current: State,
     contentScale: ContentScale,
+    alignment: Alignment,
 ): CrossfadePainter?
