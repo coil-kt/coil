@@ -1,7 +1,7 @@
 package coil3.test.composeuimultiplatform
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.test.runDesktopComposeUiTest
 import coil3.Image
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
@@ -36,7 +36,7 @@ class ComposeUiResourcesTest {
     private fun testComposeUiResource(
         uri: String,
         assert: Image.() -> Unit,
-    ) = runComposeUiTest {
+    ) = runDesktopComposeUiTest {
         val imageLoader = ImageLoader(context)
         val request = ImageRequest.Builder(context)
             .data(uri)
