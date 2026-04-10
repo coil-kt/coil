@@ -58,7 +58,7 @@ jobs:
 
     unit-tests-macos:
         name: Unit tests (macOS)
-        runs-on: macos-latest
+        runs-on: macos-26
         timeout-minutes: 120
         steps:
             - uses: actions/checkout@v6
@@ -140,7 +140,7 @@ jobs:
 
     build-samples-macos:
         name: Build samples (macOS)
-        runs-on: macos-latest
+        runs-on: macos-26
         timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
