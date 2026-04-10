@@ -1,7 +1,7 @@
 package coil3.test.composeuimultiplatform
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runDesktopComposeUiTest
+import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import coil3.Image
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
