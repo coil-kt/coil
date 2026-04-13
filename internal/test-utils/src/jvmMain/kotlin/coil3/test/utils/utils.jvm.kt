@@ -22,18 +22,18 @@ actual fun decodeBitmapResource(
             bitmap.allocN32Pixels(image.width, image.height)
             Canvas(bitmap).use { canvas ->
                 canvas.drawImageRect(
-                    image,
-                    0f,
-                    0f,
-                    image.width.toFloat(),
-                    image.height.toFloat(),
-                    0f,
-                    0f,
-                    image.width.toFloat(),
-                    image.height.toFloat(),
-                    SamplingMode.DEFAULT,
-                    null,
-                    false,
+                    image = image,
+                    srcLeft = 0f,
+                    srcTop = 0f,
+                    srcRight = image.width.toFloat(),
+                    srcBottom = image.height.toFloat(),
+                    dstLeft = 0f,
+                    dstTop = 0f,
+                    dstRight = image.width.toFloat(),
+                    dstBottom = image.height.toFloat(),
+                    samplingMode = SamplingMode.DEFAULT,
+                    paint = null,
+                    strict = false,
                 )
             }
             return bitmap

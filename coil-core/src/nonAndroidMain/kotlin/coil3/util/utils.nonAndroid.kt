@@ -55,18 +55,18 @@ internal fun Bitmap.Companion.makeFromImage(
     bitmap.allocN32Pixels(outWidth, outHeight)
     Canvas(bitmap).use { canvas ->
         canvas.drawImageRect(
-            image,
-            0f,
-            0f,
-            srcWidth.toFloat(),
-            srcHeight.toFloat(),
-            0f,
-            0f,
-            outWidth.toFloat(),
-            outHeight.toFloat(),
-            SamplingMode.DEFAULT,
-            null,
-            false,
+            image = image,
+            srcLeft = 0f,
+            srcTop = 0f,
+            srcRight = srcWidth.toFloat(),
+            srcBottom = srcHeight.toFloat(),
+            dstLeft = 0f,
+            dstTop = 0f,
+            dstRight = outWidth.toFloat(),
+            dstBottom = outHeight.toFloat(),
+            samplingMode = SamplingMode.DEFAULT,
+            paint = null,
+            strict = false,
         )
     }
     return bitmap
