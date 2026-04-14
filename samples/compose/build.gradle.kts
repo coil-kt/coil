@@ -62,7 +62,6 @@ kotlin {
     }
 
     arrayOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { target ->

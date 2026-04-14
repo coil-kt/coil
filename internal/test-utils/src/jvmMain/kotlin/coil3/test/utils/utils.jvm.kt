@@ -6,7 +6,7 @@ import okio.buffer
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Image
-import org.jetbrains.skia.Rect
+import org.jetbrains.skia.SamplingMode
 import org.jetbrains.skia.impl.use
 
 actual fun decodeBitmapResource(
@@ -23,8 +23,17 @@ actual fun decodeBitmapResource(
             Canvas(bitmap).use { canvas ->
                 canvas.drawImageRect(
                     image = image,
-                    src = Rect.makeWH(image.width.toFloat(), image.height.toFloat()),
-                    dst = Rect.makeWH(image.width.toFloat(), image.height.toFloat()),
+                    srcLeft = 0f,
+                    srcTop = 0f,
+                    srcRight = image.width.toFloat(),
+                    srcBottom = image.height.toFloat(),
+                    dstLeft = 0f,
+                    dstTop = 0f,
+                    dstRight = image.width.toFloat(),
+                    dstBottom = image.height.toFloat(),
+                    samplingMode = SamplingMode.DEFAULT,
+                    paint = null,
+                    strict = false,
                 )
             }
             return bitmap

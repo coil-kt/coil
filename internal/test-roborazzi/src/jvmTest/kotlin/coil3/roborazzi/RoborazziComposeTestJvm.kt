@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.runDesktopComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -37,7 +37,7 @@ class RoborazziComposeTestJvm {
             .components { add(engine) }
             .build()
 
-        runDesktopComposeUiTest {
+        runComposeUiTest {
             setContent {
                 AsyncImage(
                     model = url,
@@ -65,7 +65,7 @@ class RoborazziComposeTestJvm {
             .components { add(engine) }
             .build()
 
-        runDesktopComposeUiTest {
+        runComposeUiTest {
             setContent {
                 Image(
                     painter = rememberAsyncImagePainter(

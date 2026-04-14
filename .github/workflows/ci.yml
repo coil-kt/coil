@@ -52,14 +52,13 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  cache-cleanup: true
 
             - name: Unit tests
               run: ./test.sh --skip-checks --skip-instrumentation-tests
 
     unit-tests-macos:
         name: Unit tests (macOS)
-        runs-on: macos-latest
+        runs-on: macos-26
         timeout-minutes: 120
         steps:
             - uses: actions/checkout@v6
@@ -72,7 +71,6 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  cache-cleanup: true
 
             - name: Unit tests
               run: ./gradlew iosSimulatorArm64Test macosArm64Test
@@ -96,7 +94,6 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
@@ -134,7 +131,6 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  cache-cleanup: true
 
             - name: Build Compose and View samples
               # Place resource restrictions on this task so it doesn't crash.
@@ -144,7 +140,7 @@ jobs:
 
     build-samples-macos:
         name: Build samples (macOS)
-        runs-on: macos-latest
+        runs-on: macos-26
         timeout-minutes: 60
         steps:
             - uses: actions/checkout@v6
@@ -157,14 +153,13 @@ jobs:
               timeout-minutes: 5
               with:
                   cache-overwrite-existing: true
-                  cache-cleanup: true
 
             - name: Build iOS sample
-              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' ARCHS=arm64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
     deploy-snapshot:
         name: Deploy snapshot
-        runs-on: macos-latest
+        runs-on: macos-26
         timeout-minutes: 180
         if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
         needs: [checks, unit-tests, unit-tests-macos, instrumentation-tests, build-samples, build-samples-macos]
