@@ -279,7 +279,17 @@ class NetworkFetcher(
     }
 
     private val diskCacheKey: String
-        get() = options.diskCacheKey ?: url
+        get() {
+            val base = options.diskCacheKey ?: url
+            val extras = options.diskCacheKeyExtras
+            return if (extras.isEmpty()) {
+                base
+            } else {
+                base + extras.entries
+                    .sortedBy { it.key }
+                    .joinToString(prefix = "#", separator = "&") { "${it.key}=${it.value}" }
+            }
+        }
 
     private val fileSystem: FileSystem
         get() = diskCache.value?.fileSystem ?: options.fileSystem
