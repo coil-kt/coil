@@ -1,14 +1,16 @@
 #!/bin/bash
 set -e
 
+GRADLE_ARGS=("$@")
+
 # Build the Compose WASM sample.
-./gradlew samples:compose:wasmJsBrowserDistribution
+./gradlew "${GRADLE_ARGS[@]}" samples:compose:wasmJsBrowserDistribution
 
 # Copy outside files into the docs folder.
 cp -R samples/compose/build/dist/wasmJs/productionExecutable docs/sample
 
 # Build the Dokka docs.
-./assemble_docs.sh
+./assemble_docs.sh "${GRADLE_ARGS[@]}"
 
 # Copy outside files into the docs folder.
 sed -e '/full documentation here/ { N; d; }' < README.md > docs/index.md
