@@ -204,6 +204,76 @@ class NetworkFetcherTest : RobolectricTest() {
         fileSystem.checkNoOpenFiles()
     }
 
+    @Test
+    fun cached404IsRefreshedWhenCacheStrategyRequestsNewRequest() = runTestAsync {
+        val url = "https://example.com/cached-404-refresh.jpg"
+        val expectedSize = 1_000
+
+        val fileSystem = FakeFileSystem()
+        val diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
+            .build()
+
+        // Pre-populate the disk cache with a cached 404 response.
+        val editor = diskCache.openEditor(url)!!
+        fileSystem.write(editor.metadata) {
+            CacheNetworkResponse.writeTo(NetworkResponse(code = 404), this)
+        }
+        fileSystem.write(editor.data) {
+            write(ByteArray(32))
+        }
+        editor.commit()
+
+        val networkClient = FakeNetworkClient(
+            respond = {
+                NetworkResponse(
+                    body = NetworkResponseBody(
+                        source = Buffer().apply { write(ByteArray(expectedSize)) },
+                    ),
+                )
+            },
+        )
+
+        // Custom strategy that always asks for a fresh network request, simulating an expired
+        // cached response (similar to what `CacheControlCacheStrategy` does when a cached
+        // failure has become stale).
+        val refreshingStrategy = object : CacheStrategy {
+            override suspend fun read(
+                cacheResponse: NetworkResponse,
+                networkRequest: NetworkRequest,
+                options: Options,
+            ) = CacheStrategy.ReadResult(networkRequest)
+
+            override suspend fun write(
+                cacheResponse: NetworkResponse?,
+                networkRequest: NetworkRequest,
+                networkResponse: NetworkResponse,
+                options: Options,
+            ) = CacheStrategy.WriteResult(networkResponse)
+        }
+
+        val fetcher = NetworkFetcher(
+            url = url,
+            options = Options(context),
+            networkClient = lazyOf(networkClient),
+            diskCache = lazyOf(diskCache),
+            cacheStrategy = lazyOf(refreshingStrategy),
+            connectivityChecker = lazyOf(ConnectivityChecker.ONLINE),
+            concurrentRequestStrategy = lazyOf(ConcurrentRequestStrategy.UNCOORDINATED),
+        )
+
+        // The cached 404 should no longer short-circuit with `HttpException` when the
+        // cache strategy opts to refresh; a network request should be issued instead.
+        val result = fetcher.fetch()
+        assertIs<SourceFetchResult>(result)
+        assertEquals(1, networkClient.requests.size)
+
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
+    }
+
     class FakeNetworkClient(
         private val respond: suspend (NetworkRequest) -> NetworkResponse,
     ) : NetworkClient {

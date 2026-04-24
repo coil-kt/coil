@@ -81,10 +81,13 @@ class NetworkFetcher(
                 // Return the image from the disk cache if the cache strategy agrees.
                 cacheResponse = snapshot.toNetworkResponseOrNull()
                 if (cacheResponse != null) {
-                    throwIfFailureResponseCode(cacheResponse)
-
                     readResult = cacheStrategy.value.read(cacheResponse, newRequest(), options)
                     if (readResult.response != null) {
+                        // Only enforce the failure code check when the strategy opts to use the
+                        // cached response. This lets cache-aware strategies (e.g. cache-control)
+                        // issue a fresh request when a cached failure (e.g. 404) has expired.
+                        throwIfFailureResponseCode(readResult.response)
+
                         return SourceFetchResult(
                             source = snapshot.toImageSource(),
                             mimeType = getMimeType(url, readResult.response.headers[CONTENT_TYPE]),
