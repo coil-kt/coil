@@ -89,7 +89,7 @@ fun Project.androidLibrary(
     buildFeatures {
         buildConfig = config
     }
-    sourceSets["main"].resources {
+    (this as CommonExtension).sourceSets["main"].resources {
         srcDirs("src/commonMain/resources", "src/jvmCommonMain/resources")
     }
     if (project.name in publicModules) {
