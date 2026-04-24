@@ -9,6 +9,8 @@ androidApplication(name = "sample.view") {
         release {
             isDebuggable = false
             isMinifyEnabled = false
+            // Necessary to support baseline profile generation.
+            //noinspection NotShrinkingResources
             isShrinkResources = false
             signingConfig = signingConfigs["debug"]
         }

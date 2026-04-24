@@ -14,6 +14,8 @@ androidApplication(name = "sample.compose.android") {
         release {
             isDebuggable = false
             isMinifyEnabled = false
+            // Necessary to support baseline profile generation.
+            //noinspection NotShrinkingResources
             isShrinkResources = false
             signingConfig = signingConfigs["debug"]
         }
