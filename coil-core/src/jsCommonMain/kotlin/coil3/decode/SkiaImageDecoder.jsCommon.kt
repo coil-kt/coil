@@ -80,6 +80,7 @@ internal fun getJpegSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
     if (bytes.size < 10) return null
     if (int16(bytes[0], bytes[1]) == 0xFFD8u) {
         var offset = 2
+        var orientation = 0
         while (offset < bytes.size - 6) {
             val marker = int16(bytes[offset], bytes[offset + 1])
             offset += 2
@@ -87,14 +88,91 @@ internal fun getJpegSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
             if (marker in 0xFFC0u..0xFFCFu && marker != 0xFFC4u && marker != 0xFFC8u && marker != 0xFFCCu) {
                 val height = int16(bytes[offset + 3], bytes[offset + 4])
                 val width = int16(bytes[offset + 5], bytes[offset + 6])
-                return width.toInt() to height.toInt()
+                return if (orientation.isSwapped) {
+                    height.toInt() to width.toInt()
+                } else {
+                    width.toInt() to height.toInt()
+                }
             }
 
             val segmentLength = int16(bytes[offset], bytes[offset + 1])
+            if (marker == 0xFFE1u) {
+                val exifOrientation = getExifOrientation(
+                    bytes = bytes,
+                    offset = offset + 2,
+                    length = segmentLength.toInt() - 2,
+                )
+                if (exifOrientation > 0) {
+                    orientation = exifOrientation
+                }
+            }
             offset += segmentLength.toInt()
         }
     }
     return null
+}
+
+private val Int.isSwapped: Boolean
+    get() = this in 5..8
+
+private fun getExifOrientation(
+    bytes: ByteArray,
+    offset: Int,
+    length: Int,
+): Int {
+    if (length < 14 || offset < 0 || offset + length > bytes.size) return 0
+    if (bytes[offset + 0].asInt() != 0x45u || // E
+        bytes[offset + 1].asInt() != 0x78u || // x
+        bytes[offset + 2].asInt() != 0x69u || // i
+        bytes[offset + 3].asInt() != 0x66u || // f
+        bytes[offset + 4].asInt() != 0u ||
+        bytes[offset + 5].asInt() != 0u
+    ) {
+        return 0
+    }
+
+    val tiffOffset = offset + 6
+    val isLittleEndian = when (int16(bytes[tiffOffset], bytes[tiffOffset + 1])) {
+        0x4949u -> true
+        0x4D4Du -> false
+        else -> return 0
+    }
+    val read16 = if (isLittleEndian) ::int16LE else ::int16
+    val read32 = if (isLittleEndian) ::int32LE else ::int32
+    if (read16(bytes[tiffOffset + 2], bytes[tiffOffset + 3]) != 42u) return 0
+
+    val ifdOffset = read32(
+        bytes[tiffOffset + 4],
+        bytes[tiffOffset + 5],
+        bytes[tiffOffset + 6],
+        bytes[tiffOffset + 7],
+    ).toInt()
+    val ifdStart = tiffOffset + ifdOffset
+    if (ifdStart < tiffOffset || ifdStart + 2 > offset + length) return 0
+
+    val entryCount = read16(bytes[ifdStart], bytes[ifdStart + 1]).toInt()
+    var entryOffset = ifdStart + 2
+    repeat(entryCount) {
+        if (entryOffset + 12 > offset + length) return 0
+
+        val tag = read16(bytes[entryOffset], bytes[entryOffset + 1])
+        if (tag == 0x0112u) {
+            val type = read16(bytes[entryOffset + 2], bytes[entryOffset + 3])
+            val count = read32(
+                bytes[entryOffset + 4],
+                bytes[entryOffset + 5],
+                bytes[entryOffset + 6],
+                bytes[entryOffset + 7],
+            )
+            if (type == 3u && count == 1u) {
+                return read16(bytes[entryOffset + 8], bytes[entryOffset + 9]).toInt()
+            }
+            return 0
+        }
+
+        entryOffset += 12
+    }
+    return 0
 }
 
 internal fun getWebpSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {

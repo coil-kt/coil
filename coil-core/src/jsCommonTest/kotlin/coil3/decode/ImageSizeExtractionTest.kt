@@ -21,6 +21,31 @@ class ImageSizeExtractionTest {
             "2gAIAQIBAT8Q6VvS2QGL/8QAGhAAAwEAAwAAAAAAAAAAAAAAAAEhETFBUf/aAAgBAQABPxCvLSdjW8bD" +
             "41SmhXz6f//Z"
         ).decodeBase64()!!.toByteArray()
+    private val jpegWithExifOrientation6 = intArrayOf(
+        0xFF, 0xD8, // SOI.
+        0xFF, 0xE1, // APP1.
+        0x00, 0x22, // Segment length.
+        0x45, 0x78, 0x69, 0x66, 0x00, 0x00, // Exif header.
+        0x4D, 0x4D, // Big endian.
+        0x00, 0x2A, // TIFF magic number.
+        0x00, 0x00, 0x00, 0x08, // IFD0 offset.
+        0x00, 0x01, // Entry count.
+        0x01, 0x12, // Orientation tag.
+        0x00, 0x03, // SHORT.
+        0x00, 0x00, 0x00, 0x01, // Value count.
+        0x00, 0x06, 0x00, 0x00, // Orientation 6.
+        0x00, 0x00, 0x00, 0x00, // Next IFD offset.
+        0xFF, 0xC0, // SOF0.
+        0x00, 0x11, // Segment length.
+        0x08, // Precision.
+        0x00, 0x14, // Height.
+        0x00, 0x0A, // Width.
+        0x03, // Component count.
+        0x01, 0x11, 0x00,
+        0x02, 0x11, 0x00,
+        0x03, 0x11, 0x00,
+        0xFF, 0xD9, // EOI.
+    ).map { it.toByte() }.toByteArray()
     private val png = (
         "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8" +
             "YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAuIwAA" +
@@ -87,6 +112,7 @@ class ImageSizeExtractionTest {
         assertNull(getPngSizeOrNull(webp_VP8L))
         assertNull(getPngSizeOrNull(bmp))
         assertEquals(10 to 10, getJpegSizeOrNull(jpeg))
+        assertEquals(20 to 10, getJpegSizeOrNull(jpegWithExifOrientation6))
     }
 
     @Test
