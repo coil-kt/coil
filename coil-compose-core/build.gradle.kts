@@ -42,6 +42,7 @@ kotlin {
         getByName("androidDeviceTest") {
             dependencies {
                 implementation(projects.internal.testUtils)
+                implementation(projects.coilNetworkOkhttp)
                 implementation(libs.bundles.test.android)
                 implementation(libs.compose.ui.test.junit4)
             }

@@ -20,5 +20,12 @@ kotlin {
                 api(projects.coilComposeCore)
             }
         }
+        getByName("androidDeviceTest") {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(projects.coilNetworkOkhttp)
+                implementation(libs.bundles.test.android)
+            }
+        }
     }
 }
