@@ -33,6 +33,7 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size as CoilSize
 import coil3.size.SizeResolver
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineDispatcher
@@ -210,9 +211,8 @@ internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-@OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
-    get() = get(CoroutineDispatcher)
+    get() = get(ContinuationInterceptor) as? CoroutineDispatcher
 
 @ReadOnlyComposable
 @Composable

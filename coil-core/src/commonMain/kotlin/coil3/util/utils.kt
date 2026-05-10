@@ -14,6 +14,7 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import coil3.request.Options
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.reflect.KClass
@@ -128,6 +129,5 @@ internal expect class WeakReference<T : Any>(referred: T) {
 
 internal expect fun Image.prepareToDraw()
 
-@OptIn(ExperimentalStdlibApi::class)
 internal val CoroutineContext.dispatcher: CoroutineDispatcher?
-    get() = get(CoroutineDispatcher)
+    get() = get(ContinuationInterceptor) as? CoroutineDispatcher
