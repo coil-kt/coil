@@ -1,13 +1,16 @@
 package coil3.network.okhttp
 
-import coil3.fetch.SourceFetchResult
+import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.network.ConcurrentRequestStrategy
 import coil3.network.NetworkFetcher
+import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.test.utils.AbstractNetworkFetcherTest
 import coil3.test.utils.context
 import coil3.test.utils.runTestAsync
 import coil3.toUri
+import kotlin.coroutines.coroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -55,7 +58,8 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
     }
 
     @Test
-    fun interceptorHeadersAreSent() = runTestAsync {
+    @OptIn(ExperimentalCoilApi::class)
+    fun imageLoaderEnqueueSendsInterceptorHeaders() = runTestAsync {
         server.enqueue(MockResponse().setBody(Buffer().apply { write(ByteString.EMPTY) }))
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
@@ -66,16 +70,25 @@ class OkHttpNetworkFetcherTest : AbstractNetworkFetcherTest() {
                 chain.proceed(request)
             }
             .build()
-        val factory = OkHttpNetworkFetcherFactory(
-            callFactory = { client },
-            concurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
-        )
-        val fetcher = assertIs<NetworkFetcher>(
-            factory.create(url("image.png").toUri(), Options(context), imageLoader),
-        )
-
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-        result.source.close()
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(
+                    OkHttpNetworkFetcherFactory(
+                        callFactory = { client },
+                        concurrentRequestStrategy = { ConcurrentRequestStrategy.UNCOORDINATED },
+                    ),
+                )
+            }
+            .mainCoroutineContext(coroutineContext)
+            .build()
+        try {
+            val request = ImageRequest.Builder(context)
+                .data(url("image.png"))
+                .build()
+            imageLoader.enqueue(request).job.await()
+        } finally {
+            imageLoader.shutdown()
+        }
 
         val request = server.takeRequest()
         assertEquals("coil-test", request.headers["User-Agent"])
