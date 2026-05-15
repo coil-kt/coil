@@ -17,7 +17,7 @@ for arg in "$@"; do
 Usage: ./test.sh [options]
 
 Options:
-  --skip-checks                 Skip checkLegacyAbi and spotlessCheck.
+  --skip-checks                 Skip checkKotlinAbi and spotlessCheck.
   --skip-instrumentation-tests  Skip connectedDebugAndroidTest.
   --help, -h                    Show this help message.
 EOF
@@ -59,7 +59,7 @@ js_wasm_excluded_tasks=(
 
 if [[ "$skip_checks" != true ]]; then
     # Run separately to work around https://github.com/diffplug/spotless/issues/1572.
-    ./gradlew checkLegacyAbi spotlessCheck
+    ./gradlew checkKotlinAbi spotlessCheck
 fi
 
 # Run all non-JS/Wasm tests without a worker cap.
