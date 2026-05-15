@@ -75,7 +75,7 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "jetbrains-compose" }
 compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jetbrains-compose" }
 
-google-material = "com.google.android.material:material:1.13.0"
+google-material = "com.google.android.material:material:1.14.0"
 google-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.37.3"
 
 junit = "junit:junit:4.13.2"
