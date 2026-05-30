@@ -49,6 +49,11 @@ class Options(
     val diskCacheKey: String? = null,
 
     /**
+     * Extra values to be added to this image request's disk cache key.
+     */
+    val diskCacheKeyExtras: Map<String, String> = emptyMap(),
+
+    /**
      * The [FileSystem] that will be used to perform any disk read/write operations.
      */
     val fileSystem: FileSystem = defaultFileSystem(),
@@ -80,6 +85,7 @@ class Options(
         scale: Scale = this.scale,
         precision: Precision = this.precision,
         diskCacheKey: String? = this.diskCacheKey,
+        diskCacheKeyExtras: Map<String, String> = this.diskCacheKeyExtras,
         fileSystem: FileSystem = this.fileSystem,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
@@ -91,6 +97,7 @@ class Options(
         scale = scale,
         precision = precision,
         diskCacheKey = diskCacheKey,
+        diskCacheKeyExtras = diskCacheKeyExtras,
         fileSystem = fileSystem,
         memoryCachePolicy = memoryCachePolicy,
         diskCachePolicy = diskCachePolicy,

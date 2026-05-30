@@ -54,6 +54,9 @@ class ImageRequest private constructor(
     /** @see Builder.diskCacheKey */
     val diskCacheKey: String?,
 
+    /** @see Builder.diskCacheKeyExtra */
+    val diskCacheKeyExtras: Map<String, String>,
+
     /** @see Builder.fileSystem */
     val fileSystem: FileSystem,
 
@@ -315,6 +318,17 @@ class ImageRequest private constructor(
                 else -> throw AssertionError()
             } as MutableMap<String, String>
         private var diskCacheKey: String?
+        private var diskCacheKeyExtrasAreMutable = false
+        private var lazyDiskCacheKeyExtras: Any
+        private val diskCacheKeyExtras: MutableMap<String, String>
+            get() = when (val diskCacheKeyExtras = lazyDiskCacheKeyExtras) {
+                diskCacheKeyExtrasAreMutable -> diskCacheKeyExtras
+                is Map<*, *> -> diskCacheKeyExtras.toMutableMap().also {
+                    lazyDiskCacheKeyExtras = it
+                    diskCacheKeyExtrasAreMutable = true
+                }
+                else -> throw AssertionError()
+            } as MutableMap<String, String>
         private var fileSystem: FileSystem?
         private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         private var decoderFactory: Decoder.Factory?
@@ -348,6 +362,7 @@ class ImageRequest private constructor(
             memoryCacheKey = null
             lazyMemoryCacheKeyExtras = emptyMap<String, String>()
             diskCacheKey = null
+            lazyDiskCacheKeyExtras = emptyMap<String, String>()
             fileSystem = null
             fetcherFactory = null
             decoderFactory = null
@@ -377,6 +392,7 @@ class ImageRequest private constructor(
             memoryCacheKey = request.memoryCacheKey
             lazyMemoryCacheKeyExtras = request.memoryCacheKeyExtras
             diskCacheKey = request.diskCacheKey
+            lazyDiskCacheKeyExtras = request.diskCacheKeyExtras
             fileSystem = request.defined.fileSystem
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
@@ -468,6 +484,25 @@ class ImageRequest private constructor(
          */
         fun diskCacheKey(key: String?) = apply {
             this.diskCacheKey = key
+        }
+
+        /**
+         * Set extra values to be added to this image request's disk cache key.
+         */
+        fun diskCacheKeyExtras(extras: Map<String, String>) = apply {
+            this.lazyDiskCacheKeyExtras = extras.toMutableMap()
+            this.diskCacheKeyExtrasAreMutable = true
+        }
+
+        /**
+         * Set extra values to be added to this image request's disk cache key.
+         */
+        fun diskCacheKeyExtra(key: String, value: String?) = apply {
+            if (value != null) {
+                this.diskCacheKeyExtras[key] = value
+            } else {
+                this.diskCacheKeyExtras.remove(key)
+            }
         }
 
         /**
@@ -704,6 +739,11 @@ class ImageRequest private constructor(
                     else -> throw AssertionError()
                 } as Map<String, String>,
                 diskCacheKey = diskCacheKey,
+                diskCacheKeyExtras = when (val diskCacheKeyExtras = lazyDiskCacheKeyExtras) {
+                    diskCacheKeyExtrasAreMutable -> (diskCacheKeyExtras as MutableMap<*, *>).toImmutableMap()
+                    is Map<*, *> -> diskCacheKeyExtras
+                    else -> throw AssertionError()
+                } as Map<String, String>,
                 fileSystem = fileSystem ?: defaults.fileSystem,
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
