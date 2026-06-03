@@ -24,7 +24,7 @@ skiko = "0.144.6"
 [plugins]
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 baselineProfileConsumer = { id = "androidx.baselineprofile.consumer", version.ref = "androidx-benchmark" }
-poko = "dev.drewhamilton.poko:0.22.1"
+poko = "dev.drewhamilton.poko:0.23.0"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha15"
 spotless = "com.diffplug.spotless:8.6.0"
 
