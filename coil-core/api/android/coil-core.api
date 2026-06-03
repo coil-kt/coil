@@ -27,7 +27,6 @@ public final class coil3/ColorImage : coil3/Image {
 
 public final class coil3/ComponentRegistry {
 	public fun <init> ()V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDecoderFactories ()Ljava/util/List;
 	public final fun getFetcherFactories ()Ljava/util/List;
 	public final fun getInterceptors ()Ljava/util/List;
@@ -112,7 +111,6 @@ public final class coil3/EventListener$Factory$Companion {
 public final class coil3/Extras {
 	public static final field Companion Lcoil3/Extras$Companion;
 	public static final field EMPTY Lcoil3/Extras;
-	public synthetic fun <init> (Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun asMap ()Ljava/util/Map;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun get (Lcoil3/Extras$Key;)Ljava/lang/Object;
@@ -614,7 +612,6 @@ public final class coil3/request/ErrorResult : coil3/request/ImageResult {
 }
 
 public final class coil3/request/ImageRequest {
-	public synthetic fun <init> (Landroid/content/Context;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun error ()Lcoil3/Image;
 	public final fun fallback ()Lcoil3/Image;

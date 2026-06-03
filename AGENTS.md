@@ -9,7 +9,7 @@ Most modules use source sets like `src/commonMain`, `src/commonTest`, `src/andro
 - `./gradlew spotlessCheck`: run Kotlin formatting/lint checks.
 - `./gradlew lint`: run Android lint checks.
 - `./gradlew checkKotlinAbi`: verify public API compatibility.
-- `./gradlew updateLegacyAbi`: refresh ABI baselines when API changes are intentional.
+- `./gradlew updateKotlinAbi`: refresh ABI baselines when API changes are intentional.
 - `./test.sh`: full local validation used by maintainers (style + unit/instrumentation/screenshot tests).
 - `./gradlew allTests testDebugUnitTest`: run core unit tests quickly.
 - `./gradlew connectedDebugAndroidTest`: run Android instrumentation tests (emulator/device required).
