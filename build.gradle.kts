@@ -8,9 +8,7 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
+import org.jetbrains.kotlin.gradle.dsl.abi.BinariesSource
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -133,7 +131,7 @@ allprojects {
 
     if (project.name in publicModules) {
         configureAbiValidation()
-        configureAndroidLegacyAbiValidation()
+        configureAndroidAbiValidation()
     }
 
     // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
@@ -151,38 +149,69 @@ fun Project.configureAbiValidation() {
     afterEvaluate {
         val kotlinExtension = extensions.findByType<KotlinProjectExtension>() ?: return@afterEvaluate
 
-        fun AbiValidationVariantSpec.configureVariant() = filters {
-            exclude {
-                annotatedWith.add("coil3.annotation.InternalCoilApi")
+        kotlinExtension.abiValidation {
+            referenceDumpDir.set(layout.projectDirectory.dir("api"))
+            filters {
+                exclude {
+                    annotatedWith.add("coil3.annotation.InternalCoilApi")
+                }
             }
-        }
-
-        // Unfortunately the 'enabled' property doesn't share a common interface.
-        kotlinExtension.extensions.findByType<AbiValidationExtension>()?.apply {
-            enabled.set(true)
-            configureVariant()
-        }
-        kotlinExtension.extensions.findByType<AbiValidationMultiplatformExtension>()?.apply {
-            enabled.set(true)
-            configureVariant()
+            binariesSource.set(BinariesSource.MAIN_COMPILATION)
         }
     }
 }
 
-fun Project.configureAndroidLegacyAbiValidation() {
+fun Project.configureAndroidAbiValidation() {
+    plugins.withId("com.android.library") {
+        afterEvaluate {
+            configureAndroidAbiValidation(
+                subdirectoryName = "",
+                dependencyTaskNames = listOf(
+                    "compileReleaseKotlin",
+                    "compileReleaseJavaWithJavac",
+                ),
+                classfiles = files(
+                    layout.buildDirectory.dir("intermediates/built_in_kotlinc/release/compileReleaseKotlin/classes"),
+                    layout.buildDirectory.dir("intermediates/javac/release/compileReleaseJavaWithJavac/classes"),
+                ),
+            )
+        }
+    }
+
     plugins.withId("com.android.kotlin.multiplatform.library") {
         afterEvaluate {
-            tasks
-                .matching { it.name == "dumpLegacyAbi" || it.name.startsWith("dumpLegacyAbi") }
-                .configureEach {
-                    tasks.findByName("compileAndroidMain")?.let { dependsOn(it) }
-                    configureAndroidLegacyAbiDumpInput(this@configureAndroidLegacyAbiValidation)
-                }
+            configureAndroidAbiValidation(
+                subdirectoryName = "android",
+                dependencyTaskNames = listOf(
+                    "compileAndroidMain",
+                    "compileAndroidMainJavaWithJavac",
+                ),
+                classfiles = files(
+                    layout.buildDirectory.dir("classes/kotlin/android/main"),
+                    layout.buildDirectory.dir("classes/java/android/main"),
+                    layout.buildDirectory.dir("intermediates/javac/androidMain/classes"),
+                ),
+            )
         }
     }
 }
 
-private fun Task.configureAndroidLegacyAbiDumpInput(project: Project) {
+private fun Project.configureAndroidAbiValidation(
+    subdirectoryName: String,
+    dependencyTaskNames: List<String>,
+    classfiles: FileCollection,
+) {
+    val dependencyTasks = tasks.matching { it.name in dependencyTaskNames }
+    tasks.matching { it.name == "internalDumpKotlinAbi" }.configureEach {
+        dependsOn(dependencyTasks)
+        configureKotlinAbiDumpInput(subdirectoryName, classfiles)
+    }
+}
+
+private fun Task.configureKotlinAbiDumpInput(
+    subdirectoryName: String,
+    classfiles: FileCollection,
+) {
     val dumpTaskClass = javaClass
     val getJvm = runCatching { dumpTaskClass.getMethod("getJvm") }.getOrNull() ?: return
     val jvmProperty = getJvm.invoke(this)
@@ -202,23 +231,16 @@ private fun Task.configureAndroidLegacyAbiDumpInput(project: Project) {
     val entryClass = existingEntries.firstOrNull()?.javaClass
         ?: runCatching {
             dumpTaskClass.classLoader.loadClass(
-                $$"org.jetbrains.kotlin.gradle.tasks.abi.KotlinLegacyAbiDumpTaskImpl$JvmTargetInfo",
+                $$"org.jetbrains.kotlin.gradle.tasks.abi.KotlinAbiDumpTaskImpl$JvmTargetInfo",
             )
         }.getOrNull()
         ?: return
 
     val getSubdirectoryName = entryClass.getMethod("getSubdirectoryName")
-    if (existingEntries.any { getSubdirectoryName.invoke(it) == "android" }) return
+    if (existingEntries.any { getSubdirectoryName.invoke(it) == subdirectoryName }) return
 
     val constructor = entryClass.getConstructor(String::class.java, FileCollection::class.java)
-    val androidClasses = project.files(
-        project.layout.buildDirectory.dir("classes/kotlin/android/main"),
-        project.layout.buildDirectory.dir("classes/java/android/main"),
-        project.layout.buildDirectory.dir("intermediates/javac/androidMain/classes"),
-    )
-    val androidEntry = constructor.newInstance("android", androidClasses)
-
-    existingEntries.add(androidEntry)
+    existingEntries.add(constructor.newInstance(subdirectoryName, classfiles))
     set.invoke(jvmProperty, existingEntries)
 }
 

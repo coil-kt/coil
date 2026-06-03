@@ -105,7 +105,6 @@ public final class coil3/network/NetworkFetcher$Factory : coil3/fetch/Fetcher$Fa
 public final class coil3/network/NetworkHeaders {
 	public static final field Companion Lcoil3/network/NetworkHeaders$Companion;
 	public static final field EMPTY Lcoil3/network/NetworkHeaders;
-	public synthetic fun <init> (Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun asMap ()Ljava/util/Map;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun get (Ljava/lang/String;)Ljava/lang/String;
