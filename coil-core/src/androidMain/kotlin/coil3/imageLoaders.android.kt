@@ -3,7 +3,6 @@ package coil3
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import androidx.lifecycle.Lifecycle
-import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.decode.Decoder
@@ -74,7 +73,6 @@ private val imageDecoderEnabledKey = Extras.Key(default = true)
  * max size when the app is backgrounded. Setting this option to 0.0 will free all strong references
  * to the images in the memory cache when the app is backgrounded.
  */
-@ExperimentalCoilApi
 fun ImageLoader.Builder.memoryCacheMaxSizePercentWhileInBackground(percent: Double) = apply {
     require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
     extras[memoryCacheMaxSizePercentWhileInBackgroundKey] = percent
