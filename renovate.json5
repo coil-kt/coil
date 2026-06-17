@@ -5,4 +5,12 @@
     ],
     "automerge": false,
     "dependencyDashboard": false,
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "org.jetbrains.skiko:skiko",
+            ],
+            "enabled": false,
+        },
+    ],
 }
