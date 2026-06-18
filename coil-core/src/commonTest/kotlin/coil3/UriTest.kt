@@ -235,6 +235,29 @@ class UriTest {
     }
 
     @Test
+    fun jarFileUriWithWindowsDriveLetter() {
+        // Compose Multiplatform resources on Windows (e.g. Res.getUri) produce a jar URL
+        // whose path contains a drive-letter colon. The drive colon must not be parsed as
+        // another scheme segment. Regression test for https://github.com/coil-kt/coil/issues/2833
+        val uri = "jar:file:/C:/Users/me/app.jar!/composeResources/img.png".toUri()
+        assertEquals("jar:file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/C:/Users/me/app.jar!/composeResources/img.png", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun fileUriWithWindowsDriveLetter() {
+        val uri = "file:/C:/Users/me/image.png".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/C:/Users/me/image.png", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
     fun ipv6() {
         val uri = "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/".toUri()
         assertEquals("http", uri.scheme)
