@@ -82,7 +82,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                api-level: [23, 26, 31]
+                api-level: [23, 26, 31, 36]
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-java@v5
