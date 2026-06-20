@@ -26,7 +26,7 @@ AsyncImage(
     contentDescription = null,
 )
 ```
-Coil haqidagi [to‘liq dokumentatsiya]((https://coil-kt.github.io/coil/getting_started/))ni ko'rib chiqing.
+Coil haqidagi [to‘liq dokumentatsiya](https://coil-kt.github.io/coil/getting_started/)ni ko'rib chiqing.
 
 ## Litsenziya
 
