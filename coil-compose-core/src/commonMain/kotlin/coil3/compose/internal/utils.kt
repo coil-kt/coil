@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.fastCoerceIn
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImageModelEqualityDelegate
@@ -199,11 +200,12 @@ private fun Float.toDimension(): Dimension {
     return if (isFinite()) Dimension(roundToInt()) else Dimension.Undefined
 }
 
+// fastCoerceIn tolerates inverted constraints (min > max); coerceIn would throw. See #3459.
 internal fun Constraints.constrainWidth(width: Float) =
-    width.coerceIn(minWidth.toFloat(), maxWidth.toFloat())
+    width.fastCoerceIn(minWidth.toFloat(), maxWidth.toFloat())
 
 internal fun Constraints.constrainHeight(height: Float) =
-    height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
+    height.fastCoerceIn(minHeight.toFloat(), maxHeight.toFloat())
 
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
