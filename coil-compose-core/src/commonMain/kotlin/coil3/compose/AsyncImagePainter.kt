@@ -34,6 +34,7 @@ import coil3.compose.internal.requestOf
 import coil3.compose.internal.toScale
 import coil3.compose.internal.transformOf
 import coil3.compose.internal.validateRequest
+import coil3.decode.DataSource
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
@@ -419,3 +420,18 @@ internal expect fun maybeNewCrossfadePainter(
     current: State,
     contentScale: ContentScale,
 ): CrossfadePainter?
+
+/**
+ * Cache hits normally skip the crossfade, but [useExistingImageAsPlaceholder] opts into crossfading
+ * between consecutive images, cached ones included.
+ */
+internal fun crossfadeFromExistingImage(
+    previous: State,
+    result: ImageResult,
+): Boolean {
+    return result is SuccessResult &&
+        result.dataSource == DataSource.MEMORY_CACHE &&
+        result.request.useExistingImageAsPlaceholder &&
+        previous is State.Loading &&
+        previous.painter != null
+}
