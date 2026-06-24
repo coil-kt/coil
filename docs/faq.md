@@ -100,15 +100,7 @@ Then depend on the same artifacts with [the latest snapshot version](https://git
 
 ## How to I use Proguard with Coil?
 
-To use Proguard with Coil, add the following rules to your config:
-
-```
--keep class coil3.util.DecoderServiceLoaderTarget { *; }
--keep class coil3.util.FetcherServiceLoaderTarget { *; }
--keep class coil3.util.ServiceLoaderComponentRegistry { *; }
--keep class * implements coil3.util.DecoderServiceLoaderTarget { *; }
--keep class * implements coil3.util.FetcherServiceLoaderTarget { *; }
-```
+To use Proguard with Coil, [add these Proguard rules to your config](https://github.com/coil-kt/coil/blob/main/coil-core/src/jvmMain/resources/META-INF/proguard/proguard-rules.pro).
 
 You may also need to add custom rules for Ktor, OkHttp, and Coroutines.
 
