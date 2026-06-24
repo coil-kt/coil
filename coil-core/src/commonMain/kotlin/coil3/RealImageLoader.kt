@@ -30,7 +30,6 @@ import coil3.util.emoji
 import coil3.util.log
 import coil3.util.mapNotNullIndices
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -40,6 +39,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 
@@ -94,7 +94,7 @@ internal class RealImageLoader(
         // Wrap the request to manage its lifecycle.
         val requestDelegate = requestService.requestDelegate(
             request = initialRequest,
-            job = coroutineContext.job,
+            job = currentCoroutineContext().job,
             findLifecycle = type == REQUEST_TYPE_ENQUEUE,
         ).apply { assertActive() }
 
