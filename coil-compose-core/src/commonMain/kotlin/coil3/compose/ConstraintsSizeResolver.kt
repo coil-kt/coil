@@ -37,7 +37,7 @@ class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
         if (latestConstraints.isZero) {
             var continuation: Continuation<Unit>? = null
             try {
-                suspendCancellableCoroutine<Unit> {
+                suspendCancellableCoroutine {
                     continuation = it
                     continuations.add(it)
                 }

@@ -410,7 +410,7 @@ class DiskLruCacheTest {
                 |2
                 |
                 |CLEAN k1 1 1
-""".trimMargin(), // no trailing newline
+                """.trimMargin(), // no trailing newline
             )
         }
         createNewCache()
@@ -1655,7 +1655,7 @@ class DiskLruCacheTest {
                 |$valueCount
                 |$blank
                 |
-""".trimMargin(),
+                """.trimMargin(),
             )
             for (line in bodyLines) {
                 writeUtf8(line)
@@ -1794,11 +1794,11 @@ class DiskLruCacheTest {
         newSink(index).buffer().use { it.writeUtf8(value) }
     }
 
-    private fun DiskLruCache.Editor.newSink(index: Int) = fileSystem.sink(file(index))
+    private fun Editor.newSink(index: Int) = fileSystem.sink(file(index))
 
-    private fun DiskLruCache.Editor.newSource(index: Int) = fileSystem.source(file(index))
+    private fun Editor.newSource(index: Int) = fileSystem.source(file(index))
 
-    private fun DiskLruCache.Snapshot.getSource(index: Int) = fileSystem.source(file(index))
+    private fun Snapshot.getSource(index: Int) = fileSystem.source(file(index))
 
     private fun DiskLruCache.isClosed(): Boolean {
         try {

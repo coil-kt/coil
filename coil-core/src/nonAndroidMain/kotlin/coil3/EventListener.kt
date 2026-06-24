@@ -1,6 +1,5 @@
 package coil3
 
-import coil3.EventListener.Factory
 import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.fetch.FetchResult
