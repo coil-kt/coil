@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import coil3.PlatformContext
 import coil3.network.internal.isPermissionGranted
@@ -28,7 +27,6 @@ actual fun ConnectivityChecker(context: PlatformContext): ConnectivityChecker {
     }
 }
 
-@RequiresApi(23)
 @SuppressLint("MissingPermission")
 private class ConnectivityCheckerApi23(
     private val connectivityManager: ConnectivityManager,

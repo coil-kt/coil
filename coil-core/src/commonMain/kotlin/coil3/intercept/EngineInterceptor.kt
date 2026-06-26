@@ -34,8 +34,8 @@ import coil3.util.foldIndices
 import coil3.util.isPlaceholderCached
 import coil3.util.log
 import coil3.util.prepareToDraw
-import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
@@ -256,7 +256,7 @@ internal suspend fun transform(
     val input = convertImageToBitmap(image, options, transformations, logger)
     eventListener.transformStart(request, input)
     val output = transformations.foldIndices(input) { bitmap, transformation ->
-        transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
+        transformation.transform(bitmap, options.size).also { currentCoroutineContext().ensureActive() }
     }
     eventListener.transformEnd(request, output)
     return result.copy(image = output.asImage())

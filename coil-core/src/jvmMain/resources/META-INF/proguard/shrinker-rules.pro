@@ -1,0 +1,1 @@
+../../../../../shrinker-rules.pro

@@ -197,5 +197,5 @@ jobs:
               run: |
                   GRADLE_ARGS=(--no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g" -Pkotlin.native.jvmArgs=-Xmx4g)
                   git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
-                  pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
+                  pip3 install --upgrade pip && pip3 install -r requirements-docs.txt
                   ./deploy_docs.sh "${GRADLE_ARGS[@]}"

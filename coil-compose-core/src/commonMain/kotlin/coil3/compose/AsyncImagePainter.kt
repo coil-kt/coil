@@ -1,6 +1,5 @@
 package coil3.compose
 
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.RememberObserver

@@ -83,7 +83,7 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
                     }
 
                     // Check for ImageRequest.Builder().apply { }
-                    if (receiverType?.contains("ImageRequest\$Builder") == true) {
+                    if (receiverType?.contains($$"ImageRequest$Builder") == true) {
                         return true
                     }
 
@@ -91,14 +91,14 @@ class ErrorFunctionDetector : Detector(), SourceCodeScanner {
                     val resolvedMethod = lambdaParent.resolve()
                     if (resolvedMethod != null) {
                         val returnType = resolvedMethod.returnType?.canonicalText.orEmpty()
-                        if (returnType.contains("ImageRequest.Builder") || returnType.contains("ImageRequest\$Builder")) {
+                        if (returnType.contains("ImageRequest.Builder") || returnType.contains($$"ImageRequest$Builder")) {
                             return true
                         }
 
                         // Check parameter types for builder lambda
                         for (param in resolvedMethod.parameterList.parameters) {
                             val paramType = param.type.canonicalText
-                            if (paramType.contains("ImageRequest.Builder") || paramType.contains("ImageRequest\$Builder")) {
+                            if (paramType.contains("ImageRequest.Builder") || paramType.contains($$"ImageRequest$Builder")) {
                                 return true
                             }
                         }

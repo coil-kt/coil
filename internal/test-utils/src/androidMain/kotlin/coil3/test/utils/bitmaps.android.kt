@@ -48,7 +48,7 @@ actual suspend fun Bitmap.computeSimilarity(
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
 
-    suspend fun computeThresholdAsync(index: Int) = async {
+    fun computeThresholdAsync(index: Int) = async {
         val channel1 = pixels1.await()[index]
         val channel2 = pixels2.await()[index]
 
