@@ -55,6 +55,12 @@ class ScaleDrawable @JvmOverloads constructor(
         child.colorFilter = colorFilter
     }
 
+    override fun isFilterBitmap() = child.isFilterBitmap
+
+    override fun setFilterBitmap(filter: Boolean) {
+        child.setFilterBitmap(filter)
+    }
+
     override fun onBoundsChange(bounds: Rect) {
         val width = child.intrinsicWidth
         val height = child.intrinsicHeight

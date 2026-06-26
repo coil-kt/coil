@@ -950,11 +950,13 @@ public final class coil3/size/ScaleDrawable : android/graphics/drawable/Drawable
 	public fun getOpacity ()I
 	public final fun getScale ()Lcoil3/size/Scale;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
+	public fun isFilterBitmap ()Z
 	public fun isRunning ()Z
 	public fun isStateful ()Z
 	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
 	public fun setAlpha (I)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public fun setFilterBitmap (Z)V
 	public fun setTint (I)V
 	public fun setTintBlendMode (Landroid/graphics/BlendMode;)V
 	public fun setTintList (Landroid/content/res/ColorStateList;)V

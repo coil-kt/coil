@@ -6,11 +6,11 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.FilterQuality
 import coil3.asImage
-import coil3.size.ScaleDrawable
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ImagePainterTest : RobolectricTest() {
 
@@ -24,16 +24,18 @@ class ImagePainterTest : RobolectricTest() {
     }
 
     @Test
-    fun scaleDrawableImageAsPainter_appliesFilterQualityToChild() {
-        val child = TestDrawable()
+    fun drawableImageAsPainter_enablesFilterQuality() {
+        val drawable = TestDrawable(initialFilterBitmap = false)
 
-        ScaleDrawable(child).asImage().asPainter(context, FilterQuality.None)
+        drawable.asImage().asPainter(context, FilterQuality.Low)
 
-        assertFalse(child.filterBitmap)
+        assertTrue(drawable.filterBitmap)
     }
 
-    private class TestDrawable : Drawable() {
-        var filterBitmap = true
+    private class TestDrawable(
+        initialFilterBitmap: Boolean = true,
+    ) : Drawable() {
+        var filterBitmap = initialFilterBitmap
 
         override fun draw(canvas: Canvas) = Unit
 
