@@ -21,9 +21,13 @@ actual fun Image.asPainter(
         image = bitmap.asImageBitmap(),
         filterQuality = filterQuality,
     )
+
     is DrawableImage -> DrawablePainter(
-        drawable = asDrawable(context.resources).mutate(),
+        drawable = asDrawable(context.resources).mutate().apply {
+            isFilterBitmap = filterQuality != FilterQuality.None
+        },
     )
+
     else -> ImagePainter(this)
 }
 
