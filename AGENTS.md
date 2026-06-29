@@ -32,5 +32,6 @@ PRs should include:
 - Linked issue(s) when applicable.
 - Test evidence (commands run, and screenshots for UI/screenshot test changes).
 - Updated ABI files when public API changes are intentional.
+- Add the following text at the end of the last line of the PR description: `review-path-agent`.
 
 Before submitting, ensure `./test.sh` passes locally.
