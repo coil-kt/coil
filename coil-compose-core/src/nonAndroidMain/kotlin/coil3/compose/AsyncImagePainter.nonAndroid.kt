@@ -1,6 +1,7 @@
 package coil3.compose
 
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.Alignment
 import coil3.decode.DataSource
 import coil3.request.SuccessResult
 import coil3.request.crossfadeMillis
@@ -10,6 +11,7 @@ internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
     current: AsyncImagePainter.State,
     contentScale: ContentScale,
+    alignment: Alignment,
 ): CrossfadePainter? {
     // We can only invoke the transition factory if the state is success or error.
     val result = when (current) {
@@ -39,6 +41,7 @@ internal actual fun maybeNewCrossfadePainter(
             fadeStart = !result.isPlaceholderCached,
             preferExactIntrinsicSize = false,
             preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
+            alignment = alignment,
         )
     } else {
         return null
