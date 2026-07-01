@@ -176,6 +176,14 @@ class AsyncImagePainter internal constructor(
 
     internal lateinit var scope: CoroutineScope
     internal var transform = DefaultTransform
+        set(value) {
+            if (field != value) {
+                field = value
+                updateState(untransformedState)
+            }
+        }
+
+    private var untransformedState: State = State.Empty
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
@@ -305,6 +313,7 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun updateState(state: State) {
+        untransformedState = state
         val previous = stateFlow.value
         val current = transform(state)
         stateFlow.value = current
