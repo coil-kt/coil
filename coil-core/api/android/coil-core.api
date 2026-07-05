@@ -787,6 +787,8 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final synthetic fun allowConversionToBitmap (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowHardware (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun allowHardware (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
+	public static final fun allowPartialImage (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
+	public static final fun allowPartialImage (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun allowRgb565 (Lcoil3/ImageLoader$Builder;Z)Lcoil3/ImageLoader$Builder;
 	public static final fun allowRgb565 (Lcoil3/request/ImageRequest$Builder;Z)Lcoil3/request/ImageRequest$Builder;
 	public static final fun bitmapConfig (Lcoil3/ImageLoader$Builder;Landroid/graphics/Bitmap$Config;)Lcoil3/ImageLoader$Builder;
@@ -805,6 +807,9 @@ public final class coil3/request/ImageRequests_androidKt {
 	public static final fun getAllowHardware (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAllowHardware (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAllowHardware (Lcoil3/request/Options;)Z
+	public static final fun getAllowPartialImage (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getAllowPartialImage (Lcoil3/request/ImageRequest;)Z
+	public static final fun getAllowPartialImage (Lcoil3/request/Options;)Z
 	public static final fun getAllowRgb565 (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAllowRgb565 (Lcoil3/request/ImageRequest;)Z
 	public static final fun getAllowRgb565 (Lcoil3/request/Options;)Z
