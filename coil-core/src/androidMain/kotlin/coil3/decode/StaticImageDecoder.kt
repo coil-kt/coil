@@ -15,6 +15,7 @@ import coil3.annotation.InternalCoilApi
 import coil3.asImage
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.fetch.SourceFetchResult
+import coil3.request.allowPartialImage
 import coil3.request.Options
 import coil3.request.allowRgb565
 import coil3.request.bitmapConfig
@@ -84,7 +85,7 @@ class StaticImageDecoder(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
-        onPartialImageListener = ImageDecoder.OnPartialImageListener { true }
+        onPartialImageListener = ImageDecoder.OnPartialImageListener { options.allowPartialImage }
         allocator = if (options.bitmapConfig.isHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
