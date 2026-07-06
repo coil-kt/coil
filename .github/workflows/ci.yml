@@ -34,6 +34,9 @@ jobs:
             - name: Check lint
               run: ./gradlew lint
 
+            - name: Check Skiko version
+              run: ./gradlew verifySkikoVersionsMatch
+
             - name: Check binary compatibility
               run: ./gradlew checkKotlinAbi || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew updateKotlinAbi' and commit the new API files. ***"; exit $exit_code; }
 

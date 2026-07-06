@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     `kotlin-dsl-base`
+    `java-gradle-plugin`
 }
 
 repositories {
@@ -17,6 +18,15 @@ dependencies {
     implementation(libs.gradlePlugin.composeCompiler)
     implementation(libs.gradlePlugin.kotlin)
     implementation(libs.gradlePlugin.mavenPublish)
+}
+
+gradlePlugin {
+    plugins {
+        register("verifySkikoVersions") {
+            id = "coil3.verify-skiko-versions"
+            implementationClass = "coil3.VerifySkikoVersionsPlugin"
+        }
+    }
 }
 
 // Target JVM 17.
