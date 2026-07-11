@@ -51,10 +51,9 @@ detailImageView.load("https://example.com/image.jpg") {
 }
 ```
 
-## Compose State Transitions
+## Compose AnimatedContent
 
-Use `rememberAsyncImagePainter` and `AnimatedContent` to animate between a placeholder and the
-loaded image:
+Use `rememberAsyncImagePainter` and `AnimatedContent` to animate between a placeholder and the loaded image:
 
 ```kotlin
 val sizeResolver = rememberConstraintsSizeResolver()
@@ -87,17 +86,13 @@ AnimatedContent(
 }
 ```
 
-Pass `targetState.painter` to `Image` so an old image remains visible while it animates out after the
-model changes.
+Pass `targetState.painter` to `Image` so an old image remains visible while it animates out after the model changes.
 
-The final image size is unknown until loading finishes. Use fixed constraints or a known aspect
-ratio to reserve space.
+The final image size is unknown until loading finishes. Use fixed constraints or a known aspect ratio to reserve space.
 
-`rememberAsyncImagePainter` starts in `State.Empty`, even when the image is in the memory cache. Use
-`state.result.dataSource` to skip an animation for memory-cached images if needed.
+`rememberAsyncImagePainter` starts in `State.Empty`, even when the image is in the memory cache. Use `state.result.dataSource` to skip an animation for memory-cached images if needed.
 
-NOTE: `AnimatedContent` is much more expensive than a painter crossfade and keeps the old image in memory until
-the animation ends. Prefer `ImageRequest.Builder.crossfade` in lazy lists or for a simple fade.
+NOTE: `AnimatedContent` is much more expensive than a painter crossfade and keeps the old image in memory until the animation ends. Prefer `ImageRequest.Builder.crossfade` in lazy lists or for a simple fade.
 
 ## Shared Element Transitions
 

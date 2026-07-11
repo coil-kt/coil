@@ -166,7 +166,7 @@ Image(
 )
 ```
 
-See [Compose State Transitions](/coil/recipes/#compose-state-transitions) for a complete `AnimatedContent` example.
+See [Compose AnimatedContent](/coil/recipes/#compose-animatedcontent) for a complete `AnimatedContent` example.
 
 ## Previews
 
