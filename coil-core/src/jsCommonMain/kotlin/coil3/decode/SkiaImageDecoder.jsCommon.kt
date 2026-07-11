@@ -8,6 +8,7 @@ import coil3.util.component1
 import coil3.util.component2
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image
+import org.jetbrains.skia.impl.use
 
 internal actual suspend fun decodeBitmap(
     options: Options,
@@ -59,8 +60,9 @@ internal fun getOriginalSize(bytes: ByteArray): Pair<Int, Int> { // (w,h)
     if (webpSize != null) return webpSize
 
     // Fallback for others
-    val image = Image.makeFromEncoded(bytes)
-    return image.width to image.height
+    return Image.makeFromEncoded(bytes).use { image ->
+        image.width to image.height
+    }
 }
 
 internal fun getPngSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
