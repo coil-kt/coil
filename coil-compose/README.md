@@ -150,7 +150,9 @@ AsyncImage(
 
 Custom [`Transition`](/coil/api/coil-core/coil3.transition/-transition)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
 
-That said, it's possible to create custom transitions in Compose by observing `AsyncImagePainter.state`:
+That said, it's possible to create custom transitions in Compose by observing `AsyncImagePainter.state`. See [Compose State Transitions](/coil/recipes/#compose-state-transitions) for a complete `AnimatedContent` example.
+
+For example, you can detect successful requests that were not fulfilled by the memory cache:
 
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
