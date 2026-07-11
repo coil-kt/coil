@@ -4,6 +4,7 @@ import coil3.ImageLoader
 import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
+import coil3.filePath
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import coil3.util.extension
@@ -20,7 +21,9 @@ internal class JarFileFetcher(
         val delimiterIndex = path.indexOf('!')
         check(delimiterIndex != -1) { "Invalid jar:file URI: $uri" }
 
-        val jarPath = path.substring(0, delimiterIndex).toPath()
+        val jarPath = checkNotNull(
+            Uri(path = path.substring(0, delimiterIndex), separator = uri.separator).filePath,
+        ) { "Invalid jar:file URI: $uri" }.toPath()
         val filePath = path.substring(delimiterIndex + 1, path.length).toPath()
 
         return SourceFetchResult(
