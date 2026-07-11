@@ -53,39 +53,48 @@ detailImageView.load("https://example.com/image.jpg") {
 
 ## Compose State Transitions
 
-Use `SubcomposeAsyncImage` and `AnimatedContent` to animate between a placeholder and the loaded
-image:
+Use `rememberAsyncImagePainter` and `AnimatedContent` to animate between a placeholder and the
+loaded image:
 
 ```kotlin
-SubcomposeAsyncImage(
-    model = "https://example.com/image.jpg",
-    contentDescription = stringResource(R.string.description),
-) {
-    val state by painter.state.collectAsState()
+val sizeResolver = rememberConstraintsSizeResolver()
+val painter = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalPlatformContext.current)
+        .data("https://example.com/image.jpg")
+        .size(sizeResolver)
+        .build(),
+)
+val state by painter.state.collectAsState()
 
-    AnimatedContent(
-        targetState = state,
-        contentKey = { it::class },
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-    ) { targetState ->
-        when (targetState) {
-            is AsyncImagePainter.State.Empty,
-            is AsyncImagePainter.State.Loading -> PlaceholderContent()
-            is AsyncImagePainter.State.Success -> {
-                // Ensure the old image remains visible while it animates out after the model changes.
-                SubcomposeAsyncImageContent(painter = targetState.painter)
-            }
-            is AsyncImagePainter.State.Error -> ErrorContent()
+AnimatedContent(
+    modifier = Modifier.then(sizeResolver),
+    targetState = state,
+    contentKey = { it::class },
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+) { targetState ->
+    when (targetState) {
+        is AsyncImagePainter.State.Empty,
+        is AsyncImagePainter.State.Loading -> PlaceholderContent()
+        is AsyncImagePainter.State.Success -> {
+            // Keep the old image visible while it animates out after the model changes.
+            Image(
+                painter = targetState.painter,
+                contentDescription = stringResource(R.string.description),
+            )
         }
+        is AsyncImagePainter.State.Error -> ErrorContent()
     }
 }
 ```
 
-Keep `targetState.painter` in `SubcomposeAsyncImageContent`. It ensures an old image remains visible
-while it animates out after the model changes.
+Pass `targetState.painter` to `Image` so an old image remains visible while it animates out after the
+model changes.
 
 The final image size is unknown until loading finishes. Use fixed constraints or a known aspect
 ratio to reserve space.
+
+`rememberAsyncImagePainter` starts in `State.Empty`, even when the image is in the memory cache. Use
+`state.result.dataSource` to skip an animation for memory-cached images if needed.
 
 NOTE: `AnimatedContent` is much more expensive than a painter crossfade and keeps the old image in memory until
 the animation ends. Prefer `ImageRequest.Builder.crossfade` in lazy lists or for a simple fade.
