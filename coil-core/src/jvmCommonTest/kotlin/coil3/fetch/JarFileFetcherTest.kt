@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import okio.ByteString
 import okio.ByteString.Companion.encodeUtf8
 import okio.Path
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.sink
@@ -61,7 +62,26 @@ class JarFileFetcherTest : RobolectricTest() {
         }
     }
 
-    private fun createZip(zipFile: Path, files: Map<String, ByteString>) {
+    @Test
+    fun opensFileInsideJarWithWindowsDriveLetter() = runTest {
+        val fileSystem = FakeFileSystem().apply { emulateWindows() }
+        val zipFile = "C:\\Users\\me\\app.jar".toPath()
+        fileSystem.createDirectories(zipFile.parent!!)
+        val contents = "The five boxing wizards jump quickly.".encodeUtf8()
+        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
+
+        val uri = "jar:file:/C:/Users/me/app.jar!/four/entry_1".toUri(separator = "\\")
+        val fetcher = factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader)!!
+        val result = assertIs<SourceFetchResult>(fetcher.fetch())
+
+        assertEquals(contents, result.source.source().readByteString())
+    }
+
+    private fun createZip(
+        zipFile: Path,
+        files: Map<String, ByteString>,
+        fileSystem: FakeFileSystem = this.fileSystem,
+    ) {
         ZipOutputStream(fileSystem.sink(zipFile).buffer().outputStream()).use { zip ->
             val directory = ZipEntry("four")
             zip.putNextEntry(directory)
