@@ -42,9 +42,27 @@ fun ImageSource(
 ): ImageSource = SourceImageSource(source, fileSystem, metadata)
 
 /**
- * Provides access to the image data to be decoded.
+ * Represents the source from which an image is read and supplied to Coil's decoding pipeline.
+ *
+ * Implementations are responsible for providing image data in the format expected by the
+ * decoder while allowing the underlying storage mechanism to remain abstract.
+ *
+ * This interface is intentionally extensible so applications and libraries can provide
+ * custom image sources beyond the built-in file- and stream-based implementations.
+ * For example, images may be loaded lazily from a SQLite database, encrypted storage,
+ * a content provider, or any other custom data source without requiring them to be
+ * fully loaded into memory beforehand.
+ *
+ * Custom implementations should:
+ * - Read image data only when requested (lazy loading whenever possible).
+ * - Properly manage and release any underlying resources.
+ * - Behave consistently with Coil's decoding pipeline.
+ *
+ * Making this interface extensible enables advanced caching strategies and
+ * offline-first architectures while preserving compatibility with Coil's
+ * existing built-in implementations.
  */
-sealed interface ImageSource : AutoCloseable {
+interface ImageSource : AutoCloseable {
 
     /**
      * The [FileSystem] which contains the [file].
