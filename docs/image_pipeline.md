@@ -32,12 +32,12 @@ class CustomCacheInterceptor(
         val value = cache.get(chain.request.data.toString())
         if (value != null) {
             return SuccessResult(
-                image = value.bitmap.toImage(),
+                image = value.bitmap.asImage(),
                 request = chain.request,
                 dataSource = DataSource.MEMORY_CACHE,
             )
         }
-        return chain.proceed(chain.request)
+        return chain.proceed()
     }
 }
 ```
@@ -133,10 +133,10 @@ class TimeoutInterceptor : Interceptor {
         val timeout = chain.request.timeout
         if (timeout.isFinite()) {
             return withTimeout(timeout) {
-                chain.proceed(chain.request)
+                chain.proceed()
             }
         } else {
-            return chain.proceed(chain.request)
+            return chain.proceed()
         }
     }
 }
@@ -146,7 +146,7 @@ Finally, we can set the property when creating our `ImageRequest`:
 
 ```kotlin
 AsyncImage(
-    model = ImageRequest.Builder(PlatformContext.current)
+    model = ImageRequest.Builder(LocalPlatformContext.current)
         .data("https://example.com/image.jpg")
         .timeout(10.seconds)
         .build(),
