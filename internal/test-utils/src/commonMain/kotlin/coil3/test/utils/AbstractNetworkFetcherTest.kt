@@ -36,7 +36,7 @@ abstract class AbstractNetworkFetcherTest : RobolectricTest() {
         fileSystem = FakeFileSystem()
         diskCache = DiskCache.Builder()
             .directory(fileSystem.workingDirectory)
-            .fileSystem(fileSystem)
+            .fileSystem(SynchronizedFileSystem(fileSystem))
             .maxSizeBytes(Long.MAX_VALUE)
             .build()
         imageLoader = ImageLoader.Builder(context)
