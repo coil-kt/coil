@@ -1,4 +1,6 @@
 import coil3.androidLibrary
+import com.android.compose.screenshot.tasks.PreviewScreenshotUpdateTask
+import com.android.compose.screenshot.tasks.PreviewScreenshotValidationTask
 
 plugins {
     id("com.android.library")
@@ -26,6 +28,9 @@ dependencies {
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }
 
-screenshotTests {
-    imageDifferenceThreshold = 0.01f
+tasks.withType<PreviewScreenshotUpdateTask>().configureEach {
+    testEngineInput.threshold.set(0.01f)
+}
+tasks.withType<PreviewScreenshotValidationTask>().configureEach {
+    testEngineInput.threshold.set(0.01f)
 }
