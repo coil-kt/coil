@@ -46,7 +46,7 @@ androidx-annotation = "androidx.annotation:annotation:1.10.0"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.1"
+androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.2"
 androidx-core = "androidx.core:core-ktx:1.16.0"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.4.2"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
