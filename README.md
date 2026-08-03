@@ -1,5 +1,7 @@
 ﻿![Coil](logo.svg)
 
+[![Plumber Score](https://score.getplumber.io/github.com/coil-kt/coil.svg)](https://score.getplumber.io/github.com/coil-kt/coil)
+
 An image loading library for [Android](https://www.android.com/) and [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Coil is:
 
 - **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image, automatically pausing/cancelling requests, and more.
