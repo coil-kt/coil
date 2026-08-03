@@ -13,6 +13,9 @@ env:
     JAVA_VERSION: 21
     ORG_GRADLE_IDE_DOWNLOADJAVADOC: false
     ORG_GRADLE_IDE_DOWNLOADSOURCES: false
+permissions:
+  contents: read
+
 jobs:
     checks:
         name: Checks
@@ -180,6 +183,9 @@ jobs:
               run: ./gradlew publishToMavenCentral
 
     deploy-docs:
+        # deploy_docs.sh runs mkdocs gh-deploy, which pushes the gh-pages branch.
+        permissions:
+            contents: write
         name: Deploy docs
         runs-on: ubuntu-latest
         timeout-minutes: 120
