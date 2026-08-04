@@ -9,6 +9,11 @@ import okio.Source
 
 internal actual fun defaultFileSystem(): FileSystem = ThrowingFileSystem
 
+internal actual fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long {
+    // No standard API is available to query free disk space in browser / Node.js environments.
+    return 4L * 1024 * 1024 * 1024 // 4 GB
+}
+
 /** A file system that throws if any of its methods are called. */
 private object ThrowingFileSystem : FileSystem() {
 

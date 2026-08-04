@@ -15,6 +15,8 @@ import coil3.test.utils.context
 import coil3.util.SystemCallbacks
 import coil3.util.createRequest
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.robolectric.annotation.Config
@@ -148,6 +150,33 @@ class RequestServiceTest : RobolectricTest() {
         val service = RequestService(imageLoader, SystemCallbacks(imageLoader), null)
         val options = service.options(service.updateRequest(request), Size(100, 100))
         assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
+    }
+
+    @Test
+    fun `ImageLoader allowPartialImage is preserved`() {
+        val imageLoader = ImageLoader.Builder(context)
+            .allowPartialImage(false)
+            .build() as RealImageLoader
+        val request = ImageRequest.Builder(context)
+            .defaults(imageLoader.defaults)
+            .build()
+        val service = RequestService(imageLoader, SystemCallbacks(imageLoader), null)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertFalse(options.allowPartialImage)
+    }
+
+    @Test
+    fun `ImageRequest allowPartialImage overrides ImageLoader`() {
+        val imageLoader = ImageLoader.Builder(context)
+            .allowPartialImage(false)
+            .build() as RealImageLoader
+        val request = ImageRequest.Builder(context)
+            .defaults(imageLoader.defaults)
+            .allowPartialImage(true)
+            .build()
+        val service = RequestService(imageLoader, SystemCallbacks(imageLoader), null)
+        val options = service.options(service.updateRequest(request), Size(100, 100))
+        assertTrue(options.allowPartialImage)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/pull/2669 */
