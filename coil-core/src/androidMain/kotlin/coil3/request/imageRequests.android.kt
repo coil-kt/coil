@@ -262,6 +262,8 @@ val Extras.Key.Companion.allowConversionToBitmap: Extras.Key<Boolean>
  * Allow [android.graphics.ImageDecoder] to decode partial images.
  *
  * If false, decoding will fail when [android.graphics.ImageDecoder] detects incomplete image data.
+ *
+ * Default: true
  */
 fun ImageRequest.Builder.allowPartialImage(enable: Boolean) = apply {
     extras[allowPartialImageKey] = enable
