@@ -69,6 +69,48 @@ android {
 }
 ```
 
+## Why do I get a Skiko version warning with Compose Multiplatform?
+
+Compose Multiplatform will print a warning like this if Coil's Skiko dependency is older than Compose Multiplatform's:
+
+```text
+w: Skiko dependencies' versions are incompatible.
+```
+
+This warning is generally safe to ignore, as Skiko versions typically maintain binary compatibility. Coil releases track Compose Multiplatform **stable** releases and their Skiko versions, so if you encounter this warning, first update Coil to the latest version.
+
+**NOTE**: As a rule, Coil doesn't release new versions only to match the Skiko versions used by **alpha** and **beta** versions of Compose Multiplatform unless those Skiko versions are incompatible with the version depended on by the latest Coil release.
+
+If the warning is still present, you can ignore it by setting the following Gradle property:
+
+```properties
+org.jetbrains.compose.library.compatibility.check.disable=true
+```
+
+However, that Gradle property disables all Compose Multiplatform library compatibility checks for all libraries - not just Coil. To disable the warning only for Coil and its Skiko dependency, add this code snippet to your root `build.gradle.kts` file:
+
+```kotlin
+dependencies {
+    components {
+        all {
+            if (id.group == "io.coil-kt.coil3") {
+                allVariants {
+                    withDependencies {
+                        val hadSkikoDependency = removeAll {
+                            it.group == "org.jetbrains.skiko" && it.name == "skiko"
+                        }
+                        if (hadSkikoDependency) {
+                            // Replace `0.150.0` with the Skiko version used by your Compose Multiplatform version.
+                            add("org.jetbrains.skiko:skiko:0.150.0")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
 ## How do I get development snapshots?
 
 Add the snapshots repository to your list of repositories:

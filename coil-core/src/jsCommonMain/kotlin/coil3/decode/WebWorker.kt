@@ -22,6 +22,7 @@ import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.impl.NativePointer
+import org.jetbrains.skia.impl.use
 import org.jetbrains.skiko.ExperimentalSkikoApi
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
@@ -51,22 +52,26 @@ self.onmessage = async (e) => {
     const { id, data, w, h } = e.data;
     try {
         var blob = new Blob([data]);
-        const bmp = await createImageBitmap(blob, {
-            resizeWidth: w,
-            resizeHeight: h,
-            resizeQuality: 'high'
-        });
-        const ctx = ensureCanvas(w, h);
-        ctx.clearRect(0, 0, w, h);
-        ctx.drawImage(bmp, 0, 0);
-        bmp.close();
+        var bmp = null;
+        try {
+            bmp = await createImageBitmap(blob, {
+                resizeWidth: w,
+                resizeHeight: h,
+                resizeQuality: 'high'
+            });
+            const ctx = ensureCanvas(w, h);
+            ctx.clearRect(0, 0, w, h);
+            ctx.drawImage(bmp, 0, 0);
 
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const rawBuffer = imgData.data.buffer;
-        self.postMessage(
-            { kind: "result", id: id, buffer: rawBuffer },
-            [rawBuffer]
-        );
+            const imgData = ctx.getImageData(0, 0, w, h);
+            const rawBuffer = imgData.data.buffer;
+            self.postMessage(
+                { kind: "result", id: id, buffer: rawBuffer },
+                [rawBuffer]
+            );
+        } finally {
+            bmp?.close();
+        }
     } catch (err) {
         self.postMessage(
             { kind: "error", id: id, message: err?.message ?? String(err), }
@@ -96,16 +101,17 @@ internal suspend fun decodeImageAsync(
     val webBitmap = decodeBytesToBitmap(bytes, width, height)
 
     // pass bitmap ArrayBuffer to the skiko memory
-    val skikoData = webBitmap.passToSkiko()
-
-    val colorInfo = ColorInfo(
-        ColorType.RGBA_8888,
-        ColorAlphaType.UNPREMUL,
-        ColorSpace.sRGB,
-    )
-    val imageInfo = ImageInfo(colorInfo, width, height)
-    val image = Image.makeRaster(imageInfo, skikoData, imageInfo.minRowBytes)
-    return Bitmap.makeFromImage(image)
+    return webBitmap.passToSkiko().use { skikoData ->
+        val colorInfo = ColorInfo(
+            ColorType.RGBA_8888,
+            ColorAlphaType.UNPREMUL,
+            ColorSpace.sRGB,
+        )
+        val imageInfo = ImageInfo(colorInfo, width, height)
+        Image.makeRaster(imageInfo, skikoData, imageInfo.minRowBytes).use { image ->
+            Bitmap.makeFromImage(image)
+        }
+    }
 }
 
 private suspend fun ArrayBuffer.passToSkiko(): Data {
@@ -132,30 +138,53 @@ private suspend fun decodeBytesToBitmap(
     val id = Uuid.random().toString()
     var responseListener: ((Event) -> Unit)? = null
     var errorListener: ((Event) -> Unit)? = null
+    fun cleanup() {
+        worker.removeEventListener("message", responseListener)
+        worker.removeEventListener("error", errorListener)
+    }
     responseListener = { event ->
-        val response = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerResponse>()
-        if (response != null && response.kind == "result" && response.id == id) {
-            worker.removeEventListener("message", responseListener)
-            continuation.resume(response.buffer)
+        val data = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerMessage>()
+        if (data != null && data.id == id) {
+            when (data.kind) {
+                "result" -> {
+                    cleanup()
+                    if (continuation.isActive) {
+                        continuation.resume(data.unsafeCast<WebWorkerResponse>().buffer)
+                    }
+                }
+                "error" -> {
+                    cleanup()
+                    val message = data.unsafeCast<WebWorkerError>().message
+                    if (continuation.isActive) {
+                        continuation.resumeWithException(
+                            IllegalStateException("WebWorker error: $message"),
+                        )
+                    }
+                }
+            }
         }
     }
     errorListener = { event ->
-        val err = event.unsafeCast<WebWorkerError>()
-        if (err.id == id) {
-            worker.removeEventListener("error", errorListener)
-            continuation.resumeWithException(Error("WebWorker error: ${err.message}"))
+        cleanup()
+        if (continuation.isActive) {
+            continuation.resumeWithException(IllegalStateException("WebWorker error: $event"))
         }
     }
     worker.addEventListener("message", responseListener)
     worker.addEventListener("error", errorListener)
+    continuation.invokeOnCancellation {
+        cleanup()
+    }
 
     val buffer = bytes.toInt8Array().buffer
     val transfer = JsArray<JsAny>().apply { set(0, buffer) }
-    worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
-
-    continuation.invokeOnCancellation {
-        worker.removeEventListener("message", responseListener)
-        worker.removeEventListener("error", errorListener)
+    try {
+        worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
+    } catch (throwable: Throwable) {
+        cleanup()
+        if (continuation.isActive) {
+            continuation.resumeWithException(throwable)
+        }
     }
 }
 
@@ -166,13 +195,15 @@ private fun WebWorkerRequest(
     height: Int,
 ): JsAny = js("({ id: id, data: buffer, w: width, h: height })")
 
-internal external interface WebWorkerResponse : JsAny {
+internal external interface WebWorkerMessage : JsAny {
     val id: String
     val kind: String
+}
+
+internal external interface WebWorkerResponse : WebWorkerMessage {
     val buffer: ArrayBuffer
 }
 
-internal external interface WebWorkerError : JsAny {
-    val id: String
+internal external interface WebWorkerError : WebWorkerMessage {
     val message: String
 }

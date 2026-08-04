@@ -34,6 +34,7 @@ plugins {
     alias(libs.plugins.baselineProfile) apply false
     alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
+    id("coil3.verify-skiko-versions")
     // https://github.com/gradle/gradle/issues/20084#issuecomment-1060822638
     id("org.jetbrains.dokka")
 }
@@ -88,7 +89,7 @@ allprojects {
         }
     }
 
-    apply(plugin = "com.diffplug.spotless")
+    pluginManager.apply("com.diffplug.spotless")
 
     extensions.configure<SpotlessExtension> {
         kotlin {
@@ -287,5 +288,3 @@ private val ktlintRules = buildMap {
     put("ktlint_standard_statement-wrapping", "disabled")
     put("ktlint_standard_wrapping", "enabled")
 }
-
-apply(from = rootProject.file("gradle/verifySkikoVersionsMatch.gradle.kts"))

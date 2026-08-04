@@ -166,6 +166,8 @@ Image(
 )
 ```
 
+See [Compose AnimatedContent](/coil/recipes/#compose-animatedcontent) for a complete `AnimatedContent` example.
+
 ## Previews
 
 The Android Studio preview behaviour for `AsyncImage`/`rememberAsyncImagePainter`/`SubcomposeAsyncImage` is controlled by the `LocalAsyncImagePreviewHandler`. By default, it will attempt to perform the request as normal inside the preview environment. Network access is disabled in the preview environment so network URLs will always fail.
