@@ -259,6 +259,20 @@ class UriTest {
     }
 
     @Test
+    fun blobWithHttpOrigin() {
+        val string = "blob:http://localhost:8081/a3953f30-e6ef-47b6-8750-731ce8afe0f8"
+        val uri = string.toUri()
+        assertEquals(string, uri.toString())
+    }
+
+    @Test
+    fun blobWithOpaqueOrigin() {
+        val uri = "blob:null/a3953f30-e6ef-47b6-8750-731ce8afe0f8".toUri()
+        assertEquals("blob", uri.scheme)
+        assertEquals("blob:null/a3953f30-e6ef-47b6-8750-731ce8afe0f8", uri.toString())
+    }
+
+    @Test
     fun uriCopy() {
         val uri = "http://localhost/test?q=1".toUri()
         val copiedUri = uri.newBuilder().build()

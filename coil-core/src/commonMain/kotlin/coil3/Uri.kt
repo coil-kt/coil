@@ -215,7 +215,10 @@ private fun parseUri(
                 ) {
                     if (index + 2 < original.length &&
                         original[index + 1] == '/' &&
-                        original[index + 2] == '/'
+                        original[index + 2] == '/' &&
+                        // An authority cannot start after the path has already begun. This guards
+                        // against nested-scheme URIs (e.g. "blob:http://host/id") throwing.
+                        pathStartIndex == -1
                     ) {
                         // Standard URI with an authority (e.g. "file:///path/image.jpg").
                         openScheme = false
