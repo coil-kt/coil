@@ -1,6 +1,10 @@
 package coil3.decode
 
 import android.content.res.AssetFileDescriptor
+import android.os.Bundle
+import android.system.ErrnoException
+import android.system.Os
+import android.system.OsConstants.SEEK_SET
 import androidx.annotation.DrawableRes
 import coil3.Uri
 
@@ -12,12 +16,45 @@ class AssetMetadata(
 ) : ImageSource.Metadata()
 
 /**
- * Metadata containing the [uri] and associated [assetFileDescriptor] of a `content` URI.
+ * Abstract superclass for metadata relating to the asset file descriptor obtained from a
+ * `content` URI.
+ */
+abstract class BaseContentMetadata : ImageSource.Metadata() {
+    abstract val assetFileDescriptor: AssetFileDescriptor
+    val seekable by lazy {
+        try {
+            Os.lseek(
+                assetFileDescriptor.fileDescriptor, assetFileDescriptor.startOffset,
+                SEEK_SET,
+            )
+            true
+        } catch (_: ErrnoException) {
+            false
+        }
+    }
+}
+
+/**
+ * Metadata containing the [uri] and associated [assetFileDescriptor] of a `content` URI
+ * that can be opened without special considerations.
  */
 class ContentMetadata(
     val uri: Uri,
-    val assetFileDescriptor: AssetFileDescriptor,
-) : ImageSource.Metadata()
+    override val assetFileDescriptor: AssetFileDescriptor,
+) : BaseContentMetadata()
+
+/**
+ * Metadata containing the [uri] and associated [assetFileDescriptor] of a `content` URI
+ * that must be opened with [android.content.ContentResolver.openTypedAssetFileDescriptor] (as
+ * opposed to [android.content.ContentResolver.openAssetFileDescriptor]), while also passing the
+ * [mimeTypeFilter] and [opts] (if present) to the content resolver.
+ */
+class TypedContentMetadata(
+    val uri: Uri,
+    val mimeTypeFilter: String,
+    val opts: Bundle?,
+    override val assetFileDescriptor: AssetFileDescriptor,
+) : BaseContentMetadata()
 
 /**
  * Metadata containing the [packageName], [resId], and [density] of an Android resource.
