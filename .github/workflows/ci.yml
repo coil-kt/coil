@@ -13,20 +13,23 @@ env:
     JAVA_VERSION: 21
     ORG_GRADLE_IDE_DOWNLOADJAVADOC: false
     ORG_GRADLE_IDE_DOWNLOADSOURCES: false
+permissions:
+  contents: read
+
 jobs:
     checks:
         name: Checks
         runs-on: ubuntu-latest
         timeout-minutes: 30
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
 
             - name: Check Gradle wrapper
-              uses: gradle/actions/wrapper-validation@v6
+              uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
             - name: Check style
               run: ./gradlew spotlessCheck
@@ -45,12 +48,12 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 120
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v6
+            - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -64,12 +67,12 @@ jobs:
         runs-on: macos-26
         timeout-minutes: 120
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v6
+            - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -87,12 +90,12 @@ jobs:
             matrix:
                 api-level: [23, 26, 31, 36]
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v6
+            - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -112,7 +115,7 @@ jobs:
                   sudo udevadm trigger --name-match=kvm
 
             - name: Instrumentation tests
-              uses: reactivecircus/android-emulator-runner@v2
+              uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -124,12 +127,12 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 60
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v6
+            - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -146,12 +149,12 @@ jobs:
         runs-on: macos-26
         timeout-minutes: 60
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/actions/setup-gradle@v6
+            - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
               continue-on-error: true
               timeout-minutes: 5
               with:
@@ -167,8 +170,8 @@ jobs:
         if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/2.x')
         needs: [checks, unit-tests, unit-tests-macos, instrumentation-tests, build-samples, build-samples-macos]
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
@@ -180,18 +183,21 @@ jobs:
               run: ./gradlew publishToMavenCentral
 
     deploy-docs:
+        # deploy_docs.sh runs mkdocs gh-deploy, which pushes the gh-pages branch.
+        permissions:
+            contents: write
         name: Deploy docs
         runs-on: ubuntu-latest
         timeout-minutes: 120
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, unit-tests-macos, instrumentation-tests, build-samples, build-samples-macos]
         steps:
-            - uses: actions/checkout@v7
-            - uses: actions/setup-java@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: actions/setup-python@v7
+            - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
               with:
                   python-version: '3.x'
 
