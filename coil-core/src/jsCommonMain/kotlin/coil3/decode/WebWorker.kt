@@ -122,6 +122,7 @@ private suspend fun ArrayBuffer.passToSkiko(): Data {
 }
 
 internal expect suspend fun awaitSkiko(): JsAny
+
 private fun getSkikoMemory(skikoWasm: JsAny): ArrayBuffer =
     js("skikoWasm.wasmExports.memory.buffer")
 

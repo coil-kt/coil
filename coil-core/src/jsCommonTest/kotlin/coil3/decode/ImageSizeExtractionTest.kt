@@ -6,6 +6,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 import okio.ByteString.Companion.decodeBase64
+import org.jetbrains.skia.impl.use
 
 class ImageSizeExtractionTest {
     private val jpeg = (
@@ -99,7 +100,6 @@ class ImageSizeExtractionTest {
         assertEquals(8 to 8, getWebpSizeOrNull(webp_VP8X))
     }
 
-    @OptIn(ExperimentalWasmJsInterop::class)
     @Test
     fun testSizeExtraction() = runTest {
         assertEquals(10 to 10, getOriginalSize(jpeg))
@@ -107,8 +107,16 @@ class ImageSizeExtractionTest {
         assertEquals(10 to 10, getOriginalSize(webp))
         assertEquals(9 to 9, getOriginalSize(webp_VP8L))
         assertEquals(8 to 8, getOriginalSize(webp_VP8X))
+    }
 
+    @OptIn(ExperimentalWasmJsInterop::class)
+    @Test
+    fun testAwaitSkiko() = runTest {
         awaitSkiko()
         assertEquals(11 to 11, getOriginalSize(bmp))
+        decodeImageAsync(bmp, 11, 11).use { bitmap ->
+            assertEquals(11, bitmap.width)
+            assertEquals(11, bitmap.height)
+        }
     }
 }
