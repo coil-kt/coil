@@ -87,11 +87,7 @@ private fun startWorker(code: String): Worker {
 
 private val worker by lazy { startWorker(WebWorkerJs) }
 
-private val colorInfo = ColorInfo(
-    ColorType.RGBA_8888,
-    ColorAlphaType.UNPREMUL,
-    ColorSpace.sRGB,
-)
+internal expect suspend fun awaitSkiko(): JsAny
 
 @OptIn(ExperimentalSkikoApi::class)
 internal suspend fun decodeImageAsync(
@@ -102,6 +98,12 @@ internal suspend fun decodeImageAsync(
     // async decodes an image to a bitmap on a special web worker. doesn't block UI thread :)
     val webBitmap = decodeBytesToBitmap(bytes, width, height)
 
+    awaitSkiko()
+    val colorInfo = ColorInfo(
+        ColorType.RGBA_8888,
+        ColorAlphaType.UNPREMUL,
+        ColorSpace.sRGB,
+    )
     val imageInfo = ImageInfo(colorInfo, width, height)
     val bitmap = Bitmap()
     try {
