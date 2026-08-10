@@ -99,7 +99,7 @@ internal suspend fun decodeImageAsync(
     width: Int,
     height: Int,
 ): Bitmap {
-    // async decodes an image to a bitmap on a special web worker. It doesn't block the UI thread :)
+    // async decodes an image to a bitmap on a special web worker. doesn't block UI thread :)
     val webBitmap = decodeBytesToBitmap(bytes, width, height)
 
     val imageInfo = ImageInfo(colorInfo, width, height)
