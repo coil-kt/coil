@@ -18,14 +18,10 @@ import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorInfo
 import org.jetbrains.skia.ColorSpace
 import org.jetbrains.skia.ColorType
-import org.jetbrains.skia.Data
-import org.jetbrains.skia.Image
 import org.jetbrains.skia.ImageInfo
-import org.jetbrains.skia.impl.NativePointer
-import org.jetbrains.skia.impl.use
+import org.jetbrains.skia.webext.installPixelsFromArrayBuffer
 import org.jetbrains.skiko.ExperimentalSkikoApi
 import org.khronos.webgl.ArrayBuffer
-import org.khronos.webgl.Int8Array
 import org.khronos.webgl.toInt8Array
 import org.w3c.dom.MessageEvent
 import org.w3c.dom.Worker
@@ -100,34 +96,22 @@ internal suspend fun decodeImageAsync(
     // async decodes an image to a bitmap on a special web worker. doesn't block UI thread :)
     val webBitmap = decodeBytesToBitmap(bytes, width, height)
 
-    // pass bitmap ArrayBuffer to the skiko memory
-    return webBitmap.passToSkiko().use { skikoData ->
-        val colorInfo = ColorInfo(
-            ColorType.RGBA_8888,
-            ColorAlphaType.UNPREMUL,
-            ColorSpace.sRGB,
-        )
-        val imageInfo = ImageInfo(colorInfo, width, height)
-        Image.makeRaster(imageInfo, skikoData, imageInfo.minRowBytes).use { image ->
-            Bitmap.makeFromImage(image)
+    val colorInfo = ColorInfo(
+        ColorType.RGBA_8888,
+        ColorAlphaType.UNPREMUL,
+        ColorSpace.sRGB,
+    )
+    val imageInfo = ImageInfo(colorInfo, width, height)
+    val bitmap = Bitmap()
+    try {
+        if (!bitmap.installPixelsFromArrayBuffer(imageInfo, webBitmap, imageInfo.minRowBytes)) {
+            error("Failed to install pixels from ArrayBuffer.")
         }
+        return bitmap
+    } catch (throwable: Throwable) {
+        bitmap.close()
+        throw throwable
     }
-}
-
-private suspend fun ArrayBuffer.passToSkiko(): Data {
-    val data = Data.makeUninitialized(byteLength)
-    val skikoMemory = getSkikoMemory(awaitSkiko())
-    skikoMemory.set(this, data.writableData())
-    return data
-}
-
-internal expect suspend fun awaitSkiko(): JsAny
-
-private fun getSkikoMemory(skikoWasm: JsAny): ArrayBuffer =
-    js("skikoWasm.wasmExports.memory.buffer")
-
-private fun ArrayBuffer.set(data: ArrayBuffer, offset: NativePointer) {
-    Int8Array(this).set(Int8Array(data), offset)
 }
 
 @OptIn(ExperimentalUuidApi::class)

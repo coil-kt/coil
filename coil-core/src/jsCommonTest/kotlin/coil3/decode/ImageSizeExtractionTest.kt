@@ -1,6 +1,5 @@
 package coil3.decode
 
-import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -109,14 +108,12 @@ class ImageSizeExtractionTest {
         assertEquals(8 to 8, getOriginalSize(webp_VP8X))
     }
 
-    @OptIn(ExperimentalWasmJsInterop::class)
     @Test
-    fun testAwaitSkiko() = runTest {
-        awaitSkiko()
-        assertEquals(11 to 11, getOriginalSize(bmp))
-        decodeImageAsync(bmp, 11, 11).use { bitmap ->
+    fun testDecodeImageAsync() = runTest {
+        decodeImageAsync(bmp.copyOf(), 11, 11).use { bitmap ->
             assertEquals(11, bitmap.width)
             assertEquals(11, bitmap.height)
         }
+        assertEquals(11 to 11, getOriginalSize(bmp))
     }
 }
