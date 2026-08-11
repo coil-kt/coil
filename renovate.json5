@@ -8,9 +8,24 @@
     "packageRules": [
         {
             "matchPackageNames": [
+                "/^org\\.jetbrains\\.compose(?:\\.[^:]+)*:/",
+            ],
+            "groupName": "Compose Multiplatform",
+            "groupSingleUpdates": true,
+            "ignoreUnstable": false,
+            "respectLatest": false,
+            "separateMajorMinor": false,
+        },
+        {
+            "matchPackageNames": [
                 "org.jetbrains.skiko:skiko",
             ],
-            "enabled": false,
+            "enabled": true,
+            "groupName": "Compose Multiplatform",
+            "groupSingleUpdates": true,
+            // Don't open a Skiko-only PR. Wait to group it with a Compose update.
+            "minimumGroupSize": 2,
+            "separateMajorMinor": false,
         },
     ],
 }
