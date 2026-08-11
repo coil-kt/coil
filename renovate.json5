@@ -10,8 +10,6 @@
             "matchPackageNames": [
                 "/^org\\.jetbrains\\.compose(?:\\.[^:]+)*:/",
             ],
-            // Track stable, alpha, and beta Compose Multiplatform releases.
-            "allowedVersions": "/^\\d+\\.\\d+\\.\\d+(?:-(?:alpha|beta)\\d+)?$/",
             "groupName": "Compose Multiplatform",
             "groupSingleUpdates": true,
             "ignoreUnstable": false,
