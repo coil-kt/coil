@@ -17,14 +17,14 @@ internal class BlobUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        val bytes = fetchBlobBytes(uri.toString())
+        val result = fetchBlob(uri.toString())
 
         return SourceFetchResult(
             source = ImageSource(
-                source = Buffer().apply { write(bytes) },
+                source = Buffer().apply { write(result.bytes) },
                 fileSystem = options.fileSystem,
             ),
-            mimeType = null,
+            mimeType = result.mimeType,
             dataSource = DataSource.MEMORY,
         )
     }
@@ -41,5 +41,10 @@ internal class BlobUriFetcher(
     }
 }
 
-/** Read the bytes referenced by a blob [url] using the browser's `fetch` API. */
-internal expect suspend fun fetchBlobBytes(url: String): ByteArray
+/** Read the data referenced by a blob [url] using the browser's `fetch` API. */
+internal expect suspend fun fetchBlob(url: String): BlobFetchResult
+
+internal class BlobFetchResult(
+    val bytes: ByteArray,
+    val mimeType: String?,
+)
