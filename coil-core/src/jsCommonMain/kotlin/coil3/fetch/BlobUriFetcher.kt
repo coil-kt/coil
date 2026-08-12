@@ -7,10 +7,13 @@ import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.JsAny
 import kotlin.js.Promise
-import kotlin.js.js
-import kotlinx.coroutines.await
+import kotlin.js.asJsException
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
@@ -55,4 +58,18 @@ internal class BlobUriFetcher(
     }
 }
 
-private fun fetchResponse(url: String): Promise<Response> = js("fetch(url)")
+internal expect fun fetchResponse(url: String): Promise<Response>
+
+private suspend fun <T> Promise<JsAny?>.await(): T = suspendCancellableCoroutine { continuation ->
+    then(
+        onFulfilled = {
+            @Suppress("UNCHECKED_CAST")
+            continuation.resume(it as T)
+            null
+        },
+        onRejected = {
+            continuation.resumeWithException(it.asJsException())
+            null
+        },
+    )
+}
