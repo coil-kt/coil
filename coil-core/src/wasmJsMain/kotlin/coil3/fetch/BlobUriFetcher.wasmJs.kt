@@ -1,16 +1,16 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package coil3.fetch
 
+import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.Promise
 import kotlinx.coroutines.await
 import org.khronos.webgl.ArrayBuffer
-import org.khronos.webgl.Int8Array
-import org.khronos.webgl.get
+import org.w3c.fetch.Response
 
-internal actual suspend fun fetchBlobBytes(url: String): ByteArray {
-    val buffer: ArrayBuffer = fetchArrayBuffer(url).await()
-    val int8 = Int8Array(buffer)
-    return ByteArray(int8.length) { int8[it] }
-}
+internal actual suspend fun fetchResponse(url: String): Response =
+    fetch(url).await<Response>()
 
-private fun fetchArrayBuffer(url: String): Promise<ArrayBuffer> =
-    js("fetch(url).then(function(response) { return response.arrayBuffer(); })")
+internal actual suspend fun Response.readArrayBuffer(): ArrayBuffer = arrayBuffer().await<ArrayBuffer>()
+
+private fun fetch(url: String): Promise<Response> = js("fetch(url)")
