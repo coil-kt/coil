@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package coil3.fetch
 
 import coil3.ImageLoader
@@ -5,7 +7,15 @@ import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
+import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.Promise
+import kotlin.js.js
+import kotlinx.coroutines.await
 import okio.Buffer
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.Int8Array
+import org.khronos.webgl.get
+import org.w3c.fetch.Response
 
 /**
  * Fetches images from blob URLs created by `URL.createObjectURL` on the web
@@ -17,14 +27,18 @@ internal class BlobUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        val result = fetchBlob(uri.toString())
+        val response = fetchResponse(uri.toString()).await<Response>()
+        val arrayBuffer = response.arrayBuffer().await<ArrayBuffer>()
+        val int8Array = Int8Array(arrayBuffer)
 
         return SourceFetchResult(
             source = ImageSource(
-                source = Buffer().apply { write(result.bytes) },
+                source = Buffer().apply {
+                    write(ByteArray(int8Array.length) { int8Array[it] })
+                },
                 fileSystem = options.fileSystem,
             ),
-            mimeType = result.mimeType,
+            mimeType = response.headers.get("content-type"),
             dataSource = DataSource.MEMORY,
         )
     }
@@ -41,10 +55,4 @@ internal class BlobUriFetcher(
     }
 }
 
-/** Read the data referenced by a blob [url] using the browser's `fetch` API. */
-internal expect suspend fun fetchBlob(url: String): BlobFetchResult
-
-internal class BlobFetchResult(
-    val bytes: ByteArray,
-    val mimeType: String?,
-)
+private fun fetchResponse(url: String): Promise<Response> = js("fetch(url)")
