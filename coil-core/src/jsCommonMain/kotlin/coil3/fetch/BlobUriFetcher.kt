@@ -7,13 +7,7 @@ import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.js.ExperimentalWasmJsInterop
-import kotlin.js.JsAny
-import kotlin.js.Promise
-import kotlin.js.asJsException
-import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
@@ -30,8 +24,8 @@ internal class BlobUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        val response = fetchResponse(uri.toString()).await<Response>()
-        val arrayBuffer = response.arrayBuffer().await<ArrayBuffer>()
+        val response = fetchResponse(uri.toString())
+        val arrayBuffer = response.readArrayBuffer()
         val int8Array = Int8Array(arrayBuffer)
 
         return SourceFetchResult(
@@ -58,18 +52,6 @@ internal class BlobUriFetcher(
     }
 }
 
-internal expect fun fetchResponse(url: String): Promise<Response>
+internal expect suspend fun fetchResponse(url: String): Response
 
-private suspend fun <T> Promise<JsAny?>.await(): T = suspendCancellableCoroutine { continuation ->
-    then(
-        onFulfilled = {
-            @Suppress("UNCHECKED_CAST")
-            continuation.resume(it as T)
-            null
-        },
-        onRejected = {
-            continuation.resumeWithException(it.asJsException())
-            null
-        },
-    )
-}
+internal expect suspend fun Response.readArrayBuffer(): ArrayBuffer
