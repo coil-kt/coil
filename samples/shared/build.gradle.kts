@@ -22,10 +22,14 @@ kotlin {
                 api(libs.kotlinx.serialization.json)
             }
         }
+        named("nonJsCommonMain") {
+            dependencies {
+                api(projects.coilGif)
+            }
+        }
         androidMain {
             dependencies {
                 api(projects.coilNetworkOkhttp)
-                api(projects.coilGif)
                 api(projects.coilVideo)
                 api(libs.androidx.core)
                 api(libs.androidx.lifecycle.viewmodel)

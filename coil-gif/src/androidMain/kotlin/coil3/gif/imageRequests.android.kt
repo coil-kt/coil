@@ -1,36 +1,10 @@
 package coil3.gif
 
-import android.graphics.drawable.AnimatedImageDrawable
-import android.graphics.drawable.Drawable
-import coil3.Extras
-import coil3.getExtra
-import coil3.gif.MovieDrawable.Companion.REPEAT_INFINITE
+import android.os.Build.VERSION.SDK_INT
 import coil3.request.ImageRequest
 import coil3.request.Options
 
-/**
- * Set the number of times to repeat the animation if the result is an animated [Drawable].
- *
- * @see MovieDrawable.setRepeatCount
- * @see AnimatedImageDrawable.setRepeatCount
- */
-fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
-    require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-    extras[repeatCountKey] = repeatCount
-}
-
-val ImageRequest.repeatCount: Int
-    get() = getExtra(repeatCountKey)
-
-val Options.repeatCount: Int
-    get() = getExtra(repeatCountKey)
-
-val Extras.Key.Companion.repeatCount: Extras.Key<Int>
-    get() = repeatCountKey
-
-private val repeatCountKey = Extras.Key(default = REPEAT_INFINITE)
-
-// region Binary compatibility shims (Comment #5)
+// region Binary compatibility shims
 
 @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
 fun ImageRequest.Builder.animatedTransformation(
@@ -70,3 +44,12 @@ val Options.animationEndCallback: (() -> Unit)?
     get() = animationEndCallback
 
 // endregion
+
+internal actual fun validateRepeatCount(repeatCount: Int) {
+    val minimum = if (SDK_INT >= 28) {
+        AnimatedImageDecoder.ENCODED_LOOP_COUNT
+    } else {
+        MovieDrawable.REPEAT_INFINITE
+    }
+    require(repeatCount >= minimum) { "Invalid repeatCount: $repeatCount" }
+}
