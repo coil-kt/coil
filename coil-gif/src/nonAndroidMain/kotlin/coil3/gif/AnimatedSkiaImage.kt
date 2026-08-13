@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import coil3.Canvas
 import coil3.Image
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 import kotlinx.atomicfu.locks.SynchronizedObject
@@ -229,7 +230,7 @@ internal class AnimatedSkiaImage(
         val delayMs = (cumulativeFrameDurationsMs[frameIndex] - iterationElapsedTimeMs)
             .coerceAtLeast(1L)
         invalidationJob = coroutineScope.launch {
-            delay(delayMs)
+            delay(delayMs.milliseconds)
             invalidateTick++
         }
     }
