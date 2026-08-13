@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 fun Project.addAllMultiplatformTargets(
     skikoVersion: Provider<String>,
+    enableJs: Boolean = true,
     enableWasm: Boolean = true,
     enableNativeLinux: Boolean = true,
 ) {
@@ -21,23 +22,25 @@ fun Project.addAllMultiplatformTargets(
 
             val sharedKarmaConfigDirectory = rootProject.projectDir.resolve("karma.config.d")
 
-            js {
-                browser {
-                    testTask {
-                        useKarma {
-                            useChromeHeadless()
-                            useConfigDirectory(sharedKarmaConfigDirectory)
+            if (enableJs) {
+                js {
+                    browser {
+                        testTask {
+                            useKarma {
+                                useChromeHeadless()
+                                useConfigDirectory(sharedKarmaConfigDirectory)
+                            }
                         }
                     }
-                }
-                nodejs {
-                    testTask {
-                        // Compose Multiplatform is not supported on nodejs.
-                        enabled = false
+                    nodejs {
+                        testTask {
+                            // Compose Multiplatform is not supported on nodejs.
+                            enabled = false
+                        }
                     }
+                    binaries.executable()
+                    binaries.library()
                 }
-                binaries.executable()
-                binaries.library()
             }
 
             if (enableWasm) {
@@ -97,13 +100,18 @@ fun Project.addAllMultiplatformTargets(
             }
         }
 
-        applyKotlinJsImplicitDependencyWorkaround(enableWasm)
-        createSkikoWasmJsRuntimeDependency(skikoVersion)
+        applyKotlinJsImplicitDependencyWorkaround(enableJs, enableWasm)
+        if (enableJs || enableWasm) {
+            createSkikoWasmJsRuntimeDependency(skikoVersion)
+        }
     }
 }
 
 // https://youtrack.jetbrains.com/issue/KT-56025
-fun Project.applyKotlinJsImplicitDependencyWorkaround(enableWasm: Boolean = true) {
+fun Project.applyKotlinJsImplicitDependencyWorkaround(
+    enableJs: Boolean = true,
+    enableWasm: Boolean = true,
+) {
     tasks {
         val configureJs: Task.() -> Unit = {
             dependsOn(named("jsDevelopmentLibraryCompileSync"))
@@ -118,9 +126,11 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround(enableWasm: Boolean = true
             dependsOn(getByPath(":coil:jsProductionExecutableCompileSync"))
             dependsOn(getByPath(":coil:jsTestTestDevelopmentExecutableCompileSync"))
         }
-        named("jsBrowserProductionWebpack").configure(configureJs)
-        named("jsBrowserProductionLibraryDistribution").configure(configureJs)
-        named("jsNodeProductionLibraryDistribution").configure(configureJs)
+        if (enableJs) {
+            named("jsBrowserProductionWebpack").configure(configureJs)
+            named("jsBrowserProductionLibraryDistribution").configure(configureJs)
+            named("jsNodeProductionLibraryDistribution").configure(configureJs)
+        }
 
         if (enableWasm) {
             val configureWasmJs: Task.() -> Unit = {

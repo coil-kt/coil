@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, wasmJs]
+// Targets: [iosArm64, iosSimulatorArm64, linuxArm64, linuxX64, macosArm64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -23,19 +23,24 @@ abstract fun interface coil3.gif/AnimatedTransformation { // coil3.gif/AnimatedT
 }
 
 final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
-    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int, kotlin.time/TimeSource, kotlin.coroutines/CoroutineContext = ...) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int;kotlin.time.TimeSource;kotlin.coroutines.CoroutineContext){}[0]
+    constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int, kotlin.time/TimeSource) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int;kotlin.time.TimeSource){}[0]
 
     final suspend fun decode(): coil3.decode/DecodeResult // coil3.gif/AnimatedSkiaImageDecoder.decode|decode(){}[0]
 
     final class Factory : coil3.decode/Decoder.Factory { // coil3.gif/AnimatedSkiaImageDecoder.Factory|null[0]
-        constructor <init>(kotlin/Int = ..., kotlin.time/TimeSource = ..., kotlin.coroutines/CoroutineContext = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Int;kotlin.time.TimeSource;kotlin.coroutines.CoroutineContext){}[0]
+        constructor <init>(kotlin/Int = ..., kotlin.time/TimeSource = ...) // coil3.gif/AnimatedSkiaImageDecoder.Factory.<init>|<init>(kotlin.Int;kotlin.time.TimeSource){}[0]
 
         final fun create(coil3.fetch/SourceFetchResult, coil3.request/Options, coil3/ImageLoader): coil3.decode/Decoder? // coil3.gif/AnimatedSkiaImageDecoder.Factory.create|create(coil3.fetch.SourceFetchResult;coil3.request.Options;coil3.ImageLoader){}[0]
+
+        final object Companion { // coil3.gif/AnimatedSkiaImageDecoder.Factory.Companion|null[0]
+            final const val DEFAULT_BUFFERED_FRAMES_COUNT // coil3.gif/AnimatedSkiaImageDecoder.Factory.Companion.DEFAULT_BUFFERED_FRAMES_COUNT|{}DEFAULT_BUFFERED_FRAMES_COUNT[0]
+                final fun <get-DEFAULT_BUFFERED_FRAMES_COUNT>(): kotlin/Int // coil3.gif/AnimatedSkiaImageDecoder.Factory.Companion.DEFAULT_BUFFERED_FRAMES_COUNT.<get-DEFAULT_BUFFERED_FRAMES_COUNT>|<get-DEFAULT_BUFFERED_FRAMES_COUNT>(){}[0]
+        }
     }
 
     final object Companion { // coil3.gif/AnimatedSkiaImageDecoder.Companion|null[0]
-        final const val DEFAULT_BUFFERED_FRAMES_COUNT // coil3.gif/AnimatedSkiaImageDecoder.Companion.DEFAULT_BUFFERED_FRAMES_COUNT|{}DEFAULT_BUFFERED_FRAMES_COUNT[0]
-            final fun <get-DEFAULT_BUFFERED_FRAMES_COUNT>(): kotlin/Int // coil3.gif/AnimatedSkiaImageDecoder.Companion.DEFAULT_BUFFERED_FRAMES_COUNT.<get-DEFAULT_BUFFERED_FRAMES_COUNT>|<get-DEFAULT_BUFFERED_FRAMES_COUNT>(){}[0]
+        final const val ENCODED_LOOP_COUNT // coil3.gif/AnimatedSkiaImageDecoder.Companion.ENCODED_LOOP_COUNT|{}ENCODED_LOOP_COUNT[0]
+            final fun <get-ENCODED_LOOP_COUNT>(): kotlin/Int // coil3.gif/AnimatedSkiaImageDecoder.Companion.ENCODED_LOOP_COUNT.<get-ENCODED_LOOP_COUNT>|<get-ENCODED_LOOP_COUNT>(){}[0]
     }
 }
 
@@ -57,8 +62,12 @@ final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@
     final fun (coil3.request/ImageRequest).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.ImageRequest(){}[0]
 final val coil3.gif/animationStartCallback // coil3.gif/animationStartCallback|@coil3.request.Options{}animationStartCallback[0]
     final fun (coil3.request/Options).<get-animationStartCallback>(): kotlin/Function0<kotlin/Unit>? // coil3.gif/animationStartCallback.<get-animationStartCallback>|<get-animationStartCallback>@coil3.request.Options(){}[0]
-final val coil3.gif/coil3_gif_AnimatedSkiaImageDecoder$stableprop // coil3.gif/coil3_gif_AnimatedSkiaImageDecoder$stableprop|#static{}coil3_gif_AnimatedSkiaImageDecoder$stableprop[0]
-final val coil3.gif/coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop // coil3.gif/coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop|#static{}coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop[0]
+final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.Extras.Key.Companion{}repeatCount[0]
+    final fun (coil3/Extras.Key.Companion).<get-repeatCount>(): coil3/Extras.Key<kotlin/Int> // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.Extras.Key.Companion(){}[0]
+final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.request.ImageRequest{}repeatCount[0]
+    final fun (coil3.request/ImageRequest).<get-repeatCount>(): kotlin/Int // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.request.ImageRequest(){}[0]
+final val coil3.gif/repeatCount // coil3.gif/repeatCount|@coil3.request.Options{}repeatCount[0]
+    final fun (coil3.request/Options).<get-repeatCount>(): kotlin/Int // coil3.gif/repeatCount.<get-repeatCount>|<get-repeatCount>@coil3.request.Options(){}[0]
 
 final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedHeif(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedHeif|isAnimatedHeif@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
 final fun (coil3.decode/DecodeUtils).coil3.gif/isAnimatedWebP(okio/BufferedSource): kotlin/Boolean // coil3.gif/isAnimatedWebP|isAnimatedWebP@coil3.decode.DecodeUtils(okio.BufferedSource){}[0]
@@ -68,6 +77,6 @@ final fun (coil3.decode/DecodeUtils).coil3.gif/isWebP(okio/BufferedSource): kotl
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/animatedTransformation(coil3.gif/AnimatedTransformation?): coil3.request/ImageRequest.Builder // coil3.gif/animatedTransformation|animatedTransformation@coil3.request.ImageRequest.Builder(coil3.gif.AnimatedTransformation?){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationEnd(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationEnd|onAnimationEnd@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
 final fun (coil3.request/ImageRequest.Builder).coil3.gif/onAnimationStart(kotlin/Function0<kotlin/Unit>?): coil3.request/ImageRequest.Builder // coil3.gif/onAnimationStart|onAnimationStart@coil3.request.ImageRequest.Builder(kotlin.Function0<kotlin.Unit>?){}[0]
+final fun (coil3.request/ImageRequest.Builder).coil3.gif/repeatCount(kotlin/Int): coil3.request/ImageRequest.Builder // coil3.gif/repeatCount|repeatCount@coil3.request.ImageRequest.Builder(kotlin.Int){}[0]
+final fun (coil3/ImageLoader.Builder).coil3.gif/repeatCount(kotlin/Int): coil3/ImageLoader.Builder // coil3.gif/repeatCount|repeatCount@coil3.ImageLoader.Builder(kotlin.Int){}[0]
 final fun coil3.gif/AnimatedImageDecoderFactory(): coil3.decode/Decoder.Factory // coil3.gif/AnimatedImageDecoderFactory|AnimatedImageDecoderFactory(){}[0]
-final fun coil3.gif/coil3_gif_AnimatedSkiaImageDecoder$stableprop_getter(): kotlin/Int // coil3.gif/coil3_gif_AnimatedSkiaImageDecoder$stableprop_getter|coil3_gif_AnimatedSkiaImageDecoder$stableprop_getter(){}[0]
-final fun coil3.gif/coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop_getter(): kotlin/Int // coil3.gif/coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop_getter|coil3_gif_AnimatedSkiaImageDecoder_Factory$stableprop_getter(){}[0]

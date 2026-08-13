@@ -3,11 +3,9 @@ public final class coil3/gif/AnimatedImageDecoderFactory_nonAndroidKt {
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
-	public static final field $stable I
 	public static final field Companion Lcoil3/gif/AnimatedSkiaImageDecoder$Companion;
-	public static final field DEFAULT_BUFFERED_FRAMES_COUNT I
-	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ILkotlin/time/TimeSource;Lkotlin/coroutines/CoroutineContext;)V
-	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ILkotlin/time/TimeSource;Lkotlin/coroutines/CoroutineContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final field ENCODED_LOOP_COUNT I
+	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ILkotlin/time/TimeSource;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -15,11 +13,15 @@ public final class coil3/gif/AnimatedSkiaImageDecoder$Companion {
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder$Factory : coil3/decode/Decoder$Factory {
-	public static final field $stable I
+	public static final field Companion Lcoil3/gif/AnimatedSkiaImageDecoder$Factory$Companion;
+	public static final field DEFAULT_BUFFERED_FRAMES_COUNT I
 	public fun <init> ()V
-	public fun <init> (ILkotlin/time/TimeSource;Lkotlin/coroutines/CoroutineContext;)V
-	public synthetic fun <init> (ILkotlin/time/TimeSource;Lkotlin/coroutines/CoroutineContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ILkotlin/time/TimeSource;)V
+	public synthetic fun <init> (ILkotlin/time/TimeSource;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/gif/AnimatedSkiaImageDecoder$Factory$Companion {
 }
 
 public abstract interface class coil3/gif/AnimatedTransformation {
@@ -45,8 +47,13 @@ public final class coil3/gif/ImageRequestsKt {
 	public static final fun getAnimationStartCallback (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
 	public static final fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
 	public static final fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getRepeatCount (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getRepeatCount (Lcoil3/request/ImageRequest;)I
+	public static final fun getRepeatCount (Lcoil3/request/Options;)I
 	public static final fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
 	public static final fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun repeatCount (Lcoil3/ImageLoader$Builder;I)Lcoil3/ImageLoader$Builder;
+	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 }
 
 public final class coil3/gif/PixelOpacity : java/lang/Enum {

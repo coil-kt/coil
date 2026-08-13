@@ -1,6 +1,7 @@
 # Gifs
 
-Coil supports animated GIFs, WebP, and HEIF images across all platforms.
+Coil supports animated GIFs and WebP images on Android, JVM desktop, and supported native
+targets. Animated HEIF images are also supported on Android 28 and above.
 
 To add GIF support, import the extension library:
 
@@ -16,7 +17,7 @@ And that's it! The `ImageLoader` will automatically detect any animated images u
 |---------|-----------|---------|
 | `AnimatedImageDecoder` | Android 28+ | GIF, WebP, HEIF |
 | `GifDecoder` | Android (all versions) | GIF only |
-| `AnimatedSkiaImageDecoder` | iOS, macOS, Desktop, Web | GIF, WebP |
+| `AnimatedSkiaImageDecoder` | JVM desktop, iOS, macOS, Linux native | GIF, WebP |
 
 ## Usage
 
@@ -44,7 +45,7 @@ val imageLoader = ImageLoader.Builder(context)
     }
     .build()
 
-// Non-Android (iOS, Desktop, Web)
+// Non-Android (JVM desktop and supported native targets)
 val imageLoader = ImageLoader.Builder(context)
     .components {
         add(AnimatedSkiaImageDecoder.Factory())
@@ -54,10 +55,13 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Transformations
 
-To transform the pixel data of each frame of an animated image, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation). This works on all platforms.
+To transform the pixel data of each frame of an animated image, see [AnimatedTransformation](/coil/api/coil-gif/coil3.gif/-animated-transformation).
 
 ## Notes
 
 - `GifDecoder` supports all Android API levels but is slower than `AnimatedImageDecoder`.
 - `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API (API 28+) and supports animated WebP and HEIF.
-- `AnimatedSkiaImageDecoder` uses Skia for decoding and is available on non-Android platforms.
+- `AnimatedSkiaImageDecoder` uses Skia for decoding. Its factory keeps at most two decoded frames
+  in memory by default. Pass `bufferedFramesCount` to tune that bound for a specific workload.
+- JavaScript and WebAssembly are not supported because Skia's animated-image decoder does not
+  currently provide usable performance on those targets.

@@ -6,7 +6,6 @@ plugins {
     id("com.android.kotlin.multiplatform.library")
     id("kotlin-multiplatform")
     id("org.jetbrains.kotlinx.atomicfu")
-    id("org.jetbrains.compose")
 }
 
 addAllMultiplatformTargets(
@@ -32,7 +31,7 @@ kotlin {
         named("nonAndroidMain") {
             dependencies {
                 implementation(libs.skiko)
-                implementation(compose.runtime)
+                implementation(libs.compose.runtime)
             }
         }
         commonTest {
@@ -47,13 +46,25 @@ kotlin {
                 implementation(skikoAwtRuntimeDependency())
             }
         }
+        getByName("jvmTest").resources.apply {
+            srcDir(project(":internal:test-utils").projectDir.resolve("src/androidMain/assets"))
+            include(
+                "animated_3loops.gif",
+                "animated_infinite.gif",
+                "animated.webp",
+                "frame*.png",
+                "static.webp",
+            )
+        }
         getByName("androidHostTest") {
+            kotlin.srcDir("src/androidUnitTest/kotlin")
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
         getByName("androidDeviceTest") {
+            kotlin.srcDir("src/androidInstrumentedTest/kotlin")
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
