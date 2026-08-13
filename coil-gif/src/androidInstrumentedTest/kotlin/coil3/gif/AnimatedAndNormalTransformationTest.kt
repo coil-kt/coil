@@ -11,7 +11,6 @@ import android.graphics.PorterDuff.Mode.SRC
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
-import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.asDrawable
@@ -42,11 +41,7 @@ class AnimatedAndNormalTransformationTest {
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .components {
-                if (SDK_INT >= 28) {
-                    add(AnimatedImageDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
+                add(AnimatedImageDecoderFactory())
             }
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
