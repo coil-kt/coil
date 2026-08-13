@@ -1,7 +1,6 @@
 package coil3.gif
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
@@ -48,16 +47,11 @@ class AnimationCallbacksTest {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
-        val decoderFactory = if (SDK_INT >= 28) {
-            AnimatedImageDecoder.Factory()
-        } else {
-            GifDecoder.Factory()
-        }
 
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///android_asset/animated.gif")
             .target(imageView)
-            .decoderFactory(decoderFactory)
+            .decoderFactory(AnimatedImageDecoderFactory())
             .repeatCount(0)
             .onAnimationStart {
                 isStartCalled.value = true
