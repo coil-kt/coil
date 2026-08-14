@@ -3,8 +3,10 @@ package coil3.gif
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import coil3.BitmapImage
 import coil3.Canvas
 import coil3.Image
+import coil3.asImage
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -40,6 +42,11 @@ internal class AnimatedSkiaImage(
 ) : Image {
 
     private val frameCount = codec.frameCount
+
+    init {
+        require(frameCount > 0) { "frameCount must be > 0" }
+    }
+
     private val frameInfos = codec.framesInfo
     internal val frameBufferCapacity = minOf(bufferedFramesCount, frameCount)
 
@@ -92,8 +99,7 @@ internal class AnimatedSkiaImage(
         }
     }
 
-    internal val singleIterationDurationMs =
-        cumulativeFrameDurationsMs.lastOrNull() ?: 0L
+    internal val singleIterationDurationMs = cumulativeFrameDurationsMs.last()
 
     private var invalidateTick by mutableIntStateOf(0)
     private var animationStartTime: TimeMark? = null
@@ -110,9 +116,11 @@ internal class AnimatedSkiaImage(
                 ensureFrame(frameIndex)
             }
         } catch (throwable: Throwable) {
-            frames.forEach { it.image.close() }
-            outputBitmap?.close()
-            decodeBitmap.close()
+            try {
+                frames.forEach { it.image.close() }
+            } finally {
+                workingBitmaps.close()
+            }
             throw throwable
         }
     }
@@ -120,8 +128,6 @@ internal class AnimatedSkiaImage(
     override fun draw(canvas: Canvas) {
         @Suppress("UNUSED_VARIABLE")
         val invalidation = invalidateTick
-
-        if (frameCount == 0) return
 
         if (frameCount == 1) {
             setBufferWindowStart(0)
@@ -300,19 +306,9 @@ internal class AnimatedSkiaImage(
         )
         lastDecodedFrameIndex = frameIndex
 
-        val frameBitmap = outputBitmap?.also { output ->
-            checkNotNull(decodeBitmap.peekPixels()).use { source ->
-                checkNotNull(output.peekPixels()).use { destination ->
-                    check(source.scalePixels(destination, SamplingMode.DEFAULT)) {
-                        "Unable to resize animated image frame."
-                    }
-                }
-            }
-        } ?: decodeBitmap
+        val frameBitmap = outputBitmap?.also(decodeBitmap::scalePixelsTo) ?: decodeBitmap
 
-        if (animatedTransformation != null) {
-            Canvas(frameBitmap).use(animatedTransformation::transform)
-        }
+        frameBitmap.applyTransformation(animatedTransformation)
         return SkiaImage.makeFromBitmap(frameBitmap)
     }
 
@@ -329,7 +325,6 @@ internal class AnimatedSkiaImage(
     }
 
     private fun isInBufferWindow(frameIndex: Int, windowStart: Int): Boolean {
-        if (frameCount == 0) return false
         val distance = if (frameIndex >= windowStart) {
             frameIndex.toLong() - windowStart
         } else {
@@ -348,12 +343,40 @@ internal class AnimatedSkiaImage(
     )
 }
 
+internal fun decodeStaticImage(
+    codec: Codec,
+    outputImageInfo: ImageInfo,
+    animatedTransformation: AnimatedTransformation?,
+): BitmapImage {
+    val workingBitmaps = createWorkingBitmaps(
+        decodeImageInfo = codec.imageInfo,
+        outputImageInfo = outputImageInfo,
+        needsOutputBitmap = outputImageInfo != codec.imageInfo,
+    )
+    val decodeBitmap = workingBitmaps.decode
+    val outputBitmap = workingBitmaps.output
+    var retainedBitmap: Bitmap? = null
+    try {
+        codec.readPixels(decodeBitmap)
+        val resultBitmap = outputBitmap?.also(decodeBitmap::scalePixelsTo) ?: decodeBitmap
+        resultBitmap.applyTransformation(animatedTransformation)
+        resultBitmap.setImmutable()
+
+        val image = resultBitmap.asImage()
+        // Keep the bitmap that backs the returned image open.
+        retainedBitmap = resultBitmap
+        return image
+    } finally {
+        workingBitmaps.closeExcept(retainedBitmap)
+    }
+}
+
 private fun createWorkingBitmaps(
     decodeImageInfo: ImageInfo,
     outputImageInfo: ImageInfo,
     needsOutputBitmap: Boolean,
 ): WorkingBitmaps {
-    val decode = allocateBitmap(decodeImageInfo, "animated image")
+    val decode = allocateBitmap(decodeImageInfo, "image")
     val output = try {
         if (needsOutputBitmap) allocateBitmap(outputImageInfo, "output image") else null
     } catch (throwable: Throwable) {
@@ -374,10 +397,35 @@ private fun allocateBitmap(imageInfo: ImageInfo, description: String): Bitmap {
     }
 }
 
+private fun Bitmap.scalePixelsTo(destination: Bitmap) {
+    checkNotNull(peekPixels()).use { source ->
+        checkNotNull(destination.peekPixels()).use { destinationPixels ->
+            check(source.scalePixels(destinationPixels, SamplingMode.DEFAULT)) {
+                "Unable to resize image frame."
+            }
+        }
+    }
+}
+
+private fun Bitmap.applyTransformation(transformation: AnimatedTransformation?) {
+    transformation ?: return
+    Canvas(this).use(transformation::transform)
+}
+
 private class WorkingBitmaps(
     val decode: Bitmap,
     val output: Bitmap?,
-)
+) {
+    fun close() = closeExcept(retainedBitmap = null)
+
+    fun closeExcept(retainedBitmap: Bitmap?) {
+        try {
+            if (output !== retainedBitmap) output?.close()
+        } finally {
+            if (decode !== retainedBitmap) decode.close()
+        }
+    }
+}
 
 private val AnimationFrameInfo.safeFrameDuration: Int
     get() = if (duration <= 0) DEFAULT_FRAME_DURATION else duration

@@ -1,7 +1,6 @@
 package coil3.gif
 
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
@@ -28,7 +27,6 @@ import org.jetbrains.skia.ImageInfo
  * @param bufferedFramesCount The maximum number of decoded frames to keep in memory. Must be at
  * least 1. Frames outside the buffer are decoded again as the animation advances.
  */
-@OptIn(ExperimentalCoilApi::class)
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
     private val options: Options,
@@ -49,10 +47,25 @@ class AnimatedSkiaImageDecoder(
             data.close()
         }
 
+        var ownsCodec = true
         try {
+            val frameCount = codec.frameCount
+            check(frameCount > 0) { "Animated images must contain at least 1 frame." }
+
             val (outputImageInfo, isSampled) = computeOutputImageInfo(codec.imageInfo, options)
+            if (frameCount == 1) {
+                return DecodeResult(
+                    image = decodeStaticImage(
+                        codec = codec,
+                        outputImageInfo = outputImageInfo,
+                        animatedTransformation = options.animatedTransformation,
+                    ),
+                    isSampled = isSampled,
+                )
+            }
+
             val coroutineScope = CoroutineScope(currentCoroutineContext() + SupervisorJob())
-            return DecodeResult(
+            val result = DecodeResult(
                 image = AnimatedSkiaImage(
                     codec = codec,
                     coroutineScope = coroutineScope,
@@ -67,9 +80,10 @@ class AnimatedSkiaImageDecoder(
                 ),
                 isSampled = isSampled,
             )
-        } catch (throwable: Throwable) {
-            codec.close()
-            throw throwable
+            ownsCodec = false
+            return result
+        } finally {
+            if (ownsCodec) codec.close()
         }
     }
 
