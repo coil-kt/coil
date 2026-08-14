@@ -87,6 +87,35 @@ class AnimatedSkiaImageDecoder(
         }
     }
 
+    private fun computeOutputImageInfo(
+        source: ImageInfo,
+        options: Options,
+    ): Pair<ImageInfo, Boolean> {
+        val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+            srcWidth = source.width,
+            srcHeight = source.height,
+            targetSize = options.size,
+            scale = options.scale,
+            maxSize = options.maxBitmapSize,
+        )
+        var multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = source.width,
+            srcHeight = source.height,
+            dstWidth = dstWidth,
+            dstHeight = dstHeight,
+            scale = options.scale,
+            maxSize = options.maxBitmapSize,
+        )
+        if (options.precision == Precision.INEXACT) {
+            multiplier = multiplier.coerceAtMost(1.0)
+        }
+
+        val width = (multiplier * source.width).toInt().coerceAtLeast(1)
+        val height = (multiplier * source.height).toInt().coerceAtLeast(1)
+        return source.withWidthHeight(width, height) to
+            (width < source.width || height < source.height)
+    }
+
     /**
      * @param bufferedFramesCount The maximum number of decoded frames to keep in memory. Frames
      * outside the buffer are decoded again as the animation advances.
@@ -131,33 +160,4 @@ class AnimatedSkiaImageDecoder(
          */
         const val ENCODED_LOOP_COUNT = -2
     }
-}
-
-private fun computeOutputImageInfo(
-    source: ImageInfo,
-    options: Options,
-): Pair<ImageInfo, Boolean> {
-    val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
-        srcWidth = source.width,
-        srcHeight = source.height,
-        targetSize = options.size,
-        scale = options.scale,
-        maxSize = options.maxBitmapSize,
-    )
-    var multiplier = DecodeUtils.computeSizeMultiplier(
-        srcWidth = source.width,
-        srcHeight = source.height,
-        dstWidth = dstWidth,
-        dstHeight = dstHeight,
-        scale = options.scale,
-        maxSize = options.maxBitmapSize,
-    )
-    if (options.precision == Precision.INEXACT) {
-        multiplier = multiplier.coerceAtMost(1.0)
-    }
-
-    val width = (multiplier * source.width).toInt().coerceAtLeast(1)
-    val height = (multiplier * source.height).toInt().coerceAtLeast(1)
-    return source.withWidthHeight(width, height) to
-        (width < source.width || height < source.height)
 }
