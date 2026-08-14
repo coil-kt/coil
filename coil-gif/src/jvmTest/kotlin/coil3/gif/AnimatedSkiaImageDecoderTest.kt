@@ -1,5 +1,6 @@
 package coil3.gif
 
+import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.DataSource
@@ -32,7 +33,9 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import okio.Buffer
 import okio.BufferedSource
+import okio.ByteString.Companion.decodeHex
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -67,6 +70,62 @@ class AnimatedSkiaImageDecoderTest {
             result.image.toBitmap().use { secondFrame ->
                 assertFalse(secondFrame.isSimilarTo(firstFrame, threshold = 0.99))
             }
+        }
+    }
+
+    @Test
+    fun singleFrameGifDecodesToBitmapImage() = runTest {
+        val result = decode(
+            result = staticGifSource(),
+            timeSource = FakeTimeSource(),
+        )
+
+        val image = assertIs<BitmapImage>(result.image)
+        image.bitmap.use {
+            assertEquals(2, image.width)
+            assertEquals(2, image.height)
+            assertFalse(result.isSampled)
+        }
+    }
+
+    @Test
+    fun singleFrameGifIsScaledAndReportsSampling() = runTest {
+        val result = decode(
+            result = staticGifSource(),
+            timeSource = FakeTimeSource(),
+            options = Options(
+                context = context,
+                size = Size(1, 1),
+                precision = Precision.EXACT,
+            ),
+        )
+
+        val image = assertIs<BitmapImage>(result.image)
+        image.bitmap.use {
+            assertEquals(1, image.width)
+            assertEquals(1, image.height)
+            assertTrue(result.isSampled)
+        }
+    }
+
+    @Test
+    fun singleFrameGifAppliesAnimatedTransformation() = runTest {
+        val extras = ImageRequest.Builder(context)
+            .animatedTransformation { canvas ->
+                canvas.clear(Color.RED)
+                PixelOpacity.OPAQUE
+            }
+            .build()
+            .extras
+        val result = decode(
+            result = staticGifSource(),
+            timeSource = FakeTimeSource(),
+            options = Options(context, extras = extras),
+        )
+
+        val image = assertIs<BitmapImage>(result.image)
+        image.bitmap.use { bitmap ->
+            assertEquals(Color.RED, bitmap.getColor(0, 0))
         }
     }
 
@@ -293,13 +352,27 @@ class AnimatedSkiaImageDecoderTest {
         bufferedFramesCount: Int = AnimatedSkiaImageDecoder.Factory.DEFAULT_BUFFERED_FRAMES_COUNT,
         options: Options = Options(context),
     ): DecodeResult {
+        return decode(
+            result = resourceSource(resource),
+            timeSource = timeSource,
+            bufferedFramesCount = bufferedFramesCount,
+            options = options,
+        )
+    }
+
+    private suspend fun decode(
+        result: SourceFetchResult,
+        timeSource: FakeTimeSource,
+        bufferedFramesCount: Int = AnimatedSkiaImageDecoder.Factory.DEFAULT_BUFFERED_FRAMES_COUNT,
+        options: Options = Options(context),
+    ): DecodeResult {
         val factory = AnimatedSkiaImageDecoder.Factory(
             bufferedFramesCount = bufferedFramesCount,
             timeSource = timeSource,
         )
         val decoder = assertNotNull(
             factory.create(
-                result = resourceSource(resource),
+                result = result,
                 options = options,
                 imageLoader = ImageLoader(context),
             ),
@@ -324,4 +397,15 @@ class AnimatedSkiaImageDecoderTest {
         mimeType = null,
         dataSource = DataSource.DISK,
     )
+
+    private fun staticGifSource() = Buffer()
+        .write(STATIC_GIF)
+        .asSourceResult()
+
+    companion object {
+        private val STATIC_GIF = """
+            47494638396102000200800000000000ffffff21f90401000000002c000000000100010000
+            02024401003b
+        """.trimIndent().replace("\n", "").decodeHex()
+    }
 }
