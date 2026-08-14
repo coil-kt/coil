@@ -2,7 +2,6 @@ package coil3.gif
 
 import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.DataSource
 import coil3.decode.DecodeResult
 import coil3.decode.ImageSource
@@ -42,7 +41,7 @@ import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import org.jetbrains.skia.Color
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedSkiaImageDecoderTest {
 
     @Test
