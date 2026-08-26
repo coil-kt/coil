@@ -2,6 +2,18 @@ public final class coil3/gif/AnimatedImageDecoderFactory_nonAndroidKt {
 	public static final fun AnimatedImageDecoderFactory ()Lcoil3/decode/Decoder$Factory;
 }
 
+public final class coil3/gif/AnimatedSkiaImage : coil3/Image, java/lang/AutoCloseable {
+	public fun close ()V
+	public fun draw (Lorg/jetbrains/skia/Canvas;)V
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public final fun isRunning ()Z
+	public final fun start ()V
+	public final fun stop ()V
+}
+
 public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
 	public static final field Companion Lcoil3/gif/AnimatedSkiaImageDecoder$Companion;
 	public static final field ENCODED_LOOP_COUNT I

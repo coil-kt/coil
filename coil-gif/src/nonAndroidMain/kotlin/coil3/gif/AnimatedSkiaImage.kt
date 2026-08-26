@@ -15,6 +15,7 @@ import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -28,7 +29,14 @@ import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.SamplingMode
 import org.jetbrains.skia.impl.use
 
-internal class AnimatedSkiaImage(
+/**
+ * A Skia-backed animated [Image].
+ *
+ * The image is initially stopped and displays its first frame. Call [start] to start or restart the
+ * animation from its first frame, [stop] to retain the most recently drawn frame, and [close] to
+ * release its native resources early. Once closed, this image cannot be restarted or drawn.
+ */
+class AnimatedSkiaImage internal constructor(
     private val codec: Codec,
     private val coroutineScope: CoroutineScope,
     private val timeSource: TimeSource,
@@ -40,7 +48,7 @@ internal class AnimatedSkiaImage(
     private val onAnimationStart: (() -> Unit)? = null,
     private val onAnimationEnd: (() -> Unit)? = null,
     bufferedFramesCount: Int,
-) : Image {
+) : Image, AutoCloseable {
 
     private val frameCount = codec.frameCount
 
@@ -57,7 +65,8 @@ internal class AnimatedSkiaImage(
     private var bufferWindowStart = 0
     private var lastDecodedFrameIndex = NO_FRAME
     private var lastDrawnFrameIndex = NO_FRAME
-    private var stoppedFrame: Frame? = null
+    private var animationState = AnimationState.IDLE
+    private var retainedFrame: Frame? = null
 
     private val workingBitmaps = createWorkingBitmaps(
         decodeImageInfo = decodeImageInfo,
@@ -104,7 +113,6 @@ internal class AnimatedSkiaImage(
 
     private var invalidateTick by mutableIntStateOf(0)
     private var animationStartTime: TimeMark? = null
-    private var hasNotifiedAnimationEnd = false
     private var prefetchJob: Job? = null
     private var prefetchWindowStart = NO_FRAME
     private var invalidationJob: Job? = null
@@ -117,7 +125,7 @@ internal class AnimatedSkiaImage(
                 ensureFrame(frameIndex)
             }
         } catch (throwable: Throwable) {
-            if (throwable !is Exception || !isAnimationStopped) {
+            if (throwable !is Exception || !hasDecodeFailed) {
                 try {
                     frames.forEach { it.image.close() }
                 } finally {
@@ -128,12 +136,114 @@ internal class AnimatedSkiaImage(
         }
     }
 
+    /**
+     * Start the animation, or do nothing if it is already running.
+     *
+     * The animation is reset to its first frame when it is next drawn.
+     */
+    fun start() {
+        if (frameCount == 1) return
+
+        val didStart = synchronized(frameLock) {
+            when (animationState) {
+                AnimationState.IDLE,
+                AnimationState.STOPPED,
+                -> {
+                    animationState = AnimationState.STARTING
+                    true
+                }
+                AnimationState.STARTING,
+                AnimationState.RUNNING,
+                AnimationState.FAILED,
+                AnimationState.CLOSED,
+                -> false
+            }
+        }
+        if (!didStart) return
+
+        cancelAnimationJobs()
+        invalidateTick++
+    }
+
+    /** Stop the animation and retain the most recently drawn frame. */
+    fun stop() {
+        val didStop = synchronized(frameLock) {
+            val frame = when (animationState) {
+                AnimationState.STARTING ->
+                    retainedFrame
+                    ?: frames.firstOrNull { it.index == lastDrawnFrameIndex }
+                    ?: frames.firstOrNull()
+                AnimationState.RUNNING -> {
+                    frames.firstOrNull { it.index == lastDrawnFrameIndex } ?: frames.lastOrNull()
+                }
+                AnimationState.IDLE,
+                AnimationState.STOPPED,
+                AnimationState.FAILED,
+                AnimationState.CLOSED,
+                -> return@synchronized false
+            } ?: return@synchronized false
+
+            animationState = AnimationState.STOPPED
+            retainedFrame = frame
+            bufferWindowStart = frame.index
+            animationStartTime = null
+            true
+        }
+        if (!didStop) return
+
+        cancelAnimationJobs()
+        onAnimationEnd?.invoke()
+        invalidateTick++
+    }
+
+    /** Returns true if this image's animation is currently running. */
+    fun isRunning(): Boolean {
+        return synchronized(frameLock) { animationState.isRunning }
+    }
+
+    /**
+     * Release this image's native resources.
+     *
+     * This method is idempotent. Once closed, this image cannot be restarted or drawn.
+     */
+    override fun close() {
+        val shouldClose = synchronized(frameLock) {
+            if (animationState == AnimationState.CLOSED) {
+                false
+            } else {
+                animationState = AnimationState.CLOSED
+                retainedFrame = null
+                animationStartTime = null
+                true
+            }
+        }
+        if (!shouldClose) return
+
+        cancelAnimationJobs()
+        coroutineScope.cancel()
+        synchronized(decodeLock) {
+            val images = synchronized(frameLock) {
+                frames.map { it.image }.also {
+                    frames.clear()
+                    lastDrawnFrameIndex = NO_FRAME
+                }
+            }
+            try {
+                images.forEach { it.close() }
+            } finally {
+                try {
+                    workingBitmaps.close()
+                } finally {
+                    codec.close()
+                }
+            }
+        }
+    }
+
     override fun draw(canvas: Canvas) {
         // Read this state so Compose observes it and redraws when its value changes.
         @Suppress("UNUSED_VARIABLE")
         val invalidation = invalidateTick
-
-        if (canvas.drawStoppedFrame()) return
 
         if (frameCount == 1) {
             setBufferWindowStart(0)
@@ -141,24 +251,34 @@ internal class AnimatedSkiaImage(
             return
         }
 
-        val startTime = animationStartTime ?: timeSource.markNow().also {
-            animationStartTime = it
-            onAnimationStart?.invoke()
+        when (synchronized(frameLock) { animationState }) {
+            AnimationState.IDLE -> {
+                setBufferWindowStart(0)
+                canvas.drawFrame(0)
+                return
+            }
+            AnimationState.STARTING -> beginAnimation()
+            AnimationState.RUNNING -> Unit
+            AnimationState.STOPPED,
+            AnimationState.FAILED,
+            AnimationState.CLOSED,
+            -> {
+                canvas.drawRetainedFrame()
+                return
+            }
         }
+        if (canvas.drawRetainedFrame()) return
+
+        val startTime = synchronized(frameLock) { animationStartTime } ?: return
         val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
         val isAnimationComplete = maxIterationCount > 0L &&
             elapsedTimeMs / singleIterationDurationMs >= maxIterationCount
 
         if (isAnimationComplete) {
-            prefetchJob?.cancel()
-            invalidationJob?.cancel()
             val lastFrameIndex = frameCount - 1
             setBufferWindowStart(lastFrameIndex)
             if (!canvas.drawFrame(lastFrameIndex)) return
-            if (!hasNotifiedAnimationEnd) {
-                hasNotifiedAnimationEnd = true
-                onAnimationEnd?.invoke()
-            }
+            stop()
             return
         }
 
@@ -172,8 +292,8 @@ internal class AnimatedSkiaImage(
     internal val bufferedFrameCount: Int
         get() = synchronized(frameLock) { frames.size }
 
-    internal val isAnimationStopped: Boolean
-        get() = synchronized(frameLock) { stoppedFrame != null }
+    private val hasDecodeFailed: Boolean
+        get() = synchronized(frameLock) { animationState == AnimationState.FAILED }
 
     private fun frameIndexAt(elapsedTimeMs: Long): Int {
         val iterationElapsedTimeMs = elapsedTimeMs % singleIterationDurationMs
@@ -192,36 +312,77 @@ internal class AnimatedSkiaImage(
 
     private fun setBufferWindowStart(frameIndex: Int) {
         synchronized(frameLock) {
-            if (stoppedFrame == null) {
+            if (animationState.canDecodeFrames) {
                 bufferWindowStart = frameIndex
             }
         }
     }
 
-    private fun stopAnimation() {
-        val didStop = synchronized(frameLock) {
-            if (stoppedFrame != null) {
+    private fun beginAnimation() {
+        val didBegin = synchronized(frameLock) {
+            if (animationState != AnimationState.STARTING) {
                 false
             } else {
-                val retainedFrame = frames.firstOrNull { it.index == lastDrawnFrameIndex }
+                animationState = AnimationState.RUNNING
+                retainedFrame = null
+                bufferWindowStart = 0
+                animationStartTime = timeSource.markNow()
+                prefetchWindowStart = NO_FRAME
+                invalidationFrameIndex = NO_FRAME
+                invalidationIteration = -1L
+                true
+            }
+        }
+        if (didBegin) onAnimationStart?.invoke()
+    }
+
+    private fun stopOnDecodeFailure() {
+        var notifyAnimationEnd = false
+        val didStop = synchronized(frameLock) {
+            if (animationState == AnimationState.FAILED ||
+                animationState == AnimationState.CLOSED
+            ) {
+                false
+            } else {
+                val frame = frames.firstOrNull { it.index == lastDrawnFrameIndex }
                     ?: frames.lastOrNull()
                     ?: return@synchronized false
-                stoppedFrame = retainedFrame
-                bufferWindowStart = retainedFrame.index
+                notifyAnimationEnd = animationState.isRunning
+                animationState = AnimationState.FAILED
+                retainedFrame = frame
+                bufferWindowStart = frame.index
+                animationStartTime = null
                 true
             }
         }
         if (didStop) {
-            prefetchJob?.cancel()
-            invalidationJob?.cancel()
+            cancelAnimationJobs()
+            if (notifyAnimationEnd) onAnimationEnd?.invoke()
         }
     }
 
-    private fun Canvas.drawStoppedFrame(): Boolean {
+    private fun cancelAnimationJobs() {
+        prefetchJob?.cancel()
+        prefetchJob = null
+        invalidationJob?.cancel()
+        invalidationJob = null
+    }
+
+    private fun Canvas.drawRetainedFrame(): Boolean {
         return synchronized(frameLock) {
-            val frame = stoppedFrame ?: return@synchronized false
-            drawImage(frame.image, left = 0f, top = 0f)
-            true
+            when (animationState) {
+                AnimationState.STOPPED,
+                AnimationState.FAILED,
+                -> {
+                    retainedFrame?.let { drawImage(it.image, left = 0f, top = 0f) }
+                    true
+                }
+                AnimationState.CLOSED -> true
+                AnimationState.IDLE,
+                AnimationState.STARTING,
+                AnimationState.RUNNING,
+                -> false
+            }
         }
     }
 
@@ -229,9 +390,8 @@ internal class AnimatedSkiaImage(
     private fun Canvas.drawFrame(frameIndex: Int): Boolean {
         while (true) {
             val drawResult: Boolean? = synchronized(frameLock) {
-                val retainedFrame = stoppedFrame
-                if (retainedFrame != null) {
-                    drawImage(retainedFrame.image, left = 0f, top = 0f)
+                if (!animationState.canDecodeFrames) {
+                    retainedFrame?.let { drawImage(it.image, left = 0f, top = 0f) }
                     false
                 } else {
                     frames.firstOrNull { it.index == frameIndex }?.let { frame ->
@@ -246,7 +406,7 @@ internal class AnimatedSkiaImage(
             try {
                 ensureFrame(frameIndex)
             } catch (exception: Exception) {
-                if (!drawStoppedFrame()) throw exception
+                if (!drawRetainedFrame()) throw exception
                 return false
             }
         }
@@ -273,7 +433,7 @@ internal class AnimatedSkiaImage(
     }
 
     private fun scheduleInvalidation(frameIndex: Int, elapsedTimeMs: Long) {
-        if (isAnimationStopped) return
+        if (!isRunning()) return
 
         val iteration = elapsedTimeMs / singleIterationDurationMs
         if (invalidationFrameIndex == frameIndex &&
@@ -291,13 +451,13 @@ internal class AnimatedSkiaImage(
             .coerceAtLeast(1L)
         invalidationJob = coroutineScope.launch {
             delay(delayMs.milliseconds)
-            invalidateTick++
+            if (isRunning()) invalidateTick++
         }
     }
 
     private fun isBufferWindowComplete(frameIndex: Int): Boolean {
         return synchronized(frameLock) {
-            if (stoppedFrame != null) return@synchronized true
+            if (!animationState.canDecodeFrames) return@synchronized true
             for (offset in 0 until frameBufferCapacity) {
                 val expectedFrameIndex = nextFrameIndex(frameIndex, offset)
                 if (frames.none { it.index == expectedFrameIndex }) {
@@ -311,13 +471,13 @@ internal class AnimatedSkiaImage(
     private fun ensureFrame(frameIndex: Int) {
         try {
             synchronized(frameLock) {
-                if (stoppedFrame != null) return
+                if (!animationState.canDecodeFrames) return
                 frames.firstOrNull { it.index == frameIndex }?.let { return }
             }
 
             synchronized(decodeLock) {
                 synchronized(frameLock) {
-                    if (stoppedFrame != null) return
+                    if (!animationState.canDecodeFrames) return
                     frames.firstOrNull { it.index == frameIndex }?.let { return }
                     if (!isInBufferWindow(frameIndex, bufferWindowStart)) return
                 }
@@ -327,7 +487,7 @@ internal class AnimatedSkiaImage(
                 var isRetained = false
                 try {
                     synchronized(frameLock) {
-                        if (stoppedFrame == null &&
+                        if (animationState.canDecodeFrames &&
                             isInBufferWindow(frameIndex, bufferWindowStart)
                         ) {
                             reserveFrameSlot()
@@ -342,7 +502,7 @@ internal class AnimatedSkiaImage(
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: Exception) {
-            stopAnimation()
+            stopOnDecodeFailure()
             throw exception
         }
     }
@@ -392,6 +552,22 @@ internal class AnimatedSkiaImage(
 
     private fun nextFrameIndex(frameIndex: Int, offset: Int): Int {
         return ((frameIndex.toLong() + offset) % frameCount).toInt()
+    }
+
+    private val AnimationState.canDecodeFrames: Boolean
+        get() = this == AnimationState.IDLE || this == AnimationState.STARTING ||
+            this == AnimationState.RUNNING
+
+    private val AnimationState.isRunning: Boolean
+        get() = this == AnimationState.STARTING || this == AnimationState.RUNNING
+
+    private enum class AnimationState {
+        IDLE,
+        STARTING,
+        RUNNING,
+        STOPPED,
+        FAILED,
+        CLOSED,
     }
 
     private class Frame(

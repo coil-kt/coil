@@ -48,6 +48,7 @@ class AnimatedSkiaImageDecoderTest {
     fun displaysEveryFrameWithExpectedTimingAcrossIterations() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode("animated_infinite.gif", timeSource)
+        assertIs<AnimatedSkiaImage>(result.image).start()
 
         repeat(2) {
             for (frame in 1..5) {
@@ -137,12 +138,54 @@ class AnimatedSkiaImageDecoderTest {
     fun redrawsCurrentFrameUntilItsDurationElapses() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode("animated_infinite.gif", timeSource)
+        assertIs<AnimatedSkiaImage>(result.image).start()
 
         repeat(4) {
             assertFrameIsSimilar(result, frame = 1)
             timeSource.advanceBy(100.milliseconds)
         }
         assertFrameIsSimilar(result, frame = 2)
+    }
+
+    @Test
+    fun startStopAndIsRunningControlAnimation() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode("animated_infinite.gif", timeSource)
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertFalse(image.isRunning())
+
+        assertFrameIsSimilar(result, frame = 1)
+        assertFalse(image.isRunning())
+
+        timeSource.advanceBy(10.seconds)
+        image.stop()
+        assertFalse(image.isRunning())
+
+        image.start()
+        assertTrue(image.isRunning())
+        assertFrameIsSimilar(result, frame = 1)
+
+        timeSource.advanceBy(400.milliseconds)
+        result.image.toBitmap().use { secondFrame ->
+            image.start()
+            result.image.toBitmap().use { runningFrame ->
+                runningFrame.assertIsSimilarTo(secondFrame)
+            }
+
+            image.stop()
+            assertFalse(image.isRunning())
+
+            timeSource.advanceBy(10.seconds)
+            result.image.toBitmap().use { stoppedFrame ->
+                stoppedFrame.assertIsSimilarTo(secondFrame)
+            }
+        }
+
+        image.start()
+        assertTrue(image.isRunning())
+        timeSource.advanceBy(10.seconds)
+        assertFrameIsSimilar(result, frame = 1)
+        image.close()
     }
 
     @Test
@@ -159,6 +202,7 @@ class AnimatedSkiaImageDecoderTest {
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertEquals(3, image.maxIterationCount)
+        image.start()
 
         repeat(3) {
             for (frame in 1..5) {
@@ -190,13 +234,27 @@ class AnimatedSkiaImageDecoderTest {
             timeSource = timeSource,
             options = Options(context, extras = extras),
         )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertFalse(image.isRunning())
+
+        image.stop()
+        assertEquals(0, ends)
+
+        image.start()
+        assertTrue(image.isRunning())
+        assertEquals(0, starts)
+
+        image.start()
+        assertEquals(0, starts)
 
         assertFrameIsSimilar(result, frame = 1)
+        assertTrue(image.isRunning())
         assertEquals(1, starts)
         assertEquals(0, ends)
 
         timeSource.advanceBy(2.seconds)
         assertFrameIsSimilar(result, frame = 5)
+        assertFalse(image.isRunning())
         assertEquals(1, starts)
         assertEquals(1, ends)
 
@@ -204,6 +262,16 @@ class AnimatedSkiaImageDecoderTest {
         assertFrameIsSimilar(result, frame = 5)
         assertEquals(1, starts)
         assertEquals(1, ends)
+
+        image.start()
+        assertTrue(image.isRunning())
+        assertEquals(1, starts)
+        assertFrameIsSimilar(result, frame = 1)
+        assertEquals(2, starts)
+        image.stop()
+        assertFalse(image.isRunning())
+        assertEquals(2, ends)
+        image.close()
     }
 
     @Test
@@ -216,6 +284,7 @@ class AnimatedSkiaImageDecoderTest {
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertEquals(2, image.frameBufferCapacity)
+        image.start()
 
         repeat(100) {
             result.image.toBitmap().close()
@@ -233,6 +302,7 @@ class AnimatedSkiaImageDecoderTest {
             timeSource = timeSource,
             bufferedFramesCount = 1,
         )
+        assertIs<AnimatedSkiaImage>(result.image).start()
 
         assertFrameIsSimilar(result, frame = 1)
         timeSource.advanceBy(800.milliseconds)
@@ -338,26 +408,41 @@ class AnimatedSkiaImageDecoderTest {
     @Test
     fun frameDecodeExceptionStopsOnLastValidFrame() = runTest {
         val timeSource = FakeTimeSource()
+        var ends = 0
+        val extras = ImageRequest.Builder(context)
+            .onAnimationEnd { ends++ }
+            .build()
+            .extras
         val result = decode(
             result = corruptFrameGifSource(),
             timeSource = timeSource,
             bufferedFramesCount = 1,
+            options = Options(context, extras = extras),
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
-        assertFalse(image.isAnimationStopped)
+        assertFalse(image.isRunning())
 
+        image.start()
+        assertTrue(image.isRunning())
         result.image.toBitmap().use { firstFrame ->
+            assertTrue(image.isRunning())
             timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
             result.image.toBitmap().use { failedFrame ->
                 failedFrame.assertIsSimilarTo(firstFrame)
             }
-            assertTrue(image.isAnimationStopped)
+            assertFalse(image.isRunning())
+            assertEquals(1, ends)
 
             timeSource.advanceBy(10.seconds)
             result.image.toBitmap().use { stoppedFrame ->
                 stoppedFrame.assertIsSimilarTo(firstFrame)
             }
+            assertEquals(1, ends)
+
+            image.start()
+            assertFalse(image.isRunning())
         }
+        image.close()
     }
 
     @Test
@@ -368,7 +453,7 @@ class AnimatedSkiaImageDecoderTest {
             timeSource = timeSource,
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
-        assertTrue(image.isAnimationStopped)
+        assertFalse(image.isRunning())
         assertEquals(1, image.bufferedFrameCount)
 
         result.image.toBitmap().use { firstFrame ->
@@ -377,6 +462,34 @@ class AnimatedSkiaImageDecoderTest {
                 stoppedFrame.assertIsSimilarTo(firstFrame)
             }
         }
+        image.start()
+        assertFalse(image.isRunning())
+        image.close()
+    }
+
+    @Test
+    fun closeIsIdempotentAndPreventsFurtherUse() = runTest {
+        val result = decode("animated_infinite.gif", FakeTimeSource())
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertTrue(image.bufferedFrameCount > 0)
+
+        result.image.toBitmap().close()
+        assertFalse(image.isRunning())
+
+        image.start()
+        assertTrue(image.isRunning())
+        result.image.toBitmap().close()
+
+        image.close()
+        image.close()
+        assertFalse(image.isRunning())
+        assertEquals(0, image.bufferedFrameCount)
+
+        image.start()
+        assertFalse(image.isRunning())
+        result.image.toBitmap().close()
+        runCurrent()
+        assertEquals(0, image.bufferedFrameCount)
     }
 
     @Test
@@ -484,6 +597,7 @@ class AnimatedSkiaImageDecoderTest {
         image: AnimatedSkiaImage,
         timeSource: FakeTimeSource,
     ) {
+        image.start()
         result.image.toBitmap().use { firstFrame ->
             timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
             result.image.toBitmap().use { secondFrame ->
