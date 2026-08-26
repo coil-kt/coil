@@ -22,6 +22,23 @@ abstract fun interface coil3.gif/AnimatedTransformation { // coil3.gif/AnimatedT
     abstract fun transform(org.jetbrains.skia/Canvas): coil3.gif/PixelOpacity // coil3.gif/AnimatedTransformation.transform|transform(org.jetbrains.skia.Canvas){}[0]
 }
 
+final class coil3.gif/AnimatedSkiaImage : coil3/Image, kotlin/AutoCloseable { // coil3.gif/AnimatedSkiaImage|null[0]
+    final val height // coil3.gif/AnimatedSkiaImage.height|{}height[0]
+        final fun <get-height>(): kotlin/Int // coil3.gif/AnimatedSkiaImage.height.<get-height>|<get-height>(){}[0]
+    final val shareable // coil3.gif/AnimatedSkiaImage.shareable|{}shareable[0]
+        final fun <get-shareable>(): kotlin/Boolean // coil3.gif/AnimatedSkiaImage.shareable.<get-shareable>|<get-shareable>(){}[0]
+    final val size // coil3.gif/AnimatedSkiaImage.size|{}size[0]
+        final fun <get-size>(): kotlin/Long // coil3.gif/AnimatedSkiaImage.size.<get-size>|<get-size>(){}[0]
+    final val width // coil3.gif/AnimatedSkiaImage.width|{}width[0]
+        final fun <get-width>(): kotlin/Int // coil3.gif/AnimatedSkiaImage.width.<get-width>|<get-width>(){}[0]
+
+    final fun close() // coil3.gif/AnimatedSkiaImage.close|close(){}[0]
+    final fun draw(org.jetbrains.skia/Canvas) // coil3.gif/AnimatedSkiaImage.draw|draw(org.jetbrains.skia.Canvas){}[0]
+    final fun isRunning(): kotlin/Boolean // coil3.gif/AnimatedSkiaImage.isRunning|isRunning(){}[0]
+    final fun start() // coil3.gif/AnimatedSkiaImage.start|start(){}[0]
+    final fun stop() // coil3.gif/AnimatedSkiaImage.stop|stop(){}[0]
+}
+
 final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3.gif/AnimatedSkiaImageDecoder|null[0]
     constructor <init>(coil3.decode/ImageSource, coil3.request/Options, kotlin/Int, kotlin.time/TimeSource) // coil3.gif/AnimatedSkiaImageDecoder.<init>|<init>(coil3.decode.ImageSource;coil3.request.Options;kotlin.Int;kotlin.time.TimeSource){}[0]
 

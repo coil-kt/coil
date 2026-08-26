@@ -14,6 +14,7 @@ import coil3.compose.AsyncImage
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.AnimatedSkiaImage
 import coil3.gif.AnimatedSkiaImageDecoder
 import coil3.request.Options
 import coil3.test.FakeImageLoaderEngine
@@ -84,9 +85,10 @@ class AnimatedGifScreenshotTest {
                     imageLoader = ImageLoader(context),
                 ),
             )
-            assertNotNull(decoder.decode()).image
+            assertNotNull(decoder.decode()).image as AnimatedSkiaImage
         }
 
+        image.start()
         image.toBitmap().close()
         timeSource.advanceBy(elapsed)
         return image
