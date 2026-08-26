@@ -208,7 +208,7 @@ fun Project.setupDokka(
             }
             externalDocumentationLinks.register("skiko") {
                 url.set(uri("https://jetbrains.github.io/skiko/"))
-                packageListUrl.set(uri("https://jetbrains.github.io/skiko/skiko/package-list"))
+                packageListUrl.set(uri("https://jetbrains.github.io/skiko/package-list"))
             }
             externalDocumentationLinks.register("ktor") {
                 url.set(uri("https://api.ktor.io/"))
@@ -217,12 +217,12 @@ fun Project.setupDokka(
                 url.set(uri("https://kotlinlang.org/api/kotlinx-datetime/"))
             }
             externalDocumentationLinks.register("okio") {
-                url.set(uri("https://square.github.io/okio/3.x/okio/"))
-                packageListUrl.set(uri("https://square.github.io/okio/3.x/okio/okio/package-list"))
+                url.set(uri("https://lysine.dev/okio/3.x/"))
+                packageListUrl.set(uri("https://lysine.dev/okio/3.x/package-list"))
             }
             externalDocumentationLinks.register("okhttp") {
-                url.set(uri("https://square.github.io/okhttp/5.x/okhttp/okhttp3/"))
-                packageListUrl.set(uri("https://square.github.io/okhttp/5.x/package-list"))
+                url.set(uri("https://lysine.dev/okhttp/5.x/"))
+                packageListUrl.set(uri("https://lysine.dev/okhttp/5.x/package-list"))
             }
         }
         action()

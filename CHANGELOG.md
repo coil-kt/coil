@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.6.0] - August 26, 2026
+
+- **New**: Add support for loading `blob:` URLs (object URLs) on JS/WASM. ([#3504](https://github.com/coil-kt/coil/pull/3504))
+- **New**: Add `ImageRequest.Builder.allowPartialImage` and `ImageLoader.Builder.allowPartialImage` to configure whether `StaticImageDecoder` on Android accepts partial images. This is enabled by default, which is the same behavior in previous Coil releases. ([#3494](https://github.com/coil-kt/coil/pull/3494))
+- Fix `AsyncImage` crashing when measured with inverted constraints. ([#3470](https://github.com/coil-kt/coil/pull/3470))
+- Fix Compose `filterQuality` not being applied to drawable-backed images, including GIFs. ([#3469](https://github.com/coil-kt/coil/pull/3469))
+- Fix a JS/WASM image decoder memory leak. ([#3503](https://github.com/coil-kt/coil/pull/3503))
+- Fix images failing to render with `GenericViewTarget` in R8 9.0+ optimized builds. ([#3518](https://github.com/coil-kt/coil/pull/3518))
+- Use `Runtime.maxMemory()` to determine the maximum memory cache size on JVM instead of assuming 512 MB of available memory. ([#3458](https://github.com/coil-kt/coil/pull/3458))
+- Bundle ProGuard rules with the non-Android JVM artifact. ([#3476](https://github.com/coil-kt/coil/pull/3476))
+- Update the Android compile SDK to 37.
+- Update Kotlin to 2.4.10.
+- Update Compose to 1.12.0.
+- Update Okio to 3.18.1.
+- Update Skiko to 0.150.1.
+- Update `kotlinx-io-okio` to 0.9.1.
+
 ## [3.5.0] - June 10, 2026
 
 Changes since `3.4.0`:
