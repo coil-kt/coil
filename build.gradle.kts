@@ -74,6 +74,7 @@ allprojects {
 
     // Target Kotlin 2.2.
     tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions.apiVersion = KotlinVersion.KOTLIN_2_2
         compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_2
     }
 
