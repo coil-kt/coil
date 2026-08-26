@@ -336,6 +336,50 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
+    fun frameDecodeExceptionStopsOnLastValidFrame() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode(
+            result = corruptFrameGifSource(),
+            timeSource = timeSource,
+            bufferedFramesCount = 1,
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertFalse(image.isAnimationStopped)
+
+        result.image.toBitmap().use { firstFrame ->
+            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+            result.image.toBitmap().use { failedFrame ->
+                failedFrame.assertIsSimilarTo(firstFrame)
+            }
+            assertTrue(image.isAnimationStopped)
+
+            timeSource.advanceBy(10.seconds)
+            result.image.toBitmap().use { stoppedFrame ->
+                stoppedFrame.assertIsSimilarTo(firstFrame)
+            }
+        }
+    }
+
+    @Test
+    fun frameDecodeExceptionWhileBufferingStopsOnLastValidFrame() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode(
+            result = corruptFrameGifSource(),
+            timeSource = timeSource,
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertTrue(image.isAnimationStopped)
+        assertEquals(1, image.bufferedFrameCount)
+
+        result.image.toBitmap().use { firstFrame ->
+            timeSource.advanceBy(10.seconds)
+            result.image.toBitmap().use { stoppedFrame ->
+                stoppedFrame.assertIsSimilarTo(firstFrame)
+            }
+        }
+    }
+
+    @Test
     fun animatedTransformationIsAppliedToFramePixels() = runTest {
         val extras = ImageRequest.Builder(context)
             .animatedTransformation { canvas ->
@@ -466,6 +510,10 @@ class AnimatedSkiaImageDecoderTest {
         .write(LARGE_CANVAS_GIF)
         .asSourceResult()
 
+    private fun corruptFrameGifSource() = Buffer()
+        .write(CORRUPT_FRAME_GIF)
+        .asSourceResult()
+
     companion object {
         private const val LARGE_CANVAS_SIZE = 1_024
         private const val LARGE_CANVAS_MINIMUM_BITMAP_SIZE =
@@ -479,6 +527,11 @@ class AnimatedSkiaImageDecoderTest {
         private val LARGE_CANVAS_GIF = """
             47494638396100040004800000000000ffffff21f90401010000002c000000000100010000
             020244010021f90401010000002c00000000010001000002024c01003b
+        """.trimIndent().replace("\n", "").decodeHex()
+
+        private val CORRUPT_FRAME_GIF = """
+            47494638396102000200800000000000ffffff21f90401010000002c000000000100010000
+            020244010021f90401010000002c0000000001000100000202ffff003b
         """.trimIndent().replace("\n", "").decodeHex()
     }
 }
