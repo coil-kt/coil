@@ -32,6 +32,7 @@ internal class AnimatedSkiaImage(
     private val codec: Codec,
     private val coroutineScope: CoroutineScope,
     private val timeSource: TimeSource,
+    private val decodeImageInfo: ImageInfo,
     private val outputImageInfo: ImageInfo,
     private val encodedDataSize: Long,
     repeatCount: Int,
@@ -59,9 +60,9 @@ internal class AnimatedSkiaImage(
     private var decodeFailure: Throwable? = null
 
     private val workingBitmaps = createWorkingBitmaps(
-        decodeImageInfo = codec.imageInfo,
+        decodeImageInfo = decodeImageInfo,
         outputImageInfo = outputImageInfo,
-        needsOutputBitmap = outputImageInfo != codec.imageInfo || animatedTransformation != null,
+        needsOutputBitmap = outputImageInfo != decodeImageInfo || animatedTransformation != null,
     )
     private val decodeBitmap = workingBitmaps.decode
     private val outputBitmap = workingBitmaps.output
@@ -345,13 +346,14 @@ internal class AnimatedSkiaImage(
 
 internal fun decodeStaticImage(
     codec: Codec,
+    decodeImageInfo: ImageInfo,
     outputImageInfo: ImageInfo,
     animatedTransformation: AnimatedTransformation?,
 ): BitmapImage {
     val workingBitmaps = createWorkingBitmaps(
-        decodeImageInfo = codec.imageInfo,
+        decodeImageInfo = decodeImageInfo,
         outputImageInfo = outputImageInfo,
-        needsOutputBitmap = outputImageInfo != codec.imageInfo,
+        needsOutputBitmap = outputImageInfo != decodeImageInfo,
     )
     val decodeBitmap = workingBitmaps.decode
     val outputBitmap = workingBitmaps.output

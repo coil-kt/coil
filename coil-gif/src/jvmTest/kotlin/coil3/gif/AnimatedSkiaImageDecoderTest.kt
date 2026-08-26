@@ -61,15 +61,20 @@ class AnimatedSkiaImageDecoderTest {
     @Test
     fun animatedWebPIsDecodedAndAdvancesFrames() = runTest {
         val timeSource = FakeTimeSource()
-        val result = decode("animated.webp", timeSource)
+        val result = decode(
+            resource = "animated.webp",
+            timeSource = timeSource,
+            options = Options(
+                context = context,
+                size = Size(100, 100),
+                precision = Precision.EXACT,
+            ),
+        )
         val image = assertIs<AnimatedSkiaImage>(result.image)
-
-        result.image.toBitmap().use { firstFrame ->
-            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
-            result.image.toBitmap().use { secondFrame ->
-                assertFalse(secondFrame.isSimilarTo(firstFrame, threshold = 0.99))
-            }
-        }
+        assertEquals(100, image.width)
+        assertEquals(100, image.height)
+        assertTrue(result.isSampled)
+        assertAdvancesToNextFrame(result, image, timeSource)
     }
 
     @Test
@@ -236,9 +241,10 @@ class AnimatedSkiaImageDecoderTest {
 
     @Test
     fun exactSizeScalesFramesAndReportsSampling() = runTest {
+        val timeSource = FakeTimeSource()
         val result = decode(
             resource = "animated_infinite.gif",
-            timeSource = FakeTimeSource(),
+            timeSource = timeSource,
             options = Options(
                 context = context,
                 size = Size(150, 100),
@@ -250,6 +256,29 @@ class AnimatedSkiaImageDecoderTest {
         assertEquals(100, result.image.width)
         assertEquals(100, result.image.height)
         assertTrue(result.isSampled)
+
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertAdvancesToNextFrame(result, image, timeSource)
+    }
+
+    @Test
+    fun exactSizeUpscalesFrames() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode(
+            resource = "animated_infinite.gif",
+            timeSource = timeSource,
+            options = Options(
+                context = context,
+                size = Size(600, 600),
+                precision = Precision.EXACT,
+            ),
+        )
+
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertEquals(600, image.width)
+        assertEquals(600, image.height)
+        assertFalse(result.isSampled)
+        assertAdvancesToNextFrame(result, image, timeSource)
     }
 
     @Test
@@ -285,6 +314,25 @@ class AnimatedSkiaImageDecoderTest {
         assertEquals(80, result.image.width)
         assertEquals(80, result.image.height)
         assertTrue(result.isSampled)
+    }
+
+    @Test
+    fun largeSourceDimensionsUseBoundedDecodeBitmap() = runTest {
+        val extras = ImageRequest.Builder(context)
+            .maxBitmapSize(Size(32, 32))
+            .build()
+            .extras
+        val result = decode(
+            result = largeCanvasGifSource(),
+            timeSource = FakeTimeSource(),
+            options = Options(context, extras = extras),
+        )
+
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertEquals(32, image.width)
+        assertEquals(32, image.height)
+        assertTrue(result.isSampled)
+        assertTrue(image.size < LARGE_CANVAS_MINIMUM_BITMAP_SIZE)
     }
 
     @Test
@@ -387,6 +435,19 @@ class AnimatedSkiaImageDecoderTest {
         }
     }
 
+    private suspend fun assertAdvancesToNextFrame(
+        result: DecodeResult,
+        image: AnimatedSkiaImage,
+        timeSource: FakeTimeSource,
+    ) {
+        result.image.toBitmap().use { firstFrame ->
+            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+            result.image.toBitmap().use { secondFrame ->
+                assertFalse(secondFrame.isSimilarTo(firstFrame, threshold = 0.99))
+            }
+        }
+    }
+
     private fun resourceSource(resource: String): SourceFetchResult {
         return FileSystem.RESOURCES.source(resource.toPath()).buffer().asSourceResult()
     }
@@ -401,10 +462,23 @@ class AnimatedSkiaImageDecoderTest {
         .write(STATIC_GIF)
         .asSourceResult()
 
+    private fun largeCanvasGifSource() = Buffer()
+        .write(LARGE_CANVAS_GIF)
+        .asSourceResult()
+
     companion object {
+        private const val LARGE_CANVAS_SIZE = 1_024
+        private const val LARGE_CANVAS_MINIMUM_BITMAP_SIZE =
+            LARGE_CANVAS_SIZE.toLong() * LARGE_CANVAS_SIZE
+
         private val STATIC_GIF = """
             47494638396102000200800000000000ffffff21f90401000000002c000000000100010000
             02024401003b
+        """.trimIndent().replace("\n", "").decodeHex()
+
+        private val LARGE_CANVAS_GIF = """
+            47494638396100040004800000000000ffffff21f90401010000002c000000000100010000
+            020244010021f90401010000002c00000000010001000002024c01003b
         """.trimIndent().replace("\n", "").decodeHex()
     }
 }
