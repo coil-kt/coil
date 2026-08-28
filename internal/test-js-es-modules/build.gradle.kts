@@ -20,9 +20,13 @@ kotlin {
     }
 
     sourceSets {
-        jsTest {
+        jsMain {
             dependencies {
                 implementation(projects.coilCore)
+            }
+        }
+        jsTest {
+            dependencies {
                 implementation(libs.bundles.test.common)
             }
         }
