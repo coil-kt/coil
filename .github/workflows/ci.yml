@@ -141,7 +141,6 @@ jobs:
                     GRADLE_ARGS=(--no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g" -Pkotlin.native.jvmArgs=-Xmx4g)
                     ./gradlew \
                         samples:compose:assemble \
-                        samples:compose:composeCompatibilityBrowserDistribution \
                         samples:compose-android:assembleDebug \
                         samples:view:assembleDebug \
                         "${GRADLE_ARGS[@]}"
