@@ -21,12 +21,6 @@ multiplatformAndroidLibrary(name = "coil3.core") {
 }
 
 kotlin {
-    if (providers.gradleProperty("coil.core.js.useEsModules").getOrElse("false").toBoolean()) {
-        js {
-            useEsModules()
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {
