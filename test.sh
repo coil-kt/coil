@@ -69,3 +69,8 @@ fi
 # and get stuck in Chrome/Karma restart loops.
 max_workers="${MAX_WORKERS:-1}"
 ./gradlew --max-workers="$max_workers" "${js_wasm_test_tasks[@]}"
+
+# Run Coil's JS browser tests again using ES modules. The default run above uses UMD.
+./gradlew --max-workers="$max_workers" \
+    :coil-core:jsBrowserTest \
+    -Pcoil.core.js.useEsModules=true

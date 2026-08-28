@@ -7,13 +7,12 @@ import kotlin.js.JsAny
 import kotlin.js.js
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import kotlinx.coroutines.await
 import kotlinx.coroutines.test.runTest
 
 class SkikoModuleTest {
     @Test
     fun awaitSkikoReturnsInitializedModule() = runTest {
-        assertTrue(hasInitializedMemory(awaitSkiko.await()))
+        assertTrue(hasInitializedMemory(awaitSkiko()))
     }
 }
 
