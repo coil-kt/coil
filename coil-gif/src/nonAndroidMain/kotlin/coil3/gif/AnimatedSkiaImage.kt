@@ -24,6 +24,7 @@ import org.jetbrains.skia.AnimationDisposalMode
 import org.jetbrains.skia.AnimationFrameInfo
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
+import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.Image as SkiaImage
 import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.SamplingMode
@@ -32,9 +33,9 @@ import org.jetbrains.skia.impl.use
 /**
  * A Skia-backed animated [Image].
  *
- * The image is initially stopped and displays its first frame. Call [start] to start or restart the
- * animation from its first frame, [stop] to retain the most recently drawn frame, and [close] to
- * release its native resources early. Once closed, this image cannot be restarted or drawn.
+ * The animation starts automatically when the image is first drawn. Call [stop] to retain the most
+ * recently drawn frame, [start] to restart the animation from its first frame, and [close] to release
+ * its native resources early. Once closed, this image cannot be restarted or drawn.
  */
 class AnimatedSkiaImage internal constructor(
     private val codec: Codec,
@@ -67,19 +68,6 @@ class AnimatedSkiaImage internal constructor(
     private var lastDrawnFrameIndex = NO_FRAME
     private var animationState = AnimationState.IDLE
     private var retainedFrame: Frame? = null
-
-    private val workingBitmaps = createWorkingBitmaps(
-        decodeImageInfo = decodeImageInfo,
-        outputImageInfo = outputImageInfo,
-        needsOutputBitmap = outputImageInfo != decodeImageInfo || animatedTransformation != null,
-    )
-    private val decodeBitmap = workingBitmaps.decode
-    private val outputBitmap = workingBitmaps.output
-
-    override val size = encodedDataSize
-        .saturatedAdd(decodeBitmap.byteSize())
-        .saturatedAdd(outputBitmap?.byteSize() ?: 0L)
-        .saturatedAdd(outputImageInfo.byteSize().saturatedMultiply(frameBufferCapacity))
 
     override val width: Int
         get() = outputImageInfo.width
@@ -119,6 +107,21 @@ class AnimatedSkiaImage internal constructor(
     private var invalidationFrameIndex = NO_FRAME
     private var invalidationIteration = -1L
 
+    // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
+    // The initialization block below owns cleanup if predecoding fails.
+    private val workingBitmaps = createWorkingBitmaps(
+        decodeImageInfo = decodeImageInfo,
+        outputImageInfo = outputImageInfo,
+        needsOutputBitmap = outputImageInfo != decodeImageInfo || animatedTransformation != null,
+    )
+    private val decodeBitmap = workingBitmaps.decode
+    private val outputBitmap = workingBitmaps.output
+
+    override val size = encodedDataSize
+        .saturatedAdd(decodeBitmap.byteSize())
+        .saturatedAdd(outputBitmap?.byteSize() ?: 0L)
+        .saturatedAdd(outputImageInfo.byteSize().saturatedMultiply(frameBufferCapacity))
+
     init {
         try {
             repeat(frameBufferCapacity) { frameIndex ->
@@ -139,6 +142,7 @@ class AnimatedSkiaImage internal constructor(
     /**
      * Start the animation, or do nothing if it is already running.
      *
+     * Initial playback starts automatically when the image is first drawn.
      * The animation is reset to its first frame when it is next drawn.
      */
     fun start() {
@@ -165,24 +169,30 @@ class AnimatedSkiaImage internal constructor(
         invalidateTick++
     }
 
-    /** Stop the animation and retain the most recently drawn frame. */
+    /**
+     * Stop the animation and retain the most recently drawn frame.
+     *
+     * Calling this before the first draw prevents automatic playback.
+     */
     fun stop() {
+        var notifyAnimationEnd = false
         val didStop = synchronized(frameLock) {
             val frame = when (animationState) {
+                AnimationState.IDLE -> frames.firstOrNull()
                 AnimationState.STARTING ->
                     retainedFrame
-                    ?: frames.firstOrNull { it.index == lastDrawnFrameIndex }
+                    ?: findBufferedFrameLocked(lastDrawnFrameIndex)
                     ?: frames.firstOrNull()
                 AnimationState.RUNNING -> {
-                    frames.firstOrNull { it.index == lastDrawnFrameIndex } ?: frames.lastOrNull()
+                    findBufferedFrameLocked(lastDrawnFrameIndex) ?: frames.lastOrNull()
                 }
-                AnimationState.IDLE,
                 AnimationState.STOPPED,
                 AnimationState.FAILED,
                 AnimationState.CLOSED,
                 -> return@synchronized false
             } ?: return@synchronized false
 
+            notifyAnimationEnd = animationState.isRunning
             animationState = AnimationState.STOPPED
             retainedFrame = frame
             bufferWindowStart = frame.index
@@ -192,7 +202,7 @@ class AnimatedSkiaImage internal constructor(
         if (!didStop) return
 
         cancelAnimationJobs()
-        onAnimationEnd?.invoke()
+        if (notifyAnimationEnd) onAnimationEnd?.invoke()
         invalidateTick++
     }
 
@@ -252,12 +262,9 @@ class AnimatedSkiaImage internal constructor(
         }
 
         when (synchronized(frameLock) { animationState }) {
-            AnimationState.IDLE -> {
-                setBufferWindowStart(0)
-                canvas.drawFrame(0)
-                return
-            }
-            AnimationState.STARTING -> beginAnimation()
+            AnimationState.IDLE,
+            AnimationState.STARTING,
+            -> beginAnimation()
             AnimationState.RUNNING -> Unit
             AnimationState.STOPPED,
             AnimationState.FAILED,
@@ -286,7 +293,7 @@ class AnimatedSkiaImage internal constructor(
         setBufferWindowStart(frameIndex)
         if (!canvas.drawFrame(frameIndex)) return
         prefetchFrames(frameIndex)
-        scheduleInvalidation(frameIndex, elapsedTimeMs)
+        scheduleInvalidation(frameIndex)
     }
 
     internal val bufferedFrameCount: Int
@@ -320,7 +327,9 @@ class AnimatedSkiaImage internal constructor(
 
     private fun beginAnimation() {
         val didBegin = synchronized(frameLock) {
-            if (animationState != AnimationState.STARTING) {
+            if (animationState != AnimationState.IDLE &&
+                animationState != AnimationState.STARTING
+            ) {
                 false
             } else {
                 animationState = AnimationState.RUNNING
@@ -344,8 +353,7 @@ class AnimatedSkiaImage internal constructor(
             ) {
                 false
             } else {
-                val frame = frames.firstOrNull { it.index == lastDrawnFrameIndex }
-                    ?: frames.lastOrNull()
+                val frame = findBufferedFrameLocked(lastDrawnFrameIndex) ?: frames.lastOrNull()
                     ?: return@synchronized false
                 notifyAnimationEnd = animationState.isRunning
                 animationState = AnimationState.FAILED
@@ -394,7 +402,7 @@ class AnimatedSkiaImage internal constructor(
                     retainedFrame?.let { drawImage(it.image, left = 0f, top = 0f) }
                     false
                 } else {
-                    frames.firstOrNull { it.index == frameIndex }?.let { frame ->
+                    findBufferedFrameLocked(frameIndex)?.let { frame ->
                         drawImage(frame.image, left = 0f, top = 0f)
                         lastDrawnFrameIndex = frameIndex
                         true
@@ -432,8 +440,11 @@ class AnimatedSkiaImage internal constructor(
         }
     }
 
-    private fun scheduleInvalidation(frameIndex: Int, elapsedTimeMs: Long) {
-        if (!isRunning()) return
+    private fun scheduleInvalidation(frameIndex: Int) {
+        val startTime = synchronized(frameLock) {
+            if (animationState.isRunning) animationStartTime else null
+        } ?: return
+        val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
 
         val iteration = elapsedTimeMs / singleIterationDurationMs
         if (invalidationFrameIndex == frameIndex &&
@@ -457,30 +468,20 @@ class AnimatedSkiaImage internal constructor(
 
     private fun isBufferWindowComplete(frameIndex: Int): Boolean {
         return synchronized(frameLock) {
-            if (!animationState.canDecodeFrames) return@synchronized true
-            for (offset in 0 until frameBufferCapacity) {
-                val expectedFrameIndex = nextFrameIndex(frameIndex, offset)
-                if (frames.none { it.index == expectedFrameIndex }) {
-                    return@synchronized false
-                }
-            }
-            true
+            !animationState.canDecodeFrames ||
+                (
+                    frames.size == frameBufferCapacity &&
+                    frames.all { isInBufferWindow(it.index, frameIndex) }
+                )
         }
     }
 
     private fun ensureFrame(frameIndex: Int) {
         try {
-            synchronized(frameLock) {
-                if (!animationState.canDecodeFrames) return
-                frames.firstOrNull { it.index == frameIndex }?.let { return }
-            }
+            if (!shouldDecodeFrame(frameIndex)) return
 
             synchronized(decodeLock) {
-                synchronized(frameLock) {
-                    if (!animationState.canDecodeFrames) return
-                    frames.firstOrNull { it.index == frameIndex }?.let { return }
-                    if (!isInBufferWindow(frameIndex, bufferWindowStart)) return
-                }
+                if (!shouldDecodeFrame(frameIndex)) return
 
                 // Preserve the buffered frames until their replacement has decoded successfully.
                 val image = decodeFrame(frameIndex)
@@ -490,7 +491,7 @@ class AnimatedSkiaImage internal constructor(
                         if (animationState.canDecodeFrames &&
                             isInBufferWindow(frameIndex, bufferWindowStart)
                         ) {
-                            reserveFrameSlot()
+                            reserveFrameSlotLocked()
                             frames += Frame(frameIndex, image)
                             isRetained = true
                         }
@@ -507,7 +508,15 @@ class AnimatedSkiaImage internal constructor(
         }
     }
 
-    private fun reserveFrameSlot() {
+    private fun shouldDecodeFrame(frameIndex: Int): Boolean {
+        return synchronized(frameLock) {
+            animationState.canDecodeFrames &&
+                findBufferedFrameLocked(frameIndex) == null &&
+                isInBufferWindow(frameIndex, bufferWindowStart)
+        }
+    }
+
+    private fun reserveFrameSlotLocked() {
         if (frames.size < frameBufferCapacity) return
         val index = frames.indexOfFirst { !isInBufferWindow(it.index, bufferWindowStart) }
             .takeIf { it >= 0 }
@@ -523,9 +532,15 @@ class AnimatedSkiaImage internal constructor(
         )
         lastDecodedFrameIndex = frameIndex
 
-        val frameBitmap = outputBitmap?.also(decodeBitmap::scalePixelsTo) ?: decodeBitmap
+        val frameBitmap = outputBitmap?.also { output ->
+            output.updateAlphaType(outputImageInfo.alphaTypeForTransformation(animatedTransformation))
+            decodeBitmap.scalePixelsTo(output)
+        } ?: decodeBitmap
 
-        frameBitmap.applyTransformation(animatedTransformation)
+        frameBitmap.applyTransformation(
+            transformation = animatedTransformation,
+            inputAlphaType = outputImageInfo.colorAlphaType,
+        )
         return SkiaImage.makeFromBitmap(frameBitmap)
     }
 
@@ -554,20 +569,20 @@ class AnimatedSkiaImage internal constructor(
         return ((frameIndex.toLong() + offset) % frameCount).toInt()
     }
 
-    private val AnimationState.canDecodeFrames: Boolean
-        get() = this == AnimationState.IDLE || this == AnimationState.STARTING ||
-            this == AnimationState.RUNNING
+    private fun findBufferedFrameLocked(frameIndex: Int): Frame? {
+        return frames.firstOrNull { it.index == frameIndex }
+    }
 
-    private val AnimationState.isRunning: Boolean
-        get() = this == AnimationState.STARTING || this == AnimationState.RUNNING
-
-    private enum class AnimationState {
-        IDLE,
-        STARTING,
-        RUNNING,
-        STOPPED,
-        FAILED,
-        CLOSED,
+    private enum class AnimationState(
+        val canDecodeFrames: Boolean,
+        val isRunning: Boolean,
+    ) {
+        IDLE(canDecodeFrames = true, isRunning = false),
+        STARTING(canDecodeFrames = true, isRunning = true),
+        RUNNING(canDecodeFrames = true, isRunning = true),
+        STOPPED(canDecodeFrames = false, isRunning = false),
+        FAILED(canDecodeFrames = false, isRunning = false),
+        CLOSED(canDecodeFrames = false, isRunning = false),
     }
 
     private class Frame(
@@ -585,15 +600,21 @@ internal fun decodeStaticImage(
     val workingBitmaps = createWorkingBitmaps(
         decodeImageInfo = decodeImageInfo,
         outputImageInfo = outputImageInfo,
-        needsOutputBitmap = outputImageInfo != decodeImageInfo,
+        needsOutputBitmap = outputImageInfo != decodeImageInfo || animatedTransformation != null,
     )
     val decodeBitmap = workingBitmaps.decode
     val outputBitmap = workingBitmaps.output
     var retainedBitmap: Bitmap? = null
     try {
         codec.readPixels(decodeBitmap)
-        val resultBitmap = outputBitmap?.also(decodeBitmap::scalePixelsTo) ?: decodeBitmap
-        resultBitmap.applyTransformation(animatedTransformation)
+        val resultBitmap = outputBitmap?.also { output ->
+            output.updateAlphaType(outputImageInfo.alphaTypeForTransformation(animatedTransformation))
+            decodeBitmap.scalePixelsTo(output)
+        } ?: decodeBitmap
+        resultBitmap.applyTransformation(
+            transformation = animatedTransformation,
+            inputAlphaType = outputImageInfo.colorAlphaType,
+        )
         resultBitmap.setImmutable()
 
         val image = resultBitmap.asImage()
@@ -641,9 +662,32 @@ private fun Bitmap.scalePixelsTo(destination: Bitmap) {
     }
 }
 
-private fun Bitmap.applyTransformation(transformation: AnimatedTransformation?) {
+private fun Bitmap.applyTransformation(
+    transformation: AnimatedTransformation?,
+    inputAlphaType: ColorAlphaType,
+) {
     transformation ?: return
-    Canvas(this).use(transformation::transform)
+    val transformedAlphaType = when (Canvas(this).use(transformation::transform)) {
+        PixelOpacity.UNCHANGED -> if (inputAlphaType == ColorAlphaType.OPAQUE) {
+            ColorAlphaType.OPAQUE
+        } else {
+            ColorAlphaType.PREMUL
+        }
+        PixelOpacity.TRANSLUCENT -> ColorAlphaType.PREMUL
+        PixelOpacity.OPAQUE -> ColorAlphaType.OPAQUE
+    }
+    updateAlphaType(transformedAlphaType)
+}
+
+private fun Bitmap.updateAlphaType(alphaType: ColorAlphaType) {
+    if (imageInfo.colorAlphaType == alphaType) return
+    check(setAlphaType(alphaType)) { "Unable to set image alpha type to $alphaType." }
+}
+
+private fun ImageInfo.alphaTypeForTransformation(
+    transformation: AnimatedTransformation?,
+): ColorAlphaType {
+    return if (transformation == null) colorAlphaType else ColorAlphaType.PREMUL
 }
 
 private class WorkingBitmaps(

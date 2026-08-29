@@ -19,13 +19,13 @@ import coil3.test.utils.decodeBitmapResource
 import coil3.test.utils.isSimilarTo
 import coil3.toBitmap
 import coil3.util.ServiceLoaderComponentRegistry
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -39,20 +39,36 @@ import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
+import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Color
+import org.jetbrains.skia.Data
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedSkiaImageDecoderTest {
+
+    private val imageLoader = ImageLoader(context)
+    private val imagesToClose = mutableListOf<AnimatedSkiaImage>()
+
+    @AfterTest
+    fun tearDown() {
+        try {
+            imagesToClose.forEach(AnimatedSkiaImage::close)
+        } finally {
+            imageLoader.shutdown()
+        }
+    }
 
     @Test
     fun displaysEveryFrameWithExpectedTimingAcrossIterations() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode("animated_infinite.gif", timeSource)
-        assertIs<AnimatedSkiaImage>(result.image).start()
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        assertFalse(image.isRunning())
 
         repeat(2) {
             for (frame in 1..5) {
                 assertFrameIsSimilar(result, frame)
+                assertTrue(image.isRunning())
                 timeSource.advanceBy(400.milliseconds)
                 runCurrent()
             }
@@ -114,11 +130,11 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
-    fun singleFrameGifAppliesAnimatedTransformation() = runTest {
+    fun singleFrameGifTransformationCanAddTransparency() = runTest {
         val extras = ImageRequest.Builder(context)
             .animatedTransformation { canvas ->
-                canvas.clear(Color.RED)
-                PixelOpacity.OPAQUE
+                canvas.clear(Color.TRANSPARENT)
+                PixelOpacity.TRANSLUCENT
             }
             .build()
             .extras
@@ -130,15 +146,49 @@ class AnimatedSkiaImageDecoderTest {
 
         val image = assertIs<BitmapImage>(result.image)
         image.bitmap.use { bitmap ->
-            assertEquals(Color.RED, bitmap.getColor(0, 0))
+            assertEquals(Color.TRANSPARENT, bitmap.getColor(0, 0))
         }
+    }
+
+    @Test
+    fun animatedSkiaImageSupportsSingleFrame() = runTest {
+        val data = Data.makeFromBytes(STATIC_GIF.toByteArray())
+        val codec = try {
+            Codec.makeFromData(data)
+        } finally {
+            data.close()
+        }
+        val imageInfo = codec.imageInfo
+        val image = AnimatedSkiaImage(
+            codec = codec,
+            coroutineScope = this,
+            timeSource = FakeTimeSource(),
+            decodeImageInfo = imageInfo,
+            outputImageInfo = imageInfo,
+            encodedDataSize = STATIC_GIF.size.toLong(),
+            repeatCount = REPEAT_INFINITE,
+            bufferedFramesCount = 2,
+        )
+        imagesToClose += image
+
+        assertEquals(1, image.frameBufferCapacity)
+        assertEquals(1, image.bufferedFrameCount)
+        assertFalse(image.isRunning())
+
+        image.start()
+        assertFalse(image.isRunning())
+        image.toBitmap().use { bitmap ->
+            assertEquals(2, bitmap.width)
+            assertEquals(2, bitmap.height)
+        }
+        image.stop()
+        assertFalse(image.isRunning())
     }
 
     @Test
     fun redrawsCurrentFrameUntilItsDurationElapses() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode("animated_infinite.gif", timeSource)
-        assertIs<AnimatedSkiaImage>(result.image).start()
 
         repeat(4) {
             assertFrameIsSimilar(result, frame = 1)
@@ -148,22 +198,24 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
-    fun startStopAndIsRunningControlAnimation() = runTest {
+    fun zeroFrameDurationsUseSafeDefault() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode("no_frame_delay.gif", timeSource)
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+
+        assertTrue(image.frameDurationsMs.all { it == 100 })
+        assertAdvancesToNextFrame(result, image, timeSource)
+    }
+
+    @Test
+    fun startsOnFirstDrawAndStartStopControlAnimation() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode("animated_infinite.gif", timeSource)
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertFalse(image.isRunning())
 
         assertFrameIsSimilar(result, frame = 1)
-        assertFalse(image.isRunning())
-
-        timeSource.advanceBy(10.seconds)
-        image.stop()
-        assertFalse(image.isRunning())
-
-        image.start()
         assertTrue(image.isRunning())
-        assertFrameIsSimilar(result, frame = 1)
 
         timeSource.advanceBy(400.milliseconds)
         result.image.toBitmap().use { secondFrame ->
@@ -202,7 +254,6 @@ class AnimatedSkiaImageDecoderTest {
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertEquals(3, image.maxIterationCount)
-        image.start()
 
         repeat(3) {
             for (frame in 1..5) {
@@ -216,6 +267,49 @@ class AnimatedSkiaImageDecoderTest {
             assertFrameIsSimilar(result, frame = 5)
             timeSource.advanceBy(interval)
         }
+    }
+
+    @Test
+    fun startThenStopBeforeFirstDrawOnlyInvokesEndCallback() = runTest {
+        var starts = 0
+        var ends = 0
+        val extras = ImageRequest.Builder(context)
+            .onAnimationStart { starts++ }
+            .onAnimationEnd { ends++ }
+            .build()
+            .extras
+        val result = decode(
+            resource = "animated_infinite.gif",
+            timeSource = FakeTimeSource(),
+            options = Options(context, extras = extras),
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+
+        image.start()
+        image.stop()
+
+        assertFalse(image.isRunning())
+        assertEquals(0, starts)
+        assertEquals(1, ends)
+        assertFrameIsSimilar(result, frame = 1)
+        assertEquals(0, starts)
+        assertEquals(1, ends)
+    }
+
+    @Test
+    fun stopBeforeFirstDrawPreventsAutomaticStart() = runTest {
+        val result = decode("animated_infinite.gif", FakeTimeSource())
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+
+        image.stop()
+        assertFalse(image.isRunning())
+        assertFrameIsSimilar(result, frame = 1)
+        assertFalse(image.isRunning())
+
+        image.start()
+        assertTrue(image.isRunning())
+        assertFrameIsSimilar(result, frame = 1)
+        assertTrue(image.isRunning())
     }
 
     @Test
@@ -237,20 +331,13 @@ class AnimatedSkiaImageDecoderTest {
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertFalse(image.isRunning())
 
-        image.stop()
-        assertEquals(0, ends)
-
-        image.start()
-        assertTrue(image.isRunning())
-        assertEquals(0, starts)
-
-        image.start()
-        assertEquals(0, starts)
-
         assertFrameIsSimilar(result, frame = 1)
         assertTrue(image.isRunning())
         assertEquals(1, starts)
         assertEquals(0, ends)
+
+        image.start()
+        assertEquals(1, starts)
 
         timeSource.advanceBy(2.seconds)
         assertFrameIsSimilar(result, frame = 5)
@@ -284,7 +371,6 @@ class AnimatedSkiaImageDecoderTest {
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertEquals(2, image.frameBufferCapacity)
-        image.start()
 
         repeat(100) {
             result.image.toBitmap().close()
@@ -302,11 +388,37 @@ class AnimatedSkiaImageDecoderTest {
             timeSource = timeSource,
             bufferedFramesCount = 1,
         )
-        assertIs<AnimatedSkiaImage>(result.image).start()
 
         assertFrameIsSimilar(result, frame = 1)
         timeSource.advanceBy(800.milliseconds)
         assertFrameIsSimilar(result, frame = 3)
+    }
+
+    @Test
+    fun restorePreviousDisposalCompositesFramesCorrectly() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode(
+            result = disposalGifSource(),
+            timeSource = timeSource,
+            bufferedFramesCount = 1,
+        )
+
+        result.image.toBitmap().use { frame ->
+            assertEquals(Color.RED, frame.getColor(0, 0))
+            assertEquals(Color.RED, frame.getColor(3, 3))
+        }
+
+        timeSource.advanceBy(100.milliseconds)
+        result.image.toBitmap().use { frame ->
+            assertEquals(Color.GREEN, frame.getColor(0, 0))
+            assertEquals(Color.RED, frame.getColor(3, 3))
+        }
+
+        timeSource.advanceBy(100.milliseconds)
+        result.image.toBitmap().use { frame ->
+            assertEquals(Color.RED, frame.getColor(0, 0))
+            assertEquals(Color.BLUE, frame.getColor(3, 3))
+        }
     }
 
     @Test
@@ -422,8 +534,6 @@ class AnimatedSkiaImageDecoderTest {
         val image = assertIs<AnimatedSkiaImage>(result.image)
         assertFalse(image.isRunning())
 
-        image.start()
-        assertTrue(image.isRunning())
         result.image.toBitmap().use { firstFrame ->
             assertTrue(image.isRunning())
             timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
@@ -474,11 +584,7 @@ class AnimatedSkiaImageDecoderTest {
         assertTrue(image.bufferedFrameCount > 0)
 
         result.image.toBitmap().close()
-        assertFalse(image.isRunning())
-
-        image.start()
         assertTrue(image.isRunning())
-        result.image.toBitmap().close()
 
         image.close()
         image.close()
@@ -513,18 +619,46 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
+    fun animatedTransformationCanAddTransparencyToEveryFrame() = runTest {
+        val timeSource = FakeTimeSource()
+        val extras = ImageRequest.Builder(context)
+            .animatedTransformation { canvas ->
+                canvas.clear(Color.TRANSPARENT)
+                PixelOpacity.TRANSLUCENT
+            }
+            .build()
+            .extras
+        val result = decode(
+            resource = "animated_infinite.gif",
+            timeSource = timeSource,
+            options = Options(context, extras = extras),
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+
+        repeat(2) {
+            result.image.toBitmap().use { bitmap ->
+                assertEquals(Color.TRANSPARENT, bitmap.getColor(bitmap.width / 2, bitmap.height / 2))
+            }
+            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+        }
+    }
+
+    @Test
     fun factoryOnlyHandlesAnimatedImages() {
         val factory = AnimatedSkiaImageDecoder.Factory()
-        val imageLoader = ImageLoader(context)
+        val expectedResults = mapOf(
+            "animated_infinite.gif" to true,
+            "frame1.png" to false,
+            "static.webp" to false,
+        )
 
-        val gifSource = resourceSource("animated_infinite.gif")
-        assertNotNull(factory.create(gifSource, Options(context), imageLoader))
-
-        val pngSource = resourceSource("frame1.png")
-        assertNull(factory.create(pngSource, Options(context), imageLoader))
-
-        val staticWebPSource = resourceSource("static.webp")
-        assertNull(factory.create(staticWebPSource, Options(context), imageLoader))
+        expectedResults.forEach { (resource, isSupported) ->
+            val result = resourceSource(resource)
+            result.source.use {
+                val decoder = factory.create(result, Options(context), imageLoader)
+                assertEquals(isSupported, decoder != null)
+            }
+        }
     }
 
     @Test
@@ -578,10 +712,12 @@ class AnimatedSkiaImageDecoderTest {
             factory.create(
                 result = result,
                 options = options,
-                imageLoader = ImageLoader(context),
+                imageLoader = imageLoader,
             ),
         )
-        return assertNotNull(decoder.decode())
+        return assertNotNull(decoder.decode()).also { result ->
+            (result.image as? AnimatedSkiaImage)?.let(imagesToClose::add)
+        }
     }
 
     private suspend fun assertFrameIsSimilar(result: DecodeResult, frame: Int) {
@@ -597,8 +733,9 @@ class AnimatedSkiaImageDecoderTest {
         image: AnimatedSkiaImage,
         timeSource: FakeTimeSource,
     ) {
-        image.start()
+        assertFalse(image.isRunning())
         result.image.toBitmap().use { firstFrame ->
+            assertTrue(image.isRunning())
             timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
             result.image.toBitmap().use { secondFrame ->
                 assertFalse(secondFrame.isSimilarTo(firstFrame, threshold = 0.99))
@@ -628,6 +765,10 @@ class AnimatedSkiaImageDecoderTest {
         .write(CORRUPT_FRAME_GIF)
         .asSourceResult()
 
+    private fun disposalGifSource() = Buffer()
+        .write(DISPOSAL_GIF)
+        .asSourceResult()
+
     companion object {
         private const val LARGE_CANVAS_SIZE = 1_024
         private const val LARGE_CANVAS_MINIMUM_BITMAP_SIZE =
@@ -646,6 +787,13 @@ class AnimatedSkiaImageDecoderTest {
         private val CORRUPT_FRAME_GIF = """
             47494638396102000200800000000000ffffff21f90401010000002c000000000100010000
             020244010021f90401010000002c0000000001000100000202ffff003b
+        """.trimIndent().replace("\n", "").decodeHex()
+
+        private val DISPOSAL_GIF = """
+            47494638396104000400f00000ff000000000021ff0b4e45545343415045322e300301000000
+            21f904040a0000002c0000000004000400000204848f09050021f9040c0a0000002c00000000
+            010001008000ff00000000020244010021f904040a0000002c0300030001000100800000ff0000
+            0002024401003b
         """.trimIndent().replace("\n", "").decodeHex()
     }
 }
