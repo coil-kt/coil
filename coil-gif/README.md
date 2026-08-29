@@ -40,7 +40,4 @@ To transform the pixel data of each frame of an animated image, see [AnimatedTra
 - `GifDecoder` supports all Android API levels but is slower than `AnimatedImageDecoder`.
 - `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API (API 28+) and supports animated WebP and HEIF.
 - `AnimatedSkiaImageDecoder` uses Skia for decoding. Its factory keeps at most two decoded frames in memory by default. Pass `bufferedFramesCount` to configure that.
-- On JVM and native targets, `AnimatedSkiaImage` is initially stopped and exposes `start()`,
-  `stop()`, and `isRunning()` for manual control. It also implements `AutoCloseable`; call
-  `close()` to release its native resources early when the image is no longer in use.
-- JavaScript and WebAssembly are not supported because Skia's animated-image decoder does not currently provide usable performance on those targets.
+- JavaScript and WebAssembly targets are not supported because Skia's animated-image decoder does not currently provide usable performance on those targets.
