@@ -21,9 +21,14 @@ internal class JarFileFetcher(
         val delimiterIndex = path.indexOf('!')
         check(delimiterIndex != -1) { "Invalid jar:file URI: $uri" }
 
-        val jarPath = checkNotNull(
+        val jarFilePath = checkNotNull(
             Uri(path = path.substring(0, delimiterIndex), separator = uri.separator).filePath,
-        ) { "Invalid jar:file URI: $uri" }.toPath()
+        ) { "Invalid jar:file URI: $uri" }
+        val jarPath = if (uri.separator == "/") {
+            jarFilePath.removePrefix("/").replace('/', '\\').toPath()
+        } else {
+            jarFilePath.toPath()
+        }
         val filePath = path.substring(delimiterIndex + 1, path.length).toPath()
 
         return SourceFetchResult(
