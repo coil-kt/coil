@@ -1,4 +1,3 @@
-import coil3.addNodePolyfillWebpackPlugin
 import coil3.applyCoilHierarchyTemplate
 import coil3.composeDesktopCurrentOsDependency
 import coil3.multiplatformAndroidLibrary
@@ -94,8 +93,6 @@ kotlin {
             }
         }
     }
-
-    addNodePolyfillWebpackPlugin()
 }
 
 // https://youtrack.jetbrains.com/issue/KT-56025
