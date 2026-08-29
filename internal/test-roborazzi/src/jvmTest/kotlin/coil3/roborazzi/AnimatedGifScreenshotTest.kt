@@ -27,7 +27,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -36,16 +37,16 @@ import okio.buffer
 class AnimatedGifScreenshotTest {
 
     @Test
-    fun firstFrame() {
+    fun firstFrame() = runTest {
         capture(elapsed = ZERO)
     }
 
     @Test
-    fun thirdFrame() {
+    fun thirdFrame() = runTest {
         capture(elapsed = 800.milliseconds)
     }
 
-    private fun capture(elapsed: Duration) {
+    private suspend fun capture(elapsed: Duration) {
         val (image, timeSource) = decodeAnimatedGif()
         image.toBitmap().close()
         timeSource.advanceBy(elapsed)
@@ -79,9 +80,9 @@ class AnimatedGifScreenshotTest {
         }
     }
 
-    private fun decodeAnimatedGif(): Pair<AnimatedSkiaImage, FakeTimeSource> {
+    private suspend fun decodeAnimatedGif(): Pair<AnimatedSkiaImage, FakeTimeSource> {
         val timeSource = FakeTimeSource()
-        val image = runBlocking(Dispatchers.Default) {
+        val image = withContext(Dispatchers.Default) {
             val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
             val result = SourceFetchResult(
                 source = ImageSource(source, FileSystem.RESOURCES),
