@@ -1,6 +1,7 @@
 package coil3.fetch
 
 import coil3.ImageLoader
+import coil3.Uri
 import coil3.request.Options
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -63,14 +64,37 @@ class JarFileFetcherTest : RobolectricTest() {
     }
 
     @Test
-    fun opensFileInsideJarWithWindowsDriveLetter() = runTest {
+    fun opensFileInsideJarWithAbsoluteWindowsPath() = runTest {
         val fileSystem = FakeFileSystem().apply { emulateWindows() }
         val zipFile = "C:\\Users\\me\\app.jar".toPath()
         fileSystem.createDirectories(zipFile.parent!!)
         val contents = "The five boxing wizards jump quickly.".encodeUtf8()
         createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
 
-        val uri = "jar:file:/C:/Users/me/app.jar!/four/entry_1".toUri(separator = "\\")
+        val uri = Uri(
+            scheme = "jar:file",
+            path = "C:\\Users\\me\\app.jar!/four/entry_1",
+            separator = "\\",
+        )
+        val fetcher = factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader)!!
+        val result = assertIs<SourceFetchResult>(fetcher.fetch())
+
+        assertEquals(contents, result.source.source().readByteString())
+    }
+
+    @Test
+    fun opensFileInsideJarWithRelativeWindowsPath() = runTest {
+        val fileSystem = FakeFileSystem().apply { emulateWindows() }
+        val zipFile = "Users\\me\\app.jar".toPath()
+        fileSystem.createDirectories(zipFile.parent!!)
+        val contents = "The five boxing wizards jump quickly.".encodeUtf8()
+        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
+
+        val uri = Uri(
+            scheme = "jar:file",
+            path = "Users\\me\\app.jar!/four/entry_1",
+            separator = "\\",
+        )
         val fetcher = factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader)!!
         val result = assertIs<SourceFetchResult>(fetcher.fetch())
 
