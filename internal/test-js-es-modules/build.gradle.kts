@@ -1,4 +1,3 @@
-import coil3.addNodePolyfillWebpackPlugin
 import coil3.createSkikoWasmJsRuntimeDependency
 
 plugins {
@@ -33,5 +32,4 @@ kotlin {
     }
 }
 
-addNodePolyfillWebpackPlugin(enableWasm = false)
 createSkikoWasmJsRuntimeDependency(libs.versions.skiko)
