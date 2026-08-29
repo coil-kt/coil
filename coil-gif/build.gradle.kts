@@ -53,6 +53,7 @@ kotlin {
                 "animated_infinite.gif",
                 "animated.webp",
                 "frame*.png",
+                "no_frame_delay.gif",
                 "static.webp",
             )
         }

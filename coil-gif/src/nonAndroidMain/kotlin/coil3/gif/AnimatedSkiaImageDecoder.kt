@@ -14,6 +14,7 @@ import coil3.util.component2
 import kotlin.time.TimeSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import okio.BufferedSource
 import okio.use
@@ -68,8 +69,8 @@ class AnimatedSkiaImageDecoder(
             }
 
             val coroutineScope = CoroutineScope(currentCoroutineContext() + SupervisorJob())
-            val result = DecodeResult(
-                image = AnimatedSkiaImage(
+            val image = try {
+                AnimatedSkiaImage(
                     codec = codec,
                     coroutineScope = coroutineScope,
                     timeSource = timeSource,
@@ -81,7 +82,13 @@ class AnimatedSkiaImageDecoder(
                     animatedTransformation = options.animatedTransformation,
                     onAnimationStart = options.animationStartCallback,
                     onAnimationEnd = options.animationEndCallback,
-                ),
+                )
+            } catch (throwable: Throwable) {
+                coroutineScope.cancel()
+                throw throwable
+            }
+            val result = DecodeResult(
+                image = image,
                 isSampled = isSampled,
             )
             ownsCodec = false

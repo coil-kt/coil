@@ -8,7 +8,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.v2.runComposeUiTest
-import coil3.Image
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.decode.DataSource
@@ -38,38 +37,49 @@ class AnimatedGifScreenshotTest {
 
     @Test
     fun firstFrame() {
-        capture(animatedGifAt(ZERO))
+        capture(elapsed = ZERO)
     }
 
     @Test
     fun thirdFrame() {
-        capture(animatedGifAt(800.milliseconds))
+        capture(elapsed = 800.milliseconds)
     }
 
-    private fun capture(image: Image) {
+    private fun capture(elapsed: Duration) {
+        val (image, timeSource) = decodeAnimatedGif()
+        image.toBitmap().close()
+        timeSource.advanceBy(elapsed)
         val engine = FakeImageLoaderEngine(image)
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
             .build()
 
-        runComposeUiTest {
-            setContent {
-                AsyncImage(
-                    model = "animated.gif",
-                    contentDescription = null,
-                    imageLoader = imageLoader,
-                    contentScale = ContentScale.None,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White),
-                )
-            }
+        try {
+            runComposeUiTest {
+                setContent {
+                    AsyncImage(
+                        model = "animated.gif",
+                        contentDescription = null,
+                        imageLoader = imageLoader,
+                        contentScale = ContentScale.None,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White),
+                    )
+                }
 
-            onRoot().captureRoboImage()
+                onRoot().captureRoboImage()
+            }
+        } finally {
+            try {
+                imageLoader.shutdown()
+            } finally {
+                image.close()
+            }
         }
     }
 
-    private fun animatedGifAt(elapsed: Duration): Image {
+    private fun decodeAnimatedGif(): Pair<AnimatedSkiaImage, FakeTimeSource> {
         val timeSource = FakeTimeSource()
         val image = runBlocking(Dispatchers.Default) {
             val source = FileSystem.RESOURCES.source("animated_infinite.gif".toPath()).buffer()
@@ -78,19 +88,21 @@ class AnimatedGifScreenshotTest {
                 mimeType = "image/gif",
                 dataSource = DataSource.DISK,
             )
-            val decoder = assertNotNull(
-                AnimatedSkiaImageDecoder.Factory(timeSource = timeSource).create(
-                    result = result,
-                    options = Options(context),
-                    imageLoader = ImageLoader(context),
-                ),
-            )
-            assertNotNull(decoder.decode()).image as AnimatedSkiaImage
+            val imageLoader = ImageLoader(context)
+            try {
+                val decoder = assertNotNull(
+                    AnimatedSkiaImageDecoder.Factory(timeSource = timeSource).create(
+                        result = result,
+                        options = Options(context),
+                        imageLoader = imageLoader,
+                    ),
+                )
+                assertNotNull(decoder.decode()).image as AnimatedSkiaImage
+            } finally {
+                imageLoader.shutdown()
+            }
         }
 
-        image.start()
-        image.toBitmap().close()
-        timeSource.advanceBy(elapsed)
-        return image
+        return image to timeSource
     }
 }
