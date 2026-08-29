@@ -66,18 +66,6 @@ public final class coil3/gif/ImageRequestsKt {
 	public static final fun repeatCount (Lcoil3/request/ImageRequest$Builder;I)Lcoil3/request/ImageRequest$Builder;
 }
 
-public final class coil3/gif/ImageRequests_androidKt {
-	public static final synthetic fun animatedTransformation (Lcoil3/request/ImageRequest$Builder;Lcoil3/gif/AnimatedTransformation;)Lcoil3/request/ImageRequest$Builder;
-	public static final synthetic fun getAnimatedTransformation (Lcoil3/request/ImageRequest;)Lcoil3/gif/AnimatedTransformation;
-	public static final synthetic fun getAnimatedTransformation (Lcoil3/request/Options;)Lcoil3/gif/AnimatedTransformation;
-	public static final synthetic fun getAnimationEndCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
-	public static final synthetic fun getAnimationEndCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
-	public static final synthetic fun getAnimationStartCallback (Lcoil3/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
-	public static final synthetic fun getAnimationStartCallback (Lcoil3/request/Options;)Lkotlin/jvm/functions/Function0;
-	public static final synthetic fun onAnimationEnd (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
-	public static final synthetic fun onAnimationStart (Lcoil3/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
-}
-
 public final class coil3/gif/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
 	public static final field Companion Lcoil3/gif/MovieDrawable$Companion;
 	public static final field REPEAT_INFINITE I
