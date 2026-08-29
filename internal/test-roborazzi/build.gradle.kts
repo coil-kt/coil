@@ -18,6 +18,7 @@ kotlin {
         commonTest.dependencies {
             implementation(projects.coilCore)
             implementation(projects.coilComposeCore)
+            implementation(projects.coilGif)
             implementation(projects.coilTest)
             implementation(projects.internal.testUtils)
         }
@@ -29,7 +30,6 @@ kotlin {
             implementation(libs.compose.ui.test.junit4)
         }
         jvmTest.dependencies {
-            implementation(projects.coilGif)
             implementation(libs.roborazzi.compose.desktop)
             implementation(composeDesktopCurrentOsDependency())
             implementation(libs.compose.ui.test.junit4)
@@ -42,6 +42,6 @@ kotlin {
 
 roborazzi {
     // RoborazziOptions.RecordOptions.outputDirectoryPath and roborazzi.output.dir seems to be
-    // ignored on desktop. To workaround that this is used.
+    // ignored on desktop. To work around that this is used.
     outputDir = layout.projectDirectory.dir("src/jvmTest/snapshots/images")
 }
