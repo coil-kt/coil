@@ -4,6 +4,8 @@ import coil3.Extras
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.getExtra
+import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
+import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
 import coil3.request.ImageRequest
 import coil3.request.Options
 
@@ -11,8 +13,8 @@ import coil3.request.Options
  * Set the number of times to repeat the animation if the result is an animated image.
  *
  * A value of 0 plays the animation once, a positive value repeats it that many times after its
- * first iteration, and -1 repeats it indefinitely. Platform decoders can also expose a constant
- * that preserves the loop count encoded in the image.
+ * first iteration, [REPEAT_INFINITE] repeats it indefinitely, and [ENCODED_LOOP_COUNT] uses the
+ * file's encoded repeat count (see its docs for details).
  */
 fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
     validateRepeatCount(repeatCount)
@@ -22,6 +24,10 @@ fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
 fun ImageLoader.Builder.repeatCount(repeatCount: Int) = apply {
     validateRepeatCount(repeatCount)
     extras[repeatCountKey] = repeatCount
+}
+
+private fun validateRepeatCount(repeatCount: Int) {
+    require(repeatCount >= ENCODED_LOOP_COUNT) { "Invalid repeatCount: $repeatCount" }
 }
 
 val ImageRequest.repeatCount: Int
@@ -94,8 +100,3 @@ val Extras.Key.Companion.animationEndCallback: Extras.Key<(() -> Unit)?>
     get() = animationEndCallbackKey
 
 private val animationEndCallbackKey = Extras.Key<(() -> Unit)?>(default = null)
-
-internal expect fun validateRepeatCount(repeatCount: Int)
-
-internal const val ENCODED_LOOP_COUNT = -2
-internal const val REPEAT_INFINITE = -1

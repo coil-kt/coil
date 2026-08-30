@@ -61,6 +61,13 @@ final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3
     }
 }
 
+final object coil3.gif/AnimatedImageDecoderUtils { // coil3.gif/AnimatedImageDecoderUtils|null[0]
+    final const val ENCODED_LOOP_COUNT // coil3.gif/AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT|{}ENCODED_LOOP_COUNT[0]
+        final fun <get-ENCODED_LOOP_COUNT>(): kotlin/Int // coil3.gif/AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT.<get-ENCODED_LOOP_COUNT>|<get-ENCODED_LOOP_COUNT>(){}[0]
+    final const val REPEAT_INFINITE // coil3.gif/AnimatedImageDecoderUtils.REPEAT_INFINITE|{}REPEAT_INFINITE[0]
+        final fun <get-REPEAT_INFINITE>(): kotlin/Int // coil3.gif/AnimatedImageDecoderUtils.REPEAT_INFINITE.<get-REPEAT_INFINITE>|<get-REPEAT_INFINITE>(){}[0]
+}
+
 final val coil3.gif/animatedTransformation // coil3.gif/animatedTransformation|@coil3.Extras.Key.Companion{}animatedTransformation[0]
     final fun (coil3/Extras.Key.Companion).<get-animatedTransformation>(): coil3/Extras.Key<coil3.gif/AnimatedTransformation?> // coil3.gif/animatedTransformation.<get-animatedTransformation>|<get-animatedTransformation>@coil3.Extras.Key.Companion(){}[0]
 final val coil3.gif/animatedTransformation // coil3.gif/animatedTransformation|@coil3.request.ImageRequest{}animatedTransformation[0]
