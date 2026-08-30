@@ -200,7 +200,11 @@ class AnimatedSkiaImageDecoderTest {
         val result = decode("no_frame_delay.gif", timeSource)
         val image = assertIs<AnimatedSkiaImage>(result.image)
 
-        assertTrue(image.frameDurationsMs.all { it == 100 })
+        assertTrue(
+            image.cumulativeFrameDurationsMillis.indices.all { index ->
+                image.frameDurationMillis(index) == 100L
+            },
+        )
         assertAdvancesToNextFrame(result, image, timeSource)
     }
 
@@ -533,7 +537,7 @@ class AnimatedSkiaImageDecoderTest {
 
         result.image.toBitmap().use { firstFrame ->
             assertTrue(image.isRunning())
-            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+            timeSource.advanceBy(image.frameDurationMillis(0).milliseconds)
             result.image.toBitmap().use { failedFrame ->
                 failedFrame.assertIsSimilarTo(firstFrame)
             }
@@ -636,7 +640,7 @@ class AnimatedSkiaImageDecoderTest {
             result.image.toBitmap().use { bitmap ->
                 assertEquals(Color.TRANSPARENT, bitmap.getColor(bitmap.width / 2, bitmap.height / 2))
             }
-            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+            timeSource.advanceBy(image.frameDurationMillis(0).milliseconds)
         }
     }
 
@@ -716,11 +720,20 @@ class AnimatedSkiaImageDecoderTest {
         assertFalse(image.isRunning())
         result.image.toBitmap().use { firstFrame ->
             assertTrue(image.isRunning())
-            timeSource.advanceBy(image.frameDurationsMs.first().milliseconds)
+            timeSource.advanceBy(image.frameDurationMillis(0).milliseconds)
             result.image.toBitmap().use { secondFrame ->
                 assertFalse(secondFrame.isSimilarTo(firstFrame, threshold = 0.99))
             }
         }
+    }
+
+    private fun AnimatedSkiaImage.frameDurationMillis(index: Int): Long {
+        val previousDuration = if (index == 0) {
+            0L
+        } else {
+            cumulativeFrameDurationsMillis[index - 1]
+        }
+        return cumulativeFrameDurationsMillis[index] - previousDuration
     }
 
     private fun resourceSource(resource: String): SourceFetchResult {

@@ -86,19 +86,15 @@ class AnimatedSkiaImage internal constructor(
         else -> repeatCount.toLong() + 1L
     }
 
-    internal val frameDurationsMs = List(frameCount) { index ->
-        frameInfos.getOrNull(index).safeFrameDuration
-    }
-
-    private val cumulativeFrameDurationsMs = LongArray(frameCount).also { durations ->
+    internal val cumulativeFrameDurationsMillis = LongArray(frameCount).also { durations ->
         var total = 0L
-        frameDurationsMs.forEachIndexed { index, duration ->
-            total = total.saturatedAdd(duration.toLong())
+        for (index in durations.indices) {
+            total += frameInfos.getOrNull(index).safeFrameDuration
             durations[index] = total
         }
     }
 
-    private val singleIterationDurationMs = cumulativeFrameDurationsMs.last()
+    private val maxDurationMillis = cumulativeFrameDurationsMillis.last()
 
     private var invalidateTick by mutableIntStateOf(0)
     private var animationStartTime: TimeMark? = null
@@ -118,10 +114,10 @@ class AnimatedSkiaImage internal constructor(
     private val decodeBitmap = workingBitmaps.decode
     private val outputBitmap = workingBitmaps.output
 
-    override val size = encodedDataSize
-        .saturatedAdd(decodeBitmap.byteSize())
-        .saturatedAdd(outputBitmap?.byteSize() ?: 0L)
-        .saturatedAdd(outputImageInfo.byteSize().saturatedMultiply(frameBufferCapacity))
+    override val size = encodedDataSize +
+        decodeBitmap.imageInfo.byteSize() +
+        (outputBitmap?.imageInfo?.byteSize() ?: 0L) +
+        (frameBufferCapacity * outputImageInfo.byteSize())
 
     init {
         try {
@@ -280,7 +276,7 @@ class AnimatedSkiaImage internal constructor(
         val startTime = synchronized(frameLock) { animationStartTime } ?: return
         val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
         val isAnimationComplete = maxIterationCount > 0L &&
-            elapsedTimeMs / singleIterationDurationMs >= maxIterationCount
+            elapsedTimeMs / maxDurationMillis >= maxIterationCount
 
         if (isAnimationComplete) {
             val lastFrameIndex = frameCount - 1
@@ -304,12 +300,12 @@ class AnimatedSkiaImage internal constructor(
         get() = synchronized(frameLock) { animationState == AnimationState.FAILED }
 
     private fun frameIndexAt(elapsedTimeMs: Long): Int {
-        val iterationElapsedTimeMs = elapsedTimeMs % singleIterationDurationMs
+        val iterationElapsedTimeMs = elapsedTimeMs % maxDurationMillis
         var low = 0
-        var high = cumulativeFrameDurationsMs.lastIndex
+        var high = cumulativeFrameDurationsMillis.lastIndex
         while (low < high) {
             val middle = (low + high) ushr 1
-            if (iterationElapsedTimeMs < cumulativeFrameDurationsMs[middle]) {
+            if (iterationElapsedTimeMs < cumulativeFrameDurationsMillis[middle]) {
                 high = middle
             } else {
                 low = middle + 1
@@ -447,7 +443,7 @@ class AnimatedSkiaImage internal constructor(
         } ?: return
         val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
 
-        val iteration = elapsedTimeMs / singleIterationDurationMs
+        val iteration = elapsedTimeMs / maxDurationMillis
         if (invalidationFrameIndex == frameIndex &&
             invalidationIteration == iteration &&
             invalidationJob?.isActive == true
@@ -458,8 +454,8 @@ class AnimatedSkiaImage internal constructor(
         invalidationJob?.cancel()
         invalidationFrameIndex = frameIndex
         invalidationIteration = iteration
-        val iterationElapsedTimeMs = elapsedTimeMs % singleIterationDurationMs
-        val delayMs = (cumulativeFrameDurationsMs[frameIndex] - iterationElapsedTimeMs)
+        val iterationElapsedTimeMs = elapsedTimeMs % maxDurationMillis
+        val delayMs = (cumulativeFrameDurationsMillis[frameIndex] - iterationElapsedTimeMs)
             .coerceAtLeast(1L)
         invalidationJob = coroutineScope.launch {
             delay(delayMs.milliseconds)
@@ -713,30 +709,12 @@ private fun Int.toIterationCount(): Long {
     return if (this < 0) 0L else toLong() + 1L
 }
 
-private fun Bitmap.byteSize(): Long {
-    return imageInfo.byteSize()
-}
-
 private fun ImageInfo.byteSize(): Long {
     val computedSize = computeMinByteSize().toLong()
     return if (computedSize > 0L) {
         computedSize
     } else {
         (4L * width * height).coerceAtLeast(0L)
-    }
-}
-
-private fun Long.saturatedAdd(other: Long): Long {
-    return if (Long.MAX_VALUE - this < other) Long.MAX_VALUE else this + other
-}
-
-private fun Long.saturatedMultiply(other: Int): Long {
-    return if (other == 0 || this == 0L) {
-        0L
-    } else if (this > Long.MAX_VALUE / other) {
-        Long.MAX_VALUE
-    } else {
-        this * other
     }
 }
 
