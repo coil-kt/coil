@@ -11,7 +11,6 @@ import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
-import coil3.gif.AnimatedImageDecoder.Companion.ENCODED_LOOP_COUNT
 import coil3.gif.internal.animatable2CompatCallbackOf
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
 import coil3.request.Options
@@ -50,7 +49,7 @@ class GifDecoder(
             scale = options.scale,
         )
 
-        if (options.repeatCount != ENCODED_LOOP_COUNT) {
+        if (options.repeatCount != AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT) {
             drawable.setRepeatCount(options.repeatCount)
         }
 

@@ -2,6 +2,12 @@ public final class coil3/gif/AnimatedImageDecoderFactory {
 	public static final fun create ()Lcoil3/decode/Decoder$Factory;
 }
 
+public final class coil3/gif/AnimatedImageDecoderUtils {
+	public static final field ENCODED_LOOP_COUNT I
+	public static final field INSTANCE Lcoil3/gif/AnimatedImageDecoderUtils;
+	public static final field REPEAT_INFINITE I
+}
+
 public final class coil3/gif/AnimatedSkiaImage : coil3/Image, java/lang/AutoCloseable {
 	public fun close ()V
 	public fun draw (Lorg/jetbrains/skia/Canvas;)V

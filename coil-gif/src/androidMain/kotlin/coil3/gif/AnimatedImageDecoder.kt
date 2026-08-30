@@ -164,10 +164,13 @@ class AnimatedImageDecoder(
     }
 
     companion object {
-        /**
-         * Pass this to [ImageRequest.Builder.repeatCount] to repeat according to encoded
-         * LoopCount metadata.
-         */
-        const val ENCODED_LOOP_COUNT = -2
+        @Deprecated(
+            message = "Replace with `AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT`.",
+            replaceWith = ReplaceWith(
+                expression = "ENCODED_LOOP_COUNT",
+                imports = ["coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT"],
+            ),
+        )
+        const val ENCODED_LOOP_COUNT = AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
     }
 }

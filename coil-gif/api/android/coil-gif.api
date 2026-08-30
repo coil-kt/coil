@@ -20,6 +20,12 @@ public final class coil3/gif/AnimatedImageDecoderFactory {
 	public static final fun create ()Lcoil3/decode/Decoder$Factory;
 }
 
+public final class coil3/gif/AnimatedImageDecoderUtils {
+	public static final field ENCODED_LOOP_COUNT I
+	public static final field INSTANCE Lcoil3/gif/AnimatedImageDecoderUtils;
+	public static final field REPEAT_INFINITE I
+}
+
 public abstract interface class coil3/gif/AnimatedTransformation {
 	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil3/gif/PixelOpacity;
 }

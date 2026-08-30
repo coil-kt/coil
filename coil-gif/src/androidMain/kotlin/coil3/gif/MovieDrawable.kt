@@ -54,7 +54,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var startTimeMillis = 0L
     private var frameTimeMillis = 0L
 
-    private var repeatCount = REPEAT_INFINITE
+    private var repeatCount = AnimatedImageDecoderUtils.REPEAT_INFINITE
     private var loopIteration = 0
 
     private var animatedTransformation: AnimatedTransformation? = null
@@ -108,7 +108,8 @@ class MovieDrawable @JvmOverloads constructor(
             }
             val elapsedTime = (frameTimeMillis - startTimeMillis).toInt()
             loopIteration = elapsedTime / duration
-            invalidate = repeatCount == REPEAT_INFINITE || loopIteration <= repeatCount
+            invalidate = repeatCount == AnimatedImageDecoderUtils.REPEAT_INFINITE ||
+                loopIteration <= repeatCount
             time = if (invalidate) elapsedTime - loopIteration * duration else duration
         }
         movie.setTime(time)
@@ -149,10 +150,12 @@ class MovieDrawable @JvmOverloads constructor(
      * i.e. setting [repeatCount] to 2 will result in the animation playing 3 times. Setting
      * [repeatCount] to 0 will result in the animation playing once.
      *
-     * Default: [REPEAT_INFINITE]
+     * Default: [AnimatedImageDecoderUtils.REPEAT_INFINITE]
      */
     fun setRepeatCount(repeatCount: Int) {
-        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        require(repeatCount >= AnimatedImageDecoderUtils.REPEAT_INFINITE) {
+            "Invalid repeatCount: $repeatCount"
+        }
         this.repeatCount = repeatCount
     }
 
@@ -293,7 +296,13 @@ class MovieDrawable @JvmOverloads constructor(
     private val Canvas.bounds get() = tempCanvasBounds.apply { set(0, 0, width, height) }
 
     companion object {
-        /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
+        @Deprecated(
+            message = "Replace with `AnimatedImageDecoderUtils.REPEAT_INFINITE`.",
+            replaceWith = ReplaceWith(
+                expression = "REPEAT_INFINITE",
+                imports = ["coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE"],
+            ),
+        )
+        const val REPEAT_INFINITE = AnimatedImageDecoderUtils.REPEAT_INFINITE
     }
 }

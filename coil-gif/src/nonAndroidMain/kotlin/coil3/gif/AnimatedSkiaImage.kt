@@ -7,6 +7,8 @@ import coil3.BitmapImage
 import coil3.Canvas
 import coil3.Image
 import coil3.asImage
+import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
+import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
