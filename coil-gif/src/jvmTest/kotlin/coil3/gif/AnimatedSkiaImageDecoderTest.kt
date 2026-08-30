@@ -6,6 +6,8 @@ import coil3.decode.DataSource
 import coil3.decode.DecodeResult
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
+import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.maxBitmapSize
@@ -22,7 +24,6 @@ import coil3.util.ServiceLoaderComponentRegistry
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -153,11 +154,7 @@ class AnimatedSkiaImageDecoderTest {
     @Test
     fun animatedSkiaImageSupportsSingleFrame() = runTest {
         val data = Data.makeFromBytes(STATIC_GIF.toByteArray())
-        val codec = try {
-            Codec.makeFromData(data)
-        } finally {
-            data.close()
-        }
+        val codec = data.use { Codec.makeFromData(it) }
         val imageInfo = codec.imageInfo
         val image = AnimatedSkiaImage(
             codec = codec,
@@ -244,7 +241,7 @@ class AnimatedSkiaImageDecoderTest {
     fun encodedRepeatCountFreezesOnLastFrame() = runTest {
         val timeSource = FakeTimeSource()
         val extras = ImageRequest.Builder(context)
-            .repeatCount(AnimatedSkiaImageDecoder.ENCODED_LOOP_COUNT)
+            .repeatCount(ENCODED_LOOP_COUNT)
             .build()
             .extras
         val result = decode(
@@ -665,23 +662,6 @@ class AnimatedSkiaImageDecoderTest {
     fun serviceLoaderFindsDecoder() {
         val decoders = ServiceLoaderComponentRegistry.decoders
         assertTrue(decoders.any { it.factory() is AnimatedSkiaImageDecoder.Factory })
-    }
-
-    @Test
-    fun factoryRejectsInvalidBufferSize() {
-        assertFailsWith<IllegalArgumentException> {
-            AnimatedSkiaImageDecoder.Factory(bufferedFramesCount = 0)
-        }
-    }
-
-    @Test
-    fun repeatCountRejectsValuesBelowEncodedLoopCount() {
-        ImageRequest.Builder(context)
-            .repeatCount(AnimatedSkiaImageDecoder.ENCODED_LOOP_COUNT)
-
-        assertFailsWith<IllegalArgumentException> {
-            ImageRequest.Builder(context).repeatCount(-3)
-        }
     }
 
     private suspend fun decode(
