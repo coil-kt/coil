@@ -21,6 +21,7 @@ import okio.use
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.ImageInfo
+import org.jetbrains.skia.impl.use
 
 /**
  * A [Decoder] that uses Skia to decode animated GIFs and WebPs.
@@ -41,20 +42,17 @@ class AnimatedSkiaImageDecoder(
 
     override suspend fun decode(): DecodeResult {
         val bytes = source.source().use { it.readByteArray() }
-        val data = Data.makeFromBytes(bytes)
-        val codec = try {
-            Codec.makeFromData(data)
-        } finally {
-            data.close()
-        }
+        val codec = Data.makeFromBytes(bytes).use { Codec.makeFromData(it) }
 
         var ownsCodec = true
         try {
             val frameCount = codec.frameCount
-            check(frameCount > 0) { "Animated images must contain at least 1 frame." }
+            check(frameCount > 0) { "Invalid frame count: $frameCount" }
 
             val sourceImageInfo = codec.imageInfo
-            val (outputImageInfo, isSampled) = computeOutputImageInfo(sourceImageInfo, options)
+            val outputImageInfo = computeOutputImageInfo(sourceImageInfo, options)
+            val isSampled = outputImageInfo.width < sourceImageInfo.width ||
+                outputImageInfo.height < sourceImageInfo.height
             val decodeImageInfo = computeDecodeImageInfo(sourceImageInfo, outputImageInfo)
             if (frameCount == 1) {
                 return DecodeResult(
@@ -77,8 +75,8 @@ class AnimatedSkiaImageDecoder(
                     decodeImageInfo = decodeImageInfo,
                     outputImageInfo = outputImageInfo,
                     encodedDataSize = bytes.size.toLong(),
-                    repeatCount = options.repeatCount,
                     bufferedFramesCount = bufferedFramesCount,
+                    repeatCount = options.repeatCount,
                     animatedTransformation = options.animatedTransformation,
                     onAnimationStart = options.animationStartCallback,
                     onAnimationEnd = options.animationEndCallback,
@@ -101,7 +99,7 @@ class AnimatedSkiaImageDecoder(
     private fun computeOutputImageInfo(
         source: ImageInfo,
         options: Options,
-    ): Pair<ImageInfo, Boolean> {
+    ): ImageInfo {
         val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
             srcWidth = source.width,
             srcHeight = source.height,
@@ -123,8 +121,7 @@ class AnimatedSkiaImageDecoder(
 
         val width = (multiplier * source.width).toInt().coerceAtLeast(1)
         val height = (multiplier * source.height).toInt().coerceAtLeast(1)
-        return source.withWidthHeight(width, height) to
-            (width < source.width || height < source.height)
+        return source.withWidthHeight(width, height)
     }
 
     private fun computeDecodeImageInfo(
@@ -173,13 +170,5 @@ class AnimatedSkiaImageDecoder(
         companion object {
             const val DEFAULT_BUFFERED_FRAMES_COUNT = 2
         }
-    }
-
-    companion object {
-        /**
-         * Pass this to `ImageRequest.Builder.repeatCount` to repeat according to the image's
-         * encoded loop count.
-         */
-        const val ENCODED_LOOP_COUNT = -2
     }
 }

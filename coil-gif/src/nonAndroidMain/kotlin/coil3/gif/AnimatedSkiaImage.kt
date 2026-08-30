@@ -46,11 +46,11 @@ class AnimatedSkiaImage internal constructor(
     private val decodeImageInfo: ImageInfo,
     private val outputImageInfo: ImageInfo,
     private val encodedDataSize: Long,
+    bufferedFramesCount: Int,
     repeatCount: Int,
     private val animatedTransformation: AnimatedTransformation? = null,
     private val onAnimationStart: (() -> Unit)? = null,
     private val onAnimationEnd: (() -> Unit)? = null,
-    bufferedFramesCount: Int,
 ) : Image, AutoCloseable {
 
     private val frameCount = codec.frameCount
