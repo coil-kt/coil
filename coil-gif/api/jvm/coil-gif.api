@@ -1,5 +1,5 @@
-public final class coil3/gif/AnimatedImageDecoderFactory_nonAndroidKt {
-	public static final fun AnimatedImageDecoderFactory ()Lcoil3/decode/Decoder$Factory;
+public final class coil3/gif/AnimatedImageDecoderFactory {
+	public static final fun create ()Lcoil3/decode/Decoder$Factory;
 }
 
 public final class coil3/gif/AnimatedSkiaImage : coil3/Image, java/lang/AutoCloseable {
