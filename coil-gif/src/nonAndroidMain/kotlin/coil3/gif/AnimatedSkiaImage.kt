@@ -80,7 +80,6 @@ class AnimatedSkiaImage internal constructor(
     override val shareable: Boolean
         get() = false
 
-    /** The number of times the animation is played, or 0 if it repeats forever. */
     internal val maxIterationCount = when (repeatCount) {
         ENCODED_LOOP_COUNT -> codec.repetitionCount.toIterationCount()
         REPEAT_INFINITE -> 0L
@@ -88,7 +87,7 @@ class AnimatedSkiaImage internal constructor(
     }
 
     internal val frameDurationsMs = List(frameCount) { index ->
-        frameInfos.getOrNull(index)?.safeFrameDuration ?: DEFAULT_FRAME_DURATION
+        frameInfos.getOrNull(index).safeFrameDuration
     }
 
     private val cumulativeFrameDurationsMs = LongArray(frameCount).also { durations ->
@@ -707,8 +706,8 @@ private class WorkingBitmaps(
     }
 }
 
-private val AnimationFrameInfo.safeFrameDuration: Int
-    get() = if (duration <= 0) DEFAULT_FRAME_DURATION else duration
+private val AnimationFrameInfo?.safeFrameDuration: Int
+    get() = if (this == null || duration <= 0) DEFAULT_FRAME_DURATION else duration
 
 private fun Int.toIterationCount(): Long {
     return if (this < 0) 0L else toLong() + 1L
