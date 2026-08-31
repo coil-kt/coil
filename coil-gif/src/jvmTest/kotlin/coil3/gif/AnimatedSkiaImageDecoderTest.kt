@@ -158,6 +158,7 @@ class AnimatedSkiaImageDecoderTest {
         val imageInfo = codec.imageInfo
         val image = AnimatedSkiaImage(
             codec = codec,
+            frameCount = 1,
             coroutineScope = this,
             timeSource = FakeTimeSource(),
             decodeImageInfo = imageInfo,
@@ -168,7 +169,6 @@ class AnimatedSkiaImageDecoderTest {
         )
         imagesToClose += image
 
-        assertEquals(1, image.maxFrameBufferSize)
         assertEquals(1, image.bufferedFrameCount)
         assertFalse(image.isRunning())
 
@@ -371,12 +371,12 @@ class AnimatedSkiaImageDecoderTest {
             bufferedFramesCount = 2,
         )
         val image = assertIs<AnimatedSkiaImage>(result.image)
-        assertEquals(2, image.maxFrameBufferSize)
+        assertEquals(2, image.bufferedFrameCount)
 
         repeat(100) {
             result.image.toBitmap().close()
             runCurrent()
-            assertTrue(image.bufferedFrameCount <= image.maxFrameBufferSize)
+            assertEquals(2, image.bufferedFrameCount)
             timeSource.advanceBy(400.milliseconds)
         }
     }
