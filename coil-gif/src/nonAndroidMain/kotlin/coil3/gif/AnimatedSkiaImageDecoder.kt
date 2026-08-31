@@ -1,11 +1,14 @@
 package coil3.gif
 
+import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.internal.createWorkingBitmaps
 import coil3.request.Options
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
@@ -18,6 +21,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import okio.BufferedSource
 import okio.use
+import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.ImageInfo
@@ -70,6 +74,7 @@ class AnimatedSkiaImageDecoder(
             val image = try {
                 AnimatedSkiaImage(
                     codec = codec,
+                    frameCount = frameCount,
                     coroutineScope = coroutineScope,
                     timeSource = timeSource,
                     decodeImageInfo = decodeImageInfo,
@@ -133,6 +138,32 @@ class AnimatedSkiaImageDecoder(
             width = minOf(source.width, output.width),
             height = minOf(source.height, output.height),
         )
+    }
+
+    private fun decodeStaticImage(
+        codec: Codec,
+        decodeImageInfo: ImageInfo,
+        outputImageInfo: ImageInfo,
+        animatedTransformation: AnimatedTransformation?,
+    ): BitmapImage {
+        val workingBitmaps = createWorkingBitmaps(
+            decodeImageInfo = decodeImageInfo,
+            outputImageInfo = outputImageInfo,
+            animatedTransformation = animatedTransformation,
+        )
+        var retainedBitmap: Bitmap? = null
+        try {
+            codec.readPixels(workingBitmaps.decode)
+            val resultBitmap = workingBitmaps.prepareOutput()
+            resultBitmap.setImmutable()
+
+            val image = resultBitmap.asImage()
+            // Keep the bitmap that backs the returned image open.
+            retainedBitmap = resultBitmap
+            return image
+        } finally {
+            workingBitmaps.closeExcept(retainedBitmap)
+        }
     }
 
     /**
