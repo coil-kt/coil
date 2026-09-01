@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.1] - September 1, 2026
+
+- Fix JS builds failing when ES modules are enabled. ([#3558](https://github.com/coil-kt/coil/pull/3558))
+
 ## [3.6.0] - August 26, 2026
 
 - **New**: Add support for loading `blob:` URLs (object URLs) on JS/WASM. ([#3504](https://github.com/coil-kt/coil/pull/3504))

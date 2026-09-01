@@ -14,8 +14,8 @@ Coil so‘zi qisqartma bo‘lib, quyidagini anglatadi: **Co**routine **I**mage *
 Coil Compose kutubxonasi va [tarmoq kutubxonasini](https://coil-kt.github.io/coil/network/) yuklang:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.6.0")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.0")
+implementation("io.coil-kt.coil3:coil-compose:3.6.1")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.1")
 ```
 
 Rasm yuklash uchun `AsyncImage` composable'dan foydalaning:
