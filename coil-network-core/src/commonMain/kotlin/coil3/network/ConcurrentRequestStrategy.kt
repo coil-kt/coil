@@ -5,7 +5,7 @@ import coil3.fetch.FetchResult
 import kotlin.jvm.JvmField
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.CompletableDeferred
 
 /**
  * Coordinates concurrent requests for the same key.
@@ -39,63 +39,40 @@ private class UncoordinatedConcurrentRequestStrategy : ConcurrentRequestStrategy
  */
 @ExperimentalCoilApi
 class DeDupeConcurrentRequestStrategy : ConcurrentRequestStrategy {
-    private val concurrentRequests = mutableMapOf<String, Request>()
+    private val concurrentRequests = mutableMapOf<String, CompletableDeferred<Boolean>>()
     private val lock = SynchronizedObject()
 
     override suspend fun apply(
         key: String,
         block: suspend () -> FetchResult,
     ): FetchResult {
-        var shouldWait = true
-        val request = synchronized(lock) {
-            concurrentRequests.getOrPut(key) {
-                shouldWait = false
-                Request()
+        while (true) {
+            var isLeader = false
+            val request = synchronized(lock) {
+                concurrentRequests.getOrPut(key) {
+                    isLeader = true
+                    CompletableDeferred()
+                }
             }
-        }.acquire()
 
-        if (shouldWait) {
-            request.channel.receiveCatching()
-        }
-
-        try {
-            return block().also {
-                request.markSucceeded()
+            if (!isLeader) {
+                val succeeded = request.await()
+                if (succeeded) {
+                    return block()
+                }
+                continue
             }
-        } catch (e: Exception) {
-            request.channel.trySend(Unit)
-            throw e
-        } finally {
-            request.release {
+
+            var succeeded = false
+            try {
+                return block().also {
+                    succeeded = true
+                }
+            } finally {
                 synchronized(lock) {
                     concurrentRequests -= key
                 }
-            }
-        }
-    }
-
-    private class Request {
-        val channel = Channel<Unit>(Channel.UNLIMITED)
-
-        private val lock = SynchronizedObject()
-        private var hasSucceeded = false
-        private var isClosed = false
-        private var observerCount = 0
-
-        fun acquire(): Request = synchronized(lock) {
-            observerCount++
-            this
-        }
-
-        fun markSucceeded() = synchronized(lock) {
-            hasSucceeded = true
-        }
-
-        fun release(cleanup: () -> Unit) = synchronized(lock) {
-            if ((--observerCount <= 0 || hasSucceeded) && !isClosed) {
-                channel.close()
-                cleanup()
-                isClosed = true
+                request.complete(succeeded)
             }
         }
     }
