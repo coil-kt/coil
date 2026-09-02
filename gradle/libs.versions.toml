@@ -17,7 +17,7 @@ ktor3 = "3.1.0"
 lint = "32.4.0"
 okhttp = "4.12.0"
 okio = "3.18.1"
-paparazzi = "2.0.0-alpha05"
+paparazzi = "2.0.0-alpha05.3"
 roborazzi = "1.73.0"
 skiko = "0.150.1"
 
@@ -36,7 +36,7 @@ gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", versi
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.37.0"
-gradlePlugin-paparazzi = { module = "app.cash.paparazzi:paparazzi-gradle-plugin", version.ref = "paparazzi" }
+gradlePlugin-paparazzi = { module = "com.eygraber:paparazzi-gradle-plugin", version.ref = "paparazzi" }
 gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
