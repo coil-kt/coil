@@ -107,8 +107,6 @@ fun Project.androidLibrary(
             showStackTraces = true
             showCauses = false
         }
-        // https://github.com/cashapp/paparazzi/issues/2182
-        test.reports.html.required.set(false)
     }
     action()
 }
