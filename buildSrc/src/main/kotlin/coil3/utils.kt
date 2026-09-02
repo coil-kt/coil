@@ -52,17 +52,17 @@ val Project.enableComposeMetrics: Boolean
 private fun Project.intProperty(
     name: String,
     default: () -> Int = { error("unknown property: $name") },
-): Int = (properties[name] as String?)?.toInt() ?: default()
+): Int = providers.gradleProperty(name).orNull?.toInt() ?: default()
 
 private fun Project.stringProperty(
     name: String,
     default: () -> String = { error("unknown property: $name") },
-): String = (properties[name] as String?) ?: default()
+): String = providers.gradleProperty(name).orNull ?: default()
 
 private fun Project.booleanProperty(
     name: String,
     default: () -> Boolean = { error("unknown property: $name") },
-): Boolean = (properties[name] as String?)?.toBooleanStrict() ?: default()
+): Boolean = providers.gradleProperty(name).orNull?.toBooleanStrict() ?: default()
 
 private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     var index = 0
