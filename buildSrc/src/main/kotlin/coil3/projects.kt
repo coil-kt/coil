@@ -1,12 +1,10 @@
 package coil3
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
-import com.android.build.api.dsl.Lint
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.TestExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
@@ -86,12 +84,9 @@ fun Project.androidLibrary(
     config: Boolean = false,
     action: LibraryExtension.() -> Unit = {},
 ) = androidBase<LibraryExtension>(name) {
-    buildFeatures {
-        buildConfig = config
-    }
-    (this as CommonExtension).sourceSets["main"].resources {
-        srcDirs("src/commonMain/resources", "src/jvmCommonMain/resources")
-    }
+    buildFeatures.buildConfig = config
+    sourceSets["main"].resources.directories +=
+        listOf("src/commonMain/resources", "src/jvmCommonMain/resources")
     if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
@@ -105,17 +100,15 @@ fun Project.androidLibrary(
             configure(platform)
         }
     }
-    testOptions {
-        unitTests.all { test ->
-            test.testLogging {
-                exceptionFormat = TestExceptionFormat.FULL
-                showExceptions = true
-                showStackTraces = true
-                showCauses = false
-            }
-            // https://github.com/cashapp/paparazzi/issues/2182
-            test.reports.html.required.set(false)
+    testOptions.unitTests.all { test ->
+        test.testLogging {
+            exceptionFormat = TestExceptionFormat.FULL
+            showExceptions = true
+            showStackTraces = true
+            showCauses = false
         }
+        // https://github.com/cashapp/paparazzi/issues/2182
+        test.reports.html.required.set(false)
     }
     action()
 }
@@ -231,9 +224,9 @@ fun Project.setupDokka(
 
 fun Project.androidApplication(
     name: String,
-    action: BaseAppModuleExtension.() -> Unit = {},
-) = androidBase<BaseAppModuleExtension>(name) {
-    defaultConfig {
+    action: ApplicationExtension.() -> Unit = {},
+) = androidBase<ApplicationExtension>(name) {
+    defaultConfig.apply {
         applicationId = name
         versionCode = project.versionCode
         versionName = project.versionName
@@ -248,16 +241,14 @@ fun Project.androidTest(
     config: Boolean = false,
     action: TestExtension.() -> Unit = {},
 ) = androidBase<TestExtension>(name) {
-    buildFeatures {
-        buildConfig = config
-    }
-    defaultConfig {
+    buildFeatures.buildConfig = config
+    defaultConfig.apply {
         vectorDrawables.useSupportLibrary = true
     }
     action()
 }
 
-private fun <T : BaseExtension> Project.androidBase(
+private fun <T : CommonExtension> Project.androidBase(
     name: String,
     action: T.() -> Unit,
 ) {
@@ -266,19 +257,19 @@ private fun <T : BaseExtension> Project.androidBase(
 
     android<T> {
         namespace = name
-        compileSdkVersion(project.compileSdk)
-        defaultConfig {
+        compileSdk = project.compileSdk
+        defaultConfig.apply {
             minSdk = project.minSdk
-            targetSdk = project.targetSdk
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-        packagingOptions {
-            resources.pickFirsts += RESOURCE_DUPLICATE_OVERRIDES
+        when (this) {
+            is ApplicationExtension -> defaultConfig.targetSdk = project.targetSdk
+            is LibraryExtension -> testOptions.targetSdk = project.targetSdk
+            is TestExtension -> defaultConfig.targetSdk = project.targetSdk
         }
-        testOptions {
-            unitTests.isIncludeAndroidResources = true
-        }
-        lint {
+        packaging.resources.pickFirsts += RESOURCE_DUPLICATE_OVERRIDES
+        testOptions.unitTests.isIncludeAndroidResources = true
+        lint.apply {
             warningsAsErrors = true
             disable += DISABLED_LINT_RULES
         }
@@ -286,10 +277,6 @@ private fun <T : BaseExtension> Project.androidBase(
     }
 }
 
-private fun <T : BaseExtension> Project.android(action: T.() -> Unit) {
+private fun <T : CommonExtension> Project.android(action: T.() -> Unit) {
     extensions.configure("android", action)
-}
-
-private fun BaseExtension.lint(action: Lint.() -> Unit) {
-    (this as CommonExtension).lint.apply(action)
 }
