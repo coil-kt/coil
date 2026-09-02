@@ -4,9 +4,11 @@ package coil3.decode
 
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsAny
 import kotlin.js.JsArray
+import kotlin.js.asJsException
 import kotlin.js.js
 import kotlin.js.set
 import kotlin.js.unsafeCast
@@ -21,6 +23,8 @@ import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.webext.installPixelsFromArrayBuffer
 import org.jetbrains.skiko.ExperimentalSkikoApi
+import org.jetbrains.skiko.InternalSkikoApi
+import org.jetbrains.skiko.wasm.awaitSkiko
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.toInt8Array
 import org.w3c.dom.MessageEvent
@@ -87,8 +91,6 @@ private fun startWorker(code: String): Worker {
 
 private val worker by lazy { startWorker(WebWorkerJs) }
 
-internal expect suspend fun awaitSkiko(): JsAny
-
 @OptIn(ExperimentalSkikoApi::class)
 internal suspend fun decodeImageAsync(
     bytes: ByteArray,
@@ -98,7 +100,7 @@ internal suspend fun decodeImageAsync(
     // async decodes an image to a bitmap on a special web worker. doesn't block UI thread :)
     val webBitmap = decodeBytesToBitmap(bytes, width, height)
 
-    awaitSkiko()
+    suspendAwaitSkiko()
     val colorInfo = ColorInfo(
         ColorType.RGBA_8888,
         ColorAlphaType.UNPREMUL,
@@ -115,6 +117,14 @@ internal suspend fun decodeImageAsync(
         bitmap.close()
         throw throwable
     }
+}
+
+@OptIn(InternalSkikoApi::class)
+internal suspend fun suspendAwaitSkiko(): JsAny = suspendCancellableCoroutine { cont ->
+    awaitSkiko.then(
+        onFulfilled = { cont.resume(it); null },
+        onRejected = { cont.resumeWithException(it.asJsException()); null }
+    )
 }
 
 @OptIn(ExperimentalUuidApi::class)

@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.runTest
 class SkikoModuleTest {
     @Test
     fun awaitSkikoReturnsInitializedModule() = runTest {
-        assertTrue(hasInitializedMemory(awaitSkiko()))
+        assertTrue(hasInitializedMemory(suspendAwaitSkiko()))
     }
 }
 
