@@ -123,7 +123,7 @@ internal suspend fun decodeImageAsync(
 internal suspend fun suspendAwaitSkiko(): JsAny = suspendCancellableCoroutine { cont ->
     awaitSkiko.then(
         onFulfilled = { cont.resume(it); null },
-        onRejected = { cont.resumeWithException(it.asJsException()); null }
+        onRejected = { cont.resumeWithException(it.asJsException()); null },
     )
 }
 
