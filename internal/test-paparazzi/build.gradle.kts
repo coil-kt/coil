@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("app.cash.paparazzi")
+    id("com.eygraber.paparazzi")
 }
 
 androidLibrary(name = "coil3.test.paparazzi")
@@ -17,16 +17,4 @@ dependencies {
 
     testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
-}
-
-// https://github.com/google/guava/issues/6801
-dependencies.constraints {
-    add("testImplementation", "com.google.guava:guava") {
-        attributes {
-            attribute(
-                TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                objects.named(TargetJvmEnvironment.STANDARD_JVM),
-            )
-        }
-    }
 }
