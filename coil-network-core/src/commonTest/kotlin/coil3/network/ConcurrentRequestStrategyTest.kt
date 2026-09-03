@@ -9,10 +9,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
@@ -133,18 +135,17 @@ class ConcurrentRequestStrategyTest {
     fun dedupe_canceled_request_resumes_waiter() = runTest {
         val strategy = DeDupeConcurrentRequestStrategy()
         val started = Channel<Int>(capacity = 2)
-        val cancelLeader = CompletableDeferred<Unit>()
+        val leaderStarted = CompletableDeferred<Unit>()
         val waiterStarted = CompletableDeferred<Unit>()
 
-        val leader = async {
-            runCatching {
-                strategy.apply("key") {
-                    started.send(1)
-                    cancelLeader.await()
-                    throw CancellationException("leader canceled")
-                }
+        val leader = launch {
+            strategy.apply("key") {
+                leaderStarted.complete(Unit)
+                started.send(1)
+                awaitCancellation()
             }
         }
+        leaderStarted.await()
         assertEquals(1, started.receive())
 
         val waiter = async {
@@ -158,10 +159,136 @@ class ConcurrentRequestStrategyTest {
         yield()
         assertFalse(waiterStarted.isCompleted)
 
-        cancelLeader.complete(Unit)
-        assertTrue(leader.await().exceptionOrNull() is CancellationException)
+        leader.cancelAndJoin()
         assertEquals(2, started.receive())
         assertIs<ImageFetchResult>(waiter.await())
+    }
+
+    @Test
+    fun dedupe_canceled_waiter_does_not_start_another_request() = runTest {
+        val strategy = DeDupeConcurrentRequestStrategy()
+        val leaderStarted = CompletableDeferred<Unit>()
+        val finishLeader = CompletableDeferred<Unit>()
+        val canceledWaiterStarted = CompletableDeferred<Unit>()
+        val otherWaiterStarted = CompletableDeferred<Unit>()
+
+        val leader = async {
+            strategy.apply("key") {
+                leaderStarted.complete(Unit)
+                finishLeader.await()
+                newFetchResult(1)
+            }
+        }
+        leaderStarted.await()
+
+        val canceledWaiter = launch {
+            strategy.apply("key") {
+                canceledWaiterStarted.complete(Unit)
+                newFetchResult(2)
+            }
+        }
+        val otherWaiter = async {
+            strategy.apply("key") {
+                otherWaiterStarted.complete(Unit)
+                newFetchResult(3)
+            }
+        }
+        yield()
+        assertFalse(canceledWaiterStarted.isCompleted)
+        assertFalse(otherWaiterStarted.isCompleted)
+
+        canceledWaiter.cancelAndJoin()
+        yield()
+        val otherWaiterStartedEarly = otherWaiterStarted.isCompleted
+
+        finishLeader.complete(Unit)
+        assertIs<ImageFetchResult>(leader.await())
+        assertIs<ImageFetchResult>(otherWaiter.await())
+        assertFalse(canceledWaiterStarted.isCompleted)
+        assertFalse(otherWaiterStartedEarly)
+    }
+
+    @Test
+    fun dedupe_canceled_waiter_does_not_strand_key() = runTest {
+        val strategy = DeDupeConcurrentRequestStrategy()
+        val leaderStarted = CompletableDeferred<Unit>()
+        val failLeader = CompletableDeferred<Unit>()
+        val waiterStarted = CompletableDeferred<Unit>()
+
+        val leader = async {
+            runCatching {
+                strategy.apply("key") {
+                    leaderStarted.complete(Unit)
+                    failLeader.await()
+                    error("leader failed")
+                }
+            }
+        }
+        leaderStarted.await()
+
+        val waiter = launch {
+            strategy.apply("key") {
+                waiterStarted.complete(Unit)
+                newFetchResult(2)
+            }
+        }
+        yield()
+        assertFalse(waiterStarted.isCompleted)
+
+        leader.invokeOnCompletion { waiter.cancel() }
+        failLeader.complete(Unit)
+        assertTrue(leader.await().isFailure)
+        waiter.join()
+        assertFalse(waiterStarted.isCompleted)
+
+        val nextStarted = CompletableDeferred<Unit>()
+        val next = launch {
+            strategy.apply("key") {
+                nextStarted.complete(Unit)
+                newFetchResult(3)
+            }
+        }
+        yield()
+        val didStart = nextStarted.isCompleted
+        next.cancelAndJoin()
+
+        assertTrue(didStart)
+    }
+
+    @Test
+    fun dedupe_throwable_resumes_waiter() = runTest {
+        val strategy = DeDupeConcurrentRequestStrategy()
+        val leaderStarted = CompletableDeferred<Unit>()
+        val failLeader = CompletableDeferred<Unit>()
+        val waiterStarted = CompletableDeferred<Unit>()
+
+        val leader = async {
+            runCatching {
+                strategy.apply("key") {
+                    leaderStarted.complete(Unit)
+                    failLeader.await()
+                    throw TestThrowable()
+                }
+            }
+        }
+        leaderStarted.await()
+
+        val waiter = launch {
+            strategy.apply("key") {
+                waiterStarted.complete(Unit)
+                newFetchResult(2)
+            }
+        }
+        yield()
+        assertFalse(waiterStarted.isCompleted)
+
+        failLeader.complete(Unit)
+        assertIs<TestThrowable>(leader.await().exceptionOrNull())
+        yield()
+        val didStart = waiterStarted.isCompleted
+        waiter.cancelAndJoin()
+
+        assertTrue(didStart)
     }
 
     @Test
@@ -234,4 +361,6 @@ class ConcurrentRequestStrategyTest {
             dataSource = DataSource.NETWORK,
         )
     }
+
+    private class TestThrowable : Throwable()
 }
