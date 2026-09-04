@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.6.2] - September 4, 2026
+
+- Fix `DeDupeConcurrentRequestStrategy` hanging requests for a key if a waiting request is cancelled. ([#3566](https://github.com/coil-kt/coil/pull/3566))
+- Fix a JS/WASM linkage error when using Compose Multiplatform 1.13. ([#3568](https://github.com/coil-kt/coil/pull/3568))
+
 ## [3.6.1] - September 1, 2026
 
 - Fix JS builds failing when ES modules are enabled. ([#3558](https://github.com/coil-kt/coil/pull/3558))
