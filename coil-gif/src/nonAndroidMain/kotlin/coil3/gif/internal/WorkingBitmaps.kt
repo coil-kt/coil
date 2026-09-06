@@ -9,11 +9,12 @@ import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.SamplingMode
 import org.jetbrains.skia.impl.use
 
-internal fun createWorkingBitmaps(
+internal class WorkingBitmaps(
     decodeImageInfo: ImageInfo,
-    outputImageInfo: ImageInfo,
-    animatedTransformation: AnimatedTransformation?,
-): WorkingBitmaps {
+    private val outputImageInfo: ImageInfo,
+    private val animatedTransformation: AnimatedTransformation?,
+) {
+
     val decode = allocateBitmap(decodeImageInfo)
     val output = try {
         if (outputImageInfo != decodeImageInfo || animatedTransformation != null) {
@@ -25,25 +26,16 @@ internal fun createWorkingBitmaps(
         decode.close()
         throw throwable
     }
-    return WorkingBitmaps(
-        decode = decode,
-        output = output,
-        outputImageInfo = outputImageInfo,
-        animatedTransformation = animatedTransformation,
-    )
-}
-
-internal class WorkingBitmaps(
-    val decode: Bitmap,
-    val output: Bitmap?,
-    private val outputImageInfo: ImageInfo,
-    private val animatedTransformation: AnimatedTransformation?,
-) {
 
     fun prepareOutput(): Bitmap {
         val bitmap = output?.also { output ->
+            // A previous transformation may have marked the reused output bitmap opaque.
             output.updateAlphaType(
-                outputImageInfo.alphaTypeForTransformation(animatedTransformation),
+                if (animatedTransformation == null) {
+                    outputImageInfo.colorAlphaType
+                } else {
+                    ColorAlphaType.PREMUL
+                },
             )
             decode.scalePixelsTo(output)
         } ?: decode
@@ -106,10 +98,4 @@ private fun Bitmap.applyTransformation(
 private fun Bitmap.updateAlphaType(alphaType: ColorAlphaType) {
     if (imageInfo.colorAlphaType == alphaType) return
     check(setAlphaType(alphaType)) { "Unable to set image alpha type to $alphaType." }
-}
-
-private fun ImageInfo.alphaTypeForTransformation(
-    transformation: AnimatedTransformation?,
-): ColorAlphaType {
-    return if (transformation == null) colorAlphaType else ColorAlphaType.PREMUL
 }

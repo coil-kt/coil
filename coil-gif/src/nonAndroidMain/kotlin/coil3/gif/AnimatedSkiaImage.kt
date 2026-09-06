@@ -7,8 +7,8 @@ import coil3.Canvas
 import coil3.Image
 import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
 import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
+import coil3.gif.internal.WorkingBitmaps
 import coil3.gif.internal.byteSize
-import coil3.gif.internal.createWorkingBitmaps
 import coil3.gif.internal.safeFrameDuration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
@@ -17,6 +17,7 @@ import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
@@ -40,12 +41,12 @@ class AnimatedSkiaImage internal constructor(
     private val frameCount: Int,
     private val coroutineScope: CoroutineScope,
     private val timeSource: TimeSource,
-    private val decodeImageInfo: ImageInfo,
+    decodeImageInfo: ImageInfo,
     private val outputImageInfo: ImageInfo,
-    private val encodedDataSize: Long,
+    encodedDataSize: Long,
     bufferedFramesCount: Int,
     repeatCount: Int,
-    private val animatedTransformation: AnimatedTransformation? = null,
+    animatedTransformation: AnimatedTransformation? = null,
     private val onAnimationStart: (() -> Unit)? = null,
     private val onAnimationEnd: (() -> Unit)? = null,
 ) : Image, AutoCloseable {
@@ -55,11 +56,9 @@ class AnimatedSkiaImage internal constructor(
         require(bufferedFramesCount >= 1) { "bufferedFramesCount must be >= 1" }
     }
 
-    private val frameInfos = if (frameCount > 1) {
-        List(frameCount) { codec.getFrameInfo(it) }
-    } else {
-        emptyList()
-    }
+    // Keep only the metadata needed for timing and compositing, not an object per frame.
+    private val requiredFrameIndices = IntArray(frameCount)
+    private val restorePreviousFrames = BooleanArray(frameCount)
 
     private val decodeLock = SynchronizedObject()
     private val frameLock = SynchronizedObject()
@@ -88,7 +87,12 @@ class AnimatedSkiaImage internal constructor(
     internal val cumulativeFrameDurationsMillis = LongArray(frameCount).also { durations ->
         var total = 0L
         for (index in durations.indices) {
-            total += frameInfos.getOrNull(index).safeFrameDuration
+            // Skia only exposes frame info for multi-frame images.
+            val info = if (frameCount > 1) codec.getFrameInfo(index) else null
+            requiredFrameIndices[index] = info?.requiredFrame ?: NO_FRAME
+            restorePreviousFrames[index] =
+                info?.disposalMethod == AnimationDisposalMode.RESTORE_PREVIOUS
+            total += info.safeFrameDuration
             durations[index] = total
         }
     }
@@ -97,6 +101,9 @@ class AnimatedSkiaImage internal constructor(
 
     private var invalidateTick by mutableIntStateOf(0)
     private var animationStartTime: TimeMark? = null
+
+    // Register and cancel jobs under frameLock, but start them outside it so an inline dispatcher
+    // cannot acquire decodeLock while holding frameLock.
     private var prefetchJob: Job? = null
     private var prefetchWindowStart = NO_FRAME
     private var invalidationJob: Job? = null
@@ -105,17 +112,15 @@ class AnimatedSkiaImage internal constructor(
 
     // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
     // The initialization block below owns cleanup if predecoding fails.
-    private val workingBitmaps = createWorkingBitmaps(
+    private val workingBitmaps = WorkingBitmaps(
         decodeImageInfo = decodeImageInfo,
         outputImageInfo = outputImageInfo,
         animatedTransformation = animatedTransformation,
     )
-    private val decodeBitmap = workingBitmaps.decode
-    private val outputBitmap = workingBitmaps.output
-
     override val size = encodedDataSize +
-        decodeBitmap.imageInfo.byteSize() +
-        (outputBitmap?.imageInfo?.byteSize() ?: 0L) +
+        (frameCount.toLong() * (Int.SIZE_BYTES + 1 + Long.SIZE_BYTES)) +
+        workingBitmaps.decode.imageInfo.byteSize() +
+        (workingBitmaps.output?.imageInfo?.byteSize() ?: 0L) +
         (bufferedFrames.size * outputImageInfo.byteSize())
 
     init {
@@ -150,6 +155,7 @@ class AnimatedSkiaImage internal constructor(
                 AnimationState.STOPPED,
                 -> {
                     animationState = AnimationState.STARTING
+                    cancelAnimationJobsLocked()
                     true
                 }
                 AnimationState.STARTING,
@@ -161,7 +167,6 @@ class AnimatedSkiaImage internal constructor(
         }
         if (!didStart) return
 
-        cancelAnimationJobs()
         invalidateTick++
     }
 
@@ -193,11 +198,11 @@ class AnimatedSkiaImage internal constructor(
             retainedFrame = frame
             bufferWindowStart = frame.index
             animationStartTime = null
+            cancelAnimationJobsLocked()
             true
         }
         if (!didStop) return
 
-        cancelAnimationJobs()
         if (notifyAnimationEnd) onAnimationEnd?.invoke()
         invalidateTick++
     }
@@ -220,12 +225,12 @@ class AnimatedSkiaImage internal constructor(
                 animationState = AnimationState.CLOSED
                 retainedFrame = null
                 animationStartTime = null
+                cancelAnimationJobsLocked()
                 true
             }
         }
         if (!shouldClose) return
 
-        cancelAnimationJobs()
         coroutineScope.cancel()
         synchronized(decodeLock) {
             val images = synchronized(frameLock) {
@@ -274,8 +279,8 @@ class AnimatedSkiaImage internal constructor(
 
         val startTime = synchronized(frameLock) { animationStartTime } ?: return
         val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
-        val isAnimationComplete = maxIterationCount > 0L &&
-            elapsedTimeMs / maxDurationMillis >= maxIterationCount
+        val iteration = elapsedTimeMs / maxDurationMillis
+        val isAnimationComplete = maxIterationCount > 0L && iteration >= maxIterationCount
 
         if (isAnimationComplete) {
             val lastFrameIndex = frameCount - 1
@@ -288,8 +293,8 @@ class AnimatedSkiaImage internal constructor(
         val frameIndex = frameIndexAt(elapsedTimeMs)
         setBufferWindowStart(frameIndex)
         if (!canvas.drawFrame(frameIndex)) return
-        prefetchFrames(frameIndex)
-        scheduleInvalidation(frameIndex)
+        prefetchFrames(frameIndex, iteration, startTime)
+        scheduleInvalidation(frameIndex, iteration, startTime)
     }
 
     internal val bufferedFrameCount: Int
@@ -357,16 +362,14 @@ class AnimatedSkiaImage internal constructor(
                 retainedFrame = frame
                 bufferWindowStart = frame.index
                 animationStartTime = null
+                cancelAnimationJobsLocked()
                 true
             }
         }
-        if (didStop) {
-            cancelAnimationJobs()
-            if (notifyAnimationEnd) onAnimationEnd?.invoke()
-        }
+        if (didStop && notifyAnimationEnd) onAnimationEnd?.invoke()
     }
 
-    private fun cancelAnimationJobs() {
+    private fun cancelAnimationJobsLocked() {
         prefetchJob?.cancel()
         prefetchJob = null
         invalidationJob?.cancel()
@@ -417,57 +420,83 @@ class AnimatedSkiaImage internal constructor(
         }
     }
 
-    private fun prefetchFrames(frameIndex: Int) {
-        if (bufferedFrames.size <= 1 || isBufferWindowComplete(frameIndex)) return
-        if (prefetchWindowStart == frameIndex && prefetchJob?.isActive == true) return
+    private fun prefetchFrames(frameIndex: Int, iteration: Long, startTime: TimeMark) {
+        if (bufferedFrames.size <= 1) return
 
-        prefetchJob?.cancel()
-        prefetchWindowStart = frameIndex
-        prefetchJob = coroutineScope.launch {
-            for (offset in 1 until bufferedFrames.size) {
-                currentCoroutineContext().ensureActive()
-                try {
-                    ensureFrame(nextFrameIndex(frameIndex, offset))
-                } catch (exception: CancellationException) {
-                    throw exception
-                } catch (_: Exception) {
-                    return@launch
+        val count = if (maxIterationCount > 0L && iteration == maxIterationCount - 1L) {
+            minOf(bufferedFrames.size, frameCount - frameIndex)
+        } else {
+            bufferedFrames.size
+        }
+        val job = synchronized(frameLock) {
+            if (!animationState.isRunning || animationStartTime !== startTime) return
+            if (count <= 1) {
+                // Skipping to the final frame can leave a prefetch queued from an earlier loop.
+                prefetchJob?.cancel()
+                prefetchJob = null
+                return
+            }
+            if (isBufferWindowCompleteLocked(frameIndex, count)) return
+            if (prefetchWindowStart == frameIndex && prefetchJob?.isActive == true) return
+
+            prefetchJob?.cancel()
+            prefetchWindowStart = frameIndex
+            coroutineScope.launch(start = CoroutineStart.LAZY) {
+                for (offset in 1 until count) {
+                    currentCoroutineContext().ensureActive()
+                    try {
+                        ensureFrame(nextFrameIndex(frameIndex, offset))
+                    } catch (exception: CancellationException) {
+                        throw exception
+                    } catch (_: Exception) {
+                        return@launch
+                    }
                 }
+            }.also {
+                prefetchJob = it
             }
         }
+        job.start()
     }
 
-    private fun scheduleInvalidation(frameIndex: Int) {
-        val startTime = synchronized(frameLock) {
-            if (animationState.isRunning) animationStartTime else null
-        } ?: return
-        val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
+    private fun scheduleInvalidation(frameIndex: Int, iteration: Long, startTime: TimeMark) {
+        val job = synchronized(frameLock) {
+            if (!animationState.isRunning || animationStartTime !== startTime) return
+            if (invalidationFrameIndex == frameIndex &&
+                invalidationIteration == iteration &&
+                invalidationJob?.isActive == true
+            ) {
+                return
+            }
 
-        val iteration = elapsedTimeMs / maxDurationMillis
-        if (invalidationFrameIndex == frameIndex &&
-            invalidationIteration == iteration &&
-            invalidationJob?.isActive == true
-        ) {
-            return
+            invalidationJob?.cancel()
+            invalidationFrameIndex = frameIndex
+            invalidationIteration = iteration
+            // Register the job before dispatching it so a concurrent stop/close cannot miss it.
+            coroutineScope.launch(start = CoroutineStart.LAZY) {
+                // Decode time and dispatcher delays count toward the frame's duration. If decoding
+                // crossed a loop boundary, the displayed frame is already due for replacement.
+                val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
+                val delayMs = if (elapsedTimeMs / maxDurationMillis == iteration) {
+                    cumulativeFrameDurationsMillis[frameIndex] - elapsedTimeMs % maxDurationMillis
+                } else {
+                    0L
+                }
+                delay(delayMs.coerceAtLeast(1L).milliseconds)
+                synchronized(frameLock) {
+                    if (animationState.isRunning && animationStartTime === startTime) invalidateTick++
+                }
+            }.also {
+                invalidationJob = it
+            }
         }
-
-        invalidationJob?.cancel()
-        invalidationFrameIndex = frameIndex
-        invalidationIteration = iteration
-        val iterationElapsedTimeMs = elapsedTimeMs % maxDurationMillis
-        val delayMs = (cumulativeFrameDurationsMillis[frameIndex] - iterationElapsedTimeMs)
-            .coerceAtLeast(1L)
-        invalidationJob = coroutineScope.launch {
-            delay(delayMs.milliseconds)
-            if (isRunning()) invalidateTick++
-        }
+        job.start()
     }
 
-    private fun isBufferWindowComplete(frameIndex: Int): Boolean {
-        return synchronized(frameLock) {
-            !animationState.canDecodeFrames ||
-                bufferedFrames.all { it != null && isInBufferWindow(it.index, frameIndex) }
-        }
+    private fun isBufferWindowCompleteLocked(frameIndex: Int, count: Int): Boolean {
+        return bufferedFrames.count {
+            it != null && isInBufferWindow(it.index, frameIndex, count)
+        } == count
     }
 
     private fun ensureFrame(frameIndex: Int) {
@@ -535,7 +564,7 @@ class AnimatedSkiaImage internal constructor(
 
     private fun decodeFrame(frameIndex: Int): SkiaImage {
         codec.readPixels(
-            bitmap = decodeBitmap,
+            bitmap = workingBitmaps.decode,
             frame = frameIndex,
             priorFrame = priorFrameFor(frameIndex),
         )
@@ -546,23 +575,26 @@ class AnimatedSkiaImage internal constructor(
 
     private fun priorFrameFor(frameIndex: Int): Int {
         if (frameIndex <= 0 || lastDecodedFrameIndex !in 0..<frameIndex) return NO_FRAME
-        val requiredFrame = frameInfos.getOrNull(frameIndex)?.requiredFrame ?: return NO_FRAME
+        val requiredFrame = requiredFrameIndices[frameIndex]
         if (requiredFrame == NO_FRAME || lastDecodedFrameIndex < requiredFrame) return NO_FRAME
-        val priorDisposal = frameInfos.getOrNull(lastDecodedFrameIndex)?.disposalMethod
-        return if (priorDisposal == AnimationDisposalMode.RESTORE_PREVIOUS) {
+        return if (restorePreviousFrames[lastDecodedFrameIndex]) {
             NO_FRAME
         } else {
             lastDecodedFrameIndex
         }
     }
 
-    private fun isInBufferWindow(frameIndex: Int, windowStart: Int): Boolean {
+    private fun isInBufferWindow(
+        frameIndex: Int,
+        windowStart: Int,
+        count: Int = bufferedFrames.size,
+    ): Boolean {
         val distance = if (frameIndex >= windowStart) {
             frameIndex.toLong() - windowStart
         } else {
             frameCount.toLong() - windowStart + frameIndex
         }
-        return distance < bufferedFrames.size
+        return distance < count
     }
 
     private fun nextFrameIndex(frameIndex: Int, offset: Int): Int {

@@ -54,11 +54,6 @@ final class coil3.gif/AnimatedSkiaImageDecoder : coil3.decode/Decoder { // coil3
                 final fun <get-DEFAULT_BUFFERED_FRAMES_COUNT>(): kotlin/Int // coil3.gif/AnimatedSkiaImageDecoder.Factory.Companion.DEFAULT_BUFFERED_FRAMES_COUNT.<get-DEFAULT_BUFFERED_FRAMES_COUNT>|<get-DEFAULT_BUFFERED_FRAMES_COUNT>(){}[0]
         }
     }
-
-    final object Companion { // coil3.gif/AnimatedSkiaImageDecoder.Companion|null[0]
-        final const val ENCODED_LOOP_COUNT // coil3.gif/AnimatedSkiaImageDecoder.Companion.ENCODED_LOOP_COUNT|{}ENCODED_LOOP_COUNT[0]
-            final fun <get-ENCODED_LOOP_COUNT>(): kotlin/Int // coil3.gif/AnimatedSkiaImageDecoder.Companion.ENCODED_LOOP_COUNT.<get-ENCODED_LOOP_COUNT>|<get-ENCODED_LOOP_COUNT>(){}[0]
-    }
 }
 
 final object coil3.gif/AnimatedImageDecoderUtils { // coil3.gif/AnimatedImageDecoderUtils|null[0]

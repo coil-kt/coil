@@ -21,13 +21,8 @@ public final class coil3/gif/AnimatedSkiaImage : coil3/Image, java/lang/AutoClos
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder : coil3/decode/Decoder {
-	public static final field Companion Lcoil3/gif/AnimatedSkiaImageDecoder$Companion;
-	public static final field ENCODED_LOOP_COUNT I
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;ILkotlin/time/TimeSource;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/gif/AnimatedSkiaImageDecoder$Companion {
 }
 
 public final class coil3/gif/AnimatedSkiaImageDecoder$Factory : coil3/decode/Decoder$Factory {

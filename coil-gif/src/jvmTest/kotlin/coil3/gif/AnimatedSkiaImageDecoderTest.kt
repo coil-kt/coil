@@ -1,5 +1,7 @@
 package coil3.gif
 
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateObserver
 import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.decode.DataSource
@@ -21,6 +23,7 @@ import coil3.test.utils.decodeBitmapResource
 import coil3.test.utils.isSimilarTo
 import coil3.toBitmap
 import coil3.util.ServiceLoaderComponentRegistry
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,9 +33,14 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import okio.Buffer
 import okio.BufferedSource
 import okio.ByteString.Companion.decodeHex
@@ -192,6 +200,103 @@ class AnimatedSkiaImageDecoderTest {
             timeSource.advanceBy(100.milliseconds)
         }
         assertFrameIsSimilar(result, frame = 2)
+    }
+
+    @Test
+    fun slowFrameDecodeInvalidatesImmediatelyAfterCrossingLoopBoundary() = runTest {
+        val timeSource = FakeTimeSource()
+        var delayDecode = false
+        val extras = ImageRequest.Builder(context)
+            .animatedTransformation {
+                if (delayDecode) timeSource.advanceBy(1300.milliseconds)
+                PixelOpacity.UNCHANGED
+            }
+            .build()
+            .extras
+        val result = decode(
+            resource = "animated_infinite.gif",
+            timeSource = timeSource,
+            bufferedFramesCount = 1,
+            options = Options(context, extras = extras),
+        )
+        result.image.toBitmap().close()
+        runCurrent()
+
+        timeSource.advanceBy(800.milliseconds)
+        delayDecode = true
+        var invalidations = 0
+        val observer = SnapshotStateObserver { it() }
+        observer.start()
+        try {
+            observer.observeReads(Unit, { invalidations++ }) {
+                result.image.toBitmap().close()
+            }
+            runCurrent()
+            advanceTimeBy(1)
+            runCurrent()
+            Snapshot.sendApplyNotifications()
+            assertEquals(1, invalidations)
+        } finally {
+            observer.stop()
+            observer.clear()
+        }
+    }
+
+    @Test
+    fun delayedInvalidationJobUsesRemainingFrameTime() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode("animated_infinite.gif", timeSource)
+        var invalidations = 0
+        val observer = SnapshotStateObserver { it() }
+        observer.start()
+        try {
+            observer.observeReads(Unit, { invalidations++ }) {
+                result.image.toBitmap().close()
+            }
+            // The coroutine has not started yet, but most of the frame's duration has elapsed.
+            timeSource.advanceBy(350.milliseconds)
+            runCurrent()
+            advanceTimeBy(50)
+            runCurrent()
+            Snapshot.sendApplyNotifications()
+            assertEquals(1, invalidations)
+        } finally {
+            observer.stop()
+            observer.clear()
+        }
+    }
+
+    @Test
+    fun stopDuringJobDispatchCancelsPendingWork() = runTest {
+        for (bufferedFramesCount in 1..2) {
+            val delegate = StandardTestDispatcher(testScheduler)
+            var onDispatch: ((CoroutineContext) -> Unit)? = null
+            val dispatcher = object : CoroutineDispatcher() {
+                override fun dispatch(context: CoroutineContext, block: Runnable) {
+                    onDispatch?.invoke(context)
+                    delegate.dispatch(context, block)
+                }
+            }
+            val timeSource = FakeTimeSource()
+            val result = withContext(dispatcher) {
+                decode("animated_infinite.gif", timeSource, bufferedFramesCount)
+            }
+            val image = assertIs<AnimatedSkiaImage>(result.image)
+            image.toBitmap().close()
+            timeSource.advanceBy(400.milliseconds)
+
+            val dispatchedJobs = mutableListOf<Job>()
+            onDispatch = { context ->
+                dispatchedJobs += assertNotNull(context[Job])
+                image.stop()
+            }
+
+            image.toBitmap().close()
+            assertFalse(image.isRunning())
+            // Stop during invalidation dispatch (one buffered frame) or prefetch dispatch (two).
+            // It must cancel the dispatched job and prevent any subsequent job from being launched.
+            assertTrue(dispatchedJobs.single().isCancelled)
+        }
     }
 
     @Test
@@ -360,6 +465,66 @@ class AnimatedSkiaImageDecoderTest {
         assertFalse(image.isRunning())
         assertEquals(2, ends)
         image.close()
+    }
+
+    @Test
+    fun finiteAnimationDoesNotPrefetchPastLastIteration() = runTest {
+        for (repeatCount in 0..1) {
+            val timeSource = FakeTimeSource()
+            var decodedFrames = 0
+            val extras = ImageRequest.Builder(context)
+                .repeatCount(repeatCount)
+                .animatedTransformation {
+                    decodedFrames++
+                    PixelOpacity.UNCHANGED
+                }
+                .build()
+                .extras
+            val result = decode(
+                resource = "animated_infinite.gif",
+                timeSource = timeSource,
+                options = Options(context, extras = extras),
+            )
+
+            repeat(repeatCount + 1) {
+                for (frame in 1..5) {
+                    assertFrameIsSimilar(result, frame)
+                    runCurrent()
+                    timeSource.advanceBy(400.milliseconds)
+                }
+            }
+            assertEquals(5 * (repeatCount + 1), decodedFrames)
+            assertFrameIsSimilar(result, frame = 5)
+            assertFalse(assertIs<AnimatedSkiaImage>(result.image).isRunning())
+        }
+    }
+
+    @Test
+    fun lastIterationCancelsQueuedPrefetchFromPreviousIteration() = runTest {
+        val timeSource = FakeTimeSource()
+        var decodedFrames = 0
+        val options = Options(
+            context = context,
+            extras = ImageRequest.Builder(context)
+                .repeatCount(1)
+                .animatedTransformation {
+                    decodedFrames++
+                    PixelOpacity.UNCHANGED
+                }
+                .build().extras,
+        )
+        val result = decode("animated_infinite.gif", timeSource, options = options)
+        result.image.toBitmap().close()
+        timeSource.advanceBy(400.milliseconds)
+        result.image.toBitmap().close()
+        runCurrent()
+        timeSource.advanceBy(1200.milliseconds)
+        result.image.toBitmap().close()
+        // Before the queued prefetch can run, skip to the last frame of the final iteration.
+        timeSource.advanceBy(2.seconds)
+        result.image.toBitmap().close()
+        runCurrent()
+        assertEquals(4, decodedFrames)
     }
 
     @Test

@@ -18,7 +18,6 @@ kotlin {
         commonTest.dependencies {
             implementation(projects.coilCore)
             implementation(projects.coilComposeCore)
-            implementation(projects.coilGif)
             implementation(projects.coilTest)
             implementation(projects.internal.testUtils)
         }
@@ -30,6 +29,7 @@ kotlin {
             implementation(libs.compose.ui.test.junit4)
         }
         jvmTest.dependencies {
+            implementation(projects.coilGif)
             implementation(libs.roborazzi.compose.desktop)
             implementation(composeDesktopCurrentOsDependency())
             implementation(libs.compose.ui.test.junit4)

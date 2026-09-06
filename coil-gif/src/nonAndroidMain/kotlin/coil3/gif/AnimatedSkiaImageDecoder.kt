@@ -8,7 +8,7 @@ import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
-import coil3.gif.internal.createWorkingBitmaps
+import coil3.gif.internal.WorkingBitmaps
 import coil3.request.Options
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
@@ -146,7 +146,7 @@ class AnimatedSkiaImageDecoder(
         outputImageInfo: ImageInfo,
         animatedTransformation: AnimatedTransformation?,
     ): BitmapImage {
-        val workingBitmaps = createWorkingBitmaps(
+        val workingBitmaps = WorkingBitmaps(
             decodeImageInfo = decodeImageInfo,
             outputImageInfo = outputImageInfo,
             animatedTransformation = animatedTransformation,
