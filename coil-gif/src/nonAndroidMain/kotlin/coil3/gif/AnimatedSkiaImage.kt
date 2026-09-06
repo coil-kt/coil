@@ -280,7 +280,7 @@ class AnimatedSkiaImage internal constructor(
         val startTime = synchronized(frameLock) { animationStartTime } ?: return
         val elapsedTimeMs = startTime.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
         val iteration = elapsedTimeMs / maxDurationMillis
-        val isAnimationComplete = maxIterationCount > 0L && iteration >= maxIterationCount
+        val isAnimationComplete = maxIterationCount in 1..iteration
 
         if (isAnimationComplete) {
             val lastFrameIndex = frameCount - 1
