@@ -112,6 +112,7 @@ internal suspend fun decodeImageAsync(
         if (!bitmap.installPixelsFromArrayBuffer(imageInfo, webBitmap, imageInfo.minRowBytes)) {
             error("Failed to install pixels from ArrayBuffer.")
         }
+        bitmap.setImmutable()
         return bitmap
     } catch (throwable: Throwable) {
         bitmap.close()
