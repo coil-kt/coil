@@ -37,6 +37,8 @@ private const val WebWorkerJs = """
 let canvas = null;
 let context = null;
 let cw = 0, ch = 0;
+const active = new Set();
+const cancelled = new Set();
 
 function ensureCanvas(w, h) {
   if (!canvas || w > cw || h > ch) {
@@ -49,7 +51,14 @@ function ensureCanvas(w, h) {
 }
 
 self.onmessage = async (e) => {
-    const { id, data, w, h } = e.data;
+    const { kind, id } = e.data;
+    if (kind === "cancel") {
+        if (active.has(id)) cancelled.add(id);
+        return;
+    }
+
+    const { data, w, h } = e.data;
+    active.add(id);
     try {
         var blob = new Blob([data]);
         var bmp = null;
@@ -59,9 +68,12 @@ self.onmessage = async (e) => {
                 resizeHeight: h,
                 resizeQuality: 'high'
             });
+            if (cancelled.has(id)) return;
+
             const ctx = ensureCanvas(w, h);
             ctx.clearRect(0, 0, w, h);
             ctx.drawImage(bmp, 0, 0);
+            if (cancelled.has(id)) return;
 
             const imgData = ctx.getImageData(0, 0, w, h);
             const rawBuffer = imgData.data.buffer;
@@ -73,9 +85,14 @@ self.onmessage = async (e) => {
             bmp?.close();
         }
     } catch (err) {
-        self.postMessage(
-            { kind: "error", id: id, message: err?.message ?? String(err), }
-        );
+        if (!cancelled.has(id)) {
+            self.postMessage(
+                { kind: "error", id: id, message: err?.message ?? String(err), }
+            );
+        }
+    } finally {
+        active.delete(id);
+        cancelled.delete(id);
     }
 };
 """
@@ -171,14 +188,14 @@ private suspend fun decodeBytesToBitmap(
     }
     worker.addEventListener("message", responseListener)
     worker.addEventListener("error", errorListener)
-    continuation.invokeOnCancellation {
-        cleanup()
-    }
-
     val buffer = bytes.toInt8Array().buffer
     val transfer = JsArray<JsAny>().apply { set(0, buffer) }
     try {
         worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
+        continuation.invokeOnCancellation {
+            cleanup()
+            worker.postMessage(WebWorkerCancelRequest(id))
+        }
     } catch (throwable: Throwable) {
         cleanup()
         if (continuation.isActive) {
@@ -192,7 +209,9 @@ private fun WebWorkerRequest(
     buffer: ArrayBuffer,
     width: Int,
     height: Int,
-): JsAny = js("({ id: id, data: buffer, w: width, h: height })")
+): JsAny = js("({ kind: 'decode', id: id, data: buffer, w: width, h: height })")
+
+private fun WebWorkerCancelRequest(id: String): JsAny = js("({ kind: 'cancel', id: id })")
 
 internal external interface WebWorkerMessage : JsAny {
     val id: String
