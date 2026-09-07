@@ -4,7 +4,6 @@ package coil3.decode
 
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsAny
 import kotlin.js.JsArray
@@ -14,6 +13,7 @@ import kotlin.js.set
 import kotlin.js.unsafeCast
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.ColorAlphaType
@@ -106,7 +106,42 @@ private fun startWorker(code: String): Worker {
     return worker
 }
 
-private val worker by lazy { startWorker(WebWorkerJs) }
+private val pendingRequests = mutableMapOf<String, CancellableContinuation<ArrayBuffer>>()
+
+private val workerMessageListener: (Event) -> Unit = { event ->
+    val data = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerMessage>()
+    if (data != null) {
+        val continuation = pendingRequests.remove(data.id)
+        if (continuation?.isActive == true) {
+            when (data.kind) {
+                "result" -> continuation.resume(data.unsafeCast<WebWorkerResponse>().buffer)
+                "error" -> {
+                    val message = data.unsafeCast<WebWorkerError>().message
+                    continuation.resumeWithException(
+                        IllegalStateException("WebWorker error: $message"),
+                    )
+                }
+            }
+        }
+    }
+}
+
+private val workerErrorListener: (Event) -> Unit = { event ->
+    val continuations = pendingRequests.values.toList()
+    pendingRequests.clear()
+    continuations.forEach { continuation ->
+        if (continuation.isActive) {
+            continuation.resumeWithException(IllegalStateException("WebWorker error: $event"))
+        }
+    }
+}
+
+private val worker by lazy {
+    startWorker(WebWorkerJs).apply {
+        addEventListener("message", workerMessageListener)
+        addEventListener("error", workerErrorListener)
+    }
+}
 
 @OptIn(ExperimentalSkikoApi::class)
 internal suspend fun decodeImageAsync(
@@ -152,52 +187,19 @@ private suspend fun decodeBytesToBitmap(
     height: Int,
 ): ArrayBuffer = suspendCancellableCoroutine { continuation ->
     val id = Uuid.random().toString()
-    var responseListener: ((Event) -> Unit)? = null
-    var errorListener: ((Event) -> Unit)? = null
-    fun cleanup() {
-        worker.removeEventListener("message", responseListener)
-        worker.removeEventListener("error", errorListener)
-    }
-    responseListener = { event ->
-        val data = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerMessage>()
-        if (data != null && data.id == id) {
-            when (data.kind) {
-                "result" -> {
-                    cleanup()
-                    if (continuation.isActive) {
-                        continuation.resume(data.unsafeCast<WebWorkerResponse>().buffer)
-                    }
-                }
-                "error" -> {
-                    cleanup()
-                    val message = data.unsafeCast<WebWorkerError>().message
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(
-                            IllegalStateException("WebWorker error: $message"),
-                        )
-                    }
-                }
-            }
+    pendingRequests[id] = continuation
+    continuation.invokeOnCancellation {
+        if (pendingRequests.remove(id) != null) {
+            worker.postMessage(WebWorkerCancelRequest(id))
         }
     }
-    errorListener = { event ->
-        cleanup()
-        if (continuation.isActive) {
-            continuation.resumeWithException(IllegalStateException("WebWorker error: $event"))
-        }
-    }
-    worker.addEventListener("message", responseListener)
-    worker.addEventListener("error", errorListener)
+
     val buffer = bytes.toInt8Array().buffer
     val transfer = JsArray<JsAny>().apply { set(0, buffer) }
     try {
         worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
-        continuation.invokeOnCancellation {
-            cleanup()
-            worker.postMessage(WebWorkerCancelRequest(id))
-        }
     } catch (throwable: Throwable) {
-        cleanup()
+        pendingRequests.remove(id)
         if (continuation.isActive) {
             continuation.resumeWithException(throwable)
         }
