@@ -23,8 +23,10 @@ internal actual fun maybeNewCrossfadePainter(
         return null
     }
 
-    // Don't animate if the request was fulfilled by the memory cache.
-    if (result.dataSource == DataSource.MEMORY_CACHE) {
+    // Skip cache hits, unless the caller opted in via useExistingImageAsPlaceholder.
+    if (result.dataSource == DataSource.MEMORY_CACHE &&
+        !crossfadeFromExistingImage(previous, result)
+    ) {
         return null
     }
 
