@@ -4,7 +4,6 @@ package coil3.decode
 
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsAny
 import kotlin.js.JsArray
@@ -14,6 +13,7 @@ import kotlin.js.set
 import kotlin.js.unsafeCast
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.ColorAlphaType
@@ -37,6 +37,8 @@ private const val WebWorkerJs = """
 let canvas = null;
 let context = null;
 let cw = 0, ch = 0;
+const active = new Set();
+const cancelled = new Set();
 
 function ensureCanvas(w, h) {
   if (!canvas || w > cw || h > ch) {
@@ -49,7 +51,14 @@ function ensureCanvas(w, h) {
 }
 
 self.onmessage = async (e) => {
-    const { id, data, w, h } = e.data;
+    const { kind, id } = e.data;
+    if (kind === "cancel") {
+        if (active.has(id)) cancelled.add(id);
+        return;
+    }
+
+    const { data, w, h } = e.data;
+    active.add(id);
     try {
         var blob = new Blob([data]);
         var bmp = null;
@@ -59,9 +68,12 @@ self.onmessage = async (e) => {
                 resizeHeight: h,
                 resizeQuality: 'high'
             });
+            if (cancelled.has(id)) return;
+
             const ctx = ensureCanvas(w, h);
             ctx.clearRect(0, 0, w, h);
             ctx.drawImage(bmp, 0, 0);
+            if (cancelled.has(id)) return;
 
             const imgData = ctx.getImageData(0, 0, w, h);
             const rawBuffer = imgData.data.buffer;
@@ -73,9 +85,14 @@ self.onmessage = async (e) => {
             bmp?.close();
         }
     } catch (err) {
-        self.postMessage(
-            { kind: "error", id: id, message: err?.message ?? String(err), }
-        );
+        if (!cancelled.has(id)) {
+            self.postMessage(
+                { kind: "error", id: id, message: err?.message ?? String(err), }
+            );
+        }
+    } finally {
+        active.delete(id);
+        cancelled.delete(id);
     }
 };
 """
@@ -89,7 +106,42 @@ private fun startWorker(code: String): Worker {
     return worker
 }
 
-private val worker by lazy { startWorker(WebWorkerJs) }
+private val pendingRequests = mutableMapOf<String, CancellableContinuation<ArrayBuffer>>()
+
+private val workerMessageListener: (Event) -> Unit = { event ->
+    val data = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerMessage>()
+    if (data != null) {
+        val continuation = pendingRequests.remove(data.id)
+        if (continuation?.isActive == true) {
+            when (data.kind) {
+                "result" -> continuation.resume(data.unsafeCast<WebWorkerResponse>().buffer)
+                "error" -> {
+                    val message = data.unsafeCast<WebWorkerError>().message
+                    continuation.resumeWithException(
+                        IllegalStateException("WebWorker error: $message"),
+                    )
+                }
+            }
+        }
+    }
+}
+
+private val workerErrorListener: (Event) -> Unit = { event ->
+    val continuations = pendingRequests.values.toList()
+    pendingRequests.clear()
+    continuations.forEach { continuation ->
+        if (continuation.isActive) {
+            continuation.resumeWithException(IllegalStateException("WebWorker error: $event"))
+        }
+    }
+}
+
+private val worker by lazy {
+    startWorker(WebWorkerJs).apply {
+        addEventListener("message", workerMessageListener)
+        addEventListener("error", workerErrorListener)
+    }
+}
 
 @OptIn(ExperimentalSkikoApi::class)
 internal suspend fun decodeImageAsync(
@@ -112,6 +164,7 @@ internal suspend fun decodeImageAsync(
         if (!bitmap.installPixelsFromArrayBuffer(imageInfo, webBitmap, imageInfo.minRowBytes)) {
             error("Failed to install pixels from ArrayBuffer.")
         }
+        bitmap.setImmutable()
         return bitmap
     } catch (throwable: Throwable) {
         bitmap.close()
@@ -134,44 +187,11 @@ private suspend fun decodeBytesToBitmap(
     height: Int,
 ): ArrayBuffer = suspendCancellableCoroutine { continuation ->
     val id = Uuid.random().toString()
-    var responseListener: ((Event) -> Unit)? = null
-    var errorListener: ((Event) -> Unit)? = null
-    fun cleanup() {
-        worker.removeEventListener("message", responseListener)
-        worker.removeEventListener("error", errorListener)
-    }
-    responseListener = { event ->
-        val data = (event as? MessageEvent)?.data?.unsafeCast<WebWorkerMessage>()
-        if (data != null && data.id == id) {
-            when (data.kind) {
-                "result" -> {
-                    cleanup()
-                    if (continuation.isActive) {
-                        continuation.resume(data.unsafeCast<WebWorkerResponse>().buffer)
-                    }
-                }
-                "error" -> {
-                    cleanup()
-                    val message = data.unsafeCast<WebWorkerError>().message
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(
-                            IllegalStateException("WebWorker error: $message"),
-                        )
-                    }
-                }
-            }
-        }
-    }
-    errorListener = { event ->
-        cleanup()
-        if (continuation.isActive) {
-            continuation.resumeWithException(IllegalStateException("WebWorker error: $event"))
-        }
-    }
-    worker.addEventListener("message", responseListener)
-    worker.addEventListener("error", errorListener)
+    pendingRequests[id] = continuation
     continuation.invokeOnCancellation {
-        cleanup()
+        if (pendingRequests.remove(id) != null) {
+            worker.postMessage(WebWorkerCancelRequest(id))
+        }
     }
 
     val buffer = bytes.toInt8Array().buffer
@@ -179,7 +199,7 @@ private suspend fun decodeBytesToBitmap(
     try {
         worker.postMessage(WebWorkerRequest(id, buffer, width, height), transfer)
     } catch (throwable: Throwable) {
-        cleanup()
+        pendingRequests.remove(id)
         if (continuation.isActive) {
             continuation.resumeWithException(throwable)
         }
@@ -191,7 +211,9 @@ private fun WebWorkerRequest(
     buffer: ArrayBuffer,
     width: Int,
     height: Int,
-): JsAny = js("({ id: id, data: buffer, w: width, h: height })")
+): JsAny = js("({ kind: 'decode', id: id, data: buffer, w: width, h: height })")
+
+private fun WebWorkerCancelRequest(id: String): JsAny = js("({ kind: 'cancel', id: id })")
 
 internal external interface WebWorkerMessage : JsAny {
     val id: String
