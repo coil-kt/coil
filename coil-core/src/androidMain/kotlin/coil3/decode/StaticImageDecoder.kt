@@ -42,7 +42,8 @@ class StaticImageDecoder(
     override suspend fun decode() = parallelismLock.withPermit {
         closeable.use {
             var isSampled = false
-            val bitmap = source.decodeBitmap { info, _ ->
+            var isHardwareWorkaround = false
+            val outBitmap = source.decodeBitmap { info, _ ->
                 // Configure the output image's size.
                 val (srcWidth, srcHeight) = info.size
                 val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
@@ -75,7 +76,14 @@ class StaticImageDecoder(
                 }
 
                 // Configure any other attributes.
-                configureImageDecoderProperties()
+                isHardwareWorkaround = options.bitmapConfig.isHardware &&
+                    GainmapUtils.shouldWorkAroundHardwareGainmap(info.mimeType)
+                configureImageDecoderProperties(isHardwareWorkaround)
+            }
+            val bitmap = if (isHardwareWorkaround) {
+                GainmapUtils.toHardwareBitmap(outBitmap)
+            } else {
+                outBitmap
             }
             DecodeResult(
                 image = bitmap.asImage(),
@@ -84,9 +92,9 @@ class StaticImageDecoder(
         }
     }
 
-    private fun ImageDecoder.configureImageDecoderProperties() {
+    private fun ImageDecoder.configureImageDecoderProperties(isHardwareWorkaround: Boolean) {
         onPartialImageListener = ImageDecoder.OnPartialImageListener { options.allowPartialImage }
-        allocator = if (options.bitmapConfig.isHardware) {
+        allocator = if (options.bitmapConfig.isHardware && !isHardwareWorkaround) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
             ImageDecoder.ALLOCATOR_SOFTWARE

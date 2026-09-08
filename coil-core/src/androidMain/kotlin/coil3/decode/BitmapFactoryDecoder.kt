@@ -17,6 +17,7 @@ import coil3.size.Precision
 import coil3.util.MIME_TYPE_JPEG
 import coil3.util.component1
 import coil3.util.component2
+import coil3.util.isHardware
 import coil3.util.toDrawable
 import coil3.util.toSoftware
 import kotlin.math.roundToInt
@@ -80,7 +81,11 @@ class BitmapFactoryDecoder(
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
         // Reverse the EXIF transformations to get the original image.
-        val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
+        var bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
+
+        if (options.bitmapConfig.isHardware && inPreferredConfig != Bitmap.Config.HARDWARE) {
+            bitmap = GainmapUtils.toHardwareBitmap(bitmap)
+        }
 
         return DecodeResult(
             image = bitmap.toDrawable(options.context).asImage(),
@@ -105,6 +110,17 @@ class BitmapFactoryDecoder(
         // High color depth images must be decoded as either RGBA_F16 or HARDWARE.
         if (SDK_INT >= 26 && outConfig == Bitmap.Config.RGBA_F16 && config != Bitmap.Config.HARDWARE) {
             config = Bitmap.Config.RGBA_F16
+        }
+
+        // On Android 14, GraphicBufferAllocator cannot allocate ALPHA_8 bitmaps to HARDWARE.
+        // If the hardware gainmap is not supported, decode the bitmap in software so the
+        // gainmap is not silently dropped by BitmapFactory.
+        if (config == Bitmap.Config.HARDWARE && GainmapUtils.shouldWorkAroundHardwareGainmap(outMimeType)) {
+            config = if (SDK_INT >= 26 && outConfig == Bitmap.Config.RGBA_F16) {
+                Bitmap.Config.RGBA_F16
+            } else {
+                Bitmap.Config.ARGB_8888
+            }
         }
 
         inPreferredConfig = config
