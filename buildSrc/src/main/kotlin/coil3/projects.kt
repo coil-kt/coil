@@ -42,6 +42,7 @@ private val RESOURCE_DUPLICATE_OVERRIDES = listOf(
 
 private fun Project.configureKotlinMultiplatform() {
     configureComposeSwiftRuntime()
+    configureSkikoLinuxRuntime()
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {
@@ -55,6 +56,24 @@ private fun Project.configureKotlinMultiplatform() {
                 // https://youtrack.jetbrains.com/issue/KT-61573
                 freeCompilerArgs.add("-Xexpect-actual-classes")
             }
+        }
+    }
+}
+
+private fun Project.configureSkikoLinuxRuntime() {
+    if (HostManager.host != KonanTarget.LINUX_X64) return
+
+    // Skiko 0.152 requires these system libraries, but its klib does not declare linker options.
+    val linkerOptions = providers.exec {
+        commandLine("pkg-config", "--libs", "fontconfig", "gl")
+        // Kotlin/Native uses its own sysroot, so include the host's system library directories.
+        environment("PKG_CONFIG_ALLOW_SYSTEM_LIBS", "1")
+    }.standardOutput.asText.map { output ->
+        output.trim().split(Regex("\\s+")).flatMap { listOf("-linker-option", it) }
+    }
+    tasks.withType<KotlinNativeLink>().configureEach {
+        if (binary.target.konanTarget == KonanTarget.LINUX_X64) {
+            toolOptions.freeCompilerArgs.addAll(linkerOptions)
         }
     }
 }
