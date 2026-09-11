@@ -56,6 +56,9 @@ jobs:
               with:
                   cache-overwrite-existing: true
 
+            - name: Install Skiko native dependencies
+              run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libfontconfig1-dev libgl-dev
+
             - name: Unit tests
               run: ./test.sh --skip-checks --skip-instrumentation-tests
 
