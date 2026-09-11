@@ -7,6 +7,9 @@ plugins {
 }
 
 androidApplication(name = "sample.compose.android") {
+    defaultConfig {
+        minSdk = 24
+    }
     buildFeatures {
         buildConfig = true
     }
