@@ -9,6 +9,7 @@ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.apply
@@ -19,6 +20,9 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.jetbrains.kotlin.konan.target.HostManager
+import org.jetbrains.kotlin.konan.target.KonanTarget
 
 private val DISABLED_LINT_RULES = listOf(
     "ComposableNaming",
@@ -37,6 +41,7 @@ private val RESOURCE_DUPLICATE_OVERRIDES = listOf(
 )
 
 private fun Project.configureKotlinMultiplatform() {
+    configureComposeSwiftRuntime()
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {
@@ -50,6 +55,32 @@ private fun Project.configureKotlinMultiplatform() {
                 // https://youtrack.jetbrains.com/issue/KT-61573
                 freeCompilerArgs.add("-Xexpect-actual-classes")
             }
+        }
+    }
+}
+
+private fun Project.configureComposeSwiftRuntime() {
+    if (!HostManager.hostIsMac) return
+
+    plugins.withId("org.jetbrains.compose") {
+        // Compose 1.13.0-alpha01 embeds its build machine's Xcode path in the Swift cinterop.
+        // Resolve the Swift compatibility libraries from the active toolchain instead.
+        val swiftLibraryDirectory = providers.exec {
+            commandLine("xcrun", "--find", "swiftc")
+        }.standardOutput.asText.map {
+            File(it.trim()).parentFile.parentFile.resolve("lib/swift")
+        }
+        tasks.withType<KotlinNativeLink>().configureEach {
+            val sdk = when (binary.target.konanTarget) {
+                KonanTarget.IOS_ARM64 -> "iphoneos"
+                KonanTarget.IOS_SIMULATOR_ARM64 -> "iphonesimulator"
+                else -> return@configureEach
+            }
+            toolOptions.freeCompilerArgs.addAll(
+                swiftLibraryDirectory.map {
+                    listOf("-linker-option", "-L${it.resolve(sdk)}")
+                },
+            )
         }
     }
 }
