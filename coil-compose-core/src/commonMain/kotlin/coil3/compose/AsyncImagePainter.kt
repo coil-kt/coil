@@ -174,8 +174,22 @@ class AsyncImagePainter internal constructor(
             }
         }
 
+    private var rawState: State = State.Empty
+
     internal lateinit var scope: CoroutineScope
     internal var transform = DefaultTransform
+        set(value) {
+            if (field !== value) {
+                field = value
+                // Re-apply the new transform to the current raw state so that
+                // painter changes driven by external state (e.g. light/dark mode
+                // switching the error/placeholder painter) are reflected immediately
+                // without requiring a full image reload.
+                if (isRemembered) {
+                    updateState(rawState)
+                }
+            }
+        }
     internal var onState: ((State) -> Unit)? = null
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
@@ -305,6 +319,7 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun updateState(state: State) {
+        rawState = state
         val previous = stateFlow.value
         val current = transform(state)
         stateFlow.value = current
