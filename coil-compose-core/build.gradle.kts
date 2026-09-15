@@ -49,15 +49,14 @@ kotlin {
     }
 }
 
+dependencies {
+    baselineProfile(projects.internal.benchmark)
+}
+
 baselineProfile {
     mergeIntoMain = true
     saveInSrc = true
     filter {
         include("coil3.compose.**")
-    }
-    variants {
-        create("androidMain") {
-            from(project(":internal:benchmark"))
-        }
     }
 }

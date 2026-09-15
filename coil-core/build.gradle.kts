@@ -82,14 +82,11 @@ baselineProfile {
         exclude("coil3.svg.**")
         exclude("coil3.video.**")
     }
-    variants {
-        create("androidMain") {
-            from(project(":internal:benchmark"))
-        }
-    }
 }
 
 dependencies {
+    baselineProfile(projects.internal.benchmark)
+
     lintPublish(projects.coilLint) {
         isTransitive = false
     }
