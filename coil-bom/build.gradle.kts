@@ -15,7 +15,7 @@ dependencies {
     constraints {
         for (subproject in rootProject.subprojects) {
             if (subproject.name in publicModules) {
-                api(subproject)
+                api(project(subproject.path))
             }
         }
     }
