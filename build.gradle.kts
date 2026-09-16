@@ -70,6 +70,11 @@ allprojects {
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions.jvmTarget = JvmTarget.JVM_11
+
+        // R8 uses the module name embedded in Kotlin metadata to generate filenames.
+        // AGP rejects ':' in those filenames when packaging a release build with R8.
+        // https://github.com/coil-kt/coil/issues/3585
+        compilerOptions.moduleName.set(compilerOptions.moduleName.get().replace(':', '_'))
     }
 
     // Target Kotlin 2.2.
