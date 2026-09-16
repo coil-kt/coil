@@ -17,6 +17,8 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -49,6 +51,17 @@ private fun Project.configureKotlinMultiplatform() {
             compilerOptions {
                 // https://youtrack.jetbrains.com/issue/KT-61573
                 freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+
+            // R8 uses the module name embedded in Kotlin metadata to generate filenames.
+            // AGP rejects ':' in those filenames when packaging a release build with R8.
+            // https://github.com/coil-kt/coil/issues/3585
+            val jvmModuleName = "${project.group}_${project.name}"
+            targets.configureEach {
+                val compilerOptions = (this as? HasConfigurableKotlinCompilerOptions<*>)?.compilerOptions
+                if (compilerOptions is KotlinJvmCompilerOptions) {
+                    compilerOptions.moduleName.set(jvmModuleName)
+                }
             }
         }
     }
