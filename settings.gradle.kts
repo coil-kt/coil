@@ -28,6 +28,7 @@ include(
     "coil-video",
     "coil-bom",
     "coil-test",
+    "coil-version-catalog",
 )
 
 // Private modules
