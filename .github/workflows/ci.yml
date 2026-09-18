@@ -3,6 +3,7 @@ on:
     push:
         branches:
             - main
+            - ci/release-3.6-0f371ca49
     pull_request:
 concurrency:
     # Limit concurrency to 1 for PRs. 'main' concurrency isn't limited.
