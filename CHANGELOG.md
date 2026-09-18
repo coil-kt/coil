@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.3] - September 18, 2026
+
+- Fix builds using Android Gradle Plugin 9.4.0 and R8 failing due to invalid characters in Kotlin module name metadata.
+
 ## [3.6.2] - September 4, 2026
 
 - Fix `DeDupeConcurrentRequestStrategy` hanging requests for a key if a waiting request is cancelled. ([#3566](https://github.com/coil-kt/coil/pull/3566))
