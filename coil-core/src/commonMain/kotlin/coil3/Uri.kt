@@ -230,24 +230,18 @@ private fun parseUri(
                         schemeEndIndex = index
                         authorityStartIndex = index + 1
                         pathStartIndex = index + 1
-                        index += 1
-                        // If the path begins immediately after this colon, the scheme is
-                        // complete. This stops a later colon (e.g. a Windows drive letter in
-                        // "jar:file:/C:/…") from being misparsed as another scheme segment,
-                        // while still allowing multi-segment schemes like "jar:file:/…".
-                        if (index < data.length && data[index] == '/') {
-                            openScheme = false
-                        }
                     }
                 }
             }
             '/' -> {
-                if (pathStartIndex == -1 &&
-                    queryStartIndex == -1 &&
+                if (queryStartIndex == -1 &&
                     fragmentStartIndex == -1
                 ) {
+                    // A path colon (e.g. a Windows drive letter) cannot extend the scheme.
                     openScheme = false
-                    pathStartIndex = if (authorityStartIndex == -1) 0 else index
+                    if (pathStartIndex == -1) {
+                        pathStartIndex = if (authorityStartIndex == -1) 0 else index
+                    }
                 }
             }
             '?' -> {
