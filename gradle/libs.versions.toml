@@ -1,5 +1,5 @@
 [versions]
-android-gradle-plugin = "9.4.1"
+android-gradle-plugin = "9.5.0-alpha05"
 androidx-activity = "1.13.0"
 androidx-benchmark = "1.5.0"
 androidx-lifecycle = "2.10.0"
@@ -14,7 +14,7 @@ kotlin = "2.4.20"
 ktlint = "1.8.0"
 ktor2 = "2.3.13"
 ktor3 = "3.1.0"
-lint = "32.4.1"
+lint = "32.5.0-alpha05"
 okhttp = "4.12.0"
 okio = "3.18.2"
 paparazzi = "2.0.0-alpha05.3"
@@ -25,7 +25,6 @@ skiko = "0.150.1"
 baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-benchmark" }
 baselineProfileConsumer = { id = "androidx.baselineprofile.consumer", version.ref = "androidx-benchmark" }
 poko = "dev.drewhamilton.poko:0.23.2"
-screenshot = "com.android.compose.screenshot:0.0.1-alpha16"
 spotless = "com.diffplug.spotless:8.10.2"
 
 [libraries]
@@ -108,6 +107,8 @@ roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.r
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
+
+screenshot-validation-api = "com.android.tools.screenshot:screenshot-validation-api:0.0.1-alpha16"
 
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
 
