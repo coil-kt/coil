@@ -83,11 +83,6 @@ allprojects {
         compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_2
     }
 
-    // https://issuetracker.google.com/issues/411739086?pli=1
-    tasks.withType<AbstractTestTask>().configureEach {
-        failOnNoDiscoveredTests = false
-    }
-
     // Uninstall test APKs after running instrumentation tests.
     tasks.configureEach {
         if (name == "connectedDebugAndroidTest") {
