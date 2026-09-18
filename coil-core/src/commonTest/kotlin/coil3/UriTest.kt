@@ -236,25 +236,55 @@ class UriTest {
 
     @Test
     fun jarFileUriWithWindowsDriveLetter() {
-        // Compose Multiplatform resources on Windows (e.g. Res.getUri) produce a jar URL
-        // whose path contains a drive-letter colon. The drive colon must not be parsed as
-        // another scheme segment. Regression test for https://github.com/coil-kt/coil/issues/2833
-        val uri = "jar:file:/C:/Users/me/app.jar!/composeResources/img.png".toUri()
+        // Regression test for https://github.com/coil-kt/coil/issues/2833.
+        val uri = "jar:file:/C:/Users/me/app.jar!/composeResources/img.png".toUri(separator = "\\")
         assertEquals("jar:file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/C:/Users/me/app.jar!/composeResources/img.png", uri.path)
+        assertEquals("C:\\Users\\me\\app.jar!\\composeResources\\img.png", uri.filePath)
         assertNull(uri.query)
         assertNull(uri.fragment)
     }
 
     @Test
     fun fileUriWithWindowsDriveLetter() {
-        val uri = "file:/C:/Users/me/image.png".toUri()
+        val uri = "file:/C:/Users/me/image.png".toUri(separator = "\\")
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/C:/Users/me/image.png", uri.path)
+        assertEquals("C:\\Users\\me\\image.png", uri.filePath)
         assertNull(uri.query)
         assertNull(uri.fragment)
+    }
+
+    @Test
+    fun relativeJarFileUriWithColonInEntryPath() {
+        val uri = "jar:file:app.jar!/four/icon:1.svg".toUri(separator = "/")
+        assertEquals("jar:file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("app.jar!/four/icon:1.svg", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun emptyPathWithQueryWithoutAuthority() {
+        val uri = "file:?q=value".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("", uri.path)
+        assertEquals("q=value", uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun emptyPathWithFragmentWithoutAuthority() {
+        val uri = "file:#fragment".toUri()
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("", uri.path)
+        assertNull(uri.query)
+        assertEquals("fragment", uri.fragment)
     }
 
     @Test

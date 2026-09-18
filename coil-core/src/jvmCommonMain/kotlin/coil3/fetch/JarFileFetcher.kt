@@ -4,7 +4,6 @@ import coil3.ImageLoader
 import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
-import coil3.filePath
 import coil3.request.Options
 import coil3.util.MimeTypeMap
 import coil3.util.extension
@@ -18,14 +17,15 @@ internal class JarFileFetcher(
 
     override suspend fun fetch(): FetchResult {
         val path = uri.path.orEmpty()
-        val delimiterIndex = path.indexOf('!')
-        check(delimiterIndex != -1) { "Invalid jar:file URI: $uri" }
+        val delimiterIndex = path.indexOf("!/")
+        check(delimiterIndex > 0) { "Invalid jar:file URI: $uri" }
 
-        val jarFilePath = checkNotNull(
-            Uri(path = path.substring(0, delimiterIndex), separator = uri.separator).filePath,
-        ) { "Invalid jar:file URI: $uri" }
-        val jarPath = if (uri.separator == "/") {
-            jarFilePath.removePrefix("/").replace('/', '\\').toPath()
+        val jarFilePath = path.substring(0, delimiterIndex)
+        val jarPath = if (uri.separator == "\\") {
+            val windowsPath = jarFilePath.replace('/', '\\')
+            val drivePath = windowsPath.trimStart('\\').toPath()
+            // Strip the URI prefix from drive paths, but preserve rooted and UNC paths.
+            if (drivePath.volumeLetter != null) drivePath else windowsPath.toPath()
         } else {
             jarFilePath.toPath()
         }
