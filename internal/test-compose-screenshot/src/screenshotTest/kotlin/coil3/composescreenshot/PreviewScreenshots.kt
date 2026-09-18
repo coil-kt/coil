@@ -22,6 +22,7 @@ import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
 import coil3.test.composescreenshot.R
+import com.android.tools.screenshot.PreviewTest
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
@@ -29,6 +30,7 @@ class PreviewScreenshots {
         ColorImage(Color.Red.toArgb(), width = 100, height = 100)
     }
 
+    @PreviewTest
     @Preview(
         device = Devices.PIXEL,
         showBackground = true,
@@ -49,6 +51,7 @@ class PreviewScreenshots {
         }
     }
 
+    @PreviewTest
     @Preview(
         device = Devices.PIXEL,
         showBackground = true,
@@ -72,6 +75,7 @@ class PreviewScreenshots {
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/2489 */
+    @PreviewTest
     @Preview(
         device = Devices.PIXEL,
         showBackground = true,
