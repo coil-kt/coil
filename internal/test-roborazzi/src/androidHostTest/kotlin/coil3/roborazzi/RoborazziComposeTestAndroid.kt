@@ -32,7 +32,7 @@ class RoborazziComposeTestAndroid : RobolectricTest() {
         captureRoot = composeTestRule.onRoot(),
         options = RoborazziRule.Options(
             captureType = RoborazziRule.CaptureType.LastImage(),
-            outputDirectoryPath = "src/androidUnitTest/snapshots/images",
+            outputDirectoryPath = "src/androidHostTest/snapshots/images",
         ),
     )
 
