@@ -30,7 +30,7 @@ class RoborazziViewTest : RobolectricTest() {
         captureRoot = onView(isRoot()),
         options = RoborazziRule.Options(
             captureType = RoborazziRule.CaptureType.LastImage(),
-            outputDirectoryPath = "src/androidUnitTest/snapshots/images",
+            outputDirectoryPath = "src/androidHostTest/snapshots/images",
         ),
     )
 
