@@ -75,6 +75,7 @@ internal data class ContentPainterElement(
         painter.transform = transform
         painter.onState = onState
         painter.contentScale = contentScale
+        painter.alignment = alignment
         painter.filterQuality = filterQuality
         painter.previewHandler = previewHandler
         painter._input = input
@@ -99,6 +100,7 @@ internal data class ContentPainterElement(
         painter.transform = transform
         painter.onState = onState
         painter.contentScale = contentScale
+        painter.alignment = alignment
         painter.filterQuality = filterQuality
         painter.previewHandler = previewHandler
         painter._input = input
