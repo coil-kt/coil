@@ -34,6 +34,7 @@ class DrawableUtilsTest : RobolectricTest() {
             size = size,
             scale = Scale.FIT,
             allowInexactSize = true,
+            maxSize = Size.ORIGINAL,
         )
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)
@@ -58,6 +59,7 @@ class DrawableUtilsTest : RobolectricTest() {
             size = size,
             scale = Scale.FIT,
             allowInexactSize = true,
+            maxSize = Size.ORIGINAL,
         )
 
         runBlocking { actual.assertIsSimilarTo(expected) }
@@ -76,6 +78,7 @@ class DrawableUtilsTest : RobolectricTest() {
             config = Bitmap.Config.HARDWARE,
             scale = Scale.FIT,
             allowInexactSize = true,
+            maxSize = Size.ORIGINAL,
         )
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)
@@ -94,6 +97,7 @@ class DrawableUtilsTest : RobolectricTest() {
             config = Bitmap.Config.ARGB_8888,
             scale = Scale.FIT,
             allowInexactSize = true,
+            maxSize = Size.ORIGINAL,
         )
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)

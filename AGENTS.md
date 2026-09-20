@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 This is a Kotlin Multiplatform monorepo built with Gradle. Public library modules live at the repository root (for example `coil-core`, `coil-compose`, `coil-network-okhttp`, `coil-gif`, `coil-svg`, `coil-video`, `coil-test`, `coil-bom`). Internal tooling and test support modules are under `internal/`, and runnable examples are under `samples/` (`samples:compose`, `samples:compose-android`, `samples:view`).
 
-Most modules use source sets like `src/commonMain`, `src/commonTest`, `src/androidMain`, `src/androidUnitTest`, and `src/androidInstrumentedTest`. Documentation content lives in `docs/`.
+Most modules use source sets like `src/commonMain`, `src/commonTest`, `src/androidMain`, `src/androidHostTest`, and `src/androidDeviceTest`. Documentation content lives in `docs/`.
 
 ## Build, Test, and Development Commands
 - `./gradlew spotlessCheck`: run Kotlin formatting/lint checks.
@@ -20,7 +20,7 @@ Follow `.editorconfig`: UTF-8, LF endings, 4-space indentation, max line length 
 Match existing naming patterns: packages under `coil3.*`, types in `UpperCamelCase`, members in `lowerCamelCase`, constants in `UPPER_SNAKE_CASE`. Keep file names aligned with primary types (for example `NetworkFetcher.kt`).
 
 ## Testing Guidelines
-Tests use Kotlin Test/JUnit, Robolectric, Android instrumentation, and screenshot tooling (Paparazzi/Roborazzi/Compose screenshot validation). Name test files `*Test.kt` and place them in the appropriate source set (`commonTest`, `androidUnitTest`, etc.).
+Tests use Kotlin Test/JUnit, Robolectric, Android instrumentation, and screenshot tooling (Paparazzi/Roborazzi/Compose screenshot validation). Name test files `*Test.kt` and place them in the appropriate source set (`commonTest`, `androidHostTest`, etc.).
 
 For bug fixes, add or update a failing test first when possible. Run `./test.sh` before opening a PR.
 

@@ -36,6 +36,7 @@ class ImagePainterTest : RobolectricTest() {
         initialFilterBitmap: Boolean = true,
     ) : Drawable() {
         var filterBitmap = initialFilterBitmap
+            private set
 
         override fun draw(canvas: Canvas) = Unit
 
