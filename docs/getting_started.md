@@ -1,12 +1,102 @@
 # Getting Started
 
+## Adding Dependencies
+
+All of Coil's artifacts are published to `mavenCentral()`, so make sure that repository is declared in your project before adding any of the dependencies below.
+
+### Direct declaration
+
+The simplest way to add a Coil dependency is to declare it directly with its coordinates and version, as shown throughout this page:
+
+```kotlin
+implementation("io.coil-kt.coil3:coil-compose:3.7.0-SNAPSHOT")
+```
+
+### Version catalog
+
+If your project uses a [Gradle version catalog](https://docs.gradle.org/current/userguide/version_catalogs.html#sec:accessing-catalog) (a `libs.versions.toml` file under `gradle/`), declare Coil's version and libraries there instead of hardcoding them in each module's build script:
+
+```toml
+[versions]
+coil = "3.7.0-SNAPSHOT"
+
+[libraries]
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+```
+
+Then reference the generated accessors in your module's `build.gradle.kts`:
+
+```kotlin
+implementation(libs.coil.compose)
+implementation(libs.coil.network.okhttp)
+```
+
+This keeps every Coil version in one place and lets Gradle's IDE tooling autocomplete and validate the coordinates for you.
+
+### Published version catalog
+
+Some libraries go a step further and publish their own [version catalog artifact](https://docs.gradle.org/current/userguide/version_catalogs.html#sec:importing-published-catalog), so consumers don't even need to write out the `[versions]`/`[libraries]` entries themselves — they just import the catalog and get type-safe accessors for every module the library publishes.
+
+You import it in `settings.gradle.kts`: need to change claude
+
+```kotlin
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("coilLibs") {
+            from("io.coil-kt.coil3:coil-version-catalog:3.7.0-SNAPSHOT")
+        }
+    }
+}
+```
+
+and then reference its modules directly in `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation(coilLibs.coil)
+    implementation(coilLibs.coil.core)
+    implementation(coilLibs.coil.compose)
+}
+```
+
+### Coil's BOM
+
+Coil also publishes a bill of materials (BOM), `io.coil-kt.coil3:coil-bom`, which pins compatible versions for all of Coil's artifacts. Importing it with `platform()` lets you omit the version on every individual Coil dependency, so they can't drift out of sync with each other:
+
+```kotlin
+implementation(platform("io.coil-kt.coil3:coil-bom:3.7.0-SNAPSHOT"))
+implementation("io.coil-kt.coil3:coil-compose")
+implementation("io.coil-kt.coil3:coil-network-okhttp")
+```
+
+You can combine this with a version catalog by declaring the BOM as a platform entry and depending on it the same way:
+
+```toml
+[versions]
+coil = "3.7.0-SNAPSHOT"
+
+[libraries]
+coil-bom = { group = "io.coil-kt.coil3", name = "coil-bom", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp" }
+```
+
+```kotlin
+implementation(platform(libs.coil.bom))
+implementation(libs.coil.compose)
+implementation(libs.coil.network.okhttp)
+```
+
+## Platform-Specific Setup
+
 ## Compose UI
 
 A typical Compose UI project will want to import:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.6.2")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.2")
+implementation("io.coil-kt.coil3:coil-compose:3.7.0-SNAPSHOT")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.7.0-SNAPSHOT")
 ```
 
 After that's imported you can load images from the network using `AsyncImage`:
@@ -26,8 +116,8 @@ AsyncImage(
 If you use Android Views instead of Compose UI import:
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil:3.6.2")
-implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.2")
+implementation("io.coil-kt.coil3:coil:3.7.0-SNAPSHOT")
+implementation("io.coil-kt.coil3:coil-network-okhttp:3.7.0-SNAPSHOT")
 ```
 
 After that's imported you can load images from the network using the `ImageView.load` extension function:
