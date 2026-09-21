@@ -49,7 +49,9 @@ class GifDecoder(
             scale = options.scale,
         )
 
-        drawable.setRepeatCount(options.repeatCount)
+        if (options.repeatCount != AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT) {
+            drawable.setRepeatCount(options.repeatCount)
+        }
 
         // Set the start and end animation callbacks if any one is supplied through the request.
         val onStart = options.animationStartCallback

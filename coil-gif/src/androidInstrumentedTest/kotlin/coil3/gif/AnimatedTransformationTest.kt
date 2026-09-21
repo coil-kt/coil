@@ -35,16 +35,11 @@ class AnimatedTransformationTest {
 
     @Test
     fun gifTransformationTest() = runTest {
-        val decoderFactory = if (SDK_INT >= 28) {
-            AnimatedImageDecoder.Factory()
-        } else {
-            GifDecoder.Factory()
-        }
         val imageRequest = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///android_asset/animated.gif")
             .animatedTransformation(RoundedCornersAnimatedTransformation())
             .bitmapConfig(Bitmap.Config.ARGB_8888)
-            .decoderFactory(decoderFactory)
+            .decoderFactory(AnimatedImageDecoderFactory())
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
