@@ -11,7 +11,6 @@ import android.graphics.PorterDuff.Mode.SRC
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
-import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.asDrawable
@@ -42,11 +41,7 @@ class AnimatedAndNormalTransformationTest {
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .components {
-                if (SDK_INT >= 28) {
-                    add(AnimatedImageDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
+                add(AnimatedImageDecoderFactory())
             }
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
@@ -80,7 +75,7 @@ class AnimatedAndNormalTransformationTest {
         assertIs<SuccessResult>(actual)
         // Make sure this is not an animated result.
         assertIsNot<Animatable>(actual.image.asDrawable(context.resources))
-        (actual.image as BitmapImage).bitmap.assertIsSimilarTo(expected)
+        assertIs<BitmapImage>(actual.image).bitmap.assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {

@@ -29,15 +29,19 @@ kotlin {
             implementation(libs.compose.ui.test.junit4)
         }
         jvmTest.dependencies {
+            implementation(projects.coilGif)
             implementation(libs.roborazzi.compose.desktop)
             implementation(composeDesktopCurrentOsDependency())
             implementation(libs.compose.ui.test.junit4)
         }
+        getByName("jvmTest").resources.srcDir(
+            project(":coil-gif").projectDir.resolve("src/jvmTest/resources"),
+        )
     }
 }
 
 roborazzi {
     // RoborazziOptions.RecordOptions.outputDirectoryPath and roborazzi.output.dir seems to be
-    // ignored on desktop. To workaround that this is used.
+    // ignored on desktop. To work around that this is used.
     outputDir = layout.projectDirectory.dir("src/jvmTest/snapshots/images")
 }

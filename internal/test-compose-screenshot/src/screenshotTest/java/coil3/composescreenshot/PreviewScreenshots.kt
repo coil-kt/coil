@@ -16,14 +16,12 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ColorImage
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
 import coil3.test.composescreenshot.R
 
-@OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
     private val previewHandler = AsyncImagePreviewHandler {
         ColorImage(Color.Red.toArgb(), width = 100, height = 100)
