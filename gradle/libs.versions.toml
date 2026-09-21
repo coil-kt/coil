@@ -72,6 +72,7 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "jetbrains-compose-material-icons-extended" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-compose-material3" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
 compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "jetbrains-compose" }
 compose-ui-test-junit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jetbrains-compose" }
 

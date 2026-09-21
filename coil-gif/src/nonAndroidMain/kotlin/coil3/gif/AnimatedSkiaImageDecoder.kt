@@ -1,68 +1,182 @@
 package coil3.gif
 
+import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
+import coil3.gif.internal.WorkingBitmaps
 import coil3.request.Options
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
+import coil3.request.maxBitmapSize
+import coil3.size.Precision
+import coil3.util.component1
+import coil3.util.component2
 import kotlin.time.TimeSource
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.plus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import okio.BufferedSource
 import okio.use
+import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
+import org.jetbrains.skia.ImageInfo
+import org.jetbrains.skia.impl.use
 
 /**
- * A [Decoder] that uses Skia to decode animated images (GIF, WebP).
+ * A [Decoder] that uses Skia to decode animated GIFs and WebPs.
  *
- * @param bufferedFramesCount The number of frames to be pre-buffered before the animation
- * starts playing. Must be >= 1.
+ * @param bufferedFramesCount The maximum number of decoded frames to keep in memory. Must be at
+ * least 1. Frames outside the buffer are decoded again as the animation advances.
  */
 class AnimatedSkiaImageDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val bufferedFramesCount: Int,
     private val timeSource: TimeSource,
-    private val decoderCoroutineContext: CoroutineContext = EmptyCoroutineContext,
 ) : Decoder {
 
     init {
-        // Comment #4: Add validation in decoder
         require(bufferedFramesCount >= 1) { "bufferedFramesCount must be >= 1" }
     }
 
-    override suspend fun decode(): DecodeResult = coroutineScope {
+    override suspend fun decode(): DecodeResult {
         val bytes = source.source().use { it.readByteArray() }
-        val codec = Codec.makeFromData(Data.makeFromBytes(bytes))
-        DecodeResult(
-            image = AnimatedSkiaImage(
-                codec = codec,
-                coroutineScope = this + Job(),
-                timeSource = timeSource,
-                decoderCoroutineContext = decoderCoroutineContext,
-                bufferedFramesCount = bufferedFramesCount,
-                animatedTransformation = options.animatedTransformation,
-                onAnimationStart = options.animationStartCallback,
-                onAnimationEnd = options.animationEndCallback,
-            ),
-            isSampled = false,
+        val codec = Data.makeFromBytes(bytes).use { Codec.makeFromData(it) }
+
+        var ownsCodec = true
+        try {
+            val frameCount = codec.frameCount
+            check(frameCount > 0) { "Invalid frame count: $frameCount" }
+
+            val sourceImageInfo = codec.imageInfo
+            val outputImageInfo = computeOutputImageInfo(sourceImageInfo, options)
+            val isSampled = outputImageInfo.width < sourceImageInfo.width ||
+                outputImageInfo.height < sourceImageInfo.height
+            val decodeImageInfo = computeDecodeImageInfo(sourceImageInfo, outputImageInfo)
+            if (frameCount == 1) {
+                return DecodeResult(
+                    image = decodeStaticImage(
+                        codec = codec,
+                        decodeImageInfo = decodeImageInfo,
+                        outputImageInfo = outputImageInfo,
+                        animatedTransformation = options.animatedTransformation,
+                    ),
+                    isSampled = isSampled,
+                )
+            }
+
+            val coroutineScope = CoroutineScope(currentCoroutineContext() + SupervisorJob())
+            val image = try {
+                AnimatedSkiaImage(
+                    codec = codec,
+                    frameCount = frameCount,
+                    coroutineScope = coroutineScope,
+                    timeSource = timeSource,
+                    decodeImageInfo = decodeImageInfo,
+                    outputImageInfo = outputImageInfo,
+                    encodedDataSize = bytes.size.toLong(),
+                    bufferedFramesCount = bufferedFramesCount,
+                    repeatCount = options.repeatCount,
+                    animatedTransformation = options.animatedTransformation,
+                    onAnimationStart = options.animationStartCallback,
+                    onAnimationEnd = options.animationEndCallback,
+                )
+            } catch (throwable: Throwable) {
+                coroutineScope.cancel()
+                throw throwable
+            }
+            val result = DecodeResult(
+                image = image,
+                isSampled = isSampled,
+            )
+            ownsCodec = false
+            return result
+        } finally {
+            if (ownsCodec) codec.close()
+        }
+    }
+
+    private fun computeOutputImageInfo(
+        source: ImageInfo,
+        options: Options,
+    ): ImageInfo {
+        val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
+            srcWidth = source.width,
+            srcHeight = source.height,
+            targetSize = options.size,
+            scale = options.scale,
+            maxSize = options.maxBitmapSize,
+        )
+        var multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = source.width,
+            srcHeight = source.height,
+            dstWidth = dstWidth,
+            dstHeight = dstHeight,
+            scale = options.scale,
+            maxSize = options.maxBitmapSize,
+        )
+        if (options.precision == Precision.INEXACT) {
+            multiplier = multiplier.coerceAtMost(1.0)
+        }
+
+        val width = (multiplier * source.width).toInt().coerceAtLeast(1)
+        val height = (multiplier * source.height).toInt().coerceAtLeast(1)
+        return source.withWidthHeight(width, height)
+    }
+
+    private fun computeDecodeImageInfo(
+        source: ImageInfo,
+        output: ImageInfo,
+    ): ImageInfo {
+        // Decode downsampled pixels directly, but defer upscaling to the output bitmap.
+        return source.withWidthHeight(
+            width = minOf(source.width, output.width),
+            height = minOf(source.height, output.height),
         )
     }
 
+    private fun decodeStaticImage(
+        codec: Codec,
+        decodeImageInfo: ImageInfo,
+        outputImageInfo: ImageInfo,
+        animatedTransformation: AnimatedTransformation?,
+    ): BitmapImage {
+        val workingBitmaps = WorkingBitmaps(
+            decodeImageInfo = decodeImageInfo,
+            outputImageInfo = outputImageInfo,
+            animatedTransformation = animatedTransformation,
+        )
+        var retainedBitmap: Bitmap? = null
+        try {
+            codec.readPixels(workingBitmaps.decode)
+            val resultBitmap = workingBitmaps.prepareOutput()
+            resultBitmap.setImmutable()
+
+            val image = resultBitmap.asImage()
+            // Keep the bitmap that backs the returned image open.
+            retainedBitmap = resultBitmap
+            return image
+        } finally {
+            workingBitmaps.closeExcept(retainedBitmap)
+        }
+    }
+
+    /**
+     * @param bufferedFramesCount The maximum number of decoded frames to keep in memory. Frames
+     * outside the buffer are decoded again as the animation advances.
+     * @param timeSource The time source used to advance the animation.
+     */
     class Factory(
         private val bufferedFramesCount: Int = DEFAULT_BUFFERED_FRAMES_COUNT,
         private val timeSource: TimeSource = TimeSource.Monotonic,
-        private val decoderCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     ) : Decoder.Factory {
 
         init {
-            // Comment #4: Add validation in factory
             require(bufferedFramesCount >= 1) { "bufferedFramesCount must be >= 1" }
         }
 
@@ -77,17 +191,15 @@ class AnimatedSkiaImageDecoder(
                 options = options,
                 bufferedFramesCount = bufferedFramesCount,
                 timeSource = timeSource,
-                decoderCoroutineContext = decoderCoroutineContext,
             )
         }
 
         private fun isApplicable(source: BufferedSource): Boolean {
             return DecodeUtils.isGif(source) || DecodeUtils.isAnimatedWebP(source)
         }
-    }
 
-    companion object {
-        // Comment #4: Move constant to companion and make public
-        const val DEFAULT_BUFFERED_FRAMES_COUNT = 2
+        companion object {
+            const val DEFAULT_BUFFERED_FRAMES_COUNT = 2
+        }
     }
 }
