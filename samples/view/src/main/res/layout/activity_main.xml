@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <sample.view.ImageGridView
         android:id="@+id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"

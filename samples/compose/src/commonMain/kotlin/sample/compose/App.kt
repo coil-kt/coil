@@ -3,11 +3,16 @@ package sample.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -34,28 +39,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import coil3.util.component1
-import coil3.util.component2
 import io.coil_kt.coil3.compose.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
 import sample.common.Image
+import sample.common.MIN_COLUMN_WIDTH_DP
 import sample.common.MainViewModel
-import sample.common.NUM_COLUMNS
 import sample.common.Resources
 import sample.common.Screen
-import sample.common.calculateScaledSize
 import sample.common.extras
 import sample.common.newImageLoader
 import sample.common.next
@@ -86,6 +86,7 @@ fun App(
         val screen by viewModel.screen.collectAsState()
         val isDetail = screen is Screen.Detail
         Scaffold(
+            contentWindowInsets = WindowInsets.safeDrawing,
             topBar = {
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
@@ -121,6 +122,9 @@ private fun Toolbar(
     onBackPressed: () -> Unit,
 ) {
     TopAppBar(
+        windowInsets = WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Top + WindowInsetsSides.Horizontal,
+        ),
         title = {
             Text(Title)
         },
@@ -215,12 +219,10 @@ private fun ListScreen(
     padding: PaddingValues,
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
-    val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
-    val screenWidth = containerSize().width
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(NUM_COLUMNS),
+        columns = StaggeredGridCells.Adaptive(minSize = MIN_COLUMN_WIDTH_DP.dp),
         state = gridState,
         contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
         modifier = Modifier
@@ -237,12 +239,6 @@ private fun ListScreen(
             items = images,
             key = { it.toString() },
         ) { image ->
-            // Scale the image to fit the width of a column.
-            val size = remember(density, screenWidth) {
-                val (width, height) = image.calculateScaledSize(screenWidth)
-                with(density) { DpSize(width.toDp(), height.toDp()) }
-            }
-
             // Keep track of the image's memory cache key so it can be used as a placeholder
             // for the detail screen.
             var placeholder: MemoryCache.Key? = remember { null }
@@ -258,7 +254,8 @@ private fun ListScreen(
                 onSuccess = { placeholder = it.result.memoryCacheKey },
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(size)
+                    .fillMaxWidth()
+                    .aspectRatio(image.width.toFloat() / image.height)
                     .clickable { onImageClick(image, placeholder) },
             )
         }
@@ -309,9 +306,6 @@ private class ComposeResources : Resources {
 
 @Stable
 expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier
-
-@Composable
-expect fun containerSize(): IntSize
 
 @Composable
 expect fun BackHandler(
