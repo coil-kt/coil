@@ -12,7 +12,6 @@ plugins {
 }
 
 multiplatformAndroidLibrary(name = "sample.compose") {
-    minSdk = 24
     androidResources {
         enable = true
     }
