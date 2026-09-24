@@ -7,7 +7,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko, enableWasm = false)
+addAllMultiplatformTargets(enableWasm = false)
 multiplatformAndroidLibrary(name = "coil3.network.ktor2")
 
 kotlin {
