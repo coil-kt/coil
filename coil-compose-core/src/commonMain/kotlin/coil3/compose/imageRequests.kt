@@ -14,7 +14,7 @@ import coil3.request.crossfade
  * used as the placeholder even if it is null.
  *
  * When used with [crossfade] this allows crossfading between subsequent image requests without
- * manually setting the placeholder to the previous image.
+ * manually setting the placeholder to the previous image, even when the new image is cached.
  *
  * NOTE: This configuration option only works with Compose targets.
  */
