@@ -113,6 +113,31 @@ class WeakMemoryCacheTest {
     }
 
     @Test
+    fun smallestImageInsertedLastIsNotDropped() {
+        val imageLarge = reference(FakeImage())
+        val imageMedium = reference(FakeImage())
+        val imageSmall = reference(FakeImage())
+
+        // Insert largest first, smallest last.
+        weakMemoryCache.set(Key("key"), imageLarge, emptyMap(), 300)
+        weakMemoryCache.set(Key("key"), imageMedium, emptyMap(), 200)
+        weakMemoryCache.set(Key("key"), imageSmall, emptyMap(), 100)
+
+        // Largest should be returned first.
+        assertEquals(imageLarge, weakMemoryCache.get(Key("key"))?.image)
+        weakMemoryCache.garbageCollect(imageLarge)
+
+        assertEquals(imageMedium, weakMemoryCache.get(Key("key"))?.image)
+        weakMemoryCache.garbageCollect(imageMedium)
+
+        // The smallest image must still be retrievable.
+        assertEquals(imageSmall, weakMemoryCache.get(Key("key"))?.image)
+        weakMemoryCache.garbageCollect(imageSmall)
+
+        assertNull(weakMemoryCache.get(Key("key")))
+    }
+
+    @Test
     fun cleanUpClearsAllCollectedValues() {
         val image1 = reference(FakeImage())
         weakMemoryCache.set(Key("key1"), image1, emptyMap(), 100)
