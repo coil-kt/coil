@@ -10,7 +10,7 @@ plugins {
     id("io.github.takahirom.roborazzi")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
+addAllMultiplatformTargets(enableNativeLinux = false)
 multiplatformAndroidLibrary(name = "coil3.test.roborazzi")
 
 kotlin {
