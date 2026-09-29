@@ -36,6 +36,9 @@ fun ImageRequest.Builder.extras(other: Extras) = apply {
     }
 }
 
-expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
+fun computeMinimumColumnWidthDp(availableWidthDp: Float): Int {
+    // Create fewer columns on large displays.
+    return if (availableWidthDp < 600) 100 else 200
+}
 
-const val MIN_COLUMN_WIDTH_DP = 100
+expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>

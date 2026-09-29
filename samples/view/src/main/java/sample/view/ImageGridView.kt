@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlin.math.roundToInt
-import sample.common.MIN_COLUMN_WIDTH_DP
+import sample.common.computeMinimumColumnWidthDp
 
 class ImageGridView @JvmOverloads constructor(
     context: Context,
@@ -21,8 +21,9 @@ class ImageGridView @JvmOverloads constructor(
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         val availableWidth = MeasureSpec.getSize(widthSpec) - paddingLeft - paddingRight
-        val minColumnWidth =
-            (MIN_COLUMN_WIDTH_DP * resources.displayMetrics.density).roundToInt().coerceAtLeast(1)
+        val density = resources.displayMetrics.density
+        val minColumnWidth = (computeMinimumColumnWidthDp(availableWidth / density) * density)
+            .roundToInt().coerceAtLeast(1)
         val spanCount = (availableWidth / minColumnWidth).coerceAtLeast(1)
         if (gridLayoutManager.spanCount != spanCount) {
             gridLayoutManager.spanCount = spanCount
