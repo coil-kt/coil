@@ -85,6 +85,7 @@ public abstract interface class coil3/network/NetworkClient {
 public final class coil3/network/NetworkClientKt {
 	public static final fun NetworkRequestBody (Lokio/ByteString;)Lcoil3/network/NetworkRequestBody;
 	public static final fun NetworkResponseBody (Lokio/BufferedSource;)Lcoil3/network/NetworkResponseBody;
+	public static final fun deferredNetworkClient (Lkotlin/jvm/functions/Function1;)Lcoil3/network/NetworkClient;
 }
 
 public final class coil3/network/NetworkFetcher : coil3/fetch/Fetcher {

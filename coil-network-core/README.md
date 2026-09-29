@@ -36,6 +36,32 @@ jvmMain {
 
 If you want to use a custom networking library, you can import `io.coil-kt.coil3:coil-network-core`, implement `NetworkClient`, and register `NetworkFetcher` with your custom `NetworkClient` in your `ImageLoader`.
 
+## Deferring the NetworkClient
+
+`NetworkFetcher.Factory` resolves its `NetworkClient` synchronously. If the client isn't available when the `ImageLoader` is created (e.g. it depends on an asynchronous dependency graph, an auth token, or configuration fetched at startup), wrap it with `deferredNetworkClient`, which suspends until the underlying client is resolved on the first request:
+
+```kotlin
+val deferredClient = CompletableDeferred<NetworkClient>()
+
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        add(
+            NetworkFetcher.Factory(
+                networkClient = { deferredNetworkClient(deferredClient::await) },
+            )
+        )
+    }
+    .build()
+
+// Later, once the client is ready:
+deferredClient.complete(OkHttpClient().asNetworkClient())
+```
+
+Image requests made before the client is resolved suspend until it's available instead of failing.
+
+!!! Note
+    The lambda passed to `deferredNetworkClient` is invoked on every request, so keep it cheap. Backing it with a `CompletableDeferred` (as above) memoizes the resolved client; if you resolve it another way, cache the result yourself.
+
 ## Using a custom OkHttpClient
 
 If you use `io.coil-kt.coil3:coil-network-okhttp` You can specify a custom `OkHttpClient` when creating your `ImageLoader`:

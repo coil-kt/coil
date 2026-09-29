@@ -22,6 +22,25 @@ interface NetworkClient {
 }
 
 /**
+ * Returns a [NetworkClient] that suspends until [client] resolves the underlying client the
+ * first time [NetworkClient.executeRequest] is called.
+ *
+ * This is useful when the [NetworkClient] isn't available when the [coil3.ImageLoader] is
+ * created, for example when it depends on an asynchronous dependency graph, an auth token, or
+ * configuration that's fetched at startup.
+ *
+ * [client] is invoked on every request, so it should be cheap to call repeatedly.
+ */
+fun deferredNetworkClient(
+    client: suspend () -> NetworkClient,
+): NetworkClient = object : NetworkClient {
+    override suspend fun <T> executeRequest(
+        request: NetworkRequest,
+        block: suspend (response: NetworkResponse) -> T,
+    ): T = client().executeRequest(request, block)
+}
+
+/**
  * Represents an HTTP request.
  *
  * @param url The URL to fetch.

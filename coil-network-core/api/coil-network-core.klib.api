@@ -198,3 +198,4 @@ final fun (coil3.request/ImageRequest.Builder).coil3.network/httpMethod(kotlin/S
 final fun coil3.network/ConnectivityChecker(coil3/PlatformContext): coil3.network/ConnectivityChecker // coil3.network/ConnectivityChecker|ConnectivityChecker(coil3.PlatformContext){}[0]
 final fun coil3.network/NetworkRequestBody(okio/ByteString): coil3.network/NetworkRequestBody // coil3.network/NetworkRequestBody|NetworkRequestBody(okio.ByteString){}[0]
 final fun coil3.network/NetworkResponseBody(okio/BufferedSource): coil3.network/NetworkResponseBody // coil3.network/NetworkResponseBody|NetworkResponseBody(okio.BufferedSource){}[0]
+final fun coil3.network/deferredNetworkClient(kotlin.coroutines/SuspendFunction0<coil3.network/NetworkClient>): coil3.network/NetworkClient // coil3.network/deferredNetworkClient|deferredNetworkClient(kotlin.coroutines.SuspendFunction0<coil3.network.NetworkClient>){}[0]
