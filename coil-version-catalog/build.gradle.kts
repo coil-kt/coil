@@ -15,12 +15,10 @@ catalog {
         val versionAlias = version("coil", version)
 
         rootProject.subprojects
-            .map { subproject ->
-                subproject.name
-            }.filter { subproject ->
-                subproject in publicModules
-            }.forEach { projectName ->
-                library(projectName, group, projectName).versionRef(versionAlias)
+            .filter { subproject ->
+                subproject.name in publicModules
+            }.forEach { project ->
+                library(project.name, group, project.name).versionRef(versionAlias)
             }
     }
 }
