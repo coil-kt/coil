@@ -18,7 +18,7 @@ lint = "32.4.1"
 okhttp = "4.12.0"
 okio = "3.18.2"
 paparazzi = "2.0.0-alpha05.3"
-roborazzi = "1.75.0"
+roborazzi = "1.76.0"
 skiko = "0.150.1"
 
 [plugins]
@@ -26,7 +26,7 @@ baselineProfile = { id = "androidx.baselineprofile", version.ref = "androidx-ben
 baselineProfileConsumer = { id = "androidx.baselineprofile.consumer", version.ref = "androidx-benchmark" }
 poko = "dev.drewhamilton.poko:0.23.2"
 screenshot = "com.android.compose.screenshot:0.0.1-alpha16"
-spotless = "com.diffplug.spotless:8.10.2"
+spotless = "com.diffplug.spotless:8.10.3"
 
 [libraries]
 gradlePlugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
@@ -42,7 +42,7 @@ gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gra
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.7.1"
-androidx-annotation = "androidx.annotation:annotation:1.10.0"
+androidx-annotation = "androidx.annotation:annotation:1.11.0"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }

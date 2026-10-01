@@ -14,13 +14,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil3.load
 import kotlinx.coroutines.launch
 import sample.common.AndroidMainViewModel
 import sample.common.Image
-import sample.common.NUM_COLUMNS
 import sample.common.Screen
 import sample.common.enableEdgeToEdge
 import sample.common.extras
@@ -43,12 +40,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         listAdapter = ImageListAdapter(
-            resources = resources,
             setScreen = { viewModel.screen.value = it },
         )
         binding.list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(NUM_COLUMNS, VERTICAL)
             adapter = listAdapter
         }
 

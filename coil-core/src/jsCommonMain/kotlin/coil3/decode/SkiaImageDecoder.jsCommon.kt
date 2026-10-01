@@ -4,6 +4,7 @@ import coil3.asImage
 import coil3.request.Options
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
+import coil3.util.IntPair
 import coil3.util.component1
 import coil3.util.component2
 import org.jetbrains.skia.Bitmap
@@ -47,39 +48,38 @@ internal actual suspend fun decodeBitmap(
     )
 }
 
-// try to read a size directly for PNG and JPEG images.
-// It is faster than Image.makeFromEncoded(bytes)
-internal fun getOriginalSize(bytes: ByteArray): Pair<Int, Int> { // (w,h)
-    val pngSize = getPngSizeOrNull(bytes)
-    if (pngSize != null) return pngSize
+// Reading PNG, JPEG, and WebP headers is faster than Image.makeFromEncoded(bytes).
+internal fun getOriginalSize(bytes: ByteArray): IntPair {
+    val pngSize = getPngSize(bytes)
+    if (pngSize != UnspecifiedSize) return pngSize
 
-    val jpegSize = getJpegSizeOrNull(bytes)
-    if (jpegSize != null) return jpegSize
+    val jpegSize = getJpegSize(bytes)
+    if (jpegSize != UnspecifiedSize) return jpegSize
 
-    val webpSize = getWebpSizeOrNull(bytes)
-    if (webpSize != null) return webpSize
+    val webpSize = getWebpSize(bytes)
+    if (webpSize != UnspecifiedSize) return webpSize
 
     // Fallback for others
     return Image.makeFromEncoded(bytes).use { image ->
-        image.width to image.height
+        IntPair(image.width, image.height)
     }
 }
 
-internal fun getPngSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
-    if (bytes.size < 24) return null
+internal fun getPngSize(bytes: ByteArray): IntPair {
+    if (bytes.size < 24) return UnspecifiedSize
     if (
         int32(bytes[0], bytes[1], bytes[2], bytes[3]) == 0x8950_4E47u &&
         int32(bytes[4], bytes[5], bytes[6], bytes[7]) == 0x0D0A_1A0Au
     ) {
         val width = int32(bytes[16], bytes[17], bytes[18], bytes[19])
         val height = int32(bytes[20], bytes[21], bytes[22], bytes[23])
-        return width.toInt() to height.toInt()
+        return IntPair(width.toInt(), height.toInt())
     }
-    return null
+    return UnspecifiedSize
 }
 
-internal fun getJpegSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
-    if (bytes.size < 10) return null
+internal fun getJpegSize(bytes: ByteArray): IntPair {
+    if (bytes.size < 10) return UnspecifiedSize
     if (int16(bytes[0], bytes[1]) == 0xFFD8u) {
         var offset = 2
         while (offset < bytes.size - 6) {
@@ -89,25 +89,25 @@ internal fun getJpegSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
             if (marker in 0xFFC0u..0xFFCFu && marker != 0xFFC4u && marker != 0xFFC8u && marker != 0xFFCCu) {
                 val height = int16(bytes[offset + 3], bytes[offset + 4])
                 val width = int16(bytes[offset + 5], bytes[offset + 6])
-                return width.toInt() to height.toInt()
+                return IntPair(width.toInt(), height.toInt())
             }
 
             val segmentLength = int16(bytes[offset], bytes[offset + 1])
             offset += segmentLength.toInt()
         }
     }
-    return null
+    return UnspecifiedSize
 }
 
-internal fun getWebpSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
-    if (bytes.size < 30) return null
+internal fun getWebpSize(bytes: ByteArray): IntPair {
+    if (bytes.size < 30) return UnspecifiedSize
 
     // check "RIFF" and "WEBP" signatures
     if (
         int32(bytes[0], bytes[1], bytes[2], bytes[3]) != 0x5249_4646u ||
         int32(bytes[8], bytes[9], bytes[10], bytes[11]) != 0x5745_4250u
     ) {
-        return null
+        return UnspecifiedSize
     }
 
     val chunkType = int32(bytes[12], bytes[13], bytes[14], bytes[15])
@@ -116,26 +116,28 @@ internal fun getWebpSizeOrNull(bytes: ByteArray): Pair<Int, Int>? {
         0x5650_3858u -> { // "VP8X" (Extended WebP)
             val w = int24LE(bytes[24], bytes[25], bytes[26]).toInt() + 1
             val h = int24LE(bytes[27], bytes[28], bytes[29]).toInt() + 1
-            w to h
+            IntPair(w, h)
         }
         0x5650_3820u -> { // "VP8" (Lossy WebP)
             // Check Sync Code "0x9D 0x01 0x2A"
-            if (bytes[23].asInt() != 0x9Du || bytes[24].asInt() != 0x01u || bytes[25].asInt() != 0x2Au) return null
+            if (bytes[23].asInt() != 0x9Du || bytes[24].asInt() != 0x01u || bytes[25].asInt() != 0x2Au) return UnspecifiedSize
             val w = (int16LE(bytes[26], bytes[27]) and 0x3FFFu).toInt()
             val h = (int16LE(bytes[28], bytes[29]) and 0x3FFFu).toInt()
-            w to h
+            IntPair(w, h)
         }
         0x5650_384Cu -> { // "VP8L" (Lossless WebP)
             // Check Lossless
-            if (bytes[20].asInt() != 0x2Fu) return null
+            if (bytes[20].asInt() != 0x2Fu) return UnspecifiedSize
             val bits = int32LE(bytes[21], bytes[22], bytes[23], bytes[24])
             val w = (bits and 0x3FFFu).toInt() + 1
             val h = ((bits shr 14) and 0x3FFFu).toInt() + 1
-            w to h
+            IntPair(w, h)
         }
-        else -> null
+        else -> UnspecifiedSize
     }
 }
+
+internal val UnspecifiedSize = IntPair(-1, -1)
 
 private fun int16(b1: Byte, b2: Byte): UInt =
     (b1.asInt() shl 8) or b2.asInt()

@@ -2,8 +2,6 @@ package sample.common
 
 import coil3.Extras
 import coil3.request.ImageRequest
-import coil3.util.IntPair
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 expect fun assetTypes(): List<AssetType>
@@ -31,12 +29,6 @@ fun String.toColorInt(): Int {
     return color.toInt()
 }
 
-fun Image.calculateScaledSize(displayWidth: Int): IntPair {
-    val columnWidth = (displayWidth / NUM_COLUMNS.toDouble()).roundToInt()
-    val scale = columnWidth / width.toDouble()
-    return IntPair(columnWidth, (scale * height).roundToInt())
-}
-
 fun ImageRequest.Builder.extras(other: Extras) = apply {
     extras.setAll(other)
     other.asMap().forEach { (key, value) ->
@@ -44,6 +36,9 @@ fun ImageRequest.Builder.extras(other: Extras) = apply {
     }
 }
 
-expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
+fun computeMinimumColumnWidthDp(availableWidthDp: Float): Int {
+    // Create fewer columns on large displays.
+    return if (availableWidthDp < 600) 100 else 200
+}
 
-const val NUM_COLUMNS = 4
+expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
