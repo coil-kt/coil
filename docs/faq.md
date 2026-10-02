@@ -77,39 +77,35 @@ Compose Multiplatform will print a warning like this if Coil's Skiko dependency 
 w: Skiko dependencies' versions are incompatible.
 ```
 
-This warning is generally safe to ignore, as Skiko versions typically maintain binary compatibility. Coil releases track Compose Multiplatform **stable** releases and their Skiko versions, so if you encounter this warning, first update Coil to the latest version.
+Skiko does not guarantee binary compatibility between milestone versions because it wraps Skia, whose milestone versions can introduce breaking changes. This warning should not be assumed safe to ignore. Coil releases track Compose Multiplatform **stable** releases and their Skiko versions, so if you encounter this warning, first update Coil to the latest version.
 
-**NOTE**: As a rule, Coil doesn't release new versions only to match the Skiko versions used by **alpha** and **beta** versions of Compose Multiplatform unless those Skiko versions are incompatible with the version depended on by the latest Coil release.
+**NOTE**: Coil doesn't release new versions only to match the Skiko versions used by **alpha** and **beta** Compose Multiplatform releases. However, if there is a binary compatibility issue that requires Coil to depend on a newer Skiko version, Coil will publish an **alpha** release with the updated dependency.
 
-If the warning is still present, you can ignore it by setting the following Gradle property:
+If you've updated Coil to the latest version and the warning is still present you can suppress the warning like so:
+
+**Compose Multiplatform >= 1.13.0**
+
+Add the following to the `build.gradle.kts` file of each module that applies the Compose Multiplatform plugin:
+
+```kotlin
+compose {
+    dependencyCompatibility {
+        exclude("io.coil-kt.coil3")
+    }
+}
+```
+
+This disables the compatibility check only for Coil.
+
+**Older Compose Multiplatform versions:**
+
+Add the following to your `gradle.properties` file:
 
 ```properties
 org.jetbrains.compose.library.compatibility.check.disable=true
 ```
 
-However, that Gradle property disables all Compose Multiplatform library compatibility checks for all libraries - not just Coil. To disable the warning only for Coil and its Skiko dependency, add this code snippet to your root `build.gradle.kts` file:
-
-```kotlin
-dependencies {
-    components {
-        all {
-            if (id.group == "io.coil-kt.coil3") {
-                allVariants {
-                    withDependencies {
-                        val hadSkikoDependency = removeAll {
-                            it.group == "org.jetbrains.skiko" && it.name == "skiko"
-                        }
-                        if (hadSkikoDependency) {
-                            // Replace `0.150.0` with the Skiko version used by your Compose Multiplatform version.
-                            add("org.jetbrains.skiko:skiko:0.150.0")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
+This disables all Compose Multiplatform library compatibility checks for all libraries, including Coil.
 
 ## How do I get development snapshots?
 
