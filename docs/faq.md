@@ -79,7 +79,7 @@ w: Skiko dependencies' versions are incompatible.
 
 Skiko does not guarantee binary compatibility between milestone versions because it wraps Skia, whose milestone versions can introduce breaking changes. This warning should not be assumed safe to ignore. Coil releases track Compose Multiplatform **stable** releases and their Skiko versions, so if you encounter this warning, first update Coil to the latest version.
 
-**NOTE**: Coil doesn't release new versions only to match the Skiko versions used by non-stable Compose Multiplatform releases. However, if there is a binary compatibility issue that requires Coil to depend on a newer Skiko version, Coil will publish an **alpha** release with the updated dependency.
+**NOTE**: Coil doesn't release new versions only to match the Skiko versions used by **alpha** and **beta** Compose Multiplatform releases. However, if there is a binary compatibility issue that requires Coil to depend on a newer Skiko version, Coil will publish an **alpha** release with the updated dependency.
 
 If you've updated Coil to the latest version and the warning is still present you can suppress the warning like so:
 
