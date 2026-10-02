@@ -42,7 +42,7 @@ class CustomCacheInterceptor(
 }
 ```
 
-Interceptors are an advanced feature that let you wrap an `ImageLoader`'s image pipeline with custom logic. Their design is heavily based on [OkHttp's `Interceptor` interface](https://square.github.io/okhttp/interceptors/#interceptors).
+Interceptors are an advanced feature that let you wrap an `ImageLoader`'s image pipeline with custom logic. Their design is heavily based on [OkHttp's `Interceptor` interface](https://lysine.dev/okhttp/interceptors/#interceptors).
 
 See [Interceptor](/coil/api/coil-core/coil3.intercept/-interceptor) for more information.
 
