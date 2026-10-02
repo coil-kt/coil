@@ -26,7 +26,8 @@ class HttpEngineNetworkClientTest {
         val engine = HttpEngine.Builder(context).build()
         try {
             val expectedBody = ByteArray(32 * 1024) { it.toByte() }
-            server.enqueue(MockResponse().setBody(expectedBody.contentToString()))
+            val responseBody = Buffer().write(expectedBody)
+            server.enqueue(MockResponse().setBody(responseBody))
             server.start()
 
             val client = HttpEngineNetworkClient(engine, executor)
