@@ -14,9 +14,12 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
+import coil3.util.GainmapHardwareChecker
 import coil3.util.MIME_TYPE_JPEG
 import coil3.util.component1
 import coil3.util.component2
+import coil3.util.fixGainmapHardwareBug
+import coil3.util.isHardware
 import coil3.util.toDrawable
 import coil3.util.toSoftware
 import kotlin.math.roundToInt
@@ -80,7 +83,16 @@ class BitmapFactoryDecoder(
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
         // Reverse the EXIF transformations to get the original image.
-        val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
+        var bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
+
+        if (SDK_INT == 34 &&
+            options.bitmapConfig.isHardware &&
+            !exifData.isFlipped &&
+            !exifData.isRotated &&
+            GainmapHardwareChecker.hasGainmapHardwareBug
+        ) {
+            bitmap = bitmap.fixGainmapHardwareBug()
+        }
 
         return DecodeResult(
             image = bitmap.toDrawable(options.context).asImage(),
@@ -105,6 +117,12 @@ class BitmapFactoryDecoder(
         // High color depth images must be decoded as either RGBA_F16 or HARDWARE.
         if (SDK_INT >= 26 && outConfig == Bitmap.Config.RGBA_F16 && config != Bitmap.Config.HARDWARE) {
             config = Bitmap.Config.RGBA_F16
+        }
+
+        // Android 14 has a bug where uploading single-channel (ALPHA_8) gainmaps
+        // to hardware bitmaps fails under OpenGL/skiagl. Decode to software first.
+        if (SDK_INT == 34 && config.isHardware && GainmapHardwareChecker.hasGainmapHardwareBug) {
+            config = Bitmap.Config.ARGB_8888
         }
 
         inPreferredConfig = config

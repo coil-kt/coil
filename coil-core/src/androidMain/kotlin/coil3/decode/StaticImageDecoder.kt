@@ -23,8 +23,10 @@ import coil3.request.colorSpace
 import coil3.request.maxBitmapSize
 import coil3.request.premultipliedAlpha
 import coil3.size.Precision
+import coil3.util.GainmapHardwareChecker
 import coil3.util.component1
 import coil3.util.component2
+import coil3.util.fixGainmapHardwareBug
 import coil3.util.isHardware
 import kotlin.math.roundToInt
 import kotlinx.coroutines.sync.Semaphore
@@ -42,7 +44,7 @@ class StaticImageDecoder(
     override suspend fun decode() = parallelismLock.withPermit {
         closeable.use {
             var isSampled = false
-            val bitmap = source.decodeBitmap { info, _ ->
+            var bitmap = source.decodeBitmap { info, _ ->
                 // Configure the output image's size.
                 val (srcWidth, srcHeight) = info.size
                 val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
@@ -77,6 +79,12 @@ class StaticImageDecoder(
                 // Configure any other attributes.
                 configureImageDecoderProperties()
             }
+            if (SDK_INT == 34 &&
+                options.bitmapConfig.isHardware &&
+                GainmapHardwareChecker.hasGainmapHardwareBug
+            ) {
+                bitmap = bitmap.fixGainmapHardwareBug()
+            }
             DecodeResult(
                 image = bitmap.asImage(),
                 isSampled = isSampled,
@@ -87,7 +95,11 @@ class StaticImageDecoder(
     private fun ImageDecoder.configureImageDecoderProperties() {
         onPartialImageListener = ImageDecoder.OnPartialImageListener { options.allowPartialImage }
         allocator = if (options.bitmapConfig.isHardware) {
-            ImageDecoder.ALLOCATOR_HARDWARE
+            if (SDK_INT == 34 && GainmapHardwareChecker.hasGainmapHardwareBug) {
+                ImageDecoder.ALLOCATOR_SOFTWARE
+            } else {
+                ImageDecoder.ALLOCATOR_HARDWARE
+            }
         } else {
             ImageDecoder.ALLOCATOR_SOFTWARE
         }
