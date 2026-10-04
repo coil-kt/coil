@@ -12,7 +12,6 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.test.utils.FakeImage
-import coil3.test.utils.IgnoreOnApple
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
 import kotlin.coroutines.CoroutineContext
@@ -22,7 +21,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -51,15 +52,18 @@ class DeferredDispatchTest : RobolectricTest() {
     @Test
     fun `does dispatch if dispatcher changes`() = runTest {
         withContext(testDispatcher) {
-            launchWithDeferredDispatch {
+            val gate = CompletableDeferred<Unit>()
+            val job = launchWithDeferredDispatch {
                 assertEquals(1, testDispatcher.dispatchCount)
 
                 withContext(Dispatchers.Default) {
-                    delay(10.milliseconds)
+                    gate.await()
                 }
 
                 assertEquals(2, testDispatcher.dispatchCount)
-            }.join()
+            }
+            gate.complete(Unit)
+            job.join()
         }
     }
 
@@ -85,24 +89,26 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     @Test
-    @IgnoreOnApple
     fun `image loader does dispatch if dispatcher changes`() = runTest {
         withContext(testDispatcher) {
-            launchWithDeferredDispatch {
+            val gate = CompletableDeferred<Unit>()
+            val job = launchWithDeferredDispatch {
                 assertEquals(1, testDispatcher.dispatchCount)
 
                 val imageLoader = ImageLoader(context)
                 val request = ImageRequest.Builder(context)
                     .data(Unit)
                     .fetcherFactory(TestFetcher.Factory())
-                    .decoderFactory(TestDecoder.Factory())
+                    .decoderFactory(TestDecoder.Factory(gate))
                     .decoderCoroutineContext(Dispatchers.Default)
                     .build()
                 val result = imageLoader.execute(request)
 
                 assertIs<SuccessResult>(result)
                 assertEquals(2, testDispatcher.dispatchCount)
-            }.join()
+            }
+            gate.complete(Unit)
+            job.join()
         }
     }
 
@@ -138,22 +144,25 @@ class DeferredDispatchTest : RobolectricTest() {
     }
 
     private class TestDecoder(
-        private val options: Options,
+        private val gate: Deferred<Unit>?,
     ) : Decoder {
 
         override suspend fun decode(): DecodeResult {
+            gate?.await()
             return DecodeResult(
                 image = FakeImage(),
                 isSampled = false,
             )
         }
 
-        class Factory : Decoder.Factory {
+        class Factory(
+            private val gate: Deferred<Unit>? = null,
+        ) : Decoder.Factory {
             override fun create(
                 result: SourceFetchResult,
                 options: Options,
                 imageLoader: ImageLoader,
-            ): Decoder = TestDecoder(options)
+            ): Decoder = TestDecoder(gate)
         }
     }
 }
