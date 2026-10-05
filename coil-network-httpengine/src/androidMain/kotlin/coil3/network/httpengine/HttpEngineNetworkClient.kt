@@ -17,13 +17,14 @@ import coil3.network.NetworkResponseBody
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
-import okio.Source
-import okio.Timeout
+import okio.BufferedSink
+import okio.FileSystem
+import okio.Path
 import okio.buffer
 
 @RequiresApi(34)
@@ -68,20 +69,12 @@ class HttpEngineNetworkClient(
                         requestMillis = requestMillis,
                         responseMillis = System.currentTimeMillis(),
                         headers = headersBuilder.build(),
-                        body = NetworkResponseBody(body.buffer()),
+                        body = body,
                         delegate = info,
                     )
 
                     continuation.resume(networkResponse) { _, value, _ ->
                         value.body?.close()
-                    }
-
-                    try {
-                        body.start()
-                    } catch (exception: Exception) {
-                        body.onFailed(
-                            IOException("Unable to start HttpEngine response read", exception),
-                        )
                     }
                 }
 
@@ -198,123 +191,135 @@ class HttpEngineNetworkClient(
     private class HttpEngineResponseBody(
         private val request: UrlRequest,
         private val executor: Executor,
-    ) : Source {
+    ) : NetworkResponseBody {
 
-        private sealed interface Event {
-            class Data(val data: ByteArray) : Event
-            data object Succeeded : Event
-            class Failed(val exception: IOException) : Event
-        }
-
-        private val events = LinkedBlockingQueue<Event>(1)
+        private val lock = Any()
+        private val channel = Channel<Int>(capacity = 1)
         private val readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE)
+        private val responseBuffer = ByteArray(BUFFER_SIZE)
 
         @Volatile
         private var closed = false
-        private var currentData: ByteArray? = null
-        private var currentOffset = 0
 
-        fun start() {
-            if (closed) return
-            request.read(readBuffer)
-        }
+        @Volatile
+        private var readStarted = false
 
-        fun onReadCompleted(buffer: ByteBuffer) {
-            if (!closed) {
-                buffer.flip()
-                val data = ByteArray(buffer.remaining())
-                buffer.get(data)
-                buffer.clear()
-                events.offer(Event.Data(data))
+        @Volatile
+        private var finished = false
+
+        override suspend fun writeTo(sink: BufferedSink) {
+            readBody { byteCount ->
+                sink.write(responseBuffer, 0, byteCount)
             }
         }
 
-        fun onSucceeded() {
-            if (!closed) {
-                events.offer(Event.Succeeded)
+        override suspend fun writeTo(fileSystem: FileSystem, path: Path) {
+            val sink = fileSystem.sink(path).buffer()
+            try {
+                writeTo(sink)
+            } finally {
+                sink.close()
             }
         }
-
-        fun onFailed(exception: IOException) {
-            if (!closed) {
-                events.offer(Event.Failed(exception))
-            }
-        }
-
-        override fun read(sink: Buffer, byteCount: Long): Long {
-            if (byteCount == 0L) return 0L
-
-            while (true) {
-                val data = currentData
-                if (data != null && currentOffset < data.size) {
-                    val bytesToRead = minOf(
-                        byteCount,
-                        (data.size - currentOffset).toLong(),
-                    ).toInt()
-                    sink.write(data, currentOffset, bytesToRead)
-                    currentOffset += bytesToRead
-                    return bytesToRead.toLong()
-                }
-
-                if (data != null) {
-                    currentData = null
-                    currentOffset = 0
-                    requestNextRead()
-                }
-
-                val event = try {
-                    events.take()
-                } catch (e: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    close()
-                    throw IOException("Interrupted while reading HttpEngine response body", e)
-                }
-
-                when (event) {
-                    is Event.Data -> {
-                        currentData = event.data
-                        currentOffset = 0
-                    }
-                    Event.Succeeded -> return -1L
-                    is Event.Failed -> throw event.exception
-                }
-            }
-        }
-
-        override fun timeout(): Timeout = Timeout.NONE
 
         override fun close() {
-            if (closed) return
-            closed = true
-            currentData = null
-            events.clear()
-            events.offer(Event.Failed(IOException("HttpEngine response body closed")))
+            synchronized(lock) {
+                if (closed) return
+                closed = true
+                channel.close(IOException("HttpEngine response body closed"))
+            }
+
             try {
                 executor.execute {
-                    request.cancel()
+                    synchronized(lock) {
+                        request.cancel()
+                    }
                 }
             } catch (_: RuntimeException) {}
         }
 
-        private fun requestNextRead() {
-            if (closed) return
-            try {
-                executor.execute {
-                    if (!closed) {
-                        try {
-                            request.read(readBuffer)
-                        } catch (e: RuntimeException) {
-                            onFailed(IOException("HttpEngine response read failed", e))
-                        }
-                    }
+        private suspend inline fun readBody(crossinline consume: (Int) -> Unit) {
+            requestNextRead()
+            while (true) {
+                val result = channel.receiveCatching()
+                if (result.isClosed) {
+                    result.exceptionOrNull()?.let { throw it }
+                    return
                 }
-            } catch (e: RuntimeException) {
-                onFailed(IOException("Unable to schedule HttpEngine response read", e))
+
+                consume(result.getOrThrow())
+                requestNextRead()
             }
         }
 
+        private fun requestNextRead() {
+            if (closed || finished || readStarted) return
+            readStarted = true
+
+            try {
+                executor.execute {
+                    synchronized(lock) {
+                        if (closed || finished) {
+                            readStarted = false
+                            return@synchronized
+                        }
+
+                        try {
+                            readBuffer.clear()
+                            request.read(readBuffer)
+                        } catch (exception: RuntimeException) {
+                            readStarted = false
+                            failLocked(IOException("HttpEngine response read failed", exception))
+                        }
+                    }
+                }
+            } catch (exception: RuntimeException) {
+                readStarted = false
+                synchronized(lock) {
+                    failLocked(IOException("Unable to schedule HttpEngine response read", exception))
+                }
+            }
+        }
+
+        fun onReadCompleted(buffer: ByteBuffer) {
+            synchronized(lock) {
+                if (closed) return
+
+                buffer.flip()
+                val byteCount = buffer.remaining()
+                buffer.get(responseBuffer, 0, byteCount)
+                buffer.clear()
+                readStarted = false
+
+                val result = channel.trySend(byteCount)
+                if (result.isFailure && !result.isClosed) {
+                    failLocked(IOException("Unable to queue HttpEngine response data"))
+                }
+            }
+        }
+
+        fun onSucceeded() {
+            synchronized(lock) {
+                finished = true
+                readStarted = false
+                channel.close()
+            }
+        }
+
+        fun onFailed(exception: IOException) {
+            synchronized(lock) {
+                failLocked(exception)
+            }
+        }
+
+        private fun failLocked(exception: IOException) {
+            finished = true
+            readStarted = false
+            channel.close(exception)
+        }
+
         private companion object {
-            const val BUFFER_SIZE = 8192
+            const val BUFFER_SIZE = 16 * 1024
         }
     }
 
