@@ -15,6 +15,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.ByteString.Companion.toByteString
+import okio.Path.Companion.toPath
+import okio.fakefilesystem.FakeFileSystem
 
 @SdkSuppress(minSdkVersion = 34)
 class HttpEngineNetworkClientTest {
@@ -22,12 +24,11 @@ class HttpEngineNetworkClientTest {
     @Test
     fun responseBodyIsRead() = runTest {
         val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
+        val executor = Executors.newFixedThreadPool(4)
         val engine = HttpEngine.Builder(context).build()
         try {
             val expectedBody = ByteArray(32 * 1024) { it.toByte() }
-            val responseBody = Buffer().write(expectedBody)
-            server.enqueue(MockResponse().setBody(responseBody))
+            server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
             server.start()
 
             val client = HttpEngineNetworkClient(engine, executor)
@@ -40,6 +41,33 @@ class HttpEngineNetworkClientTest {
             }
 
             assertContentEquals(expectedBody, response)
+        } finally {
+            engine.shutdown()
+            executor.shutdownNow()
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun responseBodyCanBeWrittenToFileSystem() = runTest {
+        val server = MockWebServer()
+        val executor = Executors.newFixedThreadPool(4)
+        val engine = HttpEngine.Builder(context).build()
+        try {
+            val expectedBody = ByteArray(32 * 1024) { (it * 31).toByte() }
+            server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
+            server.start()
+
+            val fileSystem = FakeFileSystem()
+            val path = "/response.bin".toPath()
+            val request = NetworkRequest(server.url("/").toString())
+
+            HttpEngineNetworkClient(engine, executor).executeRequest(request) {
+                it.body!!.writeTo(fileSystem, path)
+            }
+
+            val actualBody = fileSystem.read(path) { readByteArray() }
+            assertContentEquals(expectedBody, actualBody)
         } finally {
             engine.shutdown()
             executor.shutdownNow()
