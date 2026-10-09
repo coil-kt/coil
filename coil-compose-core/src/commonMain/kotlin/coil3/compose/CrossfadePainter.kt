@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
@@ -76,7 +78,7 @@ class CrossfadePainter(
 
     override fun DrawScope.onDraw() {
         if (isDone) {
-            drawPainter(end, maxAlpha)
+            drawPainter(end, maxAlpha, false)
             return
         }
 
@@ -87,8 +89,8 @@ class CrossfadePainter(
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
         isDone = percent >= 1f
 
-        drawPainter(start, startAlpha)
-        drawPainter(end, endAlpha)
+        drawPainter(start, startAlpha, true)
+        drawPainter(end, endAlpha, false)
 
         if (isDone) {
             start = null
@@ -134,7 +136,11 @@ class CrossfadePainter(
         return Size.Unspecified
     }
 
-    private fun DrawScope.drawPainter(painter: Painter?, alpha: Float) {
+    private fun DrawScope.drawPainter(
+        painter: Painter?,
+        alpha: Float,
+        capDrawSize: Boolean,
+    ) {
         if (painter == null || alpha <= 0) return
 
         with(painter) {
@@ -148,7 +154,23 @@ class CrossfadePainter(
                     horizontal = (size.width - drawSize.width) / 2,
                     vertical = (size.height - drawSize.height) / 2,
                 ) {
-                    draw(drawSize, alpha, colorFilter)
+                    val exceedCap = drawSize.width > MAX_DRAW_SIZE || drawSize.height > MAX_DRAW_SIZE
+                    if (capDrawSize && exceedCap) {
+                        val cappedSize = Size(
+                            width = drawSize.width.coerceAtMost(MAX_DRAW_SIZE),
+                            height = drawSize.height.coerceAtMost(MAX_DRAW_SIZE),
+                        )
+
+                        scale(
+                            scaleX = drawSize.width / cappedSize.width,
+                            scaleY = drawSize.height / cappedSize.height,
+                            pivot = Offset.Zero,
+                        ) {
+                            draw(cappedSize, alpha, colorFilter)
+                        }
+                    } else {
+                        draw(drawSize, alpha, colorFilter)
+                    }
                 }
             }
         }
@@ -158,5 +180,12 @@ class CrossfadePainter(
         if (srcSize.isUnspecified || srcSize.isEmpty()) return dstSize
         if (dstSize.isUnspecified || dstSize.isEmpty()) return dstSize
         return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+    }
+
+    private companion object {
+        /**
+         * Maximum size of painter drawing, to prevent exceed the canvas limits.
+         */
+        const val MAX_DRAW_SIZE = 2048f
     }
 }
