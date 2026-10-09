@@ -172,7 +172,11 @@ fun Project.multiplatformAndroidLibrary(
         extensions.configure<KotlinMultiplatformExtension> {
             targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
                 namespace = name
-                compileSdk = project.compileSdk
+                compileSdk {
+                    version = release(project.compileSdk) {
+                        minorApiLevel = project.compileSdkMinor
+                    }
+                }
                 minSdk = project.minSdk
 
                 withHostTest {
@@ -320,7 +324,11 @@ private fun <T : CommonExtension> Project.androidBase(
 
     android<T> {
         namespace = name
-        compileSdk = project.compileSdk
+        compileSdk {
+            version = release(project.compileSdk) {
+                minorApiLevel = project.compileSdkMinor
+            }
+        }
         defaultConfig.apply {
             minSdk = project.minSdk
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -28,6 +28,9 @@ val Project.targetSdk: Int
 val Project.compileSdk: Int
     get() = intProperty("compileSdk")
 
+val Project.compileSdkMinor: Int
+    get() = intProperty("compileSdkMinor")
+
 val Project.groupId: String
     get() = stringProperty("GROUP")
 
