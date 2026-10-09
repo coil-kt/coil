@@ -215,10 +215,8 @@ class HttpEngineNetworkClient(
 
         override suspend fun writeTo(fileSystem: FileSystem, path: Path) {
             val sink = fileSystem.sink(path).buffer()
-            try {
+            sink.use { sink ->
                 writeTo(sink)
-            } finally {
-                sink.close()
             }
         }
 
