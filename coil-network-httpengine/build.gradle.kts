@@ -19,11 +19,6 @@ kotlin {
                 api(projects.coilNetworkCore)
             }
         }
-        androidMain {
-            dependencies {
-                // HttpEngine is built into the Android SDK (API 34+)
-            }
-        }
         commonTest {
             dependencies {
                 implementation(projects.internal.testUtils)
