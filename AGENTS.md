@@ -3,15 +3,18 @@
 ## Project Structure & Module Organization
 This is a Kotlin Multiplatform monorepo built with Gradle. Public library modules live at the repository root (for example `coil-core`, `coil-compose`, `coil-network-okhttp`, `coil-gif`, `coil-svg`, `coil-video`, `coil-test`, `coil-bom`). Internal tooling and test support modules are under `internal/`, and runnable examples are under `samples/` (`samples:compose`, `samples:compose-android`, `samples:view`).
 
-Most modules use source sets like `src/commonMain`, `src/commonTest`, `src/androidMain`, `src/androidHostTest`, and `src/androidDeviceTest`. Documentation content lives in `docs/`.
+Most modules use source sets like `src/commonMain`, `src/commonTest`, `src/androidMain`, `src/androidHostTest`, and `src/androidDeviceTest`. Shared build logic and the custom source-set hierarchy live in `buildSrc/`; dependency versions are in `gradle/libs.versions.toml`. Documentation content lives in `docs/`.
 
 ## Build, Test, and Development Commands
 - `./gradlew spotlessCheck`: run Kotlin formatting/lint checks.
 - `./gradlew lint`: run Android lint checks.
+- `./gradlew verifySkikoVersionsMatch`: check that Coil and Compose request matching Skiko versions.
 - `./gradlew checkKotlinAbi`: verify public API compatibility.
 - `./gradlew updateKotlinAbi`: refresh ABI baselines when API changes are intentional.
-- `./test.sh`: full local validation used by maintainers (style + unit/instrumentation/screenshot tests).
-- `./gradlew allTests testDebugUnitTest`: run core unit tests quickly.
+- `./test.sh`: run style and ABI checks plus unit, instrumentation, and screenshot tests.
+- `./test.sh --skip-instrumentation-tests`: run the suite without connected-device tests.
+- `./test.sh --skip-checks`: skip style and ABI checks when they have already passed.
+- `./gradlew allTests testDebugUnitTest`: run aggregate multiplatform and Android unit tests.
 - `./gradlew connectedDebugAndroidTest`: run Android instrumentation tests (emulator/device required).
 
 ## Coding Style & Naming Conventions

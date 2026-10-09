@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -52,10 +53,10 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
 import sample.common.Image
-import sample.common.MIN_COLUMN_WIDTH_DP
 import sample.common.MainViewModel
 import sample.common.Resources
 import sample.common.Screen
+import sample.common.computeMinimumColumnWidthDp
 import sample.common.extras
 import sample.common.newImageLoader
 import sample.common.next
@@ -222,7 +223,7 @@ private fun ListScreen(
     val layoutDirection = LocalLayoutDirection.current
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Adaptive(minSize = MIN_COLUMN_WIDTH_DP.dp),
+        columns = ImageGridCells,
         state = gridState,
         contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
         modifier = Modifier
@@ -258,6 +259,15 @@ private fun ListScreen(
                     .aspectRatio(image.width.toFloat() / image.height)
                     .clickable { onImageClick(image, placeholder) },
             )
+        }
+    }
+}
+
+private object ImageGridCells : StaggeredGridCells {
+    override fun Density.calculateCrossAxisCellSizes(availableSize: Int, spacing: Int): IntArray {
+        val minSize = computeMinimumColumnWidthDp(availableSize / density).dp
+        return with(StaggeredGridCells.Adaptive(minSize)) {
+            calculateCrossAxisCellSizes(availableSize, spacing)
         }
     }
 }

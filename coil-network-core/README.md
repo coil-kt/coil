@@ -55,7 +55,7 @@ val imageLoader = ImageLoader.Builder(context)
 ```
 
 !!! Note
-    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://lysine.dev/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
 
 ## Cache-Control support
 
@@ -90,7 +90,7 @@ val request = ImageRequest.Builder(context)
 imageLoader.execute(request)
 ```
 
-Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
+Or you can create an OkHttp [`Interceptor`](https://lysine.dev/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
 
 ```kotlin
 class RequestHeaderInterceptor(

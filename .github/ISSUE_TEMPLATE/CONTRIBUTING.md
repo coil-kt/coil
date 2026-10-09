@@ -14,4 +14,12 @@ When submitting code, please make every effort to follow existing conventions an
 
 If you are making an API change, run `./gradlew updateKotlinAbi` and include any changed files in your pull request.
 
-*Modified from OkHttp's [Contributing](https://square.github.io/okhttp/contributing/) section.*
+*Modified from OkHttp's [Contributing](https://lysine.dev/okhttp/contributing/) section.*
+
+## Generative AI
+
+Using generative AI to assist with coding is acceptable as long as a human stays in the loop, understands the proposed changes, and reviews them before submission.
+
+Low-effort pull requests, such as pointing Claude or Codex at a GitHub issue and creating a pull request with its changes without understanding the changes being made, will not be reviewed or accepted.
+
+AI-generated comments are prohibited.
