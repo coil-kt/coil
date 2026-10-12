@@ -75,6 +75,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         if (values.isEmpty()) {
             values += newValue
         } else {
+            var added = false
             for (index in values.indices) {
                 val value = values[index]
                 if (size >= value.size) {
@@ -83,8 +84,12 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
                     } else {
                         values.add(index, newValue)
                     }
+                    added = true
                     break
                 }
+            }
+            if (!added) {
+                values += newValue
             }
         }
 

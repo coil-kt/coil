@@ -1,8 +1,8 @@
 package coil3.decode
 
+import coil3.util.IntPair
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 import okio.ByteString.Companion.decodeBase64
 import org.jetbrains.skia.impl.use
@@ -71,41 +71,61 @@ class ImageSizeExtractionTest {
 
     @Test
     fun testPngSizeExtraction() {
-        assertNull(getPngSizeOrNull(jpeg))
-        assertNull(getPngSizeOrNull(webp))
-        assertNull(getPngSizeOrNull(webp_VP8X))
-        assertNull(getPngSizeOrNull(webp_VP8L))
-        assertNull(getPngSizeOrNull(bmp))
-        assertEquals(10 to 10, getPngSizeOrNull(png))
+        assertEquals(UnspecifiedSize, getPngSize(jpeg))
+        assertEquals(UnspecifiedSize, getPngSize(webp))
+        assertEquals(UnspecifiedSize, getPngSize(webp_VP8X))
+        assertEquals(UnspecifiedSize, getPngSize(webp_VP8L))
+        assertEquals(UnspecifiedSize, getPngSize(bmp))
+        assertEquals(IntPair(10, 10), getPngSize(png))
     }
 
     @Test
     fun testJpegSizeExtraction() {
-        assertNull(getJpegSizeOrNull(png))
-        assertNull(getJpegSizeOrNull(webp))
-        assertNull(getPngSizeOrNull(webp_VP8X))
-        assertNull(getPngSizeOrNull(webp_VP8L))
-        assertNull(getPngSizeOrNull(bmp))
-        assertEquals(10 to 10, getJpegSizeOrNull(jpeg))
+        assertEquals(UnspecifiedSize, getJpegSize(png))
+        assertEquals(UnspecifiedSize, getJpegSize(webp))
+        assertEquals(UnspecifiedSize, getJpegSize(webp_VP8X))
+        assertEquals(UnspecifiedSize, getJpegSize(webp_VP8L))
+        assertEquals(UnspecifiedSize, getJpegSize(bmp))
+        assertEquals(IntPair(10, 10), getJpegSize(jpeg))
     }
 
     @Test
     fun testWebpSizeExtraction() {
-        assertNull(getWebpSizeOrNull(png))
-        assertNull(getWebpSizeOrNull(jpeg))
-        assertNull(getWebpSizeOrNull(bmp))
-        assertEquals(10 to 10, getWebpSizeOrNull(webp))
-        assertEquals(9 to 9, getWebpSizeOrNull(webp_VP8L))
-        assertEquals(8 to 8, getWebpSizeOrNull(webp_VP8X))
+        assertEquals(UnspecifiedSize, getWebpSize(png))
+        assertEquals(UnspecifiedSize, getWebpSize(jpeg))
+        assertEquals(UnspecifiedSize, getWebpSize(bmp))
+        assertEquals(IntPair(10, 10), getWebpSize(webp))
+        assertEquals(IntPair(9, 9), getWebpSize(webp_VP8L))
+        assertEquals(IntPair(8, 8), getWebpSize(webp_VP8X))
+    }
+
+    @Test
+    fun testShortHeaders() {
+        assertEquals(UnspecifiedSize, getPngSize(png.copyOf(23)))
+        assertEquals(UnspecifiedSize, getJpegSize(jpeg.copyOf(9)))
+        assertEquals(UnspecifiedSize, getWebpSize(webp.copyOf(29)))
+        assertEquals(UnspecifiedSize, getPngSize(byteArrayOf()))
+        assertEquals(UnspecifiedSize, getJpegSize(byteArrayOf()))
+        assertEquals(UnspecifiedSize, getWebpSize(byteArrayOf()))
+    }
+
+    @Test
+    fun testInvalidWebpHeaders() {
+        val invalidLossy = webp.copyOf().apply { this[23] = 0 }
+        val invalidLossless = webp_VP8L.copyOf().apply { this[20] = 0 }
+        val unknownChunk = webp.copyOf().apply { this[12] = 0 }
+        assertEquals(UnspecifiedSize, getWebpSize(invalidLossy))
+        assertEquals(UnspecifiedSize, getWebpSize(invalidLossless))
+        assertEquals(UnspecifiedSize, getWebpSize(unknownChunk))
     }
 
     @Test
     fun testSizeExtraction() = runTest {
-        assertEquals(10 to 10, getOriginalSize(jpeg))
-        assertEquals(10 to 10, getOriginalSize(png))
-        assertEquals(10 to 10, getOriginalSize(webp))
-        assertEquals(9 to 9, getOriginalSize(webp_VP8L))
-        assertEquals(8 to 8, getOriginalSize(webp_VP8X))
+        assertEquals(IntPair(10, 10), getOriginalSize(jpeg))
+        assertEquals(IntPair(10, 10), getOriginalSize(png))
+        assertEquals(IntPair(10, 10), getOriginalSize(webp))
+        assertEquals(IntPair(9, 9), getOriginalSize(webp_VP8L))
+        assertEquals(IntPair(8, 8), getOriginalSize(webp_VP8X))
     }
 
     @Test
@@ -114,6 +134,6 @@ class ImageSizeExtractionTest {
             assertEquals(11, bitmap.width)
             assertEquals(11, bitmap.height)
         }
-        assertEquals(11 to 11, getOriginalSize(bmp))
+        assertEquals(IntPair(11, 11), getOriginalSize(bmp))
     }
 }
