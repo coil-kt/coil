@@ -33,7 +33,7 @@ done
 test_tasks=(
     allTests
     testDebugUnitTest
-    testScreenshotTestDefaultDebugTestSuite
+    testDebugScreenshotTestDefaultTestSuite
     verifyPaparazziDebug
     verifyRoborazziAndroidHostTest
     verifyRoborazziJvm
