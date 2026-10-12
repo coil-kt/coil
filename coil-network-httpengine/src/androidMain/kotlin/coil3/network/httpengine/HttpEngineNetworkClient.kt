@@ -11,8 +11,6 @@ import coil3.network.NetworkRequestBody
 import coil3.network.NetworkResponse
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.resumeWithException
 import kotlin.time.TimeSource
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -25,7 +23,6 @@ class HttpEngineNetworkClient(
     private val timeSource: TimeSource = TimeSource.Monotonic,
 ) : NetworkClient {
 
-    @OptIn(ExperimentalAtomicApi::class)
     override suspend fun <T> executeRequest(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
@@ -66,20 +63,21 @@ class HttpEngineNetworkClient(
                 }
 
                 val urlRequest = builder.build()
-                val canceled = AtomicBoolean(false)
+                val requestLock = Any()
 
                 continuation.invokeOnCancellation {
-                    canceled.store(true)
                     try {
                         executor.execute {
-                            urlRequest.cancel()
+                            synchronized(requestLock) {
+                                urlRequest.cancel()
+                            }
                         }
                     } catch (_: RuntimeException) {}
                 }
 
                 try {
                     executor.execute {
-                        if (!canceled.load()) {
+                        synchronized(requestLock) {
                             try {
                                 urlRequest.start()
                             } catch (exception: RuntimeException) {
