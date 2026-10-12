@@ -6,5 +6,5 @@ import okio.Path
 
 internal actual fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long {
     val stats = StatFs(directory.toFile().apply { mkdir() }.absolutePath)
-    return stats.blockCountLong * stats.blockSizeLong
+    return stats.availableBytes
 }
