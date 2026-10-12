@@ -20,6 +20,7 @@ import java.util.concurrent.Executor
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.resumeWithException
+import kotlin.time.TimeSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
@@ -32,6 +33,7 @@ import okio.buffer
 class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
     private val executor: Executor,
+    private val timeSource: TimeSource = TimeSource.Monotonic,
 ) : NetworkClient {
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -41,6 +43,7 @@ class HttpEngineNetworkClient(
     ): T {
         val requestBody = request.body?.readByteArray()
         val requestMillis = System.currentTimeMillis()
+        val requestTimeMark = timeSource.markNow()
 
         val response = suspendCancellableCoroutine { continuation ->
             val callback = object : UrlRequest.Callback {
@@ -69,7 +72,7 @@ class HttpEngineNetworkClient(
                     val networkResponse = NetworkResponse(
                         code = info.httpStatusCode,
                         requestMillis = requestMillis,
-                        responseMillis = System.currentTimeMillis(),
+                        responseMillis = requestMillis + requestTimeMark.elapsedNow().inWholeMilliseconds,
                         headers = headersBuilder.build(),
                         body = body,
                         delegate = info,
