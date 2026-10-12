@@ -112,9 +112,8 @@ private class HttpEngineResponseBody(
 ) : NetworkResponseBody {
 
     private val lock = Any()
-    private val channel = Channel<Int>(capacity = 1)
+    private val channel = Channel<ByteBuffer>(capacity = 1)
     private val readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE)
-    private val responseBuffer = ByteArray(BUFFER_SIZE)
 
     @Volatile
     private var closed = false
@@ -126,8 +125,9 @@ private class HttpEngineResponseBody(
     private var finished = false
 
     override suspend fun writeTo(sink: BufferedSink) {
-        readBody { byteCount ->
-            sink.write(responseBuffer, 0, byteCount)
+        readBody { buffer ->
+            sink.buffer.write(buffer)
+            sink.emitCompleteSegments()
         }
     }
 
@@ -154,7 +154,7 @@ private class HttpEngineResponseBody(
         } catch (_: RuntimeException) {}
     }
 
-    private suspend inline fun readBody(crossinline consume: (Int) -> Unit) {
+    private suspend inline fun readBody(crossinline consume: (ByteBuffer) -> Unit) {
         requestNextRead()
         while (true) {
             val result = channel.receiveCatching()
@@ -200,14 +200,9 @@ private class HttpEngineResponseBody(
     fun onReadCompleted(buffer: ByteBuffer) {
         synchronized(lock) {
             if (closed) return
-
             buffer.flip()
-            val byteCount = buffer.remaining()
-            buffer.get(responseBuffer, 0, byteCount)
-            buffer.clear()
             readStarted = false
-
-            val result = channel.trySend(byteCount)
+            val result = channel.trySend(buffer)
             if (result.isFailure && !result.isClosed) {
                 failLocked(IOException("Unable to queue HttpEngine response data"))
             }
