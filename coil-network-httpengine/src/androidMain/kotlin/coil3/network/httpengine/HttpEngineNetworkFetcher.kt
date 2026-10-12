@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.Uri
-import coil3.annotation.InternalCoilApi
 import coil3.fetch.Fetcher
 import coil3.network.CacheStrategy
 import coil3.network.ConcurrentRequestStrategy
@@ -16,7 +15,6 @@ import coil3.network.NetworkFetcher
 import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import java.util.concurrent.Executor
-import kotlin.jvm.JvmName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
