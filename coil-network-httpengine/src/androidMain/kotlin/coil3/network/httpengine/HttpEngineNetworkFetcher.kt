@@ -39,9 +39,8 @@ fun HttpEngineNetworkFetcherFactory(
     )
 }
 
-@InternalCoilApi
 @RequiresApi(34)
-class HttpEngineFetcherFactory : Fetcher.Factory<Uri> {
+internal class HttpEngineFetcherFactory : Fetcher.Factory<Uri> {
     private val delegate = singleParameterLazy<PlatformContext, NetworkFetcher.Factory> { context ->
         NetworkFetcher.Factory(
             networkClient = {
