@@ -17,7 +17,8 @@ import coil3.network.NetworkResponseBody
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -33,6 +34,7 @@ class HttpEngineNetworkClient(
     private val executor: Executor,
 ) : NetworkClient {
 
+    @OptIn(ExperimentalAtomicApi::class)
     override suspend fun <T> executeRequest(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
@@ -149,7 +151,7 @@ class HttpEngineNetworkClient(
                 val canceled = AtomicBoolean(false)
 
                 continuation.invokeOnCancellation {
-                    canceled.set(true)
+                    canceled.store(true)
                     try {
                         executor.execute {
                             urlRequest.cancel()
@@ -159,7 +161,7 @@ class HttpEngineNetworkClient(
 
                 try {
                     executor.execute {
-                        if (!canceled.get()) {
+                        if (!canceled.load()) {
                             try {
                                 urlRequest.start()
                             } catch (exception: RuntimeException) {
