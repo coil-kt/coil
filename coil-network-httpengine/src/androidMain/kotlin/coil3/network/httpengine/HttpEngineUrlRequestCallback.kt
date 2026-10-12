@@ -20,9 +20,8 @@ import okio.FileSystem
 import okio.Path
 import okio.buffer
 
-@InternalCoilApi
 @RequiresApi(34)
-class HttpEngineUrlRequestCallback(
+internal class HttpEngineUrlRequestCallback(
     private val continuation: CancellableContinuation<NetworkResponse>,
     private val executor: Executor,
     private val requestMillis: Long,
