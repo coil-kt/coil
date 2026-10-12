@@ -4,13 +4,17 @@ package coil3.network.httpengine
 
 import android.net.http.HttpEngine
 import androidx.annotation.RequiresApi
+import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.Uri
+import coil3.annotation.InternalCoilApi
 import coil3.fetch.Fetcher
 import coil3.network.CacheStrategy
 import coil3.network.ConcurrentRequestStrategy
 import coil3.network.ConnectivityChecker
 import coil3.network.NetworkFetcher
+import coil3.network.internal.singleParameterLazy
+import coil3.request.Options
 import java.util.concurrent.Executor
 import kotlin.jvm.JvmName
 import kotlinx.coroutines.Dispatchers
@@ -33,4 +37,29 @@ fun HttpEngineNetworkFetcherFactory(
         connectivityChecker = connectivityChecker,
         concurrentRequestStrategy = concurrentRequestStrategy,
     )
+}
+
+@InternalCoilApi
+@RequiresApi(34)
+class HttpEngineFetcherFactory : Fetcher.Factory<Uri> {
+    private val delegate = singleParameterLazy<PlatformContext, NetworkFetcher.Factory> { context ->
+        NetworkFetcher.Factory(
+            networkClient = {
+                HttpEngineNetworkClient(
+                    httpEngine = HttpEngine.Builder(context).build(),
+                    executor = Dispatchers.IO.asExecutor(),
+                )
+            },
+        )
+    }
+
+    override fun create(
+        data: Uri,
+        options: Options,
+        imageLoader: ImageLoader,
+    ): Fetcher? {
+        if (data.scheme != "http" && data.scheme != "https") return null
+
+        return delegate.get(options.context.applicationContext).create(data, options, imageLoader)
+    }
 }
