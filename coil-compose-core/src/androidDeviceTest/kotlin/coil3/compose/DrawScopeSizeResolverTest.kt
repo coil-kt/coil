@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.registerIdlingResource
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import coil3.ColorImage
