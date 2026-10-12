@@ -47,6 +47,7 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
+                implementation(libs.androidx.test.espresso)
                 implementation(libs.compose.ui.test.junit4)
             }
         }

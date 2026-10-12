@@ -838,6 +838,7 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
@@ -881,6 +882,7 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
@@ -924,6 +926,7 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
@@ -1124,6 +1127,7 @@ class AsyncImageTest {
             dstWidth = composableWidth,
             dstHeight = composableHeight,
             scale = scale,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1.0)
         assertLoadedBitmapSize(
             width = (multiplier * SampleWidth).toInt(),
