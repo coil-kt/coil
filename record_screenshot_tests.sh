@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-./gradlew updateScreenshotTestDefaultDebugTestSuite recordPaparazziDebug recordRoborazziAndroidHostTest recordRoborazziJvm
+./gradlew updateDebugScreenshotTestDefaultTestSuite recordPaparazziDebug recordRoborazziAndroidHostTest recordRoborazziJvm
