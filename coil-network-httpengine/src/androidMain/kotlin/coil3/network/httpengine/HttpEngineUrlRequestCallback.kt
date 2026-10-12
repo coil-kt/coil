@@ -85,14 +85,10 @@ class HttpEngineUrlRequestCallback(
         info: UrlResponseInfo?,
         error: HttpException,
     ) {
-        val ioException = IOException(
-            "HttpEngine request failed: ${error.message}",
-            error,
-        )
         if (continuation.isActive) {
-            continuation.resumeWithException(ioException)
+            continuation.resumeWithException(error)
         } else {
-            responseBody?.onFailed(ioException)
+            responseBody?.onFailed(error)
         }
     }
 
