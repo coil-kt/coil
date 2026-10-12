@@ -4,7 +4,6 @@ import android.net.http.HttpException
 import android.net.http.UrlRequest
 import android.net.http.UrlResponseInfo
 import androidx.annotation.RequiresApi
-import coil3.annotation.InternalCoilApi
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
