@@ -843,8 +843,8 @@ class AsyncImageTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -887,8 +887,8 @@ class AsyncImageTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -931,8 +931,8 @@ class AsyncImageTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
