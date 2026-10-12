@@ -1,7 +1,7 @@
-package coil3.util
+package coil3.disk
 
-import coil3.disk.DiskCache
 import coil3.test.utils.RobolectricTest
+import coil3.util.remainingFreeSpaceBytes
 import kotlin.test.assertEquals
 import okio.FileSystem
 import okio.Path
@@ -13,7 +13,7 @@ import org.junit.rules.TemporaryFolder
 import org.robolectric.shadows.ShadowStatFs
 
 /** Regression tests: https://github.com/coil-kt/coil/issues/3622 */
-class FileSystemsTest : RobolectricTest() {
+class DiskCacheAndroidTest : RobolectricTest() {
 
     @get:Rule
     val temporaryFolder = TemporaryFolder()
