@@ -11,5 +11,5 @@ internal class HttpEngineNetworkFetcherServiceLoaderTarget : FetcherServiceLoade
         return HttpEngineFetcherFactory()
     }
     override fun type() = Uri::class
-    override fun priority() = 1 // http-engine > okhttp > ktor3 > ktor2
+    override fun priority() = -1 // http-engine > okhttp > ktor3 > ktor2
 }
