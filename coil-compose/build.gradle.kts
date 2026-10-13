@@ -10,7 +10,11 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-multiplatformAndroidLibrary(name = "coil3.compose.singleton")
+multiplatformAndroidLibrary(name = "coil3.compose.singleton") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
     sourceSets {

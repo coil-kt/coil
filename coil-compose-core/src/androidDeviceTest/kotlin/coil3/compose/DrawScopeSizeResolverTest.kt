@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.compose.ui.unit.dp
 import coil3.ColorImage
 import coil3.ImageLoader
@@ -15,6 +15,7 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.size.Size as CoilSize
+import coil3.test.utils.ComposeTestActivity
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.roundToInt
 import kotlin.test.Test
@@ -26,7 +27,7 @@ class DrawScopeSizeResolverTest {
     private val idlingResource = ImageLoaderIdlingResource()
 
     @Test
-    fun imageIsLoadedWithDrawScopeSize() = runComposeUiTest {
+    fun imageIsLoadedWithDrawScopeSize() = runAndroidComposeUiTest<ComposeTestActivity> {
         registerIdlingResource(idlingResource)
 
         val expectedSizeDp = 100.dp

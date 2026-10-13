@@ -18,7 +18,7 @@ Usage: ./test.sh [options]
 
 Options:
   --skip-checks                 Skip checkKotlinAbi and spotlessCheck.
-  --skip-instrumentation-tests  Skip connectedDebugAndroidTest.
+  --skip-instrumentation-tests  Skip connected Android tests.
   --help, -h                    Show this help message.
 EOF
             exit 0
@@ -40,7 +40,7 @@ test_tasks=(
 )
 
 if [[ "$skip_instrumentation_tests" != true ]]; then
-    test_tasks+=(connectedDebugAndroidTest)
+    test_tasks+=(connectedDebugAndroidTest connectedAndroidDeviceTest)
 fi
 
 js_wasm_test_tasks=(

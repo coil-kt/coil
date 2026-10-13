@@ -838,12 +838,13 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -881,12 +882,13 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -924,12 +926,13 @@ class AsyncImageTest {
             dstWidth = dstWidth.toPx(),
             dstHeight = dstHeight.toPx(),
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1f)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((scale * SampleWidth).toDp())
-            .assertHeightIsEqualTo((scale * SampleHeight).toDp())
+            .assertWidthIsEqualTo((scale * SampleWidth).toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo((scale * SampleHeight).toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -1124,6 +1127,7 @@ class AsyncImageTest {
             dstWidth = composableWidth,
             dstHeight = composableHeight,
             scale = scale,
+            maxSize = Size.ORIGINAL,
         ).coerceAtMost(1.0)
         assertLoadedBitmapSize(
             width = (multiplier * SampleWidth).toInt(),

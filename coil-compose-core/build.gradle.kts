@@ -12,7 +12,11 @@ plugins {
 }
 
 addAllMultiplatformTargets(libs.versions.skiko, enableNativeLinux = false)
-multiplatformAndroidLibrary(name = "coil3.compose.core")
+multiplatformAndroidLibrary(name = "coil3.compose.core") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
     sourceSets {
@@ -43,6 +47,7 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
+                implementation(libs.androidx.test.espresso)
                 implementation(libs.compose.ui.test.junit4)
             }
         }
