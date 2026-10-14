@@ -8,7 +8,9 @@ import coil3.network.NetworkHeaders
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
 import java.io.IOException
+import java.net.URI
 import java.nio.ByteBuffer
+import java.util.Locale
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
 import kotlin.time.TimeMark
@@ -23,18 +25,84 @@ import okio.buffer
 internal class HttpEngineUrlRequestCallback(
     private val continuation: CancellableContinuation<NetworkResponse>,
     private val executor: Executor,
+    initialUrl: String,
+    private val hasSensitiveRequestData: Boolean,
     private val requestMillis: Long,
     private val requestTimeMark: TimeMark,
 ) : UrlRequest.Callback {
 
     private var responseBody: HttpEngineResponseBody? = null
+    private var currentUrl: String = initialUrl
 
     override fun onRedirectReceived(
         request: UrlRequest,
         info: UrlResponseInfo,
         newLocationUrl: String,
     ) {
+        val redirectUrl = resolveRedirect(currentUrl, newLocationUrl)
+        if (redirectUrl == null) {
+            rejectRedirect(request, IOException("HttpEngine returned an invalid redirect URL"))
+            return
+        }
+
+        // UrlRequest.followRedirect() doesn't let us remove headers or the upload body from the
+        // redirected request. Do not forward potentially sensitive request data to another origin.
+        // Unknown/custom headers are treated as sensitive because they may contain credentials.
+        if (hasSensitiveRequestData && !hasSameOrigin(currentUrl, redirectUrl)) {
+            rejectRedirect(
+                request,
+                IOException("Refusing cross-origin redirect with sensitive request data"),
+            )
+            return
+        }
+
+        currentUrl = redirectUrl.toString()
         request.followRedirect()
+    }
+
+    private fun resolveRedirect(currentUrl: String, location: String): URI? = try {
+        URI(currentUrl).resolve(URI(location)).normalize()
+    } catch (_: IllegalArgumentException) {
+        null
+    } catch (_: java.net.URISyntaxException) {
+        null
+    }
+
+    private fun hasSameOrigin(currentUrl: String, redirectUrl: URI): Boolean {
+        val currentOrigin = origin(try {
+            URI(currentUrl)
+        } catch (_: Exception) {
+            return false
+        }) ?: return false
+        val redirectOrigin = origin(redirectUrl) ?: return false
+        return currentOrigin == redirectOrigin
+    }
+
+    private fun origin(uri: URI): Origin? {
+        val scheme = uri.scheme?.lowercase(Locale.ROOT) ?: return null
+        if (scheme != "http" && scheme != "https") return null
+        val host = uri.host?.lowercase(Locale.ROOT) ?: return null
+        val port = when {
+            uri.port >= 0 -> uri.port
+            scheme == "https" -> 443
+            else -> 80
+        }
+        return Origin(scheme, host, port)
+    }
+
+    private data class Origin(
+        val scheme: String,
+        val host: String,
+        val port: Int,
+    )
+
+    private fun rejectRedirect(request: UrlRequest, exception: IOException) {
+        try {
+            request.cancel()
+        } catch (_: RuntimeException) {}
+        if (continuation.isActive) {
+            continuation.resumeWithException(exception)
+        }
     }
 
     override fun onResponseStarted(
