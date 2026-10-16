@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.graphics.createBitmap
@@ -141,6 +142,29 @@ class CrossfadePainterTest : RobolectricTest() {
         frameEnd.assertIsSimilarTo(expectedEnd)
     }
 
+    @Test
+    fun draw_capsStartDrawSize() {
+        val startColor = Color.Red
+        val endColor = Color.Blue
+        val start = SolidColorPainter(startColor, Size(64f, 64f))
+        val end = SolidColorPainter(endColor, Size(64f, 4096f))
+        val timeSource = FakeTimeSource()
+        val painter = CrossfadePainter(
+            start = start,
+            end = end,
+            contentScale = ContentScale.Crop,
+            duration = 100.milliseconds,
+            timeSource = timeSource,
+        )
+
+        render(painter, 64, 4096)
+        timeSource.advanceBy(200.milliseconds)
+        render(painter, 64, 4096)
+
+        assertEquals(Size(2048f, 2048f), start.drawSize)
+        assertEquals(Size(64f, 4096f), end.drawSize)
+    }
+
     private fun render(painter: Painter, width: Int, height: Int): Bitmap {
         val image = createBitmap(width, height).asImageBitmap()
         val canvas = Canvas(image)
@@ -181,6 +205,12 @@ class CrossfadePainterTest : RobolectricTest() {
         private val color: Color,
         override val intrinsicSize: Size,
     ) : Painter() {
-        override fun DrawScope.onDraw() = drawRect(color)
+        var drawSize: Size = Size.Unspecified
+            private set
+
+        override fun DrawScope.onDraw() {
+            drawRect(color)
+            drawSize = size
+        }
     }
 }
