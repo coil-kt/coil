@@ -21,22 +21,24 @@ internal actual fun maybeNewCrossfadePainter(
         else -> return null
     }
 
-    // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
-    // a `CrossfadeTransformation`.
-    val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
-    if (transition is CrossfadeTransition) {
-        return CrossfadePainter(
-            start = previous.painter.takeIf { previous is AsyncImagePainter.State.Loading },
-            end = current.painter,
-            contentScale = contentScale,
-            duration = transition.durationMillis.milliseconds,
-            fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
-            preferExactIntrinsicSize = transition.preferExactIntrinsicSize,
-            preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
-        )
-    } else {
+    val factory = result.request.transitionFactory as? CrossfadeTransition.Factory ?: return null
+
+    // For errors and cache hits, create() returns a non-crossfade transition. Still crossfade
+    // cache hits when the caller opted in via useExistingImageAsPlaceholder.
+    val transition = factory.create(FakeTransitionTarget, result)
+    if (transition !is CrossfadeTransition && !crossfadeFromExistingImage(previous, result)) {
         return null
     }
+
+    return CrossfadePainter(
+        start = previous.painter.takeIf { previous is AsyncImagePainter.State.Loading },
+        end = current.painter,
+        contentScale = contentScale,
+        duration = factory.durationMillis.milliseconds,
+        fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
+        preferExactIntrinsicSize = factory.preferExactIntrinsicSize,
+        preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
+    )
 }
 
 private val FakeTransitionTarget = object : TransitionTarget {
