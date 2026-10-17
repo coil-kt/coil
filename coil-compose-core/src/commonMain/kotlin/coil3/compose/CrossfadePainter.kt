@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
@@ -11,9 +12,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
+import kotlin.math.floor
+import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
@@ -142,14 +146,38 @@ class CrossfadePainter(
             val drawSize = computeDrawSize(intrinsicSize, size)
 
             if (size.isUnspecified || size.isEmpty()) {
-                draw(drawSize, alpha, colorFilter)
+                drawWithinCanvasLimit(painter, drawSize, alpha)
             } else {
                 inset(
                     horizontal = (size.width - drawSize.width) / 2,
                     vertical = (size.height - drawSize.height) / 2,
                 ) {
-                    draw(drawSize, alpha, colorFilter)
+                    drawWithinCanvasLimit(painter, drawSize, alpha)
                 }
+            }
+        }
+    }
+
+    private fun DrawScope.drawWithinCanvasLimit(
+        painter: Painter,
+        drawSize: Size,
+        alpha: Float,
+    ) {
+        val safeDrawSize = drawSize.limitedToCanvasBitmap()
+        with(painter) {
+            if (safeDrawSize == drawSize) {
+                draw(drawSize, alpha, colorFilter)
+                return
+            }
+
+            // Painter.draw insets its draw scope to the given size from the top-left.
+            // Scale that raster back up so the crop rect stays where it was.
+            scale(
+                scaleX = drawSize.width / safeDrawSize.width,
+                scaleY = drawSize.height / safeDrawSize.height,
+                pivot = Offset.Zero,
+            ) {
+                draw(safeDrawSize, alpha, colorFilter)
             }
         }
     }
@@ -159,4 +187,29 @@ class CrossfadePainter(
         if (dstSize.isUnspecified || dstSize.isEmpty()) return dstSize
         return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
     }
+}
+
+// RecordingCanvas throws when a software bitmap is larger than 100MB.
+// VectorPainter allocates an ARGB_8888 bitmap of its draw size.
+private const val MAX_CANVAS_BITMAP_BYTES = 100L * 1024 * 1024
+private const val BYTES_PER_PIXEL = 4L
+
+private fun Size.limitedToCanvasBitmap(): Size {
+    if (!isSpecified || isEmpty()) return this
+
+    val maxPixels = MAX_CANVAS_BITMAP_BYTES.toDouble() / BYTES_PER_PIXEL
+    val pixels = width.toDouble() * height.toDouble()
+    if (pixels <= maxPixels) return this
+
+    val downscale = sqrt(maxPixels / pixels)
+    var safeWidth = floor(width * downscale).coerceAtLeast(1.0)
+    var safeHeight = floor(height * downscale).coerceAtLeast(1.0)
+    if (safeWidth * safeHeight > maxPixels) {
+        if (safeWidth >= safeHeight) {
+            safeWidth = floor(maxPixels / safeHeight).coerceAtLeast(1.0)
+        } else {
+            safeHeight = floor(maxPixels / safeWidth).coerceAtLeast(1.0)
+        }
+    }
+    return Size(safeWidth.toFloat(), safeHeight.toFloat())
 }
