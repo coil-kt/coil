@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.graphics.createBitmap
@@ -17,6 +18,7 @@ import coil3.test.utils.RobolectricTest
 import coil3.test.utils.assertIsSimilarTo
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.test.runTest
 
@@ -141,6 +143,55 @@ class CrossfadePainterTest : RobolectricTest() {
         frameEnd.assertIsSimilarTo(expectedEnd)
     }
 
+    @Test
+    fun draw_limitsOversizedCropToCanvasBitmapLimit() = runTest {
+        val start = SolidColorPainter(Color.Red, Size(32f, 64f))
+        val end = SolidColorPainter(Color.Blue, Size(64f, 8192f))
+        val timeSource = FakeTimeSource()
+        val painter = CrossfadePainter(
+            start = start,
+            end = end,
+            contentScale = ContentScale.Crop,
+            duration = 100.milliseconds,
+            timeSource = timeSource,
+        )
+
+        val width = 64
+        val height = 8192
+        render(painter, width, height)
+
+        // Uncapped crop is 4096x8192 (128MB). Keep the 1:2 aspect and stay within 100MB.
+        assertTrue(start.drawSize.bitmapBytes() <= MAX_CANVAS_BITMAP_BYTES)
+        assertTrue(start.drawSize.width < 4096f)
+        assertEquals(2f, start.drawSize.height / start.drawSize.width, absoluteTolerance = 0.01f)
+
+        timeSource.advanceBy(50.milliseconds)
+        render(painter, width, height)
+        assertEquals(Size(64f, 8192f), end.drawSize)
+    }
+
+    @Test
+    fun draw_doesNotLimitCropWithinCanvasBitmapLimit() {
+        val start = SolidColorPainter(Color.Red, Size(64f, 64f))
+        val end = SolidColorPainter(Color.Blue, Size(64f, 3000f))
+        val timeSource = FakeTimeSource()
+        val painter = CrossfadePainter(
+            start = start,
+            end = end,
+            contentScale = ContentScale.Crop,
+            duration = 100.milliseconds,
+            timeSource = timeSource,
+        )
+
+        render(painter, 64, 3000)
+        // 3000x3000 is 36MB, above a 2048 edge cap and still legal to draw.
+        assertEquals(Size(3000f, 3000f), start.drawSize)
+
+        timeSource.advanceBy(50.milliseconds)
+        render(painter, 64, 3000)
+        assertEquals(Size(64f, 3000f), end.drawSize)
+    }
+
     private fun render(painter: Painter, width: Int, height: Int): Bitmap {
         val image = createBitmap(width, height).asImageBitmap()
         val canvas = Canvas(image)
@@ -181,6 +232,16 @@ class CrossfadePainterTest : RobolectricTest() {
         private val color: Color,
         override val intrinsicSize: Size,
     ) : Painter() {
-        override fun DrawScope.onDraw() = drawRect(color)
+        var drawSize: Size = Size.Unspecified
+            private set
+
+        override fun DrawScope.onDraw() {
+            drawSize = size
+            drawRect(color)
+        }
     }
 }
+
+private const val MAX_CANVAS_BITMAP_BYTES = 100.0 * 1024 * 1024
+
+private fun Size.bitmapBytes(): Double = width.toDouble() * height.toDouble() * 4.0
