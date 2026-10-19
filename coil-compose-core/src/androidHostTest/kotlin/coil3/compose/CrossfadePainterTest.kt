@@ -155,6 +155,7 @@ class CrossfadePainterTest : RobolectricTest() {
             contentScale = ContentScale.Crop,
             duration = 100.milliseconds,
             timeSource = timeSource,
+            maxSize = Size(2048f, 4096f),
         )
 
         render(painter, 64, 4096)

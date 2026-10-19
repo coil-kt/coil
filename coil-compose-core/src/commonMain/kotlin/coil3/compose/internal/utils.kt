@@ -186,6 +186,12 @@ internal fun Constraints.toSize(): CoilSize {
 }
 
 @Stable
+internal fun CoilSize.toSize() = Size(
+    width = width.let { if (it is Dimension.Pixels) it.px.toFloat() else Float.POSITIVE_INFINITY },
+    height = height.let { if (it is Dimension.Pixels) it.px.toFloat() else Float.POSITIVE_INFINITY },
+)
+
+@Stable
 internal fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(width.toDimension(), height.toDimension())

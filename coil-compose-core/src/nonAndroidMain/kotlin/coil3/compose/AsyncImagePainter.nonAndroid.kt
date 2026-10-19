@@ -1,9 +1,11 @@
 package coil3.compose
 
 import androidx.compose.ui.layout.ContentScale
+import coil3.compose.internal.toSize
 import coil3.decode.DataSource
 import coil3.request.SuccessResult
 import coil3.request.crossfadeMillis
+import coil3.request.maxBitmapSize
 import kotlin.time.Duration.Companion.milliseconds
 
 internal actual fun maybeNewCrossfadePainter(
@@ -39,6 +41,7 @@ internal actual fun maybeNewCrossfadePainter(
             fadeStart = !result.isPlaceholderCached,
             preferExactIntrinsicSize = false,
             preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
+            maxSize = result.request.maxBitmapSize.toSize(),
         )
     } else {
         return null
