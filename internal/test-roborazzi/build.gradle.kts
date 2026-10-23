@@ -11,7 +11,11 @@ plugins {
 }
 
 addAllMultiplatformTargets(enableNativeLinux = false)
-multiplatformAndroidLibrary(name = "coil3.test.roborazzi")
+multiplatformAndroidLibrary(name = "coil3.test.roborazzi") {
+    androidResources {
+        enable = true
+    }
+}
 
 kotlin {
     sourceSets {

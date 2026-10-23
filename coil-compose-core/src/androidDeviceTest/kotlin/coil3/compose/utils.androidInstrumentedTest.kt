@@ -24,6 +24,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.size.Scale
+import coil3.size.Size
 import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.assumeTrue
 import coil3.toUri
@@ -69,6 +70,7 @@ private fun Bitmap.scale(width: Int, height: Int, scale: Scale = Scale.FIT): Bit
             dstWidth = width,
             dstHeight = height,
             scale = scale,
+            maxSize = Size.ORIGINAL,
         ).toFloat()
         val dx = (width - multiplier * input.width) / 2
         val dy = (height - multiplier * input.height) / 2

@@ -352,7 +352,7 @@ class RealImageLoaderAndroidTest {
 
     /** Regression test: https://github.com/coil-kt/coil/pull/3259 */
     @Test
-    fun veryLargeImageWithFill() = runTest {
+    fun veryLargeImageWithFillRespectsMaxBitmapSize() = runTest {
         val request = ImageRequest.Builder(context)
             .data(R.drawable.very_large)
             .scale(Scale.FILL)
@@ -424,6 +424,7 @@ class RealImageLoaderAndroidTest {
             dstWidth = 9052,
             dstHeight = imageView.height,
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
@@ -459,6 +460,7 @@ class RealImageLoaderAndroidTest {
             dstWidth = imageView.width,
             dstHeight = 4965,
             scale = Scale.FIT,
+            maxSize = Size.ORIGINAL,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()

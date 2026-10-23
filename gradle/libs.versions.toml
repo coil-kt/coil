@@ -15,10 +15,10 @@ ktlint = "1.8.0"
 ktor2 = "2.3.13"
 ktor3 = "3.1.0"
 lint = "32.4.1"
-okhttp = "4.12.0"
+okhttp = "4.12.1"
 okio = "3.18.2"
 paparazzi = "2.0.0-alpha05.1"
-roborazzi = "1.76.0"
+roborazzi = "1.77.0"
 skiko = "0.153.0"
 
 [plugins]
@@ -87,7 +87,7 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.1"
 kotlinx-io-okio = "org.jetbrains.kotlinx:kotlinx-io-okio:0.9.1"
 kotlinx-browser = "org.jetbrains.kotlinx:kotlinx-browser:0.5.0"
-kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0"
 
 ktor2-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor2" }
 ktor2-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor2" }

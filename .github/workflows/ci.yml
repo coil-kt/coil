@@ -120,7 +120,7 @@ jobs:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
-                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
+                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest connectedAndroidDeviceTest
 
     build-samples:
         name: Build samples

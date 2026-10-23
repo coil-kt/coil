@@ -3,7 +3,9 @@ package coil3.compose
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.compose.ui.layout.ContentScale
+import coil3.compose.internal.toSize
 import coil3.request.SuccessResult
+import coil3.request.maxBitmapSize
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
 import coil3.transition.TransitionTarget
@@ -33,6 +35,7 @@ internal actual fun maybeNewCrossfadePainter(
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = transition.preferExactIntrinsicSize,
             preferEndFirstIntrinsicSize = result.request.preferEndFirstIntrinsicSize,
+            maxSize = result.request.maxBitmapSize.toSize(),
         )
     } else {
         return null
