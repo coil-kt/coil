@@ -11,13 +11,10 @@ import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.inset
-import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
-import kotlin.math.floor
-import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
@@ -40,8 +37,10 @@ import kotlin.time.TimeSource
  *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
  *  require an exact intrinsic size to scale the drawable.
  * @param preferEndFirstIntrinsicSize Returns `true` if this request prefers the end painter's intrinsic size
- * when calculating the `CrossfadePainter`'s intrinsic size.
- * When enabled, the end painter's intrinsic size takes precedence.
+ *  when calculating the `CrossfadePainter`'s intrinsic size.
+ *  When enabled, the end painter's intrinsic size takes precedence.
+ * @param maxSize The maximum size at which [start] and [end] are drawn before canvas scaling.
+ *  [Size.Unspecified] disables the limit.
  */
 @Stable
 class CrossfadePainter(
@@ -53,6 +52,7 @@ class CrossfadePainter(
     val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false,
     val preferEndFirstIntrinsicSize: Boolean = false,
+    val maxSize: Size = Size.Unspecified,
 ) : Painter() {
 
     @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
@@ -65,6 +65,18 @@ class CrossfadePainter(
         fadeStart: Boolean = true,
         preferExactIntrinsicSize: Boolean = false,
     ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize)
+
+    @Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        start: Painter?,
+        end: Painter?,
+        contentScale: ContentScale = ContentScale.Fit,
+        duration: Duration = 200.milliseconds,
+        timeSource: TimeSource = TimeSource.Monotonic,
+        fadeStart: Boolean = true,
+        preferExactIntrinsicSize: Boolean = false,
+        preferEndFirstIntrinsicSize: Boolean = false,
+    ) : this(start, end, contentScale, duration, timeSource, fadeStart, preferExactIntrinsicSize, preferEndFirstIntrinsicSize)
 
     private var invalidateTick by mutableIntStateOf(0)
     private var startTime: TimeMark? = null
@@ -144,40 +156,22 @@ class CrossfadePainter(
         with(painter) {
             val size = size
             val drawSize = computeDrawSize(intrinsicSize, size)
-
-            if (size.isUnspecified || size.isEmpty()) {
-                drawWithinCanvasLimit(painter, drawSize, alpha)
+            val scale = if (maxSize.isSpecified && drawSize.isSpecified && !drawSize.isEmpty()) {
+                maxOf(drawSize.width / maxSize.width, drawSize.height / maxSize.height, 1f)
             } else {
-                inset(
-                    horizontal = (size.width - drawSize.width) / 2,
-                    vertical = (size.height - drawSize.height) / 2,
-                ) {
-                    drawWithinCanvasLimit(painter, drawSize, alpha)
+                1f
+            }
+
+            withTransform({
+                if (size.isSpecified && !size.isEmpty()) {
+                    translate(
+                        left = (size.width - drawSize.width) / 2,
+                        top = (size.height - drawSize.height) / 2,
+                    )
                 }
-            }
-        }
-    }
-
-    private fun DrawScope.drawWithinCanvasLimit(
-        painter: Painter,
-        drawSize: Size,
-        alpha: Float,
-    ) {
-        val safeDrawSize = drawSize.limitedToCanvasBitmap()
-        with(painter) {
-            if (safeDrawSize == drawSize) {
-                draw(drawSize, alpha, colorFilter)
-                return
-            }
-
-            // Painter.draw insets its draw scope to the given size from the top-left.
-            // Scale that raster back up so the crop rect stays where it was.
-            scale(
-                scaleX = drawSize.width / safeDrawSize.width,
-                scaleY = drawSize.height / safeDrawSize.height,
-                pivot = Offset.Zero,
-            ) {
-                draw(safeDrawSize, alpha, colorFilter)
+                scale(scale, scale, pivot = Offset.Zero)
+            }) {
+                draw(drawSize / scale, alpha, colorFilter)
             }
         }
     }
@@ -187,29 +181,4 @@ class CrossfadePainter(
         if (dstSize.isUnspecified || dstSize.isEmpty()) return dstSize
         return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
     }
-}
-
-// RecordingCanvas throws when a software bitmap is larger than 100MB.
-// VectorPainter allocates an ARGB_8888 bitmap of its draw size.
-private const val MAX_CANVAS_BITMAP_BYTES = 100L * 1024 * 1024
-private const val BYTES_PER_PIXEL = 4L
-
-private fun Size.limitedToCanvasBitmap(): Size {
-    if (!isSpecified || isEmpty()) return this
-
-    val maxPixels = MAX_CANVAS_BITMAP_BYTES.toDouble() / BYTES_PER_PIXEL
-    val pixels = width.toDouble() * height.toDouble()
-    if (pixels <= maxPixels) return this
-
-    val downscale = sqrt(maxPixels / pixels)
-    var safeWidth = floor(width * downscale).coerceAtLeast(1.0)
-    var safeHeight = floor(height * downscale).coerceAtLeast(1.0)
-    if (safeWidth * safeHeight > maxPixels) {
-        if (safeWidth >= safeHeight) {
-            safeWidth = floor(maxPixels / safeHeight).coerceAtLeast(1.0)
-        } else {
-            safeHeight = floor(maxPixels / safeWidth).coerceAtLeast(1.0)
-        }
-    }
-    return Size(safeWidth.toFloat(), safeHeight.toFloat())
 }
