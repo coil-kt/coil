@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.BitmapImage
+import coil3.ColorImage
 import coil3.EventListener
 import coil3.Extras
 import coil3.ImageLoader
@@ -61,6 +63,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -524,6 +527,66 @@ class AsyncImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.red_rectangle)
+    }
+
+    @Test
+    fun previewHandlerResultIsVisibleOnFirstComposition() {
+        val previewHandler = AsyncImagePreviewHandler {
+            ColorImage(Color.Red.toArgb(), width = 100, height = 100)
+        }
+        val firstStates = arrayOfNulls<State>(2)
+
+        composeTestRule.setContent {
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+                    val first = rememberAsyncImagePainter(
+                        model = "https://example.com/image/0",
+                        imageLoader = imageLoader,
+                    )
+                    val second = rememberAsyncImagePainter(
+                        model = "https://example.com/image/1",
+                        imageLoader = imageLoader,
+                    )
+                    if (firstStates[0] == null) firstStates[0] = first.state.value
+                    if (firstStates[1] == null) firstStates[1] = second.state.value
+                }
+            }
+        }
+
+        assertIs<State.Success>(firstStates[0])
+        assertIs<State.Success>(firstStates[1])
+        composeTestRule.waitForIdle()
+        assertEquals(0, requestTracker.startedRequests)
+    }
+
+    @Test
+    fun suspendingPreviewHandlerStaysEmptyUntilItResumes() {
+        val gate = CompletableDeferred<Unit>()
+        val previewHandler = AsyncImagePreviewHandler {
+            gate.await()
+            ColorImage(Color.Blue.toArgb(), width = 100, height = 100)
+        }
+        var painter: AsyncImagePainter? = null
+        var firstState: State? = null
+
+        composeTestRule.setContent {
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+                    val current = rememberAsyncImagePainter(
+                        model = "https://example.com/image",
+                        imageLoader = imageLoader,
+                    )
+                    painter = current
+                    if (firstState == null) firstState = current.state.value
+                }
+            }
+        }
+
+        assertIs<State.Empty>(firstState)
+        gate.complete(Unit)
+        composeTestRule.waitForIdle()
+        assertIs<State.Success>(painter?.state?.value)
+        assertEquals(0, requestTracker.startedRequests)
     }
 
     @Test
