@@ -39,7 +39,11 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -144,6 +148,9 @@ private fun rememberAsyncImagePainter(
     painter.filterQuality = filterQuality
     painter.previewHandler = previewHandler()
     painter._input = input
+    // Resolve a non-suspending preview before the caller reads state. Preview renders often
+    // do not recompose, so a result applied from onRemembered stays invisible.
+    painter.resolvePreviewHandler()
     return painter
 }
 
@@ -180,6 +187,8 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
+    private var previewResolutionStarted = false
+    private var previewResolvedImmediately = false
 
     internal var _input: Input? = input
         set(value) {
@@ -218,8 +227,26 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
-        launchJob()
+        if (!previewResolvedImmediately) {
+            launchJob()
+        }
         isRemembered = true
+    }
+
+    internal fun resolvePreviewHandler() {
+        if (previewResolutionStarted) return
+        val previewHandler = previewHandler ?: return
+        val input = _input ?: return
+        previewResolutionStarted = true
+
+        // Omit the target so a handler that suspends cannot publish Loading before we cancel it.
+        val request = updateRequest(input.request, isPreview = true)
+            .newBuilder()
+            .target(null)
+            .build()
+        val state = previewHandler.handleImmediately(input.imageLoader, request) ?: return
+        previewResolvedImmediately = true
+        updateState(state)
     }
 
     private fun launchJob() {
@@ -418,3 +445,19 @@ internal expect fun maybeNewCrossfadePainter(
     current: State,
     contentScale: ContentScale,
 ): CrossfadePainter?
+
+private fun AsyncImagePreviewHandler.handleImmediately(
+    imageLoader: ImageLoader,
+    request: ImageRequest,
+): AsyncImagePainter.State? {
+    val job: CompletableJob = Job()
+    val outcome = suspend { handle(imageLoader, request) }
+        .startCoroutineUninterceptedOrReturn(Continuation(job) {})
+    if (outcome === COROUTINE_SUSPENDED) {
+        job.cancel()
+        return null
+    }
+    job.complete()
+    @Suppress("UNCHECKED_CAST")
+    return outcome as AsyncImagePainter.State
+}
