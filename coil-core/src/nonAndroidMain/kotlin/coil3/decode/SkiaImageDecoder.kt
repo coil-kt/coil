@@ -10,6 +10,7 @@ import okio.use
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
+import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.impl.use
 
@@ -23,12 +24,24 @@ class SkiaImageDecoder(
         if (data != null) {
             return try {
                 Codec.makeFromData(data).use { codec ->
-                    val bitmap = options.allocDecodeBitmap(codec.width, codec.height)
+                    val fmt = codec.encodedImageFormat
+                    // Avoid allocating unscaled pixels on supported format (webp, jxl)
+                    val scaleInplace = fmt == EncodedImageFormat.WEBP // TODO: Add JXL (subclass of SkScalingCodec)
 
-                    // This will do subsampling if size not match
-                    codec.readPixels(bitmap)
+                    val bitmap = if (scaleInplace) {
+                        val dst = options.allocDecodeBitmap(codec.width, codec.height)
+                        codec.readPixels(dst)
+                        dst
+                   } else {
+                        val src = codec.readPixels()
+
+                        // Avoid coping, SkImage take bitmap's pixel ref if not mutable
+                        src.setImmutable()
+                        val image = src.use { Image.makeFromBitmap(src) }
+                        image.use { Bitmap.makeFromImage(image, options) }
+                    }
+
                     bitmap.setImmutable()
-
                     val isSampled = bitmap.width < codec.width || bitmap.height < codec.height
                     DecodeResult(
                         image = bitmap.asImage(),
