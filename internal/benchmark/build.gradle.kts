@@ -1,5 +1,6 @@
+import coil3.MANAGED_DEVICE_NAME
 import coil3.androidTest
-import com.android.build.api.dsl.ManagedVirtualDevice
+import coil3.configureManagedDevice
 
 plugins {
     id("com.android.test")
@@ -26,23 +27,13 @@ androidTest(name = "coil3.benchmark", config = true) {
             matchingFallbacks += "release"
         }
     }
-    testOptions {
-        managedDevices {
-            allDevices {
-                create<ManagedVirtualDevice>("pixel9Api35") {
-                    device = "Pixel 9"
-                    apiLevel = 35
-                    systemImageSource = "aosp"
-                }
-            }
-        }
-    }
+    configureManagedDevice(testOptions.managedDevices)
     targetProjectPath = ":samples:$targetProject"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
 baselineProfile {
-    managedDevices += "pixel9Api35"
+    managedDevices += MANAGED_DEVICE_NAME
     useConnectedDevices = false
     enableEmulatorDisplay = false
 }
