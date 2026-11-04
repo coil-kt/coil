@@ -48,7 +48,7 @@ class MicrosTraceSectionMetric(
                 Mode.Average -> listOf(
                     Measurement(
                         name = label + "Average_µs",
-                        data = slices.sumOf { it.dur } / 1_000.0 / slices.size.coerceAtLeast(1),
+                        data = slices.sumOf { it.dur } / 1_000.0 / slices.size,
                     ),
                 )
             }
