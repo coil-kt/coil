@@ -5,6 +5,26 @@
     ],
     "automerge": false,
     "dependencyDashboard": false,
+    "customManagers": [
+        {
+            "customType": "regex",
+            "managerFilePatterns": ["/^gradle/libs\\.versions\\.toml$/"],
+            "matchStrings": ["android-ndk\\s*=\\s*\"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""],
+            "depNameTemplate": "android/ndk",
+            "datasourceTemplate": "custom.android-ndk",
+            "versioningTemplate": "semver",
+        },
+    ],
+    "customDatasources": {
+        "android-ndk": {
+            "defaultRegistryUrlTemplate": "https://dl.google.com/android/repository/repository2-3.xml",
+            "format": "plain",
+            "transformTemplates": [
+                "$match($join(releases.version, ''), /<remotePackage\\b[^>]*\\bpath=\"ndk;([0-9]+\\.[0-9]+\\.[0-9]+)\"[^>]*>[\\s\\S]*?<\\/remotePackage>/)",
+                "{'releases': [$[$contains(match, /<channelRef\\s+ref=\"channel-0\"/) and $not($contains(match, /<preview>\\s*[1-9]/))].{'version': groups[0], 'isStable': true}], 'sourceUrl': 'https://github.com/android/ndk'}",
+            ],
+        },
+    },
     "packageRules": [
         {
             "matchPackageNames": [

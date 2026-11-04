@@ -1,9 +1,27 @@
 pluginManagement {
+    // Settings plugins are resolved before version catalog accessors are available.
+    val versions = file("gradle/libs.versions.toml").readLines()
+    fun version(name: String) = versions.first { it.startsWith("$name = ") }
+        .substringAfter('"').substringBefore('"')
+
+    plugins {
+        id("com.android.settings") version version("android-gradle-plugin")
+    }
+    settings.extra["androidNdkVersion"] = version("android-ndk")
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
+}
+
+plugins {
+    id("com.android.settings")
+}
+
+android {
+    ndkVersion = settings.extra["androidNdkVersion"] as String
 }
 
 rootProject.name = "coil-root"
