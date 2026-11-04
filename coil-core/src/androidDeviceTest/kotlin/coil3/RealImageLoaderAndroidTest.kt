@@ -424,12 +424,19 @@ class RealImageLoaderAndroidTest {
             dstWidth = 9052,
             dstHeight = imageView.height,
             scale = Scale.FIT,
-            maxSize = Size.ORIGINAL,
+            maxSize = result.request.maxBitmapSize,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
-        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
-        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+        assertTrue(
+            image.bitmap.width in expectedWidth - 1..expectedWidth + 1,
+            "Expected width $expectedWidth, got ${image.bitmap.width} " +
+                "(view height ${imageView.height})",
+        )
+        assertTrue(
+            image.bitmap.height in expectedHeight - 1..expectedHeight + 1,
+            "Expected height $expectedHeight, got ${image.bitmap.height}",
+        )
     }
 
     @Test
@@ -460,12 +467,19 @@ class RealImageLoaderAndroidTest {
             dstWidth = imageView.width,
             dstHeight = 4965,
             scale = Scale.FIT,
-            maxSize = Size.ORIGINAL,
+            maxSize = result.request.maxBitmapSize,
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
-        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
-        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+        assertTrue(
+            image.bitmap.width in expectedWidth - 1..expectedWidth + 1,
+            "Expected width $expectedWidth, got ${image.bitmap.width}",
+        )
+        assertTrue(
+            image.bitmap.height in expectedHeight - 1..expectedHeight + 1,
+            "Expected height $expectedHeight, got ${image.bitmap.height} " +
+                "(view width ${imageView.width})",
+        )
     }
 
     private suspend fun testEnqueue(
