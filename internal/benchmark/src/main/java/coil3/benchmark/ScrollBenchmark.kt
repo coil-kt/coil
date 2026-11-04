@@ -38,6 +38,10 @@ class ScrollBenchmark {
                 FrameTimingMetric(),
                 StartupTimingMetric(),
                 MicrosTraceSectionMetric(
+                    "rememberAsyncImagePainter",
+                    Sum, Average,
+                ),
+                MicrosTraceSectionMetric(
                     "AsyncImagePainter.onRemembered",
                     Sum, Average,
                 ),
