@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.abi.BinariesSource
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.tasks.IncrementalSyncTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -148,6 +149,13 @@ allprojects {
             .file("gradle/nodejs/registerSkikoMjsWorkaround.cjs")
             .asFile
         nodeJsArgs.add(skikoMjsWorkaround.absolutePath)
+    }
+
+    afterEvaluate {
+        // Main and test resources both include the same Skiko runtime files in JS/Wasm test bundles.
+        tasks.withType<IncrementalSyncTask>().matching { it.name.contains("Test") }.configureEach {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        }
     }
 }
 
