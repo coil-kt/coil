@@ -131,6 +131,7 @@ fun Project.multiplatformAndroidLibrary(
 
                 withDeviceTest {
                     instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                    configureAndroidDeviceTests(managedDevices, "AndroidDeviceTest")
                 }
 
                 lint {
@@ -264,6 +265,9 @@ private fun <T : CommonExtension> Project.androidBase(
             is ApplicationExtension -> defaultConfig.targetSdk = project.targetSdk
             is LibraryExtension -> testOptions.targetSdk = project.targetSdk
             is TestExtension -> defaultConfig.targetSdk = project.targetSdk
+        }
+        if (this !is TestExtension) {
+            configureAndroidDeviceTests(testOptions.managedDevices, "DebugAndroidTest")
         }
         packaging.resources.pickFirsts += RESOURCE_DUPLICATE_OVERRIDES
         testOptions.unitTests.isIncludeAndroidResources = true
