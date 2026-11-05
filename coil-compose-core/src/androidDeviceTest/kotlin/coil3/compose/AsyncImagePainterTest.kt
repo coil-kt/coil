@@ -530,39 +530,45 @@ class AsyncImagePainterTest {
     }
 
     @Test
-    fun previewHandlerResultIsVisibleOnFirstComposition() {
+    fun previewStateIsSuccessOnFirstRead() {
         val previewHandler = AsyncImagePreviewHandler {
             ColorImage(Color.Red.toArgb(), width = 100, height = 100)
         }
-        val firstStates = arrayOfNulls<State>(2)
+        var firstState: State? = null
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
-                    val first = rememberAsyncImagePainter(
-                        model = "https://example.com/image/0",
+                    val painter = rememberAsyncImagePainter(
+                        model = "https://example.com/image.jpg",
                         imageLoader = imageLoader,
                     )
-                    val second = rememberAsyncImagePainter(
-                        model = "https://example.com/image/1",
-                        imageLoader = imageLoader,
-                    )
-                    if (firstStates[0] == null) firstStates[0] = first.state.value
-                    if (firstStates[1] == null) firstStates[1] = second.state.value
+                    val state by painter.state.collectAsState()
+                    if (firstState == null) firstState = state
+                    if (state is State.Success) {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                        )
+                    } else {
+                        Box(Modifier.size(64.dp))
+                    }
                 }
             }
         }
 
-        assertIs<State.Success>(firstStates[0])
-        assertIs<State.Success>(firstStates[1])
+        assertIs<State.Success>(firstState)
         composeTestRule.waitForIdle()
         assertEquals(0, requestTracker.startedRequests)
     }
 
     @Test
-    fun suspendingPreviewHandlerStaysEmptyUntilItResumes() {
+    fun suspendingPreviewHandlerRunsOnce() {
+        var calls = 0
         val gate = CompletableDeferred<Unit>()
         val previewHandler = AsyncImagePreviewHandler {
+            calls++
             gate.await()
             ColorImage(Color.Blue.toArgb(), width = 100, height = 100)
         }
@@ -573,19 +579,31 @@ class AsyncImagePainterTest {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
                     val current = rememberAsyncImagePainter(
-                        model = "https://example.com/image",
+                        model = "https://example.com/image.jpg",
                         imageLoader = imageLoader,
                     )
                     painter = current
-                    if (firstState == null) firstState = current.state.value
+                    val state by current.state.collectAsState()
+                    if (firstState == null) firstState = state
+                    if (state is State.Success) {
+                        Image(
+                            painter = current,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                        )
+                    } else {
+                        Box(Modifier.size(64.dp))
+                    }
                 }
             }
         }
 
         assertIs<State.Empty>(firstState)
+        assertEquals(1, calls)
         gate.complete(Unit)
         composeTestRule.waitForIdle()
         assertIs<State.Success>(painter?.state?.value)
+        assertEquals(1, calls)
         assertEquals(0, requestTracker.startedRequests)
     }
 

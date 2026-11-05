@@ -39,11 +39,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Precision
 import coil3.size.SizeResolver
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
-import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
@@ -148,9 +144,11 @@ private fun rememberAsyncImagePainter(
     painter.filterQuality = filterQuality
     painter.previewHandler = previewHandler()
     painter._input = input
-    // Resolve a non-suspending preview before the caller reads state. Preview renders often
-    // do not recompose, so a result applied from onRemembered stays invisible.
-    painter.resolvePreviewHandler()
+    // Run the preview handler before the caller reads state. A handler that does not suspend
+    // finishes inside this undispatched launch.
+    if (painter.previewHandler != null) {
+        painter.launchRequestIfIdle()
+    }
     return painter
 }
 
@@ -187,8 +185,6 @@ class AsyncImagePainter internal constructor(
     internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var previewHandler: AsyncImagePreviewHandler? = null
-    private var previewResolutionStarted = false
-    private var previewResolvedImmediately = false
 
     internal var _input: Input? = input
         set(value) {
@@ -226,27 +222,17 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
+        isRemembered = true
         (painter as? RememberObserver)?.onRemembered()
-        if (!previewResolvedImmediately) {
+        if (rememberJob == null) {
             launchJob()
         }
-        isRemembered = true
     }
 
-    internal fun resolvePreviewHandler() {
-        if (previewResolutionStarted) return
-        val previewHandler = previewHandler ?: return
-        val input = _input ?: return
-        previewResolutionStarted = true
-
-        // Omit the target so a handler that suspends cannot publish Loading before we cancel it.
-        val request = updateRequest(input.request, isPreview = true)
-            .newBuilder()
-            .target(null)
-            .build()
-        val state = previewHandler.handleImmediately(input.imageLoader, request) ?: return
-        previewResolvedImmediately = true
-        updateState(state)
+    internal fun launchRequestIfIdle() {
+        if (rememberJob == null) {
+            launchJob()
+        }
     }
 
     private fun launchJob() {
@@ -337,8 +323,9 @@ class AsyncImagePainter internal constructor(
         stateFlow.value = current
         painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
-        // Manually forget and remember the old/new painters.
-        if (previous.painter !== current.painter) {
+        // Manually forget and remember the old/new painters. The initial onRemembered
+        // remembers whatever painter is current, so skip that until this painter is remembered.
+        if (isRemembered && previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
@@ -445,19 +432,3 @@ internal expect fun maybeNewCrossfadePainter(
     current: State,
     contentScale: ContentScale,
 ): CrossfadePainter?
-
-private fun AsyncImagePreviewHandler.handleImmediately(
-    imageLoader: ImageLoader,
-    request: ImageRequest,
-): AsyncImagePainter.State? {
-    val job: CompletableJob = Job()
-    val outcome = suspend { handle(imageLoader, request) }
-        .startCoroutineUninterceptedOrReturn(Continuation(job) {})
-    if (outcome === COROUTINE_SUSPENDED) {
-        job.cancel()
-        return null
-    }
-    job.complete()
-    @Suppress("UNCHECKED_CAST")
-    return outcome as AsyncImagePainter.State
-}
