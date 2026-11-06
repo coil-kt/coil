@@ -80,6 +80,7 @@ internal class HttpEngineNetworkClient(
                 try {
                     executor.execute {
                         synchronized(requestLock) {
+                            if (!continuation.isActive) return@synchronized
                             try {
                                 urlRequest.start()
                             } catch (exception: RuntimeException) {
@@ -101,7 +102,7 @@ internal class HttpEngineNetworkClient(
             }
         }
 
-        return block(response)
+        return response.body.use { block(response) }
     }
 }
 

@@ -7,7 +7,9 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkRequestBody
 import coil3.network.httpengine.internal.HttpEngineNetworkClient
 import coil3.test.utils.context
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -20,6 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -118,6 +121,35 @@ class HttpEngineNetworkClientTest {
         } finally {
             engine.shutdown()
             executor.shutdownNow()
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun requestCanceledBeforeStartDoesNotStart() = runTest {
+        val server = MockWebServer()
+        val engine = HttpEngine.Builder(context).build()
+        try {
+            server.enqueue(MockResponse().setBody("unexpected"))
+            server.start()
+
+            val tasks = LinkedBlockingQueue<Runnable>()
+            val client = HttpEngineNetworkClient(engine, Executor { tasks.add(it) })
+            val request = NetworkRequest(server.url("/").toString())
+            val job = launch(start = CoroutineStart.UNDISPATCHED) {
+                client.executeRequest(request) { error("Cancelled request returned a response") }
+            }
+
+            val start = tasks.remove()
+            job.cancelAndJoin()
+            // Run cancellation before the queued start, as a concurrent executor can do.
+            tasks.remove().run()
+            start.run()
+
+            // Shutdown fails if the request started and is still waiting on its callback.
+            engine.shutdown()
+            assertEquals(0, server.requestCount)
+        } finally {
             server.shutdown()
         }
     }
