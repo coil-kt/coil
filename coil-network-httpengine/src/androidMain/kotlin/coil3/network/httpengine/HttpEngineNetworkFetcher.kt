@@ -15,11 +15,13 @@ import coil3.network.NetworkFetcher
 import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import java.util.concurrent.Executor
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
 @JvmName("factory")
 @RequiresApi(34)
+@OptIn(ExperimentalTime::class)
 fun HttpEngineNetworkFetcherFactory(
     httpEngine: HttpEngine,
     executor: Executor = Dispatchers.IO.asExecutor(),
@@ -38,6 +40,7 @@ fun HttpEngineNetworkFetcherFactory(
 }
 
 @RequiresApi(34)
+@OptIn(ExperimentalTime::class)
 internal class HttpEngineFetcherFactory : Fetcher.Factory<Uri> {
     private val delegate = singleParameterLazy<PlatformContext, NetworkFetcher.Factory> { context ->
         NetworkFetcher.Factory(

@@ -1,4 +1,3 @@
-
 package coil3.network.httpengine
 
 import android.net.http.HttpEngine
@@ -12,15 +11,17 @@ import coil3.network.NetworkResponse
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
-import kotlin.time.TimeSource
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
 
 @RequiresApi(34)
+@OptIn(ExperimentalTime::class)
 class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
     private val executor: Executor,
-    private val timeSource: TimeSource = TimeSource.Monotonic,
+    private val clock: Clock = Clock.System,
 ) : NetworkClient {
 
     override suspend fun <T> executeRequest(
@@ -28,8 +29,7 @@ class HttpEngineNetworkClient(
         block: suspend (response: NetworkResponse) -> T,
     ): T {
         val requestBody = request.body?.readByteArray()
-        val requestMillis = System.currentTimeMillis()
-        val requestTimeMark = timeSource.markNow()
+        val requestMillis = clock.now().toEpochMilliseconds()
 
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
@@ -41,7 +41,7 @@ class HttpEngineNetworkClient(
                         header !in SAFE_CROSS_ORIGIN_REDIRECT_HEADERS
                     },
                 requestMillis = requestMillis,
-                requestTimeMark = requestTimeMark,
+                clock = clock,
             )
 
             try {
