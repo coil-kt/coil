@@ -1,5 +1,5 @@
 [versions]
-android-gradle-plugin = "9.5.0"
+android-gradle-plugin = "9.5.1"
 android-ndk = "30.0.16248370"
 androidx-activity = "1.13.0"
 androidx-benchmark = "1.5.0"
