@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -25,6 +27,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.ByteString.Companion.toByteString
 import okio.ForwardingSink
+import okio.IOException
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
@@ -218,6 +221,48 @@ class HttpEngineNetworkClientTest {
             engine.shutdown()
             executor.shutdownNow()
             server.shutdown()
+        }
+    }
+
+    @Test
+    fun redirectPolicyCanRejectALaterHop() = runTest {
+        val server = MockWebServer()
+        val executor = Executors.newSingleThreadExecutor()
+        val engine = HttpEngine.Builder(context).build()
+        try {
+            server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
+            server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/blocked"))
+            server.enqueue(MockResponse().setBody("unexpected"))
+            server.start()
+
+            val start = server.url("/start").toString()
+            val next = server.url("/next").toString()
+            val blocked = server.url("/blocked").toString()
+            val request = NetworkRequest(start)
+            val rejection = IOException("Redirect blocked by test policy")
+            val hops = mutableListOf<Pair<String, String>>()
+            val policy = HttpEngineRedirectPolicy { originalRequest, fromUrl, toUrl ->
+                assertSame(request, originalRequest)
+                hops += fromUrl to toUrl
+                if (toUrl == blocked) throw rejection
+            }
+            val client = HttpEngineNetworkClient(engine, executor, redirectPolicy = policy)
+
+            val failure = assertFailsWith<IOException> {
+                client.executeRequest(request) { it.body!!.writeTo(Buffer()) }
+            }
+
+            assertSame(rejection, failure)
+            assertEquals(listOf(start to next, next to blocked), hops)
+            assertEquals(2, server.requestCount)
+        } finally {
+            try {
+                executor.submit {}.get(5, SECONDS)
+                engine.shutdown()
+            } finally {
+                executor.shutdownNow()
+                server.shutdown()
+            }
         }
     }
 
