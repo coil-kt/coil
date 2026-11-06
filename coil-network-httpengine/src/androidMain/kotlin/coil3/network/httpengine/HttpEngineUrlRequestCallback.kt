@@ -13,7 +13,8 @@ import java.nio.ByteBuffer
 import java.util.Locale
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
-import kotlin.time.TimeMark
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.channels.Channel
 import okio.BufferedSink
@@ -22,13 +23,14 @@ import okio.Path
 import okio.buffer
 
 @RequiresApi(34)
+@OptIn(ExperimentalTime::class)
 internal class HttpEngineUrlRequestCallback(
     private val continuation: CancellableContinuation<NetworkResponse>,
     private val executor: Executor,
     initialUrl: String,
     private val hasSensitiveRequestData: Boolean,
     private val requestMillis: Long,
-    private val requestTimeMark: TimeMark,
+    private val clock: Clock,
 ) : UrlRequest.Callback {
 
     private var responseBody: HttpEngineResponseBody? = null
@@ -69,11 +71,12 @@ internal class HttpEngineUrlRequestCallback(
     }
 
     private fun hasSameOrigin(currentUrl: String, redirectUrl: URI): Boolean {
-        val currentOrigin = origin(try {
+        val currentUri = try {
             URI(currentUrl)
         } catch (_: Exception) {
             return false
-        }) ?: return false
+        }
+        val currentOrigin = origin(currentUri) ?: return false
         val redirectOrigin = origin(redirectUrl) ?: return false
         return currentOrigin == redirectOrigin
     }
@@ -120,7 +123,7 @@ internal class HttpEngineUrlRequestCallback(
         val networkResponse = NetworkResponse(
             code = info.httpStatusCode,
             requestMillis = requestMillis,
-            responseMillis = requestMillis + requestTimeMark.elapsedNow().inWholeMilliseconds,
+            responseMillis = clock.now().toEpochMilliseconds(),
             headers = headersBuilder.build(),
             body = body,
             delegate = info,

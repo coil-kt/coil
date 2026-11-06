@@ -10,6 +10,9 @@ import java.util.concurrent.Executors
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -19,7 +22,39 @@ import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 
 @SdkSuppress(minSdkVersion = 34)
+@OptIn(ExperimentalTime::class)
 class HttpEngineNetworkClientTest {
+
+    @Test
+    fun requestAndResponseTimestampsUseClock() = runTest {
+        val server = MockWebServer()
+        val executor = Executors.newSingleThreadExecutor()
+        val engine = HttpEngine.Builder(context).build()
+        try {
+            server.enqueue(MockResponse().setBody("ok"))
+            server.start()
+
+            val sent = Instant.parse("2026-01-01T00:00:00Z")
+            val received = Instant.parse("2026-01-01T00:00:01Z")
+            val clock = object : Clock {
+                private val times = listOf(sent, received).iterator()
+
+                override fun now() = times.next()
+            }
+            val client = HttpEngineNetworkClient(engine, executor, clock)
+            val request = NetworkRequest(server.url("/").toString())
+
+            client.executeRequest(request) {
+                it.body!!.writeTo(Buffer())
+                assertEquals(sent.toEpochMilliseconds(), it.requestMillis)
+                assertEquals(received.toEpochMilliseconds(), it.responseMillis)
+            }
+        } finally {
+            engine.shutdown()
+            executor.shutdownNow()
+            server.shutdown()
+        }
+    }
 
     @Test
     fun responseBodyIsRead() = runTest {
