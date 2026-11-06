@@ -63,16 +63,16 @@ actual abstract class EventListener : ImageRequest.Listener {
     /**
      * Called before [Transition.transition].
      *
-     * This is skipped when the transition is disabled or [ImageRequest.target] does not
-     * implement [TransitionTarget].
+     * This is skipped if [transition] comes from [Transition.Factory.NONE]
+     * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     open fun transitionStart(request: ImageRequest, transition: Transition) {}
 
     /**
      * Called after [Transition.transition].
      *
-     * This is skipped when the transition is disabled or [ImageRequest.target] does not
-     * implement [TransitionTarget].
+     * This is skipped if [transition] comes from [Transition.Factory.NONE]
+     * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     open fun transitionEnd(request: ImageRequest, transition: Transition) {}
 
