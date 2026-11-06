@@ -27,9 +27,6 @@ class HttpEngineNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
-        val requestBody = request.body?.readByteArray()
-        val requestMillis = clock.now().toEpochMilliseconds()
-
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
                 continuation = continuation,
@@ -39,34 +36,33 @@ class HttpEngineNetworkClient(
                     request.headers.asMap().keys.any { header ->
                         header !in SAFE_CROSS_ORIGIN_REDIRECT_HEADERS
                     },
-                requestMillis = requestMillis,
+                requestMillis = clock.now().toEpochMilliseconds(),
                 clock = clock,
             )
 
             try {
-                val builder = httpEngine.newUrlRequestBuilder(
-                    request.url,
-                    executor,
-                    callback,
-                ).setHttpMethod(request.method)
+                val urlBuilder = httpEngine
+                    .newUrlRequestBuilder(request.url, executor, callback)
+                    .setHttpMethod(request.method)
 
                 for ((key, values) in request.headers.asMap()) {
                     for (value in values) {
-                        builder.addHeader(key, value)
+                        urlBuilder.addHeader(key, value)
                     }
                 }
 
+                val requestBody = request.body?.readByteArray()
                 if (requestBody != null) {
                     if (request.headers["Content-Type"] == null) {
-                        builder.addHeader("Content-Type", "application/octet-stream")
+                        urlBuilder.addHeader("Content-Type", "application/octet-stream")
                     }
-                    builder.setUploadDataProvider(
+                    urlBuilder.setUploadDataProvider(
                         ByteArrayUploadDataProvider(requestBody),
                         executor,
                     )
                 }
 
-                val urlRequest = builder.build()
+                val urlRequest = urlBuilder.build()
                 val requestLock = Any()
 
                 continuation.invokeOnCancellation {
