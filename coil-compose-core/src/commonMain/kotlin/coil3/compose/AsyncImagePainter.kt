@@ -144,8 +144,15 @@ private fun rememberAsyncImagePainter(
     painter.filterQuality = filterQuality
     painter.previewHandler = previewHandler()
     painter._input = input
-    // Run the preview handler before the caller reads state. A handler that does not suspend
-    // finishes inside this undispatched launch.
+    // In the preview/inspection environment, resolve the request during composition instead of
+    // waiting for onRemembered. Callers commonly gate on `painter.state` (e.g.
+    // `if (state is Success) Image(...) else placeholder`), reading it while composing. A static
+    // preview renders a single frame and does not recompose, so a result published later from
+    // onRemembered would never reach that branch. launchRequestIfIdle starts the job UNDISPATCHED,
+    // so a preview handler that does not suspend finishes synchronously here and the first read of
+    // `state` already observes the result. This only runs when a preview handler is present, so the
+    // on-device path (launch from onRemembered) is unchanged, and the job is tied to the
+    // composition scope so it is cancelled if the composition is discarded.
     if (painter.previewHandler != null) {
         painter.launchRequestIfIdle()
     }
@@ -162,6 +169,9 @@ class AsyncImagePainter internal constructor(
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float = DefaultAlpha
     private var colorFilter: ColorFilter? = null
+
+    /** The child painter that has been issued [RememberObserver.onRemembered], if any. */
+    private var rememberedPainter: Painter? = null
 
     private var isRemembered = false
     private var rememberJob: Job? = null
@@ -223,7 +233,9 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         isRemembered = true
-        (painter as? RememberObserver)?.onRemembered()
+        // Idempotent: if the current painter was already remembered during composition (preview),
+        // this is a no-op; otherwise it remembers it now.
+        rememberPainter(painter)
         if (rememberJob == null) {
             launchJob()
         }
@@ -233,6 +245,19 @@ class AsyncImagePainter internal constructor(
         if (rememberJob == null) {
             launchJob()
         }
+    }
+
+    /**
+     * Issue [RememberObserver.onRemembered] to [newPainter] (if it is a [RememberObserver]),
+     * forgetting the previously remembered child painter first. This keeps child painters such as
+     * [CrossfadePainter] remembered exactly once across both the preview and on-device code paths,
+     * independent of when [onRemembered] runs.
+     */
+    private fun rememberPainter(newPainter: Painter?) {
+        if (rememberedPainter === newPainter) return
+        (rememberedPainter as? RememberObserver)?.onForgotten()
+        rememberedPainter = newPainter
+        (newPainter as? RememberObserver)?.onRemembered()
     }
 
     private fun launchJob() {
@@ -255,14 +280,16 @@ class AsyncImagePainter internal constructor(
 
     override fun onForgotten() {
         rememberJob = null
-        (painter as? RememberObserver)?.onForgotten()
         isRemembered = false
+        // Balance the onRemembered we issued to the child painter.
+        rememberPainter(null)
     }
 
     override fun onAbandoned() {
         rememberJob = null
-        (painter as? RememberObserver)?.onAbandoned()
         isRemembered = false
+        // Balance the onRemembered we issued to the child painter.
+        rememberPainter(null)
     }
 
     /**
@@ -323,11 +350,12 @@ class AsyncImagePainter internal constructor(
         stateFlow.value = current
         painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
-        // Manually forget and remember the old/new painters. The initial onRemembered
-        // remembers whatever painter is current, so skip that until this painter is remembered.
-        if (isRemembered && previous.painter !== current.painter) {
-            (previous.painter as? RememberObserver)?.onForgotten()
-            (current.painter as? RememberObserver)?.onRemembered()
+        // Manually forget the old painter and remember the new one. This runs while the painter is
+        // active: either after onRemembered on-device, or during composition in a preview (where
+        // onRemembered may never fire). rememberPainter is idempotent, so onRemembered will not
+        // double-notify the child painter.
+        if (isRemembered || previewHandler != null) {
+            rememberPainter(painter)
         }
 
         // Notify the state listener.
