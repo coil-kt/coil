@@ -6,15 +6,14 @@ import android.net.http.UploadDataSink
 import androidx.annotation.RequiresApi
 import coil3.network.NetworkClient
 import coil3.network.NetworkRequest
-import coil3.network.NetworkRequestBody
 import coil3.network.NetworkResponse
+import coil3.network.httpengine.internal.readByteArray
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okio.Buffer
 
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
@@ -153,9 +152,3 @@ private val SAFE_CROSS_ORIGIN_REDIRECT_HEADERS = setOf(
     "pragma",
     "user-agent",
 )
-
-private suspend fun NetworkRequestBody.readByteArray(): ByteArray {
-    val buffer = Buffer()
-    writeTo(buffer)
-    return buffer.readByteArray()
-}
