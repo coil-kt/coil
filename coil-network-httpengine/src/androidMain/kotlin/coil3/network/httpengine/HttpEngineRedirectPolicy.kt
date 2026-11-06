@@ -4,7 +4,7 @@ import coil3.network.NetworkRequest
 import coil3.network.httpengine.internal.DefaultHttpEngineRedirectPolicy
 import okio.IOException
 
-/** Controls which redirects an [HttpEngineNetworkClient] follows. */
+/** Controls which redirects an `HttpEngineNetworkClient` follows. */
 fun interface HttpEngineRedirectPolicy {
 
     /**
