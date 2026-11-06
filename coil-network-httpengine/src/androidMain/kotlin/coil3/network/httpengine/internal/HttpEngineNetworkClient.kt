@@ -31,6 +31,7 @@ internal class HttpEngineNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
+        val requestMillis = clock.now().toEpochMilliseconds()
         val requestBody = request.body?.readByteArray()
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
@@ -39,7 +40,7 @@ internal class HttpEngineNetworkClient(
                 executor = executor,
                 clock = clock,
                 redirectPolicy = redirectPolicy,
-                requestMillis = clock.now().toEpochMilliseconds(),
+                requestMillis = requestMillis,
             )
 
             try {
@@ -100,11 +101,7 @@ internal class HttpEngineNetworkClient(
             }
         }
 
-        return try {
-            block(response)
-        } finally {
-            response.body?.close()
-        }
+        return block(response)
     }
 }
 
