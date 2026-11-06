@@ -6,7 +6,7 @@ plugins {
     id("kotlin-multiplatform")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko)
+addAllMultiplatformTargets()
 multiplatformAndroidLibrary(name = "sample.common") {
     androidResources {
         enable = true
