@@ -17,6 +17,7 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.suspendCancellableCoroutine
+import okio.Buffer
 
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
@@ -31,8 +32,7 @@ internal class HttpEngineNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
-        val requestMillis = clock.now().toEpochMilliseconds()
-        val requestBody = request.body?.readByteArray()
+        val requestBody = request.body?.readBuffer()
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
                 continuation = continuation,
@@ -40,7 +40,6 @@ internal class HttpEngineNetworkClient(
                 executor = executor,
                 clock = clock,
                 redirectPolicy = redirectPolicy,
-                requestMillis = requestMillis,
             )
 
             try {
@@ -59,7 +58,7 @@ internal class HttpEngineNetworkClient(
                         urlBuilder.addHeader("Content-Type", "application/octet-stream")
                     }
                     urlBuilder.setUploadDataProvider(
-                        ByteArrayUploadDataProvider(requestBody),
+                        BufferUploadDataProvider(requestBody),
                         executor,
                     )
                 }
@@ -74,25 +73,19 @@ internal class HttpEngineNetworkClient(
                                 urlRequest.cancel()
                             }
                         }
-                    } catch (_: RuntimeException) {}
+                    } catch (_: Exception) {}
                 }
 
-                try {
-                    executor.execute {
-                        synchronized(requestLock) {
-                            if (!continuation.isActive) return@synchronized
-                            try {
-                                urlRequest.start()
-                            } catch (exception: RuntimeException) {
-                                if (continuation.isActive) {
-                                    continuation.resumeWithException(exception)
-                                }
+                executor.execute {
+                    synchronized(requestLock) {
+                        if (!continuation.isActive) return@synchronized
+                        try {
+                            callback.start(urlRequest)
+                        } catch (exception: Exception) {
+                            if (continuation.isActive) {
+                                continuation.resumeWithException(exception)
                             }
                         }
-                    }
-                } catch (exception: RuntimeException) {
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(exception)
                     }
                 }
             } catch (exception: Exception) {
@@ -107,22 +100,21 @@ internal class HttpEngineNetworkClient(
 }
 
 @RequiresApi(34)
-private class ByteArrayUploadDataProvider(
-    private val data: ByteArray,
+private class BufferUploadDataProvider(
+    private val data: Buffer,
 ) : UploadDataProvider() {
-    private var offset = 0
+    // Buffer.copy() shares the underlying byte arrays.
+    private var remaining = data.copy()
 
-    override fun getLength() = data.size.toLong()
+    override fun getLength() = data.size
 
     override fun read(
         uploadDataSink: UploadDataSink,
         byteBuffer: ByteBuffer,
     ) {
         try {
-            val byteCount = minOf(data.size - offset, byteBuffer.remaining())
-            if (byteCount > 0) {
-                byteBuffer.put(data, offset, byteCount)
-                offset += byteCount
+            while (byteBuffer.hasRemaining() && remaining.size > 0) {
+                remaining.read(byteBuffer)
             }
 
             uploadDataSink.onReadSucceeded(false)
@@ -132,7 +124,7 @@ private class ByteArrayUploadDataProvider(
     }
 
     override fun rewind(uploadDataSink: UploadDataSink) {
-        offset = 0
+        remaining = data.copy()
         uploadDataSink.onRewindSucceeded()
     }
 }
