@@ -109,36 +109,37 @@ class HttpEngineNetworkClient(
             response.body?.close()
         }
     }
+}
 
-    private class ByteArrayUploadDataProvider(
-        private val data: ByteArray,
-    ) : UploadDataProvider() {
+@RequiresApi(34)
+private class ByteArrayUploadDataProvider(
+    private val data: ByteArray,
+) : UploadDataProvider() {
 
-        private var offset = 0
+    private var offset = 0
 
-        override fun getLength(): Long = data.size.toLong()
+    override fun getLength() = data.size.toLong()
 
-        override fun read(
-            uploadDataSink: UploadDataSink,
-            byteBuffer: ByteBuffer,
-        ) {
-            try {
-                val byteCount = minOf(data.size - offset, byteBuffer.remaining())
-                if (byteCount > 0) {
-                    byteBuffer.put(data, offset, byteCount)
-                    offset += byteCount
-                }
-
-                uploadDataSink.onReadSucceeded(false)
-            } catch (e: Exception) {
-                uploadDataSink.onReadError(e)
+    override fun read(
+        uploadDataSink: UploadDataSink,
+        byteBuffer: ByteBuffer,
+    ) {
+        try {
+            val byteCount = minOf(data.size - offset, byteBuffer.remaining())
+            if (byteCount > 0) {
+                byteBuffer.put(data, offset, byteCount)
+                offset += byteCount
             }
-        }
 
-        override fun rewind(uploadDataSink: UploadDataSink) {
-            offset = 0
-            uploadDataSink.onRewindSucceeded()
+            uploadDataSink.onReadSucceeded(false)
+        } catch (e: Exception) {
+            uploadDataSink.onReadError(e)
         }
+    }
+
+    override fun rewind(uploadDataSink: UploadDataSink) {
+        offset = 0
+        uploadDataSink.onRewindSucceeded()
     }
 }
 
