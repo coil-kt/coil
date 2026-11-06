@@ -177,7 +177,6 @@ fun Project.setupDokka(
             failOnWarning.set(true)
             suppressInheritedMembers.set(true)
         }
-        val jvmSourceSets = dokkaSourceSets.matching { it.name == "jvmMain" }
         dokkaSourceSets.configureEach {
             jdkVersion.set(8)
             skipDeprecated.set(true)
@@ -188,6 +187,7 @@ fun Project.setupDokka(
 
             // Shared JVM source sets can get KLIB metadata instead of JVM dependency JARs.
             if (name != "jvmMain" && name != "androidMain") {
+                val jvmSourceSets = dokkaSourceSets.matching { it.name == "jvmMain" }
                 classpath.from(
                     analysisPlatform.map { platform ->
                         if (platform == KotlinPlatform.JVM) {
