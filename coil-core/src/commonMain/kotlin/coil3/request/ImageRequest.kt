@@ -558,7 +558,7 @@ class ImageRequest private constructor(
 
         /**
          * Set the scaling algorithm that will be used to fit/fill the image into the size provided
-         * by [sizeResolver].
+         * by the [SizeResolver].
          */
         fun scale(scale: Scale) = apply {
             this.scale = scale

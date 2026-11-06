@@ -11,7 +11,6 @@ import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
 import coil3.size.SizeResolver
-import coil3.transition.NoneTransition
 import coil3.transition.Transition
 import coil3.transition.TransitionTarget
 
@@ -64,7 +63,7 @@ actual abstract class EventListener : ImageRequest.Listener {
     /**
      * Called before [Transition.transition].
      *
-     * This is skipped if [transition] is a [NoneTransition]
+     * This is skipped if [transition] comes from [Transition.Factory.NONE]
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     open fun transitionStart(request: ImageRequest, transition: Transition) {}
@@ -72,7 +71,7 @@ actual abstract class EventListener : ImageRequest.Listener {
     /**
      * Called after [Transition.transition].
      *
-     * This is skipped if [transition] is a [NoneTransition]
+     * This is skipped if [transition] comes from [Transition.Factory.NONE]
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     open fun transitionEnd(request: ImageRequest, transition: Transition) {}

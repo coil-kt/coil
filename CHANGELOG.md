@@ -970,7 +970,7 @@ Changes since `1.0.0-rc3`:
 ## [1.0.0-rc2] - September 3, 2020
 
 - **This release requires Kotlin 1.4.0 or above.**
-- All the changes present in [0.13.0](#0130---september-3-2020).
+- All the changes present in [0.13.0](#0130-september-3-2020).
 - Depend on the base Kotlin `stdlib` instead of `stdlib-jdk8`.
 
 ## [0.13.0] - September 3, 2020

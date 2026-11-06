@@ -185,6 +185,20 @@ fun Project.setupDokka(
                 analysisPlatform.set(KotlinPlatform.JVM)
             }
 
+            // Shared JVM source sets can get KLIB metadata instead of JVM dependency JARs.
+            if (name != "jvmMain" && name != "androidMain") {
+                val jvmSourceSets = dokkaSourceSets.matching { it.name == "jvmMain" }
+                classpath.from(
+                    analysisPlatform.map { platform ->
+                        if (platform == KotlinPlatform.JVM) {
+                            jvmSourceSets.map { it.classpath }
+                        } else {
+                            emptyList()
+                        }
+                    },
+                )
+            }
+
             // Suppress the 'main' source set for non-multiplatform Android
             // libraries to avoid conflicting with the 'release' source set.
             // https://github.com/Kotlin/dokka/issues/3701

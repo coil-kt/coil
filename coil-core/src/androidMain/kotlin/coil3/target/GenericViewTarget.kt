@@ -14,7 +14,7 @@ import coil3.transition.TransitionTarget
  * An opinionated [ViewTarget] that simplifies updating the [Drawable] attached to a [View]
  * and supports automatically starting and stopping animated [Drawable]s.
  *
- * If you need custom behaviour that this class doesn't support it's recommended
+ * If you need custom behavior that this class doesn't support it's recommended
  * to implement [ViewTarget] directly.
  */
 abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, DefaultLifecycleObserver {
@@ -22,7 +22,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
     private var isStarted = false
 
     /**
-     * The current [Drawable] attached to [view].
+     * The current [Drawable] attached to [ViewTarget.view].
      */
     abstract override var drawable: Drawable?
 

@@ -10,7 +10,7 @@ import kotlin.jvm.JvmField
 
 /**
  * A [Decoder] that ignores the [SourceFetchResult] and always returns the [Image] returned by
- * [imageFactory].
+ * `imageFactory`.
  *
  * This is useful for skipping the decoding step, for instance when you only want to preload to disk
  * and do not want to decode the image into memory.
