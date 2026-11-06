@@ -23,6 +23,7 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
+/** Creates a fetcher backed by the shared, process-wide [HttpEngine]. */
 @JvmName("factory")
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
@@ -94,7 +95,7 @@ private class HttpEngineFetcherFactory(
         NetworkFetcher.Factory(
             networkClient = {
                 HttpEngineNetworkClient(
-                    httpEngine = HttpEngine.Builder(context).build(),
+                    httpEngine = sharedHttpEngine.get(context),
                     executor = executor,
                     clock = clock,
                     redirectPolicy = redirectPolicy,
@@ -117,5 +118,11 @@ private class HttpEngineFetcherFactory(
 
     private fun isApplicable(data: Uri): Boolean {
         return data.scheme == "http" || data.scheme == "https"
+    }
+
+    private companion object {
+        private val sharedHttpEngine = singleParameterLazy { context: Context ->
+            HttpEngine.Builder(context).build()
+        }
     }
 }
