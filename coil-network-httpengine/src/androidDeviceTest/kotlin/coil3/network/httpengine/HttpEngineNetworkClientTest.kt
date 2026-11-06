@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
+import okio.BufferedSink
 import okio.ByteString.Companion.toByteString
 import okio.ForwardingSink
 import okio.IOException
@@ -51,13 +52,26 @@ class HttpEngineNetworkClientTest {
 
             val sent = Instant.parse("2026-01-01T00:00:00Z")
             val received = Instant.parse("2026-01-01T00:00:01Z")
+            var bodyWritten = false
             val clock = object : Clock {
                 private val times = listOf(sent, received).iterator()
 
-                override fun now() = times.next()
+                override fun now(): Instant {
+                    check(bodyWritten)
+                    return times.next()
+                }
             }
             val client = HttpEngineNetworkClient(engine, executor, clock)
-            val request = NetworkRequest(server.url("/").toString())
+            val request = NetworkRequest(
+                url = server.url("/").toString(),
+                method = "POST",
+                body = object : NetworkRequestBody {
+                    override suspend fun writeTo(sink: BufferedSink) {
+                        sink.writeUtf8("request")
+                        bodyWritten = true
+                    }
+                },
+            )
 
             client.executeRequest(request) {
                 it.body!!.writeTo(Buffer())
@@ -77,7 +91,7 @@ class HttpEngineNetworkClientTest {
         val executor = Executors.newFixedThreadPool(4)
         val engine = HttpEngine.Builder(context).build()
         try {
-            val expectedBody = ByteArray(32 * 1024) { it.toByte() }
+            val expectedBody = ByteArray(128 * 1024) { it.toByte() }
             server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
             server.start()
 
@@ -104,7 +118,7 @@ class HttpEngineNetworkClientTest {
         val executor = Executors.newFixedThreadPool(4)
         val engine = HttpEngine.Builder(context).build()
         try {
-            val expectedBody = ByteArray(32 * 1024 + 37) { (it * 31).toByte() }
+            val expectedBody = ByteArray(128 * 1024 + 37) { (it * 31).toByte() }
             server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
             server.start()
 
@@ -314,7 +328,7 @@ class HttpEngineNetworkClientTest {
             )
             server.enqueue(MockResponse().setBody("ok"))
 
-            val requestBody = "redirect-body".encodeToByteArray()
+            val requestBody = kotlin.random.Random(0).nextBytes(64 * 1024 + 37)
             val request = NetworkRequest(
                 url = server.url("/redirect").toString(),
                 method = "POST",

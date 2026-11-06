@@ -31,9 +31,14 @@ internal class HttpEngineUrlRequestCallback(
     private val executor: Executor,
     private val clock: Clock,
     private val redirectPolicy: HttpEngineRedirectPolicy,
-    private val requestMillis: Long,
 ) : UrlRequest.Callback {
-    private var responseBody: HttpEngineResponseBody? = null
+    @Volatile private var requestMillis = 0L
+    @Volatile private var responseBody: HttpEngineResponseBody? = null
+
+    fun start(request: UrlRequest) {
+        requestMillis = clock.now().toEpochMilliseconds()
+        request.start()
+    }
 
     override fun onRedirectReceived(
         request: UrlRequest,
@@ -62,22 +67,21 @@ internal class HttpEngineUrlRequestCallback(
         request: UrlRequest,
         info: UrlResponseInfo,
     ) {
-        val body = HttpEngineResponseBody(request, executor)
-        responseBody = body
-
         val headersBuilder = NetworkHeaders.Builder()
         for ((key, value) in info.headers.asList) {
             headersBuilder.add(key, value)
         }
 
+        val responseBody = HttpEngineResponseBody(request, executor)
         val networkResponse = NetworkResponse(
             code = info.httpStatusCode,
             requestMillis = requestMillis,
             responseMillis = clock.now().toEpochMilliseconds(),
             headers = headersBuilder.build(),
-            body = body,
+            body = responseBody,
             delegate = info,
         )
+        this.responseBody = responseBody
 
         continuation.resume(networkResponse) { _, value, _ ->
             value.body?.close()
@@ -103,19 +107,14 @@ internal class HttpEngineUrlRequestCallback(
         request: UrlRequest,
         info: UrlResponseInfo?,
         error: HttpException,
-    ) {
-        if (continuation.isActive) {
-            continuation.resumeWithException(error)
-        } else {
-            responseBody?.onFailed(error)
-        }
-    }
+    ) = fail(error)
 
     override fun onCanceled(
         request: UrlRequest,
         info: UrlResponseInfo?,
-    ) {
-        val exception = IOException("HttpEngine request canceled")
+    ) = fail(IOException("HttpEngine request canceled"))
+
+    private fun fail(exception: IOException) {
         if (continuation.isActive) {
             continuation.resumeWithException(exception)
         } else {
@@ -189,6 +188,6 @@ private class HttpEngineResponseBody(
     }
 
     private companion object {
-        private const val BUFFER_SIZE = 16 * 1024
+        private const val BUFFER_SIZE = 64 * 1024
     }
 }
