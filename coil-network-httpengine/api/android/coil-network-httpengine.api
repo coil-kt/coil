@@ -5,7 +5,10 @@ public final class coil3/network/httpengine/HttpEngineNetworkClient : coil3/netw
 }
 
 public final class coil3/network/httpengine/HttpEngineNetworkFetcher {
+	public static final fun asNetworkClient (Landroid/net/http/HttpEngine;)Lcoil3/network/NetworkClient;
 	public static final fun factory (Landroid/net/http/HttpEngine;Ljava/util/concurrent/Executor;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Lcoil3/fetch/Fetcher$Factory;
+	public static final fun factory (Ljava/util/concurrent/Executor;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Lcoil3/fetch/Fetcher$Factory;
 	public static synthetic fun factory$default (Landroid/net/http/HttpEngine;Ljava/util/concurrent/Executor;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcoil3/fetch/Fetcher$Factory;
+	public static synthetic fun factory$default (Ljava/util/concurrent/Executor;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcoil3/fetch/Fetcher$Factory;
 }
 

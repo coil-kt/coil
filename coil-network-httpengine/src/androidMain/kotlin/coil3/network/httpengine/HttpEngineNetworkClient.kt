@@ -13,13 +13,15 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
 class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
-    private val executor: Executor,
+    private val executor: Executor = Dispatchers.IO.asExecutor(),
     private val clock: Clock = Clock.System,
 ) : NetworkClient {
 
@@ -27,6 +29,7 @@ class HttpEngineNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
+        val requestBody = request.body?.readByteArray()
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
                 continuation = continuation,
@@ -51,7 +54,6 @@ class HttpEngineNetworkClient(
                     }
                 }
 
-                val requestBody = request.body?.readByteArray()
                 if (requestBody != null) {
                     if (request.headers["Content-Type"] == null) {
                         urlBuilder.addHeader("Content-Type", "application/octet-stream")
@@ -111,7 +113,6 @@ class HttpEngineNetworkClient(
 private class ByteArrayUploadDataProvider(
     private val data: ByteArray,
 ) : UploadDataProvider() {
-
     private var offset = 0
 
     override fun getLength() = data.size.toLong()
