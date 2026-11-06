@@ -1,10 +1,13 @@
 package coil3.composescreenshot
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,10 +21,12 @@ import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.compose.rememberAsyncImagePainter
 import coil3.test.composescreenshot.R
+import com.android.tools.screenshot.PreviewTest
 
 @OptIn(ExperimentalCoilApi::class)
 class PreviewScreenshots {
@@ -91,6 +96,40 @@ class PreviewScreenshots {
                 imageLoader = imageLoader,
                 modifier = Modifier.fillMaxSize(0.5f),
             )
+        }
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/3001 */
+    @PreviewTest
+    @Preview(name = "1 - Light", device = Devices.PIXEL, showBackground = true)
+    @Preview(
+        name = "2 - Dark",
+        device = Devices.PIXEL,
+        showBackground = true,
+        uiMode = Configuration.UI_MODE_NIGHT_YES,
+    )
+    @Preview(name = "3 - Large", device = Devices.PIXEL, showBackground = true, fontScale = 2f)
+    @Composable
+    fun stateGatedPreview() {
+        val context = LocalContext.current
+        val imageLoader = remember { ImageLoader(context) }
+
+        CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+            val painter = rememberAsyncImagePainter(
+                model = "https://example.com/image.jpg",
+                imageLoader = imageLoader,
+            )
+            val state by painter.state.collectAsState()
+            if (state is AsyncImagePainter.State.Success) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    contentScale = ContentScale.None,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                Box(Modifier.fillMaxSize())
+            }
         }
     }
 }

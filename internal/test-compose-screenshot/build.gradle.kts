@@ -26,6 +26,7 @@ dependencies {
     testImplementation(libs.bundles.test.jvm)
 
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+    screenshotTestImplementation(libs.androidx.screenshot.validation.api)
 }
 
 tasks.withType<PreviewScreenshotUpdateTask>().configureEach {

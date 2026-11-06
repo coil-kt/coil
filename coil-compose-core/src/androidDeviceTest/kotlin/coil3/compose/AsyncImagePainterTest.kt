@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.BitmapImage
+import coil3.ColorImage
 import coil3.EventListener
 import coil3.Extras
 import coil3.ImageLoader
@@ -61,6 +63,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -524,6 +527,84 @@ class AsyncImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.red_rectangle)
+    }
+
+    @Test
+    fun previewStateIsSuccessOnFirstRead() {
+        val previewHandler = AsyncImagePreviewHandler {
+            ColorImage(Color.Red.toArgb(), width = 100, height = 100)
+        }
+        var firstState: State? = null
+
+        composeTestRule.setContent {
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+                    val painter = rememberAsyncImagePainter(
+                        model = "https://example.com/image.jpg",
+                        imageLoader = imageLoader,
+                    )
+                    val state by painter.state.collectAsState()
+                    if (firstState == null) firstState = state
+                    if (state is State.Success) {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                        )
+                    } else {
+                        Box(Modifier.size(64.dp))
+                    }
+                }
+            }
+        }
+
+        assertIs<State.Success>(firstState)
+        composeTestRule.waitForIdle()
+        assertEquals(0, requestTracker.startedRequests)
+    }
+
+    @Test
+    fun suspendingPreviewHandlerRunsOnce() {
+        var calls = 0
+        val gate = CompletableDeferred<Unit>()
+        val previewHandler = AsyncImagePreviewHandler {
+            calls++
+            gate.await()
+            ColorImage(Color.Blue.toArgb(), width = 100, height = 100)
+        }
+        var painter: AsyncImagePainter? = null
+        var firstState: State? = null
+
+        composeTestRule.setContent {
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+                    val current = rememberAsyncImagePainter(
+                        model = "https://example.com/image.jpg",
+                        imageLoader = imageLoader,
+                    )
+                    painter = current
+                    val state by current.state.collectAsState()
+                    if (firstState == null) firstState = state
+                    if (state is State.Success) {
+                        Image(
+                            painter = current,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                        )
+                    } else {
+                        Box(Modifier.size(64.dp))
+                    }
+                }
+            }
+        }
+
+        assertIs<State.Empty>(firstState)
+        assertEquals(1, calls)
+        gate.complete(Unit)
+        composeTestRule.waitForIdle()
+        assertIs<State.Success>(painter?.state?.value)
+        assertEquals(1, calls)
+        assertEquals(0, requestTracker.startedRequests)
     }
 
     @Test
