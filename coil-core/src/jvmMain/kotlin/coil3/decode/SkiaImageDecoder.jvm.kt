@@ -11,7 +11,7 @@ internal actual suspend fun decodeBitmap(
 ): DecodeResult = decodeBitmapSync(options, bytes)
 
 internal actual fun tryMakeData(source: ImageSource): Data? {
-    if (source is FileImageSource && source.fileSystem == FileSystem.SYSTEM) {
+    if (source is FileImageSource && source.fileSystem === FileSystem.SYSTEM) {
         return Data.makeFromFileName("${source.file}")
     }
     return null
