@@ -22,20 +22,22 @@ import coil3.util.forEachIndices
 import kotlin.math.roundToInt
 
 /**
- * A [Drawable] that crossfades from [CrossfadeDrawable.start] to [CrossfadeDrawable.end].
+ * A [Drawable] that crossfades from [start][CrossfadeDrawable.start] to [end][CrossfadeDrawable.end].
  *
- * NOTE: The animation can only be executed once as the start
+ * NOTE: The animation can only be executed once as the [start][CrossfadeDrawable.start]
  * drawable is dereferenced at the end of the transition.
  *
  * @param start The [Drawable] to crossfade from.
  * @param end The [Drawable] to crossfade to.
- * @param scale The scaling algorithm for the start and end drawables.
+ * @param scale The scaling algorithm for [start][CrossfadeDrawable.start] and
+ *  [end][CrossfadeDrawable.end].
  * @param durationMillis The duration of the crossfade animation.
  * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
  * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1
- *  if `start` **and** `end` return -1 for that dimension. If false, the intrinsic width/height will
- *  be -1 if `start` **or** `end` return -1 for that dimension. This is useful for views that
- *  require an exact intrinsic size to scale the drawable.
+ *  if [start][CrossfadeDrawable.start] **and** [end][CrossfadeDrawable.end] return -1 for that
+ *  dimension. If false, the intrinsic width/height will be -1 if [start][CrossfadeDrawable.start]
+ *  **or** [end][CrossfadeDrawable.end] return -1 for that dimension. This is useful for views
+ *  that require an exact intrinsic size to scale the drawable.
  */
 class CrossfadeDrawable @JvmOverloads constructor(
     start: Drawable?,
