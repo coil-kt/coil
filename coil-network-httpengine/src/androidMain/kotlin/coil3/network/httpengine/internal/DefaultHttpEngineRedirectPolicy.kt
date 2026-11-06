@@ -42,7 +42,11 @@ internal class DefaultHttpEngineRedirectPolicy : HttpEngineRedirectPolicy {
         return Origin(scheme, host, port)
     }
 
-    private data class Origin(val scheme: String, val host: String, val port: Int)
+    private data class Origin(
+        val scheme: String,
+        val host: String,
+        val port: Int,
+    )
 }
 
 // Treat unknown headers as potentially sensitive because they may carry credentials.
