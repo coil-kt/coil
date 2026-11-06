@@ -1,4 +1,4 @@
-package coil3.network.httpengine
+package coil3.network.httpengine.internal
 
 import android.net.http.HttpException
 import android.net.http.UrlRequest
@@ -8,6 +8,7 @@ import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
+import coil3.network.httpengine.HttpEngineRedirectPolicy
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
@@ -32,7 +33,6 @@ internal class HttpEngineUrlRequestCallback(
     private val redirectPolicy: HttpEngineRedirectPolicy,
     private val requestMillis: Long,
 ) : UrlRequest.Callback {
-
     private var responseBody: HttpEngineResponseBody? = null
 
     override fun onRedirectReceived(

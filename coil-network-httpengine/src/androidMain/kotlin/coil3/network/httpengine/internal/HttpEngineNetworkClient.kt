@@ -1,4 +1,4 @@
-package coil3.network.httpengine
+package coil3.network.httpengine.internal
 
 import android.net.http.HttpEngine
 import android.net.http.UploadDataProvider
@@ -7,9 +7,10 @@ import androidx.annotation.RequiresApi
 import coil3.network.NetworkClient
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
-import coil3.network.httpengine.internal.readByteArray
+import coil3.network.httpengine.HttpEngineRedirectPolicy
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
+import kotlin.collections.iterator
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -19,7 +20,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
-class HttpEngineNetworkClient(
+internal class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
     private val executor: Executor = Dispatchers.IO.asExecutor(),
     private val clock: Clock = Clock.System,

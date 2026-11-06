@@ -5,6 +5,7 @@ import androidx.test.filters.SdkSuppress
 import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
 import coil3.network.NetworkRequestBody
+import coil3.network.httpengine.internal.HttpEngineNetworkClient
 import coil3.test.utils.context
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.SECONDS
