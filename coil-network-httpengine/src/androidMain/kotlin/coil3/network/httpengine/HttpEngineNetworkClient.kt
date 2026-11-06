@@ -23,6 +23,7 @@ class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
     private val executor: Executor = Dispatchers.IO.asExecutor(),
     private val clock: Clock = Clock.System,
+    private val redirectPolicy: HttpEngineRedirectPolicy = HttpEngineRedirectPolicy.DEFAULT,
 ) : NetworkClient {
 
     override suspend fun <T> executeRequest(
@@ -33,14 +34,11 @@ class HttpEngineNetworkClient(
         val response = suspendCancellableCoroutine { continuation ->
             val callback = HttpEngineUrlRequestCallback(
                 continuation = continuation,
+                networkRequest = request,
                 executor = executor,
-                initialUrl = request.url,
-                hasSensitiveRequestData = request.body != null ||
-                    request.headers.asMap().keys.any { header ->
-                        header !in SAFE_CROSS_ORIGIN_REDIRECT_HEADERS
-                    },
-                requestMillis = clock.now().toEpochMilliseconds(),
                 clock = clock,
+                redirectPolicy = redirectPolicy,
+                requestMillis = clock.now().toEpochMilliseconds(),
             )
 
             try {
@@ -139,14 +137,3 @@ private class ByteArrayUploadDataProvider(
         uploadDataSink.onRewindSucceeded()
     }
 }
-
-// Headers that are safe to forward to a different origin. Treat unknown/custom headers as
-// potentially sensitive because they may carry credentials.
-private val SAFE_CROSS_ORIGIN_REDIRECT_HEADERS = setOf(
-    "accept",
-    "accept-encoding",
-    "accept-language",
-    "cache-control",
-    "pragma",
-    "user-agent",
-)
