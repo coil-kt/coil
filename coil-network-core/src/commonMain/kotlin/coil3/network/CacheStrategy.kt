@@ -30,7 +30,7 @@ interface CacheStrategy {
         val response: NetworkResponse?
 
         /**
-         * Launch a new network [request].
+         * Launch a new [NetworkRequest].
          */
         constructor(request: NetworkRequest) {
             this.request = request
@@ -38,7 +38,7 @@ interface CacheStrategy {
         }
 
         /**
-         * Use the [response]'s body as the [ImageSource].
+         * Use the [NetworkResponse]'s body as the [ImageSource].
          */
         constructor(response: NetworkResponse) {
             this.request = null
@@ -67,7 +67,7 @@ interface CacheStrategy {
         val response: NetworkResponse?
 
         /**
-         * Write [response] to the disk cache.
+         * Write the [NetworkResponse] to the disk cache.
          * Set [NetworkResponse.body] to `null` to skip writing the response body.
          */
         constructor(response: NetworkResponse) {

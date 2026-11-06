@@ -207,7 +207,7 @@ class FakeImageLoaderEngine private constructor(
 
         /**
          * Set a callback to modify an incoming [ImageRequest] before it's handled by
-         * the [interceptors].
+         * the [Interceptor]s.
          *
          * By default, [FakeImageLoaderEngine] uses this callback to clear an [ImageRequest]'s
          * transition and setting this callback replaces that behaviour.

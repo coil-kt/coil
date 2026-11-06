@@ -101,6 +101,7 @@ allprojects {
     extensions.configure<SpotlessExtension> {
         kotlin {
             target("**/*.kt", "**/*.kts")
+            targetExclude("docs/api/**")
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(ktlintRules)
             endWithNewline()
             leadingTabsToSpaces()

@@ -22,7 +22,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
     private var isStarted = false
 
     /**
-     * The current [Drawable] attached to [view].
+     * The current [Drawable] attached to [ViewTarget.view].
      */
     abstract override var drawable: Drawable?
 
