@@ -25,6 +25,7 @@ kotlin {
         androidMain {
             dependencies {
                 api(projects.coilNetworkOkhttp)
+                api(projects.coilNetworkHttpengine)
                 api(projects.coilGif)
                 api(projects.coilVideo)
                 api(libs.androidx.core)
