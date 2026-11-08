@@ -23,7 +23,6 @@ import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
-/** Creates a fetcher backed by the shared, process-wide [HttpEngine]. */
 @JvmName("factory")
 @RequiresApi(34)
 @OptIn(ExperimentalTime::class)
