@@ -7,6 +7,7 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkRequestBody
 import coil3.network.httpengine.internal.HttpEngineNetworkClient
 import coil3.test.utils.context
+import java.io.File
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
@@ -31,8 +32,10 @@ import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString.Companion.toByteString
+import okio.FileSystem
 import okio.ForwardingSink
 import okio.IOException
+import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
@@ -133,6 +136,34 @@ class HttpEngineNetworkClientTest {
             val actualBody = fileSystem.read(path) { readByteArray() }
             assertContentEquals(expectedBody, actualBody)
         } finally {
+            engine.shutdown()
+            executor.shutdownNow()
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun responseBodyCanOverwriteASystemFile() = runTest {
+        // Exercise the FileSystem.SYSTEM optimization that writes directly to a FileChannel.
+        val server = MockWebServer()
+        val executor = Executors.newFixedThreadPool(4)
+        val engine = HttpEngine.Builder(context).build()
+        val path = File.createTempFile("httpengine", ".bin", context.cacheDir).toOkioPath()
+        try {
+            server.start()
+            val client = HttpEngineNetworkClient(engine, executor)
+            val request = NetworkRequest(server.url("/").toString())
+            for (size in listOf(128 * 1024 + 37, 37, 0)) {
+                val expectedBody = ByteArray(size) { (it * 31).toByte() }
+                server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
+                FileSystem.SYSTEM.write(path) { write(ByteArray(size + 1024)) }
+
+                client.executeRequest(request) { it.body!!.writeTo(FileSystem.SYSTEM, path) }
+
+                assertContentEquals(expectedBody, FileSystem.SYSTEM.read(path) { readByteArray() })
+            }
+        } finally {
+            FileSystem.SYSTEM.delete(path)
             engine.shutdown()
             executor.shutdownNow()
             server.shutdown()

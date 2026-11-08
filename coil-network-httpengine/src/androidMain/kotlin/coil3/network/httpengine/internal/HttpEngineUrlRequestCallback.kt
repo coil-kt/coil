@@ -9,6 +9,7 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
 import coil3.network.httpengine.HttpEngineRedirectPolicy
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
@@ -132,6 +133,25 @@ private class HttpEngineResponseBody(
     private val consumed = atomic(false)
 
     override suspend fun writeTo(sink: BufferedSink) {
+        consume { sink.write(it) }
+    }
+
+    override suspend fun writeTo(fileSystem: FileSystem, path: Path) {
+        if (fileSystem === FileSystem.SYSTEM) {
+            FileOutputStream(path.toFile()).use { output ->
+                val fileChannel = output.channel
+                consume { buffer ->
+                    while (buffer.hasRemaining()) {
+                        fileChannel.write(buffer)
+                    }
+                }
+            }
+        } else {
+            fileSystem.write(path) { writeTo(this) }
+        }
+    }
+
+    private suspend inline fun consume(write: (ByteBuffer) -> Unit) {
         check(consumed.compareAndSet(expect = false, update = true)) {
             "HttpEngine response body can only be read once"
         }
@@ -144,12 +164,8 @@ private class HttpEngineResponseBody(
             result.exceptionOrNull()?.let { throw it }
             val chunk = result.getOrNull() ?: return
             chunk.flip()
-            sink.write(chunk)
+            write(chunk)
         }
-    }
-
-    override suspend fun writeTo(fileSystem: FileSystem, path: Path) {
-        fileSystem.write(path) { writeTo(this) }
     }
 
     override fun close() {
