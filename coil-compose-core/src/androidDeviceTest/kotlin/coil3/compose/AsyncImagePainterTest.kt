@@ -4,6 +4,7 @@ import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +16,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -961,6 +964,45 @@ class AsyncImagePainterTest {
         assertEquals(totalCompositions, compositionCount.load())
         assertEquals(1, requestTracker.startedRequests)
         assertEquals(1, requestTracker.finishedRequests)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/2959 */
+    @Test
+    fun movableContentDoesNotRestartTheRequest() {
+        var moved by mutableStateOf(false)
+        val states = mutableListOf<State>()
+
+        composeTestRule.setContent {
+            Box(modifier = Modifier.size(100.dp)) {
+                val content = remember {
+                    movableContentOf {
+                        AsyncImage(
+                            model = "https://example.com/image",
+                            imageLoader = imageLoader,
+                            contentDescription = null,
+                            onState = { states += it },
+                        )
+                    }
+                }
+                if (moved) {
+                    Spacer(modifier = Modifier)
+                    content()
+                } else {
+                    content()
+                }
+            }
+        }
+
+        waitForRequestComplete()
+        assertEquals(1, requestTracker.startedRequests)
+        assertIs<State.Success>(states.last())
+
+        // Move the content, which detaches and re-attaches the painter's modifier node.
+        composeTestRule.runOnUiThread { moved = true }
+        composeTestRule.waitForIdle()
+
+        assertEquals(1, requestTracker.startedRequests)
+        assertIs<State.Success>(states.last())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
