@@ -24,9 +24,11 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -307,6 +309,7 @@ class HttpEngineNetworkClientTest {
         val server = MockWebServer()
         val executor = Executors.newSingleThreadExecutor()
         val engine = HttpEngine.Builder(context).build()
+        var engineShutDown = false
         try {
             server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
             server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/blocked"))
@@ -317,30 +320,62 @@ class HttpEngineNetworkClientTest {
             val next = server.url("/next").toString()
             val blocked = server.url("/blocked").toString()
             val request = NetworkRequest(start)
-            val rejection = IOException("Redirect blocked by test policy")
             val hops = mutableListOf<Pair<String, String>>()
             val policy = HttpEngineRedirectPolicy { originalRequest, fromUrl, toUrl ->
                 assertSame(request, originalRequest)
                 hops += fromUrl to toUrl
-                if (toUrl == blocked) throw rejection
+                toUrl != blocked
             }
             val client = HttpEngineNetworkClient(engine, executor, redirectPolicy = policy)
 
-            val failure = assertFailsWith<IOException> {
-                client.executeRequest(request) { it.body!!.writeTo(Buffer()) }
+            withContext(Dispatchers.Unconfined) {
+                assertFailsWith<IOException> {
+                    client.executeRequest(request) { it.body!!.writeTo(Buffer()) }
+                }
+                // Run on the callback thread to catch failures delivered before native teardown.
+                engine.shutdown()
+                engineShutDown = true
             }
 
-            assertSame(rejection, failure)
             assertEquals(listOf(start to next, next to blocked), hops)
             assertEquals(2, server.requestCount)
         } finally {
             try {
-                executor.submit {}.get(5, SECONDS)
-                engine.shutdown()
+                if (!engineShutDown) {
+                    executor.submit {}.get(5, SECONDS)
+                    engine.shutdown()
+                }
             } finally {
                 executor.shutdownNow()
                 server.shutdown()
             }
+        }
+    }
+
+    @Test
+    fun redirectPolicyRuntimeExceptionIsUnwrapped() = runTest {
+        val server = MockWebServer()
+        val executor = Executors.newSingleThreadExecutor()
+        val engine = HttpEngine.Builder(context).build()
+        try {
+            server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
+            server.start()
+
+            val rejection = IllegalStateException("Redirect policy failed")
+            val policy = HttpEngineRedirectPolicy { _, _, _ -> throw rejection }
+            val client = HttpEngineNetworkClient(engine, executor, redirectPolicy = policy)
+
+            val failure = assertFailsWith<IllegalStateException> {
+                client.executeRequest(NetworkRequest(server.url("/").toString())) {
+                    error("Redirect policy returned a response")
+                }
+            }
+
+            assertSame(rejection, failure)
+        } finally {
+            engine.shutdown()
+            executor.shutdownNow()
+            server.shutdown()
         }
     }
 

@@ -1,5 +1,6 @@
 package coil3.network.httpengine.internal
 
+import android.net.http.CallbackException
 import android.net.http.HttpException
 import android.net.http.UrlRequest
 import android.net.http.UrlResponseInfo
@@ -46,22 +47,11 @@ internal class HttpEngineUrlRequestCallback(
         info: UrlResponseInfo,
         newLocationUrl: String,
     ) {
-        try {
-            redirectPolicy.checkRedirect(networkRequest, info.url, newLocationUrl)
-        } catch (exception: IOException) {
-            rejectRedirect(request, exception)
-            return
+        if (redirectPolicy.shouldFollowRedirect(networkRequest, info.url, newLocationUrl)) {
+            request.followRedirect()
+        } else {
+            throw IOException("Redirect rejected by policy")
         }
-        request.followRedirect()
-    }
-
-    private fun rejectRedirect(request: UrlRequest, exception: IOException) {
-        if (continuation.isActive) {
-            continuation.resumeWithException(exception)
-        }
-        try {
-            request.cancel()
-        } catch (_: RuntimeException) {}
     }
 
     override fun onResponseStarted(
@@ -108,14 +98,14 @@ internal class HttpEngineUrlRequestCallback(
         request: UrlRequest,
         info: UrlResponseInfo?,
         error: HttpException,
-    ) = fail(error)
+    ) = fail((error as? CallbackException)?.cause ?: error)
 
     override fun onCanceled(
         request: UrlRequest,
         info: UrlResponseInfo?,
     ) = fail(IOException("HttpEngine request canceled"))
 
-    private fun fail(exception: IOException) {
+    private fun fail(exception: Throwable) {
         if (continuation.isActive) {
             continuation.resumeWithException(exception)
         } else {
@@ -199,7 +189,7 @@ private class HttpEngineResponseBody(
         channel.close()
     }
 
-    fun onFailed(exception: IOException) {
+    fun onFailed(exception: Throwable) {
         channel.close(exception)
     }
 

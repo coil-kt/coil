@@ -5,29 +5,30 @@ import coil3.network.httpengine.HttpEngineRedirectPolicy
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
-import okio.IOException
 
 internal class DefaultHttpEngineRedirectPolicy : HttpEngineRedirectPolicy {
 
-    override fun checkRedirect(request: NetworkRequest, fromUrl: String, toUrl: String) {
+    override fun shouldFollowRedirect(
+        request: NetworkRequest,
+        fromUrl: String,
+        toUrl: String,
+    ): Boolean {
         val from: URI
         val to: URI
         try {
             from = URI(fromUrl)
             to = from.resolve(URI(toUrl)).normalize()
-        } catch (exception: URISyntaxException) {
-            throw IOException("HttpEngine returned an invalid redirect URL", exception)
+        } catch (_: URISyntaxException) {
+            return false
         }
 
         // HttpEngine cannot strip headers or the upload body when following a redirect.
         val hasSensitiveData = request.body != null ||
             request.headers.asMap().keys.any { it !in SAFE_CROSS_ORIGIN_REDIRECT_HEADERS }
-        if (!hasSensitiveData) return
+        if (!hasSensitiveData) return true
 
         val origin = from.origin()
-        if (origin == null || origin != to.origin()) {
-            throw IOException("Refusing cross-origin redirect with sensitive request data")
-        }
+        return origin != null && origin == to.origin()
     }
 
     private fun URI.origin(): Origin? {

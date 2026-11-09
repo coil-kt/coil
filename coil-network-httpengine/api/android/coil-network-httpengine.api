@@ -10,7 +10,7 @@ public final class coil3/network/httpengine/HttpEngineNetworkFetcher {
 public abstract interface class coil3/network/httpengine/HttpEngineRedirectPolicy {
 	public static final field Companion Lcoil3/network/httpengine/HttpEngineRedirectPolicy$Companion;
 	public static final field DEFAULT Lcoil3/network/httpengine/HttpEngineRedirectPolicy;
-	public abstract fun checkRedirect (Lcoil3/network/NetworkRequest;Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun shouldFollowRedirect (Lcoil3/network/NetworkRequest;Ljava/lang/String;Ljava/lang/String;)Z
 }
 
 public final class coil3/network/httpengine/HttpEngineRedirectPolicy$Companion {
