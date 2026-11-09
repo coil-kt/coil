@@ -221,6 +221,19 @@ class UriTest {
         assertNull(uri.fragment)
     }
 
+    /** Regression test for https://github.com/coil-kt/coil/issues/3220. */
+    @Test
+    fun windowsNetworkPath() {
+        val uri = "\\\\192.168.31.68\\Photos\\image.jpg".toUri(separator = "\\")
+        assertNull(uri.scheme)
+        assertNull(uri.authority)
+        assertEquals("//192.168.31.68/Photos/image.jpg", uri.path)
+        assertEquals("\\\\192.168.31.68\\Photos\\image.jpg", uri.filePath)
+        assertEquals(listOf("192.168.31.68", "Photos", "image.jpg"), uri.pathSegments)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
     @Test
     fun multipleSchemeSegments() {
         // This format is used for Compose multiplatform resources on Android/JVM.

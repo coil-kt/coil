@@ -173,7 +173,14 @@ val Uri.filePath: String?
         if (pathSegments.isEmpty()) {
             return null
         } else {
-            val prefix = if (path!!.startsWith(separator)) separator else ""
+            val path = path!!
+            val prefix = when {
+                // Preserve the root of a UNC path (e.g. '\\host\share\image.jpg'), which is
+                // lost if only a single separator is emitted.
+                path.startsWith("//") -> separator + separator
+                path.startsWith(separator) -> separator
+                else -> ""
+            }
             return pathSegments.joinToString(prefix = prefix, separator = separator)
         }
     }
