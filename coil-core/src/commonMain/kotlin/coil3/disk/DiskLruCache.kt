@@ -22,6 +22,7 @@ import coil3.util.deleteContents
 import coil3.util.dispatcher
 import coil3.util.forEachIndices
 import coil3.util.ioCoroutineDispatcher
+import coil3.util.moveFile
 import kotlin.coroutines.CoroutineContext
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
@@ -176,7 +177,7 @@ internal class DiskLruCache(
             if (fileSystem.exists(journalFile)) {
                 fileSystem.delete(journalFileBackup)
             } else {
-                fileSystem.atomicMove(journalFileBackup, journalFile)
+                fileSystem.moveFile(journalFileBackup, journalFile)
             }
         }
 
@@ -347,11 +348,11 @@ internal class DiskLruCache(
         }
 
         if (fileSystem.exists(journalFile)) {
-            fileSystem.atomicMove(journalFile, journalFileBackup)
-            fileSystem.atomicMove(journalFileTmp, journalFile)
+            fileSystem.moveFile(journalFile, journalFileBackup)
+            fileSystem.moveFile(journalFileTmp, journalFile)
             fileSystem.delete(journalFileBackup)
         } else {
-            fileSystem.atomicMove(journalFileTmp, journalFile)
+            fileSystem.moveFile(journalFileTmp, journalFile)
         }
 
         journalWriter = newJournalWriter()
@@ -462,7 +463,7 @@ internal class DiskLruCache(
                 val dirty = entry.dirtyFiles[i]
                 val clean = entry.cleanFiles[i]
                 if (fileSystem.exists(dirty)) {
-                    fileSystem.atomicMove(dirty, clean)
+                    fileSystem.moveFile(dirty, clean)
                 } else {
                     // Ensure every entry is complete.
                     fileSystem.createFile(entry.cleanFiles[i])
