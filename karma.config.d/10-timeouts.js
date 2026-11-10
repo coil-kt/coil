@@ -5,6 +5,7 @@ config.client = config.client || {};
 config.client.mocha = config.client.mocha || {};
 config.client.mocha.timeout = 60000;
 
+config.pingTimeout = 60000;
 config.browserNoActivityTimeout = 600000;
 config.captureTimeout = 600000;
 config.browserDisconnectTimeout = 10000;

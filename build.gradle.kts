@@ -1,3 +1,4 @@
+import coil3.JsWasmTestService
 import coil3.enableComposeMetrics
 import coil3.groupId
 import coil3.publicModules
@@ -53,6 +54,16 @@ dependencies {
     }
 }
 
+val jsWasmTestService = gradle.sharedServices.registerIfAbsent(
+    "jsWasmTests",
+    JsWasmTestService::class,
+) {
+    if (System.getenv("CI").toBoolean()) {
+        // Limit max parallelism to 1 to avoid resource contention on CI.
+        maxParallelUsages.set(1)
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -96,7 +107,7 @@ allprojects {
     extensions.configure<SpotlessExtension> {
         kotlin {
             target("**/*.kt", "**/*.kts")
-            targetExclude("docs/api/**")
+            targetExclude("**/build/**", "docs/api/**")
             ktlint(libs.versions.ktlint.get()).editorConfigOverride(ktlintRules)
             endWithNewline()
             leadingTabsToSpaces()
@@ -140,6 +151,7 @@ allprojects {
 
     // Skiko's runtime files are ESM-only so preload our shim to let Node require them during tests.
     tasks.withType<KotlinJsTest>().configureEach {
+        usesService(jsWasmTestService)
         nodeJsArgs.add("--require")
         val skikoMjsWorkaround = rootProject.layout.projectDirectory
             .file("gradle/nodejs/registerSkikoMjsWorkaround.cjs")
