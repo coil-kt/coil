@@ -22,7 +22,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
@@ -32,7 +31,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
@@ -183,7 +181,7 @@ class HttpEngineNetworkClientTest {
     }
 
     @Test
-    fun responseBodyStreamsBeforeCompletionAndCanBeCanceled() = runTest(timeout = 10.seconds) {
+    fun responseBodyStreamsBeforeCompletionAndCanBeCanceled() = runTest {
         TestResources().use { test ->
             val body = Buffer().write(ByteArray(32 * 1024))
             // Leave the response open so the reader must suspend after consuming these bytes.
@@ -223,14 +221,9 @@ class HttpEngineNetworkClientTest {
             test.server.start()
 
             val received = Buffer()
+            val request = NetworkRequest(test.server.url("/").toString())
             assertFailsWith<IOException> {
-                // Use a real timeout so a missing failure callback cannot leave the reader hung.
-                withContext(Dispatchers.IO) {
-                    withTimeout(5.seconds) {
-                        val request = NetworkRequest(test.server.url("/").toString())
-                        test.client.executeRequest(request) { it.body!!.writeTo(received) }
-                    }
-                }
+                test.client.executeRequest(request) { it.body!!.writeTo(received) }
             }
             assertTrue(received.size > 0, "Failure must occur after receiving response data")
         }

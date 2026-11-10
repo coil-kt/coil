@@ -1,54 +1,67 @@
 package coil3.network.httpengine
 
+import android.net.http.HttpEngine
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
-import coil3.ImageLoader
-import coil3.decode.DataSource
-import coil3.fetch.SourceFetchResult
-import coil3.network.httpengine.internal.HttpEngineNetworkFetcherServiceLoaderTarget
+import coil3.network.ConcurrentRequestStrategy
+import coil3.network.NetworkFetcher
 import coil3.request.Options
+import coil3.test.utils.AbstractNetworkFetcherTest
 import coil3.test.utils.context
 import coil3.toUri
-import coil3.util.ServiceLoaderComponentRegistry
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
+import kotlin.time.ExperimentalTime
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
+import okio.ByteString
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 34)
-class HttpEngineNetworkFetcherTest {
+@OptIn(ExperimentalTime::class)
+class HttpEngineNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
-    @Test
-    fun serviceLoaderFactoryFetchesWithDefaultEngineAndExecutor() = runTest {
-        MockWebServer().use { server ->
-            server.enqueue(MockResponse().setBody("image-data").setHeader("Content-Type", "image/png"))
-            server.start()
-            val imageLoader = ImageLoader.Builder(context).diskCache(null).build()
+    private lateinit var server: MockWebServer
+    private lateinit var engine: HttpEngine
+
+    @BeforeTest
+    override fun before() {
+        super.before()
+        server = MockWebServer().apply { start() }
+        engine = HttpEngine.Builder(context).build()
+    }
+
+    @AfterTest
+    override fun after() {
+        try {
+            super.after()
+        } finally {
             try {
-                val target = ServiceLoaderComponentRegistry.fetchers
-                    .filterIsInstance<HttpEngineNetworkFetcherServiceLoaderTarget>()
-                    .single()
-                val factory = assertNotNull(target.factory())
-                val options = Options(context)
-                assertNull(factory.create("file:///image.png".toUri(), options, imageLoader))
-                val fetcher = assertNotNull(
-                    factory.create(server.url("/image.png").toString().toUri(), options, imageLoader),
-                )
-
-                val result = withContext(Dispatchers.IO) {
-                    assertIs<SourceFetchResult>(fetcher.fetch())
-                }
-                result.source.use { assertEquals("image-data", it.source().readUtf8()) }
-                assertEquals(DataSource.NETWORK, result.dataSource)
-                assertEquals("image/png", result.mimeType)
+                engine.shutdown()
             } finally {
-                imageLoader.shutdown()
+                server.shutdown()
             }
         }
+    }
+
+    override fun url(path: String): String {
+        return server.url(path).toString()
+    }
+
+    override fun newFetcher(
+        path: String,
+        responseBody: ByteString,
+        options: Options,
+        concurrentRequestStrategy: ConcurrentRequestStrategy,
+    ): NetworkFetcher {
+        server.enqueue(MockResponse().setBody(Buffer().write(responseBody)))
+        val factory = HttpEngineNetworkFetcherFactory(
+            httpEngine = engine,
+            concurrentRequestStrategy = { concurrentRequestStrategy },
+        )
+        return assertIs(factory.create(url(path).toUri(), options, imageLoader))
     }
 }

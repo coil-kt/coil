@@ -94,7 +94,7 @@ private class HttpEngineFetcherFactory(
         NetworkFetcher.Factory(
             networkClient = {
                 HttpEngineNetworkClient(
-                    httpEngine = sharedHttpEngine.get(context),
+                    httpEngine = HttpEngine.Builder(context).build(),
                     executor = executor,
                     clock = clock,
                     redirectPolicy = redirectPolicy,
@@ -117,11 +117,5 @@ private class HttpEngineFetcherFactory(
 
     private fun isApplicable(data: Uri): Boolean {
         return data.scheme == "http" || data.scheme == "https"
-    }
-
-    private companion object {
-        private val sharedHttpEngine = singleParameterLazy { context: Context ->
-            HttpEngine.Builder(context).build()
-        }
     }
 }
