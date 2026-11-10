@@ -9,13 +9,16 @@ import coil3.network.httpengine.internal.HttpEngineNetworkClient
 import coil3.test.utils.context
 import java.io.File
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit.SECONDS
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Clock
@@ -29,8 +32,10 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.SocketPolicy
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString.Companion.toByteString
@@ -48,12 +53,9 @@ class HttpEngineNetworkClientTest {
 
     @Test
     fun requestAndResponseTimestampsUseClock() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            server.enqueue(MockResponse().setBody("ok"))
-            server.start()
+        TestResources().use { test ->
+            test.server.enqueue(MockResponse().setBody("ok"))
+            test.server.start()
 
             val sent = Instant.parse("2026-01-01T00:00:00Z")
             val received = Instant.parse("2026-01-01T00:00:01Z")
@@ -66,9 +68,9 @@ class HttpEngineNetworkClientTest {
                     return times.next()
                 }
             }
-            val client = HttpEngineNetworkClient(engine, executor, clock)
+            val client = HttpEngineNetworkClient(test.engine, test.executor, clock)
             val request = NetworkRequest(
-                url = server.url("/").toString(),
+                url = test.server.url("/").toString(),
                 method = "POST",
                 body = object : NetworkRequestBody {
                     override suspend fun writeTo(sink: BufferedSink) {
@@ -83,92 +85,68 @@ class HttpEngineNetworkClientTest {
                 assertEquals(sent.toEpochMilliseconds(), it.requestMillis)
                 assertEquals(received.toEpochMilliseconds(), it.responseMillis)
             }
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
     @Test
     fun responseBodyIsRead() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newFixedThreadPool(4)
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            val expectedBody = ByteArray(128 * 1024) { it.toByte() }
-            server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
-            server.start()
+        TestResources(Executors.newFixedThreadPool(4)).use { test ->
+            val expectedBody = Random(0).nextBytes(128 * 1024 + 37)
+            test.server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
+            test.server.start()
 
-            val client = HttpEngineNetworkClient(engine, executor)
-            val request = NetworkRequest(server.url("/").toString())
+            val request = NetworkRequest(test.server.url("/").toString())
 
-            val response = client.executeRequest(request) {
+            val response = test.client.executeRequest(request) {
                 val buffer = Buffer()
                 it.body!!.writeTo(buffer)
                 buffer.readByteArray()
             }
 
             assertContentEquals(expectedBody, response)
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
     @Test
     fun responseBodyCanBeWrittenToFileSystem() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newFixedThreadPool(4)
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            val expectedBody = ByteArray(128 * 1024 + 37) { (it * 31).toByte() }
-            server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
-            server.start()
+        TestResources(Executors.newFixedThreadPool(4)).use { test ->
+            val expectedBody = Random(0).nextBytes(128 * 1024 + 37)
+            test.server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
+            test.server.start()
 
             val fileSystem = FakeFileSystem()
             val path = "/response.bin".toPath()
-            val request = NetworkRequest(server.url("/").toString())
+            val request = NetworkRequest(test.server.url("/").toString())
 
-            HttpEngineNetworkClient(engine, executor).executeRequest(request) {
+            test.client.executeRequest(request) {
                 it.body!!.writeTo(fileSystem, path)
             }
 
             val actualBody = fileSystem.read(path) { readByteArray() }
             assertContentEquals(expectedBody, actualBody)
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
     @Test
     fun responseBodyCanOverwriteASystemFile() = runTest {
         // Exercise the FileSystem.SYSTEM optimization that writes directly to a FileChannel.
-        val server = MockWebServer()
-        val executor = Executors.newFixedThreadPool(4)
-        val engine = HttpEngine.Builder(context).build()
-        val path = File.createTempFile("httpengine", ".bin", context.cacheDir).toOkioPath()
-        try {
-            server.start()
-            val client = HttpEngineNetworkClient(engine, executor)
-            val request = NetworkRequest(server.url("/").toString())
-            for (size in listOf(128 * 1024 + 37, 37, 0)) {
-                val expectedBody = ByteArray(size) { (it * 31).toByte() }
-                server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
-                FileSystem.SYSTEM.write(path) { write(ByteArray(size + 1024)) }
+        TestResources(Executors.newFixedThreadPool(4)).use { test ->
+            val path = File.createTempFile("httpengine", ".bin", context.cacheDir).toOkioPath()
+            try {
+                test.server.start()
+                val request = NetworkRequest(test.server.url("/").toString())
+                for (size in listOf(128 * 1024 + 37, 37, 0)) {
+                    val expectedBody = Random(0).nextBytes(size)
+                    test.server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
+                    FileSystem.SYSTEM.write(path) { write(ByteArray(size + 1024)) }
 
-                client.executeRequest(request) { it.body!!.writeTo(FileSystem.SYSTEM, path) }
+                    test.client.executeRequest(request) { it.body!!.writeTo(FileSystem.SYSTEM, path) }
 
-                assertContentEquals(expectedBody, FileSystem.SYSTEM.read(path) { readByteArray() })
+                    assertContentEquals(expectedBody, FileSystem.SYSTEM.read(path) { readByteArray() })
+                }
+            } finally {
+                FileSystem.SYSTEM.delete(path)
             }
-        } finally {
-            FileSystem.SYSTEM.delete(path)
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
@@ -193,24 +171,24 @@ class HttpEngineNetworkClientTest {
             tasks.remove().run()
             start.run()
 
-            // Shutdown fails if the request started and is still waiting on its callback.
-            engine.shutdown()
             assertEquals(0, server.requestCount)
         } finally {
-            server.shutdown()
+            try {
+                // Shutdown fails if the request started and is still waiting on its callback.
+                engine.shutdown()
+            } finally {
+                server.shutdown()
+            }
         }
     }
 
     @Test
     fun responseBodyStreamsBeforeCompletionAndCanBeCanceled() = runTest(timeout = 10.seconds) {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
+        TestResources().use { test ->
             val body = Buffer().write(ByteArray(32 * 1024))
             // Leave the response open so the reader must suspend after consuming these bytes.
-            server.enqueue(MockResponse().setBody(body).setHeader("Content-Length", 64 * 1024))
-            server.start()
+            test.server.enqueue(MockResponse().setBody(body).setHeader("Content-Length", 64 * 1024))
+            test.server.start()
 
             val firstWrite = CompletableDeferred<Unit>()
             val sink = object : ForwardingSink(Buffer()) {
@@ -219,88 +197,104 @@ class HttpEngineNetworkClientTest {
                     firstWrite.complete(Unit)
                 }
             }.buffer()
-            val client = HttpEngineNetworkClient(engine, executor)
-            val request = NetworkRequest(server.url("/").toString())
+            val request = NetworkRequest(test.server.url("/").toString())
             val reader = launch {
-                client.executeRequest(request) { it.body!!.writeTo(sink) }
+                test.client.executeRequest(request) { it.body!!.writeTo(sink) }
             }
 
-            firstWrite.await()
-            assertTrue(reader.isActive)
-            reader.cancelAndJoin()
-        } finally {
             try {
-                // Let the cancellation queued by close() run before shutting down the engine.
-                executor.submit {}.get(5, SECONDS)
-                engine.shutdown()
+                firstWrite.await()
+                assertTrue(reader.isActive)
             } finally {
-                executor.shutdownNow()
-                server.shutdown()
+                reader.cancelAndJoin()
             }
         }
     }
 
     @Test
-    fun requestBodyIsUploaded() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            server.enqueue(MockResponse().setBody("ok"))
-            server.start()
-
-            val requestBody = "request-body".encodeToByteArray()
-            val request = NetworkRequest(
-                url = server.url("/").toString(),
-                method = "POST",
-                headers = NetworkHeaders.Builder()
-                    .set("Content-Type", "text/plain")
-                    .build(),
-                body = NetworkRequestBody(requestBody.toByteString()),
+    fun truncatedResponseFailsInsteadOfReturningPartialData() = runTest {
+        TestResources().use { test ->
+            test.server.enqueue(
+                MockResponse()
+                    .setBody(Buffer().write(Random(0).nextBytes(32 * 1024)))
+                    .setHeader("Content-Length", 64 * 1024)
+                    .setSocketPolicy(SocketPolicy.DISCONNECT_AT_END),
             )
+            test.server.start()
 
-            HttpEngineNetworkClient(engine, executor).executeRequest(request) {
-                it.body!!.writeTo(Buffer())
+            val received = Buffer()
+            assertFailsWith<IOException> {
+                // Use a real timeout so a missing failure callback cannot leave the reader hung.
+                withContext(Dispatchers.IO) {
+                    withTimeout(5.seconds) {
+                        val request = NetworkRequest(test.server.url("/").toString())
+                        test.client.executeRequest(request) { it.body!!.writeTo(received) }
+                    }
+                }
             }
+            assertTrue(received.size > 0, "Failure must occur after receiving response data")
+        }
+    }
 
-            val recordedRequest = server.takeRequest()
-            assertEquals("POST", recordedRequest.method)
-            assertEquals("text/plain", recordedRequest.getHeader("Content-Type"))
-            assertContentEquals(requestBody, recordedRequest.body.readByteArray())
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
+    @Test
+    fun requestCanBeCanceledWhileWaitingForHeaders() = runTest {
+        TestResources().use { test ->
+            test.server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            test.server.start()
+
+            val request = NetworkRequest(test.server.url("/").toString())
+            val job = launch(start = CoroutineStart.UNDISPATCHED) {
+                test.client.executeRequest(request) { error("Response was not sent") }
+            }
+            try {
+                assertNotNull(test.server.takeRequest(5, SECONDS))
+            } finally {
+                job.cancelAndJoin()
+            }
+        }
+    }
+
+    @Test
+    fun unreadResponseIsClosedWhenConsumerReturnsOrThrows() = runTest {
+        for (throwFromConsumer in listOf(false, true)) {
+            TestResources().use { test ->
+                test.server.enqueue(MockResponse().setBody("unread"))
+                test.server.start()
+
+                val request = NetworkRequest(test.server.url("/").toString())
+                val failure = IOException("Consumer failed")
+                if (throwFromConsumer) {
+                    val caught = assertFailsWith<IOException> {
+                        test.client.executeRequest(request) { throw failure }
+                    }
+                    assertSame(failure, caught)
+                } else {
+                    assertEquals("result", test.client.executeRequest(request) { "result" })
+                }
+            }
         }
     }
 
     @Test
     fun requestBodyGetsDefaultContentType() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            server.enqueue(MockResponse().setBody("ok"))
-            server.start()
+        TestResources().use { test ->
+            test.server.enqueue(MockResponse().setBody("ok"))
+            test.server.start()
 
             val requestBody = "request-body".encodeToByteArray()
             val request = NetworkRequest(
-                url = server.url("/").toString(),
+                url = test.server.url("/").toString(),
                 method = "POST",
                 body = NetworkRequestBody(requestBody.toByteString()),
             )
 
-            HttpEngineNetworkClient(engine, executor).executeRequest(request) {
+            test.client.executeRequest(request) {
                 it.body!!.writeTo(Buffer())
             }
 
-            val recordedRequest = server.takeRequest()
+            val recordedRequest = assertNotNull(test.server.takeRequest(5, SECONDS))
             assertEquals("application/octet-stream", recordedRequest.getHeader("Content-Type"))
             assertContentEquals(requestBody, recordedRequest.body.readByteArray())
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
@@ -354,49 +348,39 @@ class HttpEngineNetworkClientTest {
 
     @Test
     fun redirectPolicyRuntimeExceptionIsUnwrapped() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
-            server.start()
+        TestResources().use { test ->
+            test.server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
+            test.server.start()
 
             val rejection = IllegalStateException("Redirect policy failed")
             val policy = HttpEngineRedirectPolicy { _, _, _ -> throw rejection }
-            val client = HttpEngineNetworkClient(engine, executor, redirectPolicy = policy)
+            val client = HttpEngineNetworkClient(test.engine, test.executor, redirectPolicy = policy)
 
             val failure = assertFailsWith<IllegalStateException> {
-                client.executeRequest(NetworkRequest(server.url("/").toString())) {
+                client.executeRequest(NetworkRequest(test.server.url("/").toString())) {
                     error("Redirect policy returned a response")
                 }
             }
 
             assertSame(rejection, failure)
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
         }
     }
 
     @Test
     fun requestBodyCanBeRewoundForRedirect() = runTest {
-        val server = MockWebServer()
-        val executor = Executors.newSingleThreadExecutor()
-        val engine = HttpEngine.Builder(context).build()
-        try {
-            server.start()
-            val redirectUrl = server.url("/final")
-            server.enqueue(
+        TestResources().use { test ->
+            test.server.start()
+            val redirectUrl = test.server.url("/final")
+            test.server.enqueue(
                 MockResponse()
                     .setResponseCode(307)
                     .setHeader("Location", redirectUrl),
             )
-            server.enqueue(MockResponse().setBody("ok"))
+            test.server.enqueue(MockResponse().setBody("ok"))
 
-            val requestBody = kotlin.random.Random(0).nextBytes(64 * 1024 + 37)
+            val requestBody = Random(0).nextBytes(64 * 1024 + 37)
             val request = NetworkRequest(
-                url = server.url("/redirect").toString(),
+                url = test.server.url("/redirect").toString(),
                 method = "POST",
                 headers = NetworkHeaders.Builder()
                     .set("Content-Type", "text/plain")
@@ -404,22 +388,42 @@ class HttpEngineNetworkClientTest {
                 body = NetworkRequestBody(requestBody.toByteString()),
             )
 
-            HttpEngineNetworkClient(engine, executor).executeRequest(request) {
+            test.client.executeRequest(request) {
                 val buffer = Buffer()
                 it.body!!.writeTo(buffer)
                 assertEquals("ok", buffer.readUtf8())
             }
 
-            val firstRequest = server.takeRequest()
-            val secondRequest = server.takeRequest()
+            val firstRequest = assertNotNull(test.server.takeRequest(5, SECONDS))
+            val secondRequest = assertNotNull(test.server.takeRequest(5, SECONDS))
             assertEquals("POST", firstRequest.method)
             assertEquals("POST", secondRequest.method)
+            assertEquals("text/plain", firstRequest.getHeader("Content-Type"))
+            assertEquals("text/plain", secondRequest.getHeader("Content-Type"))
             assertContentEquals(requestBody, firstRequest.body.readByteArray())
             assertContentEquals(requestBody, secondRequest.body.readByteArray())
-        } finally {
-            engine.shutdown()
-            executor.shutdownNow()
-            server.shutdown()
+        }
+    }
+
+    private class TestResources(
+        val executor: ExecutorService = Executors.newSingleThreadExecutor(),
+    ) : AutoCloseable {
+        val server = MockWebServer()
+        val engine = HttpEngine.Builder(context).build()
+        val client = HttpEngineNetworkClient(engine, executor)
+
+        override fun close() {
+            try {
+                // Run queued cancellation before shutdown, which rejects active native requests.
+                executor.submit {}.get(5, SECONDS)
+                engine.shutdown()
+            } finally {
+                try {
+                    executor.shutdownNow()
+                } finally {
+                    server.shutdown()
+                }
+            }
         }
     }
 }

@@ -14,11 +14,13 @@ class HttpEngineRedirectPolicyTest {
     private val url = "https://example.com/images/start"
 
     @Test
-    fun sensitiveHeadersCanFollowSameOriginRedirects() {
+    fun sensitiveHeadersRequireSameOriginRedirects() {
         val request = requestWithHeader("Authorization")
 
         assertTrue(policy.shouldFollowRedirect(request, url, "../image.png"))
         assertTrue(policy.shouldFollowRedirect(request, url, "https://EXAMPLE.com:443/image.png"))
+        assertFalse(policy.shouldFollowRedirect(request, url, "https://example.com:8443/image.png"))
+        assertFalse(policy.shouldFollowRedirect(request, url, "http://example.com/image.png"))
     }
 
     @Test
@@ -27,6 +29,13 @@ class HttpEngineRedirectPolicyTest {
         assertTrue(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
 
         assertFalse(policy.shouldFollowRedirect(requestWithHeader("X-Token"), url, destination))
+        val headers = NetworkHeaders.Builder()
+            .set("Accept", "image/*")
+            .set("Authorization", "secret")
+            .build()
+        assertFalse(
+            policy.shouldFollowRedirect(NetworkRequest(url, headers = headers), url, destination),
+        )
         val request = NetworkRequest(url, body = NetworkRequestBody("data".encodeUtf8()))
         assertFalse(policy.shouldFollowRedirect(request, url, destination))
     }
