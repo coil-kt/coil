@@ -10,7 +10,7 @@ import okio.ByteString.Companion.encodeUtf8
 
 class CrossOriginHttpEngineRedirectPolicyTest {
 
-    private val policy = HttpEngineRedirectPolicy.DEFAULT
+    private val policy = CrossOriginHttpEngineRedirectPolicy()
     private val url = "https://example.com/images/start"
 
     @Test
