@@ -8,9 +8,10 @@ To add support for fetching images from the network import **only one of the fol
 implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3") // Only available on Android/JVM.
 implementation("io.coil-kt.coil3:coil-network-ktor2:3.6.3")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.6.3")
+implementation("io.coil-kt.coil3:coil-network-httpengine:3.6.3") // Only available on Android API 34+.
 ```
 
-If you use OkHttp, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
+If you use OkHttp or HttpEngine, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
 
 ## Ktor network engines
 
