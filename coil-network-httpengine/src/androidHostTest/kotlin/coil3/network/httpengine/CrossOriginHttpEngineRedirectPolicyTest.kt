@@ -8,7 +8,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import okio.ByteString.Companion.encodeUtf8
 
-class HttpEngineRedirectPolicyTest {
+class CrossOriginHttpEngineRedirectPolicyTest {
 
     private val policy = HttpEngineRedirectPolicy.DEFAULT
     private val url = "https://example.com/images/start"
@@ -24,7 +24,7 @@ class HttpEngineRedirectPolicyTest {
     }
 
     @Test
-    fun crossOriginRedirectsAllowOnlySafeHeadersAndNoBody() {
+    fun crossOriginRedirectsAllowOnlyAllowedHeadersAndNoBody() {
         val destination = "https://other.example.com/image.png"
         assertTrue(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
 
@@ -43,6 +43,30 @@ class HttpEngineRedirectPolicyTest {
     @Test
     fun malformedRedirectsAreRejectedEvenWithoutSensitiveData() {
         assertFalse(policy.shouldFollowRedirect(NetworkRequest(url), url, "https://[invalid"))
+    }
+
+    @Test
+    fun customAllowedHeadersReplaceDefaultsAndIgnoreCase() {
+        val policy = CrossOriginHttpEngineRedirectPolicy(listOf("X-Token"))
+        val destination = "https://other.example.com/image.png"
+
+        assertTrue(policy.shouldFollowRedirect(requestWithHeader("x-ToKeN"), url, destination))
+        assertFalse(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
+        val request = NetworkRequest(url, body = NetworkRequestBody("data".encodeUtf8()))
+        assertFalse(policy.shouldFollowRedirect(request, url, destination))
+    }
+
+    @Test
+    fun changingTheSuppliedCollectionDoesNotChangeThePolicy() {
+        val headers = mutableListOf("Accept")
+        val policy = CrossOriginHttpEngineRedirectPolicy(headers)
+        val destination = "https://other.example.com/image.png"
+
+        headers.clear()
+        headers.add("Authorization")
+
+        assertTrue(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
+        assertFalse(policy.shouldFollowRedirect(requestWithHeader("Authorization"), url, destination))
     }
 
     private fun requestWithHeader(name: String): NetworkRequest {

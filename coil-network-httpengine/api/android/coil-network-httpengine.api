@@ -1,3 +1,10 @@
+public final class coil3/network/httpengine/CrossOriginHttpEngineRedirectPolicy : coil3/network/httpengine/HttpEngineRedirectPolicy {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Collection;)V
+	public synthetic fun <init> (Ljava/util/Collection;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun shouldFollowRedirect (Lcoil3/network/NetworkRequest;Ljava/lang/String;Ljava/lang/String;)Z
+}
+
 public final class coil3/network/httpengine/HttpEngineNetworkFetcher {
 	public static final fun asNetworkClient (Landroid/net/http/HttpEngine;Ljava/util/concurrent/Executor;Lkotlin/time/Clock;Lcoil3/network/httpengine/HttpEngineRedirectPolicy;)Lcoil3/network/NetworkClient;
 	public static synthetic fun asNetworkClient$default (Landroid/net/http/HttpEngine;Ljava/util/concurrent/Executor;Lkotlin/time/Clock;Lcoil3/network/httpengine/HttpEngineRedirectPolicy;ILjava/lang/Object;)Lcoil3/network/NetworkClient;
