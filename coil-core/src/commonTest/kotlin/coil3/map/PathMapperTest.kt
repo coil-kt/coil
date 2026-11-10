@@ -1,6 +1,5 @@
 package coil3.map
 
-import coil3.filePath
 import coil3.request.Options
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
@@ -25,7 +24,7 @@ class PathMapperTest : RobolectricTest() {
     fun parsesPoundCharacterCorrectly() {
         val path = "/sdcard/fi#le.jpg"
         val file = "/sdcard/fi#le.jpg".toPath()
-        assertEquals(path, mapper.map(file, Options(context)).filePath)
+        assertEquals(path, mapper.map(file, Options(context)).path)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1513 */

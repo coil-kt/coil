@@ -8,7 +8,7 @@ class UriTest {
 
     @Test
     fun network() {
-        val uri = "https://www.example.com/image.jpg?q=jpg#fragment".toUri()
+        val uri = "https://www.example.com/image.jpg?q=jpg#fragment".toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("www.example.com", uri.authority)
         assertEquals("/image.jpg", uri.path)
@@ -20,7 +20,7 @@ class UriTest {
 
     @Test
     fun absolute() {
-        val uri = "/test/absolute/image.jpg#something".toUri()
+        val uri = "/test/absolute/image.jpg#something".toUri(separator = "/")
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("/test/absolute/image.jpg", uri.path)
@@ -32,7 +32,7 @@ class UriTest {
 
     @Test
     fun relative() {
-        val uri = "test/relative/image.jpg#something".toUri()
+        val uri = "test/relative/image.jpg#something".toUri(separator = "/")
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("test/relative/image.jpg", uri.path)
@@ -44,7 +44,7 @@ class UriTest {
 
     @Test
     fun absoluteWithFileScheme() {
-        val uri = "file:///test/absolute/image.jpg#something".toUri()
+        val uri = "file:///test/absolute/image.jpg#something".toUri(separator = "/")
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test/absolute/image.jpg", uri.path)
@@ -56,7 +56,7 @@ class UriTest {
 
     @Test
     fun relativeWithFileScheme() {
-        val uri = "file://test/relative/image.jpg#something".toUri()
+        val uri = "file://test/relative/image.jpg#something".toUri(separator = "/")
         assertEquals("file", uri.scheme)
         // This looks wrong, but is consistent with the URI specification.
         // The authority is always the first path after the scheme and "://".
@@ -70,7 +70,7 @@ class UriTest {
 
     @Test
     fun absoluteFileUriWithoutAuthority() {
-        val uri = "file:/test/image.jpg".toUri()
+        val uri = "file:/test/image.jpg".toUri(separator = "/")
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test/image.jpg", uri.path)
@@ -82,7 +82,7 @@ class UriTest {
 
     @Test
     fun relativeFileUriWithoutAuthority() {
-        val uri = "file:test/image.jpg".toUri()
+        val uri = "file:test/image.jpg".toUri(separator = "/")
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("test/image.jpg", uri.path)
@@ -94,7 +94,7 @@ class UriTest {
 
     @Test
     fun malformed() {
-        val uri = "#something:/test/relative/image.jpg".toUri()
+        val uri = "#something:/test/relative/image.jpg".toUri(separator = "/")
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertNull(uri.path)
@@ -106,7 +106,7 @@ class UriTest {
 
     @Test
     fun veryMalformed() {
-        val uri = "/#02dkfj;anc%%2".toUri()
+        val uri = "/#02dkfj;anc%%2".toUri(separator = "/")
         assertNull(uri.scheme)
         assertNull(uri.authority)
         assertEquals("/", uri.path)
@@ -121,7 +121,7 @@ class UriTest {
         val uri = (
             "https://images.unsplash.com/photo-1550939810-cb345b2f4ad7?ixlib=rb-1.2.1&q=80" +
             "&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4MjM5fQ"
-        ).toUri()
+        ).toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("images.unsplash.com", uri.authority)
         assertEquals("/photo-1550939810-cb345b2f4ad7", uri.path)
@@ -134,7 +134,7 @@ class UriTest {
     @Test
     fun encoded() {
         val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B"
-        val uri = string.toUri()
+        val uri = string.toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國", uri.path)
@@ -148,7 +148,7 @@ class UriTest {
     @Test
     fun encodedSingle() {
         val string = "https://example.com/something%20"
-        val uri = string.toUri()
+        val uri = string.toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/something ", uri.path)
@@ -162,7 +162,7 @@ class UriTest {
     @Test
     fun encodedMalformed() {
         val string = "https://example.com/%E4%B8%8A%E6%B5%B7%2B%E4%B8%AD%E5%9C%8B%"
-        val uri = string.toUri()
+        val uri = string.toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertEquals("/上海+中國%", uri.path)
@@ -175,7 +175,7 @@ class UriTest {
 
     @Test
     fun skipsEmptyPathSegments() {
-        val uri = "file:///test///image.jpg".toUri()
+        val uri = "file:///test///image.jpg".toUri(separator = "/")
         assertEquals("file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/test///image.jpg", uri.path)
@@ -187,7 +187,7 @@ class UriTest {
 
     @Test
     fun noPath() {
-        val uri = "https://example.com?a=b#c".toUri()
+        val uri = "https://example.com?a=b#c".toUri(separator = "/")
         assertEquals("https", uri.scheme)
         assertEquals("example.com", uri.authority)
         assertNull(uri.path)
@@ -224,7 +224,7 @@ class UriTest {
     @Test
     fun multipleSchemeSegments() {
         // This format is used for Compose multiplatform resources on Android/JVM.
-        val uri = "jar:file:/outer/path/test.apk!/internal/path/1.png".toUri()
+        val uri = "jar:file:/outer/path/test.apk!/internal/path/1.png".toUri(separator = "/")
         assertEquals("jar:file", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("/outer/path/test.apk!/internal/path/1.png", uri.path)
@@ -259,7 +259,7 @@ class UriTest {
 
     @Test
     fun ipv6() {
-        val uri = "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/".toUri()
+        val uri = "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/".toUri(separator = "/")
         assertEquals("http", uri.scheme)
         assertEquals("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]", uri.authority)
         assertEquals("/", uri.path)
@@ -271,7 +271,7 @@ class UriTest {
 
     @Test
     fun data() {
-        val uri = "data:image/png;base64,FAKE_DATA".toUri()
+        val uri = "data:image/png;base64,FAKE_DATA".toUri(separator = "/")
         assertEquals("data", uri.scheme)
         assertEquals("", uri.authority)
         assertEquals("image/png;base64,FAKE_DATA", uri.path)
@@ -284,20 +284,20 @@ class UriTest {
     @Test
     fun blobWithHttpOrigin() {
         val string = "blob:http://localhost:8081/a3953f30-e6ef-47b6-8750-731ce8afe0f8"
-        val uri = string.toUri()
+        val uri = string.toUri(separator = "/")
         assertEquals(string, uri.toString())
     }
 
     @Test
     fun blobWithOpaqueOrigin() {
-        val uri = "blob:null/a3953f30-e6ef-47b6-8750-731ce8afe0f8".toUri()
+        val uri = "blob:null/a3953f30-e6ef-47b6-8750-731ce8afe0f8".toUri(separator = "/")
         assertEquals("blob", uri.scheme)
         assertEquals("blob:null/a3953f30-e6ef-47b6-8750-731ce8afe0f8", uri.toString())
     }
 
     @Test
     fun uriCopy() {
-        val uri = "http://localhost/test?q=1".toUri()
+        val uri = "http://localhost/test?q=1".toUri(separator = "/")
         val copiedUri = uri.newBuilder().build()
 
         assertEquals(uri.scheme, copiedUri.scheme)
@@ -327,7 +327,7 @@ class UriTest {
 
     @Test
     fun uriCopyAddsMultipleQueryField() {
-        val uri = "http://localhost/test?".toUri()
+        val uri = "http://localhost/test?".toUri(separator = "/")
         val modifiedUri = uri.newBuilder()
             .query("q=1&q=2&q=3")
             .build()
@@ -337,7 +337,7 @@ class UriTest {
 
     @Test
     fun uriCopyModifiesFields() {
-        val uri = "http://localhost/test?q=1#abc".toUri()
+        val uri = "http://localhost/test?q=1#abc".toUri(separator = "/")
         val modifiedUri = uri.newBuilder()
             .scheme("https")
             .query("q=2")
