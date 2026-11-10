@@ -234,9 +234,9 @@ class UriTest {
         assertNull(uri.fragment)
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/2833 */
     @Test
     fun jarFileUriWithWindowsDriveLetter() {
-        // Regression test for https://github.com/coil-kt/coil/issues/2833.
         val uri = "jar:file:/C:/Users/me/app.jar!/composeResources/img.png".toUri(separator = "\\")
         assertEquals("jar:file", uri.scheme)
         assertEquals("", uri.authority)
