@@ -234,6 +234,21 @@ class UriTest {
         assertNull(uri.fragment)
     }
 
+    @Test
+    fun pathStartingWithColon() {
+        val uri = "custom::value".toUri(separator = "/")
+        assertEquals("custom", uri.scheme)
+        assertEquals(":value", uri.path)
+    }
+
+    @Test
+    fun filePathStartingWithColon() {
+        val uri = "file::/tmp/image.svg".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals(":/tmp/image.svg", uri.path)
+        assertEquals(":/tmp/image.svg", uri.filePath)
+    }
+
     /** Regression test: https://github.com/coil-kt/coil/issues/2833 */
     @Test
     fun jarFileUriWithWindowsDriveLetter() {
