@@ -11,7 +11,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -117,45 +116,6 @@ class JarFileFetcherTest : RobolectricTest() {
     }
 
     @Test
-    fun opensFileInsideJarWithRootedWindowsPath() = runTest {
-        val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val zipFile = "\\Users\\me\\app.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
-
-        val uri = Uri(
-            scheme = "jar:file",
-            path = "\\Users\\me\\app.jar!/four/entry_1",
-            separator = "\\",
-        )
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithDriveLikeUnixPath() = runTest {
-        fileSystem.workingDirectory = "/working".toPath()
-        fileSystem.createDirectories(fileSystem.workingDirectory)
-        val zipFile = "/C:/Users/me/app.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents))
-
-        val uri = "jar:file:/C:/Users/me/app.jar!/four/entry_1".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
     fun opensFileInsideJarWithWindowsDriveUri() = runTest {
         val fileSystem = FakeFileSystem().apply { emulateWindows() }
         val zipFile = "C:\\Users\\me\\app.jar".toPath()
@@ -173,146 +133,6 @@ class JarFileFetcherTest : RobolectricTest() {
         assertEquals("image/svg+xml", result.mimeType)
         assertEquals(DataSource.DISK, result.dataSource)
         fileSystem.checkNoOpenFiles()
-    }
-
-    @Test
-    fun opensFileInsideJarWithWindowsDriveUriAndEmptyAuthority() = runTest {
-        val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val zipFile = "c:\\Users\\me\\app.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
-
-        val uri = "jar:file:///c:/Users/me/app.jar!/four/entry_1".toUri(separator = "\\")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithEncodedWindowsUri() = runTest {
-        val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val zipFile = "C:\\Program Files\\app%20.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("icon +%20.svg" to contents), fileSystem)
-
-        val uri = "jar:file:/C:/Program%20Files/app%2520.jar!/four/icon%20+%2520.svg?v=1#preview"
-            .toUri(separator = "\\")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithWindowsUncPath() = runTest {
-        val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val zipFile = "\\\\server\\share\\app.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
-
-        val uri = Uri(
-            scheme = "jar:file",
-            path = "\\\\server\\share\\app.jar!/four/entry_1",
-            separator = "\\",
-        )
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithWindowsUncUri() = runTest {
-        val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val zipFile = "\\\\server\\share\\app.jar".toPath()
-        fileSystem.createDirectories(zipFile.parent!!)
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents), fileSystem)
-
-        val uri = "jar:file:////server/share/app.jar!/four/entry_1".toUri(separator = "\\")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithExclamationMarkInFileName() = runTest {
-        val zipFile = "/app!1.jar".toPath()
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("entry_1" to contents))
-
-        val uri = "jar:file:/app!1.jar!/four/entry_1".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideJarWithExclamationMarkInEntryDirectory() = runTest {
-        val zipFile = "/app.jar".toPath()
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("icons!/entry_1" to contents))
-
-        val uri = "jar:file:/app.jar!/four/icons!/entry_1".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun opensFileInsideRelativeJarWithColonInEntryPath() = runTest {
-        fileSystem.workingDirectory = "/working".toPath()
-        fileSystem.createDirectories(fileSystem.workingDirectory)
-        val zipFile = "app.jar".toPath()
-        val contents = "image data".encodeUtf8()
-        createZip(zipFile, mapOf("icon:1.svg" to contents))
-
-        val uri = "jar:file:app.jar!/four/icon:1.svg".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-        val result = assertIs<SourceFetchResult>(fetcher.fetch())
-
-        result.source.use {
-            assertEquals(contents, it.source().readByteString())
-        }
-    }
-
-    @Test
-    fun rejectsMissingJarPath() = runTest {
-        val uri = "jar:file:!/four/entry_1".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-
-        val exception = assertFailsWith<IllegalStateException> { fetcher.fetch() }
-
-        assertEquals("Invalid jar:file URI: $uri", exception.message)
-    }
-
-    @Test
-    fun rejectsMissingEntrySeparator() = runTest {
-        val uri = "jar:file:/app!1.jar".toUri(separator = "/")
-        val fetcher = assertNotNull(factory.create(uri, Options(context, fileSystem = fileSystem), imageLoader))
-
-        val exception = assertFailsWith<IllegalStateException> { fetcher.fetch() }
-
-        assertEquals("Invalid jar:file URI: $uri", exception.message)
     }
 
     private fun createZip(

@@ -17,8 +17,8 @@ internal class JarFileFetcher(
 
     override suspend fun fetch(): FetchResult {
         val path = uri.path.orEmpty()
-        val delimiterIndex = path.indexOf("!/")
-        check(delimiterIndex > 0) { "Invalid jar:file URI: $uri" }
+        val delimiterIndex = path.indexOf('!')
+        check(delimiterIndex != -1) { "Invalid jar:file URI: $uri" }
 
         val jarFilePath = path.substring(0, delimiterIndex)
         val jarPath = if (uri.separator == "\\") {

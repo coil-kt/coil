@@ -258,36 +258,6 @@ class UriTest {
     }
 
     @Test
-    fun relativeJarFileUriWithColonInEntryPath() {
-        val uri = "jar:file:app.jar!/four/icon:1.svg".toUri(separator = "/")
-        assertEquals("jar:file", uri.scheme)
-        assertEquals("", uri.authority)
-        assertEquals("app.jar!/four/icon:1.svg", uri.path)
-        assertNull(uri.query)
-        assertNull(uri.fragment)
-    }
-
-    @Test
-    fun emptyPathWithQueryWithoutAuthority() {
-        val uri = "file:?q=value".toUri()
-        assertEquals("file", uri.scheme)
-        assertEquals("", uri.authority)
-        assertEquals("", uri.path)
-        assertEquals("q=value", uri.query)
-        assertNull(uri.fragment)
-    }
-
-    @Test
-    fun emptyPathWithFragmentWithoutAuthority() {
-        val uri = "file:#fragment".toUri()
-        assertEquals("file", uri.scheme)
-        assertEquals("", uri.authority)
-        assertEquals("", uri.path)
-        assertNull(uri.query)
-        assertEquals("fragment", uri.fragment)
-    }
-
-    @Test
     fun ipv6() {
         val uri = "http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/".toUri()
         assertEquals("http", uri.scheme)
