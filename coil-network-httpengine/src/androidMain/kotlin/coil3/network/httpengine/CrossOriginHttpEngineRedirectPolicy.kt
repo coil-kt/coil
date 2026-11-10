@@ -9,8 +9,7 @@ import java.util.Locale
  * Allows same-origin redirects and cross-origin redirects with only allowed headers and no body.
  * Malformed redirects are rejected.
  *
- * @param allowedCrossOriginRedirectHeaders Header names allowed on cross-origin redirects, compared
- * case-insensitively. This collection replaces the default allowlist and is copied on construction.
+ * @param allowedCrossOriginRedirectHeaders Header names allowed on cross-origin redirects.
  */
 class CrossOriginHttpEngineRedirectPolicy(
     allowedCrossOriginRedirectHeaders: Collection<String> = ALLOWED_CROSS_ORIGIN_REDIRECT_HEADERS,
