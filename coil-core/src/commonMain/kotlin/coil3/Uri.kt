@@ -230,9 +230,8 @@ private fun parseUri(
                         schemeEndIndex = index
                         authorityStartIndex = index + 1
                         pathStartIndex = index + 1
-                        index += 1
-                        if (data.getOrNull(index) == '/') {
-                            openScheme = false
+                        if (data.getOrNull(index + 1) == ':') {
+                            index += 1
                         }
                     }
                 }

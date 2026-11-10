@@ -93,6 +93,48 @@ class UriTest {
     }
 
     @Test
+    fun fileUriWithColonInPath() {
+        for (path in listOf("/tmp/a:b.png", "images/a:b.png")) {
+            val uri = "file:$path?q=1#preview".toUri(separator = "/")
+            assertEquals("file", uri.scheme)
+            assertEquals(path, uri.path)
+            assertEquals(path, uri.filePath)
+            assertEquals("q=1", uri.query)
+            assertEquals("preview", uri.fragment)
+        }
+    }
+
+    @Test
+    fun fileUriWithQueryWithoutPath() {
+        val uri = "file:?/tmp/a:b.png#preview".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.path)
+        assertNull(uri.filePath)
+        assertEquals("/tmp/a:b.png", uri.query)
+        assertEquals("preview", uri.fragment)
+    }
+
+    @Test
+    fun fileUriWithFragmentWithoutPath() {
+        val uri = "file:#/tmp/a:b.png".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("", uri.path)
+        assertNull(uri.filePath)
+        assertNull(uri.query)
+        assertEquals("/tmp/a:b.png", uri.fragment)
+    }
+
+    @Test
+    fun networkWithoutAuthority() {
+        val string = "https:/example.com:443/a:b.png"
+        val uri = string.toUri(separator = "/")
+        assertEquals("https", uri.scheme)
+        assertEquals("", uri.authority)
+        assertEquals("/example.com:443/a:b.png", uri.path)
+        assertEquals(string, uri.toString())
+    }
+
+    @Test
     fun malformed() {
         val uri = "#something:/test/relative/image.jpg".toUri(separator = "/")
         assertNull(uri.scheme)
@@ -232,6 +274,15 @@ class UriTest {
         assertEquals(listOf("outer", "path", "test.apk!", "internal", "path", "1.png"), uri.pathSegments)
         assertNull(uri.query)
         assertNull(uri.fragment)
+    }
+
+    @Test
+    fun jarEntryWithColonInPath() {
+        val uri = "jar:file:/tmp/app.jar!/a:b.png?q=1#preview".toUri(separator = "/")
+        assertEquals("jar:file", uri.scheme)
+        assertEquals("/tmp/app.jar!/a:b.png", uri.path)
+        assertEquals("q=1", uri.query)
+        assertEquals("preview", uri.fragment)
     }
 
     @Test
