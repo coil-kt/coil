@@ -93,35 +93,63 @@ class UriTest {
     }
 
     @Test
-    fun fileUriWithColonInPath() {
-        for (path in listOf("/tmp/a:b.png", "images/a:b.png")) {
-            val uri = "file:$path?q=1#preview".toUri(separator = "/")
-            assertEquals("file", uri.scheme)
-            assertEquals(path, uri.path)
-            assertEquals(path, uri.filePath)
-            assertEquals("q=1", uri.query)
-            assertEquals("preview", uri.fragment)
-        }
-    }
-
-    @Test
-    fun fileUriWithQueryWithoutPath() {
-        val uri = "file:?/tmp/a:b.png#preview".toUri(separator = "/")
+    fun absoluteFileUriWithColonInPath() {
+        val uri = "file:/tmp/a:b.png?q=1#preview".toUri(separator = "/")
         assertEquals("file", uri.scheme)
-        assertEquals("", uri.path)
-        assertNull(uri.filePath)
-        assertEquals("/tmp/a:b.png", uri.query)
+        assertEquals("/tmp/a:b.png", uri.path)
+        assertEquals("/tmp/a:b.png", uri.filePath)
+        assertEquals("q=1", uri.query)
         assertEquals("preview", uri.fragment)
     }
 
     @Test
-    fun fileUriWithFragmentWithoutPath() {
-        val uri = "file:#/tmp/a:b.png".toUri(separator = "/")
+    fun relativeFileUriWithColonInPath() {
+        val uri = "file:images/a:b.png?q=1#preview".toUri(separator = "/")
         assertEquals("file", uri.scheme)
-        assertEquals("", uri.path)
-        assertNull(uri.filePath)
+        assertEquals("images/a:b.png", uri.path)
+        assertEquals("images/a:b.png", uri.filePath)
+        assertEquals("q=1", uri.query)
+        assertEquals("preview", uri.fragment)
+    }
+
+    @Test
+    fun filePathStartingWithQuestionMark() {
+        val uri = "file:?poster.svg".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("?poster.svg", uri.path)
+        assertEquals("?poster.svg", uri.filePath)
         assertNull(uri.query)
-        assertEquals("/tmp/a:b.png", uri.fragment)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun filePathStartingWithEncodedQuestionMark() {
+        val uri = "file:%3Fposter.svg".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("?poster.svg", uri.path)
+        assertEquals("?poster.svg", uri.filePath)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun filePathStartingWithHash() {
+        val uri = "file:#poster.svg".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("#poster.svg", uri.path)
+        assertEquals("#poster.svg", uri.filePath)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
+    }
+
+    @Test
+    fun filePathStartingWithEncodedHash() {
+        val uri = "file:%23poster.svg".toUri(separator = "/")
+        assertEquals("file", uri.scheme)
+        assertEquals("#poster.svg", uri.path)
+        assertEquals("#poster.svg", uri.filePath)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
     }
 
     @Test
@@ -283,6 +311,15 @@ class UriTest {
         assertEquals("/tmp/app.jar!/a:b.png", uri.path)
         assertEquals("q=1", uri.query)
         assertEquals("preview", uri.fragment)
+    }
+
+    @Test
+    fun jarFilePathStartingWithHash() {
+        val uri = "jar:file:#app.jar!/entry.svg".toUri(separator = "/")
+        assertEquals("jar:file", uri.scheme)
+        assertEquals("#app.jar!/entry.svg", uri.path)
+        assertNull(uri.query)
+        assertNull(uri.fragment)
     }
 
     @Test
