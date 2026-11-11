@@ -58,6 +58,26 @@ val imageLoader = ImageLoader.Builder(context)
 !!! Note
     If you already have a built `OkHttpClient`, use [`newBuilder()`](https://lysine.dev/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
 
+## Using HttpEngine with an ImageLoader
+
+To use `HttpEngine` on Android API 34 and newer, add `coil-network-httpengine` and register its fetcher in your `ImageLoader`:
+
+```kotlin
+import android.os.Build.VERSION.SDK_INT
+import coil3.ImageLoader
+import coil3.network.httpengine.HttpEngineNetworkFetcherFactory
+
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        if (SDK_INT >= 34) {
+            add(HttpEngineNetworkFetcherFactory())
+        }
+    }
+    .build()
+```
+
+If you don't register a network fetcher manually, Coil's service loader picks the first available network client from OkHttp, Ktor 3, Ktor 2, and HttpEngine, in that order.
+
 ## Cache-Control support
 
 By default, Coil 3.x does not respect `Cache-Control` headers and always saves a response to its disk cache.
