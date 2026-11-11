@@ -1,0 +1,76 @@
+package coil3.network.httpengine
+
+import coil3.network.NetworkHeaders
+import coil3.network.NetworkRequest
+import coil3.network.NetworkRequestBody
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import okio.ByteString.Companion.encodeUtf8
+
+class CrossOriginHttpEngineRedirectPolicyTest {
+
+    private val policy = CrossOriginHttpEngineRedirectPolicy()
+    private val url = "https://example.com/images/start"
+
+    @Test
+    fun sensitiveHeadersRequireSameOriginRedirects() {
+        val request = requestWithHeader("Authorization")
+
+        assertTrue(policy.shouldFollowRedirect(request, url, "../image.png"))
+        assertTrue(policy.shouldFollowRedirect(request, url, "https://EXAMPLE.com:443/image.png"))
+        assertFalse(policy.shouldFollowRedirect(request, url, "https://example.com:8443/image.png"))
+        assertFalse(policy.shouldFollowRedirect(request, url, "http://example.com/image.png"))
+    }
+
+    @Test
+    fun crossOriginRedirectsAllowOnlyAllowedHeadersAndNoBody() {
+        val destination = "https://other.example.com/image.png"
+        assertTrue(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
+
+        assertFalse(policy.shouldFollowRedirect(requestWithHeader("X-Token"), url, destination))
+        val headers = NetworkHeaders.Builder()
+            .set("Accept", "image/*")
+            .set("Authorization", "secret")
+            .build()
+        assertFalse(
+            policy.shouldFollowRedirect(NetworkRequest(url, headers = headers), url, destination),
+        )
+        val request = NetworkRequest(url, body = NetworkRequestBody("data".encodeUtf8()))
+        assertFalse(policy.shouldFollowRedirect(request, url, destination))
+    }
+
+    @Test
+    fun malformedRedirectsAreRejectedEvenWithoutSensitiveData() {
+        assertFalse(policy.shouldFollowRedirect(NetworkRequest(url), url, "https://[invalid"))
+    }
+
+    @Test
+    fun customAllowedHeadersReplaceDefaultsAndIgnoreCase() {
+        val policy = CrossOriginHttpEngineRedirectPolicy(listOf("X-Token"))
+        val destination = "https://other.example.com/image.png"
+
+        assertTrue(policy.shouldFollowRedirect(requestWithHeader("x-ToKeN"), url, destination))
+        assertFalse(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
+        val request = NetworkRequest(url, body = NetworkRequestBody("data".encodeUtf8()))
+        assertFalse(policy.shouldFollowRedirect(request, url, destination))
+    }
+
+    @Test
+    fun changingTheSuppliedCollectionDoesNotChangeThePolicy() {
+        val headers = mutableListOf("Accept")
+        val policy = CrossOriginHttpEngineRedirectPolicy(headers)
+        val destination = "https://other.example.com/image.png"
+
+        headers.clear()
+        headers.add("Authorization")
+
+        assertTrue(policy.shouldFollowRedirect(requestWithHeader("Accept"), url, destination))
+        assertFalse(policy.shouldFollowRedirect(requestWithHeader("Authorization"), url, destination))
+    }
+
+    private fun requestWithHeader(name: String): NetworkRequest {
+        val headers = NetworkHeaders.Builder().set(name, "value").build()
+        return NetworkRequest(url, headers = headers)
+    }
+}

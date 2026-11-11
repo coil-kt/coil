@@ -1,5 +1,6 @@
 package sample.common
 
+import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
@@ -21,6 +22,9 @@ fun newImageLoader(
         .diskCache {
             newDiskCache()
         }
+        .components {
+            addPlatformComponents()
+        }
         // Show a short crossfade when loading images asynchronously.
         .crossfade(true)
         // Enable logging if this is a debug build.
@@ -33,3 +37,5 @@ fun newImageLoader(
 }
 
 internal expect fun newDiskCache(): DiskCache?
+
+internal expect fun ComponentRegistry.Builder.addPlatformComponents()

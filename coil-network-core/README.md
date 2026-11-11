@@ -8,9 +8,10 @@ To add support for fetching images from the network import **only one of the fol
 implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3") // Only available on Android/JVM.
 implementation("io.coil-kt.coil3:coil-network-ktor2:3.6.3")
 implementation("io.coil-kt.coil3:coil-network-ktor3:3.6.3")
+implementation("io.coil-kt.coil3:coil-network-httpengine:3.6.3") // Only available on Android API 34+.
 ```
 
-If you use OkHttp, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
+If you use OkHttp or HttpEngine, that's it. Once imported, network URLs like `https://example.com/image.jpg` will automatically be supported. If you use Ktor, you need to add supported engines for each platform (see below).
 
 ## Ktor network engines
 
@@ -56,6 +57,26 @@ val imageLoader = ImageLoader.Builder(context)
 
 !!! Note
     If you already have a built `OkHttpClient`, use [`newBuilder()`](https://lysine.dev/okhttp/5.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
+
+## Using HttpEngine with an ImageLoader
+
+To use `HttpEngine` on Android API 34 and newer, add `coil-network-httpengine` and register its fetcher in your `ImageLoader`:
+
+```kotlin
+import android.os.Build.VERSION.SDK_INT
+import coil3.ImageLoader
+import coil3.network.httpengine.HttpEngineNetworkFetcherFactory
+
+val imageLoader = ImageLoader.Builder(context)
+    .components {
+        if (SDK_INT >= 34) {
+            add(HttpEngineNetworkFetcherFactory())
+        }
+    }
+    .build()
+```
+
+If you don't register a network fetcher manually, Coil's service loader picks the first available network client from OkHttp, Ktor 3, Ktor 2, and HttpEngine, in that order.
 
 ## Cache-Control support
 
