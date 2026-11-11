@@ -10,7 +10,6 @@ import coil3.test.utils.context
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.random.Random
@@ -61,7 +60,9 @@ class HttpEngineNetworkClientTest {
                 private val times = listOf(sent, received).iterator()
 
                 override fun now(): Instant {
-                    check(bodyWritten)
+                    check(bodyWritten) {
+                        "The request timestamp must exclude time spent buffering the request body."
+                    }
                     return times.next()
                 }
             }
@@ -91,7 +92,7 @@ class HttpEngineNetworkClientTest {
 
     @Test
     fun responseBodyIsRead() = runTest {
-        withTestResources(Executors.newFixedThreadPool(4)) { test ->
+        withTestResources { test ->
             val expectedBody = Random(0).nextBytes(128 * 1024 + 37)
             test.server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
             test.server.start()
@@ -110,7 +111,7 @@ class HttpEngineNetworkClientTest {
 
     @Test
     fun responseBodyCanBeWrittenToFileSystem() = runTest {
-        withTestResources(Executors.newFixedThreadPool(4)) { test ->
+        withTestResources { test ->
             val expectedBody = Random(0).nextBytes(128 * 1024 + 37)
             test.server.enqueue(MockResponse().setBody(Buffer().write(expectedBody)))
             test.server.start()
@@ -131,7 +132,7 @@ class HttpEngineNetworkClientTest {
     @Test
     fun responseBodyCanOverwriteASystemFile() = runTest {
         // Exercise the FileSystem.SYSTEM optimization that writes directly to a FileChannel.
-        withTestResources(Executors.newFixedThreadPool(4)) { test ->
+        withTestResources { test ->
             val path = File.createTempFile("httpengine", ".bin", context.cacheDir).toOkioPath()
             try {
                 test.server.start()
@@ -276,6 +277,30 @@ class HttpEngineNetworkClientTest {
                     assertEquals("result", test.client.executeRequest(request) { "result" })
                 }
             }
+        }
+    }
+
+    @Test
+    fun requestHeadersAreForwarded() = runTest {
+        withTestResources { test ->
+            test.server.enqueue(MockResponse().setBody("ok"))
+            test.server.start()
+
+            val request = NetworkRequest(
+                url = test.server.url("/").toString(),
+                headers = NetworkHeaders.Builder()
+                    .set("Accept", "image/webp, image/png")
+                    .set("Authorization", "Bearer test-token")
+                    .set("X-Request-ID", "test-request")
+                    .build(),
+            )
+
+            test.client.executeRequest(request) { it.body!!.writeTo(Buffer()) }
+
+            val recordedRequest = test.takeRequest()
+            assertEquals("image/webp, image/png", recordedRequest.getHeader("Accept"))
+            assertEquals("Bearer test-token", recordedRequest.getHeader("Authorization"))
+            assertEquals("test-request", recordedRequest.getHeader("X-Request-ID"))
         }
     }
 
@@ -428,10 +453,9 @@ class HttpEngineNetworkClientTest {
     }
 
     private suspend fun withTestResources(
-        executor: ExecutorService = Executors.newSingleThreadExecutor(),
         block: suspend (TestResources) -> Unit,
     ) {
-        val test = TestResources(executor)
+        val test = TestResources()
         try {
             block(test)
         } finally {
@@ -447,9 +471,8 @@ class HttpEngineNetworkClientTest {
             }
         }.buffer()
 
-    private class TestResources(
-        val executor: ExecutorService,
-    ) {
+    private class TestResources {
+        val executor = Executors.newSingleThreadExecutor()
         val server = MockWebServer()
         val engine = HttpEngine.Builder(context).build()
         val client = HttpEngineNetworkClient(
