@@ -18,14 +18,23 @@ import okio.use
 class FileUriFetcherTest : RobolectricTest() {
 
     @Test
-    fun opensFileWithWindowsDriveUri() = runTest {
+    fun opensFileWithEncodedSpaceInWindowsDriveUri() = runTest {
+        assertOpensWindowsDriveUri("file:/C:/Users/me/my%20image.svg")
+    }
+
+    @Test
+    fun opensFileWithLiteralSpaceInWindowsDriveUri() = runTest {
+        assertOpensWindowsDriveUri("file:/C:/Users/me/my image.svg")
+    }
+
+    private suspend fun assertOpensWindowsDriveUri(uriString: String) {
         val fileSystem = FakeFileSystem().apply { emulateWindows() }
-        val file = "C:\\Users\\me\\image.svg".toPath()
+        val file = "C:\\Users\\me\\my image.svg".toPath()
         fileSystem.createDirectories(file.parent!!)
         val contents = "image data".encodeUtf8()
         fileSystem.write(file) { write(contents) }
 
-        val uri = "file:/C:/Users/me/image.svg".toUri(separator = "\\")
+        val uri = uriString.toUri(separator = "\\")
         val options = Options(context, fileSystem = fileSystem)
         val fetcher = assertNotNull(FileUriFetcher.Factory().create(uri, options, ImageLoader(context)))
         val result = assertIs<SourceFetchResult>(fetcher.fetch())
