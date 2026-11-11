@@ -173,7 +173,13 @@ val Uri.filePath: String?
         if (pathSegments.isEmpty()) {
             return null
         } else {
-            val prefix = if (path!!.startsWith(separator)) separator else ""
+            val path = path!!
+            val prefix = when {
+                // Keep the two leading separators of a Windows UNC path.
+                separator == "\\" && path.startsWith("//") -> separator + separator
+                path.startsWith(separator) -> separator
+                else -> ""
+            }
             return pathSegments.joinToString(prefix = prefix, separator = separator)
         }
     }

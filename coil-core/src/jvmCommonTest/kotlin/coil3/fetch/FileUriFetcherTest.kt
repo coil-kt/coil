@@ -67,6 +67,27 @@ class FileUriFetcherTest : RobolectricTest() {
     }
 
     @Test
+    fun opensFileWithWindowsUncPath() = runTest {
+        val fileSystem = FakeFileSystem().apply { emulateWindows() }
+        val path = "\\\\server\\share\\image.svg"
+        val file = path.toPath()
+        fileSystem.createDirectories(file.parent!!)
+        val contents = "image data".encodeUtf8()
+        fileSystem.write(file) { write(contents) }
+
+        val uri = path.toUri(separator = "\\")
+        val options = Options(context, fileSystem = fileSystem)
+        val fetcher = assertNotNull(FileUriFetcher.Factory().create(uri, options, ImageLoader(context)))
+        val result = assertIs<SourceFetchResult>(fetcher.fetch())
+
+        result.source.use {
+            assertEquals(contents, it.source().readByteString())
+            assertEquals(file, it.file())
+        }
+        fileSystem.checkNoOpenFiles()
+    }
+
+    @Test
     fun opensFileWithRelativeWindowsPath() = runTest {
         val fileSystem = FakeFileSystem().apply { emulateWindows() }
         val file = "images\\image.svg".toPath()
