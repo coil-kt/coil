@@ -187,7 +187,7 @@ val Uri.filePath: String?
 /**
  * Parse this [String] into a [Uri]. This method will not throw if the URI is malformed.
  *
- * @param separator The path separator used to separate URI path elements. By default, this
+ * @param separator The path separator used to separate file URI path elements. By default, this
  *  will be '/' on UNIX systems and '\' on Windows systems.
  */
 @JvmOverloads
