@@ -3,6 +3,7 @@ import coil3.composeDesktopCurrentOsDependency
 import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     id("com.android.kotlin.multiplatform.library")
@@ -44,6 +45,10 @@ kotlin {
         browser {
             commonWebpackConfig {
                 outputFileName = "coilSample.js"
+                optimization = KotlinWebpackConfig.Optimization(
+                    runtimeChunk = "single",
+                    splitChunks = null,
+                )
             }
         }
         binaries.executable()

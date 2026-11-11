@@ -174,7 +174,7 @@ internal suspend fun decodeImageAsync(
 
 @OptIn(InternalSkikoApi::class)
 internal suspend fun suspendAwaitSkiko(): JsAny = suspendCancellableCoroutine { cont ->
-    awaitSkiko.then(
+    val _ = awaitSkiko.then(
         onFulfilled = { cont.resume(it); null },
         onRejected = { cont.resumeWithException(it.asJsException()); null },
     )
