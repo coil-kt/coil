@@ -5,8 +5,13 @@ import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+import org.jetbrains.kotlin.konan.target.Family
 
 fun Project.addAllMultiplatformTargets(
     skikoVersion: Provider<String>,
@@ -94,6 +99,21 @@ fun Project.addAllMultiplatformTargets(
             if (enableNativeLinux) {
                 linuxX64()
                 linuxArm64()
+            }
+
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                targets.withType<KotlinNativeTarget>().configureEach {
+                    if (konanTarget.family == Family.LINUX) {
+                        // Skip linking Linux test binaries as well as running them on Windows.
+                        binaries.withType<TestExecutable>().configureEach {
+                            linkTaskProvider.configure { enabled = false }
+                        }
+                        val linuxTargetName = name
+                        tasks.withType<KotlinNativeTest>().configureEach {
+                            if (targetName == linuxTargetName) enabled = false
+                        }
+                    }
+                }
             }
         }
 

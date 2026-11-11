@@ -20,7 +20,15 @@ internal class JarFileFetcher(
         val delimiterIndex = path.indexOf('!')
         check(delimiterIndex != -1) { "Invalid jar:file URI: $uri" }
 
-        val jarPath = path.substring(0, delimiterIndex).toPath()
+        val jarFilePath = path.substring(0, delimiterIndex)
+        val jarPath = if (uri.separator == "\\") {
+            val windowsPath = jarFilePath.replace('/', '\\')
+            val drivePath = windowsPath.trimStart('\\').toPath()
+            // Strip the URI prefix from drive paths, but preserve rooted and UNC paths.
+            if (drivePath.volumeLetter != null) drivePath else windowsPath.toPath()
+        } else {
+            jarFilePath.toPath()
+        }
         val filePath = path.substring(delimiterIndex + 1, path.length).toPath()
 
         return SourceFetchResult(

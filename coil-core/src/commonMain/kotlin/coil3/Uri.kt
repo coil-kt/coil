@@ -173,7 +173,13 @@ val Uri.filePath: String?
         if (pathSegments.isEmpty()) {
             return null
         } else {
-            val prefix = if (path!!.startsWith(separator)) separator else ""
+            val path = path!!
+            val prefix = when {
+                // Keep the two leading separators of a Windows UNC path.
+                separator == "\\" && path.startsWith("//") -> separator + separator
+                path.startsWith(separator) -> separator
+                else -> ""
+            }
             return pathSegments.joinToString(prefix = prefix, separator = separator)
         }
     }
@@ -181,7 +187,7 @@ val Uri.filePath: String?
 /**
  * Parse this [String] into a [Uri]. This method will not throw if the URI is malformed.
  *
- * @param separator The path separator used to separate URI path elements. By default, this
+ * @param separator The path separator used to separate file URI path elements. By default, this
  *  will be '/' on UNIX systems and '\' on Windows systems.
  */
 @JvmOverloads
@@ -231,16 +237,21 @@ private fun parseUri(
                         authorityStartIndex = index + 1
                         pathStartIndex = index + 1
                         index += 1
+                        if (data.getOrNull(index) == '/') {
+                            openScheme = false
+                        }
                     }
                 }
             }
             '/' -> {
-                if (pathStartIndex == -1 &&
-                    queryStartIndex == -1 &&
+                if (queryStartIndex == -1 &&
                     fragmentStartIndex == -1
                 ) {
+                    // A path colon (e.g. a Windows drive letter) cannot extend the scheme.
                     openScheme = false
-                    pathStartIndex = if (authorityStartIndex == -1) 0 else index
+                    if (pathStartIndex == -1) {
+                        pathStartIndex = if (authorityStartIndex == -1) 0 else index
+                    }
                 }
             }
             '?' -> {
