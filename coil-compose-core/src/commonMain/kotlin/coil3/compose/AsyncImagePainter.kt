@@ -159,6 +159,7 @@ class AsyncImagePainter internal constructor(
     private var colorFilter: ColorFilter? = null
 
     private var isRemembered = false
+    private var completedInput: Input? = null
     private var rememberJob: Job? = null
         set(value) {
             field?.cancel()
@@ -218,12 +219,18 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
-        launchJob()
+        // Don't restart a request that already completed for the current input. The painter can be
+        // remembered again without being forgotten in between (e.g. its modifier node is detached
+        // and re-attached by `movableContentOf`), and restarting would discard the result.
+        if (_input != completedInput) {
+            launchJob()
+        }
         isRemembered = true
     }
 
     private fun launchJob() {
         val input = _input ?: return
+        completedInput = null
 
         rememberJob = scope.launchWithDeferredDispatch {
             val previewHandler = previewHandler
@@ -237,6 +244,7 @@ class AsyncImagePainter internal constructor(
                 input.imageLoader.execute(request).toState()
             }
             updateState(state)
+            completedInput = input
         }
     }
 
