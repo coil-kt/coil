@@ -11,7 +11,6 @@ import kotlin.js.asJsException
 import kotlin.js.js
 import kotlin.js.set
 import kotlin.js.unsafeCast
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -180,7 +179,6 @@ internal suspend fun suspendAwaitSkiko(): JsAny = suspendCancellableCoroutine { 
     )
 }
 
-@OptIn(ExperimentalUuidApi::class)
 private suspend fun decodeBytesToBitmap(
     bytes: ByteArray,
     width: Int,

@@ -108,7 +108,6 @@ internal class EngineInterceptor(
         options: Options,
         eventListener: EventListener,
     ): ExecuteResult {
-        @Suppress("NAME_SHADOWING")
         var options = options
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
