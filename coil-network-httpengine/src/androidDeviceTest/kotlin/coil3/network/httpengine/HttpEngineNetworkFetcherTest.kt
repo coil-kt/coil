@@ -12,7 +12,6 @@ import coil3.toUri
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertIs
-import kotlin.time.ExperimentalTime
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -21,7 +20,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 34)
-@OptIn(ExperimentalTime::class)
 class HttpEngineNetworkFetcherTest : AbstractNetworkFetcherTest() {
 
     private lateinit var server: MockWebServer

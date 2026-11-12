@@ -24,7 +24,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import okio.Buffer
 import okio.BufferedSource
@@ -34,7 +33,6 @@ import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
-@OptIn(ExperimentalTime::class)
 class CacheControlCacheStrategyTest : RobolectricTest() {
     // Friday, November 8, 2024 8:00:00 AM UTC
     private var now = Instant.fromEpochSeconds(1731052800)

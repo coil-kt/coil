@@ -12,12 +12,10 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
-import kotlin.time.ExperimentalTime
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
-@OptIn(ExperimentalTime::class)
 class FileUriKeyerTest : RobolectricTest() {
 
     private lateinit var clock: FakeClock
