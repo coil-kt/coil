@@ -120,11 +120,8 @@ class RequestHeaderInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val headers = Headers.Builder()
-            .set("Cache-Control", "no-cache")
-            .build()
         val request = chain.request().newBuilder()
-            .headers(headers)
+            .header(name, value)
             .build()
         return chain.proceed(request)
     }
@@ -133,10 +130,9 @@ class RequestHeaderInterceptor(
 val imageLoader = ImageLoader.Builder(context)
     .components {
         add(
-            OkHttpNetworkFetcher(
+            OkHttpNetworkFetcherFactory(
                 callFactory = {
                     OkHttpClient.Builder()
-                        // This header will be added to every image request.
                         .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
                         .build()
                 },

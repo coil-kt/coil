@@ -115,5 +115,5 @@ val request = ImageRequest.Builder(context)
     .data(url)
     .size(width, height)
     .build()
-val drawable = context.imageLoader.execute(request).image.asDrawable(resources)
+val drawable = context.imageLoader.execute(request).image?.asDrawable(context.resources)
 ```
