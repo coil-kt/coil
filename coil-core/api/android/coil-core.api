@@ -293,6 +293,12 @@ public final class coil3/decode/AssetMetadata : coil3/decode/ImageSource$Metadat
 	public final fun getFilePath ()Ljava/lang/String;
 }
 
+public abstract class coil3/decode/BaseContentMetadata : coil3/decode/ImageSource$Metadata {
+	public fun <init> ()V
+	public abstract fun getAssetFileDescriptor ()Landroid/content/res/AssetFileDescriptor;
+	public final fun getSeekable ()Z
+}
+
 public final class coil3/decode/BitmapFactoryDecoder : coil3/decode/Decoder {
 	public fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;)V
 	public synthetic fun <init> (Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil3/decode/ExifOrientationStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -329,9 +335,9 @@ public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Me
 	public final fun getByteBuffer ()Ljava/nio/ByteBuffer;
 }
 
-public final class coil3/decode/ContentMetadata : coil3/decode/ImageSource$Metadata {
+public final class coil3/decode/ContentMetadata : coil3/decode/BaseContentMetadata {
 	public fun <init> (Lcoil3/Uri;Landroid/content/res/AssetFileDescriptor;)V
-	public final fun getAssetFileDescriptor ()Landroid/content/res/AssetFileDescriptor;
+	public fun getAssetFileDescriptor ()Landroid/content/res/AssetFileDescriptor;
 	public final fun getUri ()Lcoil3/Uri;
 }
 
@@ -422,6 +428,14 @@ public final class coil3/decode/StaticImageDecoder$Factory : coil3/decode/Decode
 	public fun <init> (Lkotlinx/coroutines/sync/Semaphore;)V
 	public synthetic fun <init> (Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
+}
+
+public final class coil3/decode/TypedContentMetadata : coil3/decode/BaseContentMetadata {
+	public fun <init> (Lcoil3/Uri;Ljava/lang/String;Landroid/os/Bundle;Landroid/content/res/AssetFileDescriptor;)V
+	public fun getAssetFileDescriptor ()Landroid/content/res/AssetFileDescriptor;
+	public final fun getMimeTypeFilter ()Ljava/lang/String;
+	public final fun getOpts ()Landroid/os/Bundle;
+	public final fun getUri ()Lcoil3/Uri;
 }
 
 public abstract interface class coil3/disk/DiskCache {
