@@ -27,6 +27,12 @@ class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
     private val writeFaults = mutableSetOf<Path>()
     private val deleteFaults = mutableSetOf<Path>()
     private val renameFaults = mutableSetOf<Path>()
+    private var atomicMoveSupported = true
+
+    /** Emulates a file system that cannot move files atomically, e.g. Windows MSIX. */
+    fun setAtomicMoveSupported(supported: Boolean) {
+        atomicMoveSupported = supported
+    }
 
     fun setFaultyWrite(file: Path, faulty: Boolean) {
         if (faulty) {
@@ -53,10 +59,21 @@ class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
     }
 
     override fun atomicMove(source: Path, target: Path) {
+        if (!atomicMoveSupported) {
+            throw IOException("atomic move is not supported")
+        }
         if (source in renameFaults || target in renameFaults) {
             throw IOException("boom!")
         }
         super.atomicMove(source, target)
+    }
+
+    override fun copy(source: Path, target: Path) {
+        // Fail the copy as well so a faulty rename can't be worked around by copying and deleting.
+        if (source in renameFaults || target in renameFaults) {
+            throw IOException("boom!")
+        }
+        super.copy(source, target)
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
@@ -84,7 +101,9 @@ class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
         private val file: Path,
     ) : Sink by delegate {
         override fun write(source: Buffer, byteCount: Long) {
-            if (file in writeFaults) {
+            // Also fail if the file has a faulty rename so a faulty rename can't be worked around
+            // by copying and deleting.
+            if (file in writeFaults || file in renameFaults) {
                 throw IOException("boom!")
             }
             delegate.write(source, byteCount)

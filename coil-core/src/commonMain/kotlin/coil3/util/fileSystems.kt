@@ -35,6 +35,36 @@ internal fun FileSystem.createFile(file: Path, mustCreate: Boolean = false) {
     }
 }
 
+/**
+ * Move [source] to [target], falling back to a non-atomic copy and delete if the file system does
+ * not support moving the file atomically.
+ *
+ * Some file systems cannot move a file atomically, even when the source and the target are in the
+ * same directory. For instance, Windows redirects reads and writes for MSIX apps with flexible
+ * virtualization enabled, which can place the source and the target on different volumes and makes
+ * `atomicMove` fail with `AtomicMoveNotSupportedException`. Okio recommends copying and deleting in
+ * that case.
+ */
+internal fun FileSystem.moveFile(source: Path, target: Path) {
+    try {
+        atomicMove(source, target)
+    } catch (e: IOException) {
+        try {
+            copy(source, target)
+            delete(source)
+        } catch (fallback: IOException) {
+            // Don't leave a partially copied file behind.
+            try {
+                delete(target, mustExist = false)
+            } catch (_: IOException) {}
+
+            // Throw the original exception as it's more likely to explain the root cause.
+            e.addSuppressed(fallback)
+            throw e
+        }
+    }
+}
+
 /** https://github.com/square/okio/issues/1090 */
 internal fun FileSystem.createTempFile(): Path {
     var tempFile: Path

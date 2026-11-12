@@ -110,6 +110,31 @@ class DiskLruCacheTest {
         assertNull(snapshot)
     }
 
+    /** Regression test for https://github.com/coil-kt/coil/issues/3010. */
+    @Test
+    fun operatesWithoutAtomicMoveSupport() {
+        fileSystem.setAtomicMoveSupported(false)
+
+        set("k1", "a", "b")
+        assertValue("k1", "a", "b")
+
+        // Force the journal to be rebuilt, which also moves files.
+        while (dispatcher.isIdle()) {
+            set("a", "a", "a")
+            set("b", "b", "b")
+        }
+        dispatcher.runNextTask()
+
+        assertValue("k1", "a", "b")
+        assertValue("a", "a", "a")
+        assertFalse(fileSystem.exists(journalFileBackup))
+
+        // The cache can also be reopened from the rebuilt journal.
+        cache.close()
+        createNewCache()
+        assertValue("k1", "a", "b")
+    }
+
     @Test
     fun validateKey() {
         var key: String? = null
