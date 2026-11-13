@@ -19,7 +19,7 @@ AsyncImage(
 ```
 
 !!! Note
-    If you use Compose Multiplatform, you'll need to use Ktor instead of OkHttp. See [here](network.md#ktor-network-engines) for how to do that.
+    OkHttp supports Android and desktop JVM. For shared networking code that also targets iOS or the web, see [Ktor network engines](network.md#ktor-network-engines).
 
 ## Android Views
 
@@ -96,7 +96,7 @@ val image = bitmap.asImage()
 It's also interoperable with Compose UI's `Painter` class. This extension function requires importing the `coil-compose-core` artifact:
 
 ```kotlin
-val painter = image.asPainter()
+val painter = image.asPainter(LocalPlatformContext.current)
 ```
 
 !!! Note
