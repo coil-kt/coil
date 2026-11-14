@@ -124,7 +124,7 @@ class AnimatedImageDecoder(
             return baseDrawable
         }
 
-        if (options.repeatCount != ENCODED_LOOP_COUNT) {
+        if (options.repeatCount != AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT) {
             baseDrawable.repeatCount = options.repeatCount
         }
 
