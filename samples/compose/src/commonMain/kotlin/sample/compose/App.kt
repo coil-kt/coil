@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +48,6 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import io.coil_kt.coil3.compose.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.MissingResourceException
 import sample.common.AssetType
 import sample.common.Image
@@ -113,7 +111,6 @@ fun App(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Toolbar(
     assetType: AssetType,
@@ -284,7 +281,6 @@ private val lightColors = lightColorScheme(
     surface = Color.White,
 )
 
-@OptIn(ExperimentalResourceApi::class)
 private val resourceDetailScreen = Screen.Detail(
     image = Image(
         uri = Res.getUri("drawable/sample.jpg"),
@@ -294,7 +290,6 @@ private val resourceDetailScreen = Screen.Detail(
     ),
 )
 
-@OptIn(ExperimentalResourceApi::class)
 private class ComposeResources : Resources {
 
     override fun uri(path: String): String {

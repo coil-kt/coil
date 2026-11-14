@@ -28,7 +28,6 @@ class SystemCallbacksTest {
         systemCallbacks.registerMemoryPressureCallbacks()
 
         // Clear the local reference.
-        @Suppress("UNUSED_VALUE")
         imageLoader = null
 
         val bitmaps = mutableListOf<Bitmap>()

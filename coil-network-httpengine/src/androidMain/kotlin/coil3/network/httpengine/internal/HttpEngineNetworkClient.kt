@@ -13,14 +13,12 @@ import java.util.concurrent.Executor
 import kotlin.collections.iterator
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
 
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 internal class HttpEngineNetworkClient(
     private val httpEngine: HttpEngine,
     private val executor: Executor = Dispatchers.IO.asExecutor(),
