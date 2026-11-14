@@ -129,7 +129,7 @@ class RequestServiceTest : RobolectricTest() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1768 */
     @Test
-    @Config(sdk = [23])
+    @Config(sdk = [24])
     fun `RGB_565 is preserved if hardware bitmaps are disabled`() {
         val request = ImageRequest.Builder(context)
             .bitmapConfig(Bitmap.Config.RGB_565)
