@@ -57,7 +57,12 @@ class AnimatedSkiaImageDecoder(
             val outputImageInfo = computeOutputImageInfo(sourceImageInfo, options)
             val isSampled = outputImageInfo.width < sourceImageInfo.width ||
                 outputImageInfo.height < sourceImageInfo.height
-            val decodeImageInfo = computeDecodeImageInfo(sourceImageInfo, outputImageInfo)
+
+            // Decode downsampled pixels directly, but defer upscaling to the output bitmap.
+            val decodeImageInfo = sourceImageInfo.withWidthHeight(
+                width = minOf(sourceImageInfo.width, outputImageInfo.width),
+                height = minOf(sourceImageInfo.height, outputImageInfo.height),
+            )
             if (frameCount == 1) {
                 return DecodeResult(
                     image = decodeStaticImage(
@@ -129,17 +134,6 @@ class AnimatedSkiaImageDecoder(
         return source.withWidthHeight(width, height)
     }
 
-    private fun computeDecodeImageInfo(
-        source: ImageInfo,
-        output: ImageInfo,
-    ): ImageInfo {
-        // Decode downsampled pixels directly, but defer upscaling to the output bitmap.
-        return source.withWidthHeight(
-            width = minOf(source.width, output.width),
-            height = minOf(source.height, output.height),
-        )
-    }
-
     private fun decodeStaticImage(
         codec: Codec,
         decodeImageInfo: ImageInfo,
@@ -186,12 +180,7 @@ class AnimatedSkiaImageDecoder(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isApplicable(result.source.source())) return null
-            return AnimatedSkiaImageDecoder(
-                source = result.source,
-                options = options,
-                bufferedFramesCount = bufferedFramesCount,
-                timeSource = timeSource,
-            )
+            return AnimatedSkiaImageDecoder(result.source, options, bufferedFramesCount, timeSource)
         }
 
         private fun isApplicable(source: BufferedSource): Boolean {

@@ -16,6 +16,7 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.decode.toImageDecoderSourceOrNull
 import coil3.fetch.SourceFetchResult
+import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT as SHARED_ENCODED_LOOP_COUNT
 import coil3.gif.internal.animatable2CallbackOf
 import coil3.gif.internal.asPostProcessor
 import coil3.gif.internal.maybeWrapImageSourceToRewriteFrameDelay
@@ -124,7 +125,7 @@ class AnimatedImageDecoder(
             return baseDrawable
         }
 
-        if (options.repeatCount != AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT) {
+        if (options.repeatCount != SHARED_ENCODED_LOOP_COUNT) {
             baseDrawable.repeatCount = options.repeatCount
         }
 
@@ -171,6 +172,6 @@ class AnimatedImageDecoder(
                 imports = ["coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT"],
             ),
         )
-        const val ENCODED_LOOP_COUNT = AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
+        const val ENCODED_LOOP_COUNT = SHARED_ENCODED_LOOP_COUNT
     }
 }

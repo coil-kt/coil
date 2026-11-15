@@ -19,6 +19,7 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil3.decode.DecodeUtils
+import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE as SHARED_REPEAT_INFINITE
 import coil3.gif.PixelOpacity.OPAQUE
 import coil3.gif.PixelOpacity.UNCHANGED
 import coil3.size.Scale
@@ -54,7 +55,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var startTimeMillis = 0L
     private var frameTimeMillis = 0L
 
-    private var repeatCount = AnimatedImageDecoderUtils.REPEAT_INFINITE
+    private var repeatCount = SHARED_REPEAT_INFINITE
     private var loopIteration = 0
 
     private var animatedTransformation: AnimatedTransformation? = null
@@ -108,7 +109,7 @@ class MovieDrawable @JvmOverloads constructor(
             }
             val elapsedTime = (frameTimeMillis - startTimeMillis).toInt()
             loopIteration = elapsedTime / duration
-            invalidate = repeatCount == AnimatedImageDecoderUtils.REPEAT_INFINITE ||
+            invalidate = repeatCount == SHARED_REPEAT_INFINITE ||
                 loopIteration <= repeatCount
             time = if (invalidate) elapsedTime - loopIteration * duration else duration
         }
@@ -153,7 +154,7 @@ class MovieDrawable @JvmOverloads constructor(
      * Default: [AnimatedImageDecoderUtils.REPEAT_INFINITE]
      */
     fun setRepeatCount(repeatCount: Int) {
-        require(repeatCount >= AnimatedImageDecoderUtils.REPEAT_INFINITE) {
+        require(repeatCount >= SHARED_REPEAT_INFINITE) {
             "Invalid repeatCount: $repeatCount"
         }
         this.repeatCount = repeatCount
@@ -303,6 +304,6 @@ class MovieDrawable @JvmOverloads constructor(
                 imports = ["coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE"],
             ),
         )
-        const val REPEAT_INFINITE = AnimatedImageDecoderUtils.REPEAT_INFINITE
+        const val REPEAT_INFINITE = SHARED_REPEAT_INFINITE
     }
 }

@@ -95,7 +95,7 @@ private fun Bitmap.applyTransformation(
     updateAlphaType(transformedAlphaType)
 }
 
-private fun Bitmap.updateAlphaType(alphaType: ColorAlphaType) {
+internal fun Bitmap.updateAlphaType(alphaType: ColorAlphaType) {
     if (imageInfo.colorAlphaType == alphaType) return
     check(setAlphaType(alphaType)) { "Unable to set image alpha type to $alphaType." }
 }

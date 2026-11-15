@@ -839,6 +839,42 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
+    fun animatedTransformationCanChangeOpacityWhenBitmapsAreReused() = runTest {
+        val timeSource = FakeTimeSource()
+        val colors = listOf(Color.RED, Color.BLUE, Color.TRANSPARENT, 0x8000FF00.toInt(), Color.RED)
+        var decodedFrames = 0
+        val extras = ImageRequest.Builder(context)
+            .animatedTransformation { canvas ->
+                val color = colors[decodedFrames++ % colors.size]
+                canvas.clear(color)
+                if (color ushr 24 == 255) PixelOpacity.OPAQUE else PixelOpacity.TRANSLUCENT
+            }
+            .build()
+            .extras
+        val result = decode(
+            resource = "animated_infinite.gif",
+            timeSource = timeSource,
+            options = Options(
+                context = context,
+                size = Size(320, 320),
+                precision = Precision.EXACT,
+                extras = extras,
+            ),
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+
+        repeat(2) {
+            colors.forEachIndexed { index, color ->
+                image.toBitmap().use { bitmap ->
+                    assertEquals(color, bitmap.getColor(bitmap.width / 2, bitmap.height / 2))
+                }
+                runCurrent()
+                timeSource.advanceBy(image.frameDurationMillis(index).milliseconds)
+            }
+        }
+    }
+
+    @Test
     fun factoryOnlyHandlesAnimatedImages() {
         val factory = AnimatedSkiaImageDecoder.Factory()
         val expectedResults = mapOf(

@@ -11,7 +11,6 @@ import coil3.gif.internal.FrameBitmapPool
 import coil3.gif.internal.WorkingBitmaps
 import coil3.gif.internal.byteSize
 import coil3.gif.internal.safeFrameDuration
-import coil3.gif.internal.scalePixelsTo
 import coil3.util.IntPair
 import coil3.util.component1
 import coil3.util.component2
@@ -118,18 +117,22 @@ class AnimatedSkiaImage internal constructor(
 
     // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
     // The initialization block below owns cleanup if predecoding fails.
-    private val bitmapPool = if (bufferedFrames.size > 1 && animatedTransformation == null) {
-        FrameBitmapPool(outputImageInfo, bufferedFrames.size)
+    private val bitmapPool = if (bufferedFrames.size > 1) {
+        FrameBitmapPool(
+            imageInfo = outputImageInfo,
+            capacity = bufferedFrames.size,
+        )
     } else {
         null
     }
     private val workingBitmaps = try {
-        if (bitmapPool == null || decodeImageInfo != outputImageInfo ||
+        val needsWorkingOutput = bitmapPool == null || animatedTransformation != null
+        if (needsWorkingOutput || decodeImageInfo != outputImageInfo ||
             requiredFrameIndices.any { it != NO_FRAME }
         ) {
             WorkingBitmaps(
                 decodeImageInfo = decodeImageInfo,
-                outputImageInfo = if (bitmapPool == null) outputImageInfo else decodeImageInfo,
+                outputImageInfo = if (needsWorkingOutput) outputImageInfo else decodeImageInfo,
                 animatedTransformation = animatedTransformation,
             )
         } else {
@@ -613,12 +616,12 @@ class AnimatedSkiaImage internal constructor(
         )
         lastDecodedFrameIndex = frameIndex
 
-        if (slot == null) {
-            return SkiaImage.makeFromBitmap(checkNotNull(workingBitmaps).prepareOutput())
+        val output = workingBitmaps?.prepareOutput()
+        return if (slot == null) {
+            SkiaImage.makeFromBitmap(checkNotNull(output))
+        } else {
+            slot.publish(output)
         }
-        workingBitmaps?.decode?.scalePixelsTo(slot.bitmap)
-        slot.bitmap.notifyPixelsChanged()
-        return slot.image
     }
 
     private fun priorFrameFor(frameIndex: Int): Int {
