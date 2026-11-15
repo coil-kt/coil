@@ -7,9 +7,11 @@ import coil3.Canvas
 import coil3.Image
 import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
 import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
+import coil3.gif.internal.BitmapSwapChain
 import coil3.gif.internal.WorkingBitmaps
 import coil3.gif.internal.byteSize
 import coil3.gif.internal.safeFrameDuration
+import coil3.gif.internal.scalePixelsTo
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -112,15 +114,31 @@ class AnimatedSkiaImage internal constructor(
 
     // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
     // The initialization block below owns cleanup if predecoding fails.
-    private val workingBitmaps = WorkingBitmaps(
-        decodeImageInfo = decodeImageInfo,
-        outputImageInfo = outputImageInfo,
-        animatedTransformation = animatedTransformation,
-    )
+    private val swapChain = if (bufferedFrames.size == 2 && animatedTransformation == null) {
+        BitmapSwapChain(outputImageInfo)
+    } else {
+        null
+    }
+    private val workingBitmaps = try {
+        if (swapChain == null || decodeImageInfo != outputImageInfo ||
+            requiredFrameIndices.any { it != NO_FRAME }
+        ) {
+            WorkingBitmaps(
+                decodeImageInfo = decodeImageInfo,
+                outputImageInfo = if (swapChain == null) outputImageInfo else decodeImageInfo,
+                animatedTransformation = animatedTransformation,
+            )
+        } else {
+            null
+        }
+    } catch (throwable: Throwable) {
+        swapChain?.close()
+        throw throwable
+    }
     override val size = encodedDataSize +
         (frameCount.toLong() * (Int.SIZE_BYTES + 1 + Long.SIZE_BYTES)) +
-        workingBitmaps.decode.imageInfo.byteSize() +
-        (workingBitmaps.output?.imageInfo?.byteSize() ?: 0L) +
+        (workingBitmaps?.decode?.imageInfo?.byteSize() ?: 0L) +
+        (workingBitmaps?.output?.imageInfo?.byteSize() ?: 0L) +
         (bufferedFrames.size * outputImageInfo.byteSize())
 
     init {
@@ -130,11 +148,7 @@ class AnimatedSkiaImage internal constructor(
             }
         } catch (throwable: Throwable) {
             if (throwable !is Exception || !hasDecodeFailed) {
-                try {
-                    bufferedFrames.forEach { it?.image?.close() }
-                } finally {
-                    workingBitmaps.close()
-                }
+                closeBitmaps()
                 throw throwable
             }
         }
@@ -233,21 +247,27 @@ class AnimatedSkiaImage internal constructor(
 
         coroutineScope.cancel()
         synchronized(decodeLock) {
-            val images = synchronized(frameLock) {
-                bufferedFrames.mapNotNull { it?.image }.also {
+            try {
+                synchronized(frameLock) {
+                    closeBitmaps()
                     bufferedFrames.fill(null)
                     lastDrawnFrameIndex = NO_FRAME
                 }
-            }
-            try {
-                images.forEach { it.close() }
             } finally {
-                try {
-                    workingBitmaps.close()
-                } finally {
-                    codec.close()
-                }
+                codec.close()
             }
+        }
+    }
+
+    private fun closeBitmaps() {
+        try {
+            if (swapChain != null) {
+                swapChain.close()
+            } else {
+                bufferedFrames.forEach { it?.image?.close() }
+            }
+        } finally {
+            workingBitmaps?.close()
         }
     }
 
@@ -504,10 +524,12 @@ class AnimatedSkiaImage internal constructor(
             if (!shouldDecodeFrame(frameIndex)) return
 
             synchronized(decodeLock) {
-                if (!shouldDecodeFrame(frameIndex)) return
+                val slot = synchronized(frameLock) {
+                    if (!shouldDecodeFrameLocked(frameIndex)) return
+                    reserveDecodeSlotLocked()
+                }
 
-                // Preserve the buffered frames until their replacement has decoded successfully.
-                val image = decodeFrame(frameIndex)
+                val image = decodeFrame(frameIndex, slot)
                 var isRetained = false
                 try {
                     val replacedFrame = synchronized(frameLock) {
@@ -521,9 +543,9 @@ class AnimatedSkiaImage internal constructor(
                             null
                         }
                     }
-                    replacedFrame?.image?.close()
+                    if (slot == null) replacedFrame?.image?.close()
                 } finally {
-                    if (!isRetained) image.close()
+                    if (slot == null && !isRetained) image.close()
                 }
             }
         } catch (exception: CancellationException) {
@@ -535,11 +557,25 @@ class AnimatedSkiaImage internal constructor(
     }
 
     private fun shouldDecodeFrame(frameIndex: Int): Boolean {
-        return synchronized(frameLock) {
-            animationState.canDecodeFrames &&
-                findBufferedFrameLocked(frameIndex) == null &&
-                isInBufferWindow(frameIndex, bufferWindowStart)
-        }
+        return synchronized(frameLock) { shouldDecodeFrameLocked(frameIndex) }
+    }
+
+    private fun shouldDecodeFrameLocked(frameIndex: Int): Boolean {
+        return animationState.canDecodeFrames &&
+            findBufferedFrameLocked(frameIndex) == null &&
+            isInBufferWindow(frameIndex, bufferWindowStart)
+    }
+
+    private fun reserveDecodeSlotLocked(): BitmapSwapChain.Slot? {
+        val swapChain = swapChain ?: return null
+        val render = findBufferedFrameLocked(lastDrawnFrameIndex) ?: lastBufferedFrameLocked()
+        val slot = swapChain.decodeSlot(render?.image)
+
+        // Remove the slot from the buffer before overwriting its pixels. The most recently drawn
+        // frame stays available while decoding and if a decode fails.
+        val index = bufferedFrames.indexOfFirst { it?.image === slot.image }
+        if (index >= 0) removeBufferedFrameLocked(index)
+        return slot
     }
 
     private fun addBufferedFrameLocked(frame: Frame): Frame? {
@@ -553,24 +589,35 @@ class AnimatedSkiaImage internal constructor(
             bufferedFrame != null &&
                 !isInBufferWindow(bufferedFrame.index, bufferWindowStart)
         }.takeIf { it >= 0 } ?: 0
-        val replacedFrame = bufferedFrames[replacedIndex]
-        // Preserve decode order so failure fallback can retain the newest valid frame.
-        for (index in replacedIndex until bufferedFrames.lastIndex) {
-            bufferedFrames[index] = bufferedFrames[index + 1]
-        }
+        val replacedFrame = removeBufferedFrameLocked(replacedIndex)
         bufferedFrames[bufferedFrames.lastIndex] = frame
         return replacedFrame
     }
 
-    private fun decodeFrame(frameIndex: Int): SkiaImage {
+    private fun removeBufferedFrameLocked(index: Int): Frame? {
+        val frame = bufferedFrames[index]
+        // Preserve decode order so failure fallback can retain the newest valid frame.
+        for (slot in index until bufferedFrames.lastIndex) {
+            bufferedFrames[slot] = bufferedFrames[slot + 1]
+        }
+        bufferedFrames[bufferedFrames.lastIndex] = null
+        return frame
+    }
+
+    private fun decodeFrame(frameIndex: Int, slot: BitmapSwapChain.Slot?): SkiaImage {
         codec.readPixels(
-            bitmap = workingBitmaps.decode,
+            bitmap = workingBitmaps?.decode ?: checkNotNull(slot).bitmap,
             frame = frameIndex,
             priorFrame = priorFrameFor(frameIndex),
         )
         lastDecodedFrameIndex = frameIndex
 
-        return SkiaImage.makeFromBitmap(workingBitmaps.prepareOutput())
+        if (slot == null) {
+            return SkiaImage.makeFromBitmap(checkNotNull(workingBitmaps).prepareOutput())
+        }
+        workingBitmaps?.decode?.scalePixelsTo(slot.bitmap)
+        slot.bitmap.notifyPixelsChanged()
+        return slot.image
     }
 
     private fun priorFrameFor(frameIndex: Int): Int {

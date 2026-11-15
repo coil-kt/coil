@@ -57,7 +57,7 @@ internal class WorkingBitmaps(
     }
 }
 
-private fun allocateBitmap(imageInfo: ImageInfo): Bitmap {
+internal fun allocateBitmap(imageInfo: ImageInfo): Bitmap {
     val bitmap = Bitmap()
     try {
         check(bitmap.allocPixels(imageInfo)) { "Unable to allocate pixels." }
@@ -68,7 +68,7 @@ private fun allocateBitmap(imageInfo: ImageInfo): Bitmap {
     }
 }
 
-private fun Bitmap.scalePixelsTo(destination: Bitmap) {
+internal fun Bitmap.scalePixelsTo(destination: Bitmap) {
     checkNotNull(peekPixels()).use { source ->
         checkNotNull(destination.peekPixels()).use { destinationPixels ->
             check(source.scalePixels(destinationPixels, SamplingMode.DEFAULT)) {
