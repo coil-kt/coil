@@ -2,7 +2,9 @@ package coil3.gif
 
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateObserver
+import coil3.Bitmap
 import coil3.BitmapImage
+import coil3.Canvas
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.decode.DecodeResult
@@ -51,6 +53,7 @@ import okio.fakefilesystem.FakeFileSystem
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Color
 import org.jetbrains.skia.Data
+import org.jetbrains.skia.PictureRecorder
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedSkiaImageDecoderTest {
@@ -59,7 +62,7 @@ class AnimatedSkiaImageDecoderTest {
     private val imagesToClose = mutableListOf<AnimatedSkiaImage>()
 
     @AfterTest
-    fun tearDown() {
+    fun after() {
         try {
             imagesToClose.forEach(AnimatedSkiaImage::close)
         } finally {
@@ -561,6 +564,34 @@ class AnimatedSkiaImageDecoderTest {
     }
 
     @Test
+    fun recordedFrameSurvivesEvictionAndClose() = runTest {
+        val timeSource = FakeTimeSource()
+        val result = decode(
+            result = Buffer().write(INDEPENDENT_FRAMES_GIF).asSourceResult(),
+            timeSource = timeSource,
+            bufferedFramesCount = 1,
+        )
+        val image = assertIs<AnimatedSkiaImage>(result.image)
+        PictureRecorder().use { recorder ->
+            val canvas = recorder.beginRecording(0f, 0f, image.width.toFloat(), image.height.toFloat())
+            image.draw(canvas)
+            recorder.finishRecordingAsPicture().use { firstFrame ->
+                timeSource.advanceBy(100.milliseconds)
+                image.toBitmap().use { assertEquals(Color.GREEN, it.getColor(0, 0)) }
+                timeSource.advanceBy(100.milliseconds)
+                image.toBitmap().use { assertEquals(Color.BLUE, it.getColor(0, 0)) }
+                image.close()
+
+                Bitmap().use { bitmap ->
+                    assertTrue(bitmap.allocN32Pixels(image.width, image.height))
+                    Canvas(bitmap).use { it.drawPicture(firstFrame) }
+                    assertEquals(Color.RED, bitmap.getColor(0, 0))
+                }
+            }
+        }
+    }
+
+    @Test
     fun restorePreviousDisposalCompositesFramesCorrectly() = runTest {
         val timeSource = FakeTimeSource()
         val result = decode(
@@ -945,6 +976,14 @@ class AnimatedSkiaImageDecoderTest {
         private val CORRUPT_FRAME_GIF = """
             47494638396102000200800000000000ffffff21f90401010000002c000000000100010000
             020244010021f90401010000002c0000000001000100000202ffff003b
+        """.trimIndent().replace("\n", "").decodeHex()
+
+        // Three opaque, full-canvas frames: red, green, and blue.
+        private val INDEPENDENT_FRAMES_GIF = """
+            47494638396101000100810000ff000000ff000000ff000000
+            21f904040a0000002c0000000001000100000202440100
+            21f904040a0000002c00000000010001000002024c0100
+            21f904040a0000002c00000000010001000002025401003b
         """.trimIndent().replace("\n", "").decodeHex()
 
         private val DISPOSAL_GIF = """

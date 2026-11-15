@@ -39,6 +39,6 @@ To transform the pixel data of each frame of an animated image, see [AnimatedTra
 
 - `GifDecoder` supports all Android API levels but is slower than `AnimatedImageDecoder`.
 - `AnimatedImageDecoder` is powered by Android's [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API (API 28+) and supports animated WebP and HEIF (API 30+).
-- `AnimatedSkiaImageDecoder` uses Skia for decoding. By default, it buffers at most two decoded frame snapshots, in addition to the encoded image data and reusable decode/output bitmaps. Pass `bufferedFramesCount` to configure the frame buffer. Single-frame GIFs are decoded to a `BitmapImage` and release the encoded data immediately.
+- `AnimatedSkiaImageDecoder` uses Skia for decoding. By default, it buffers at most two decoded frame snapshots, in addition to the encoded image data and a reusable decode bitmap when needed. Pass `bufferedFramesCount` to configure the frame buffer. Single-frame GIFs are decoded to a `BitmapImage` and release the encoded data immediately.
 - `AnimatedSkiaImageDecoder` depends on the Compose runtime and will not animate properly in other environments.
 - JavaScript and WebAssembly targets are not supported.

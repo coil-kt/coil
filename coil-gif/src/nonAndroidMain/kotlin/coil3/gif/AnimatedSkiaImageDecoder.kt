@@ -1,14 +1,12 @@
 package coil3.gif
 
-import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.asImage
 import coil3.decode.DecodeResult
 import coil3.decode.DecodeUtils
 import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
-import coil3.gif.internal.WorkingBitmaps
+import coil3.gif.internal.FrameBitmapDecoder
 import coil3.request.Options
 import coil3.request.maxBitmapSize
 import coil3.size.Precision
@@ -21,7 +19,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import okio.BufferedSource
 import okio.use
-import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.ImageInfo
@@ -59,13 +56,17 @@ class AnimatedSkiaImageDecoder(
                 outputImageInfo.height < sourceImageInfo.height
             val decodeImageInfo = computeDecodeImageInfo(sourceImageInfo, outputImageInfo)
             if (frameCount == 1) {
+                val frameDecoder = FrameBitmapDecoder(
+                    decodeImageInfo = decodeImageInfo,
+                    outputImageInfo = outputImageInfo,
+                    animatedTransformation = options.animatedTransformation,
+                )
                 return DecodeResult(
-                    image = decodeStaticImage(
-                        codec = codec,
-                        decodeImageInfo = decodeImageInfo,
-                        outputImageInfo = outputImageInfo,
-                        animatedTransformation = options.animatedTransformation,
-                    ),
+                    image = try {
+                        frameDecoder.decodeStaticFrame(codec)
+                    } finally {
+                        frameDecoder.close()
+                    },
                     isSampled = isSampled,
                 )
             }
@@ -138,32 +139,6 @@ class AnimatedSkiaImageDecoder(
             width = minOf(source.width, output.width),
             height = minOf(source.height, output.height),
         )
-    }
-
-    private fun decodeStaticImage(
-        codec: Codec,
-        decodeImageInfo: ImageInfo,
-        outputImageInfo: ImageInfo,
-        animatedTransformation: AnimatedTransformation?,
-    ): BitmapImage {
-        val workingBitmaps = WorkingBitmaps(
-            decodeImageInfo = decodeImageInfo,
-            outputImageInfo = outputImageInfo,
-            animatedTransformation = animatedTransformation,
-        )
-        var retainedBitmap: Bitmap? = null
-        try {
-            codec.readPixels(workingBitmaps.decode)
-            val resultBitmap = workingBitmaps.prepareOutput()
-            resultBitmap.setImmutable()
-
-            val image = resultBitmap.asImage()
-            // Keep the bitmap that backs the returned image open.
-            retainedBitmap = resultBitmap
-            return image
-        } finally {
-            workingBitmaps.closeExcept(retainedBitmap)
-        }
     }
 
     /**

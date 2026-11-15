@@ -7,7 +7,7 @@ import coil3.Canvas
 import coil3.Image
 import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
 import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
-import coil3.gif.internal.WorkingBitmaps
+import coil3.gif.internal.FrameBitmapDecoder
 import coil3.gif.internal.byteSize
 import coil3.gif.internal.safeFrameDuration
 import kotlin.time.Duration.Companion.milliseconds
@@ -112,15 +112,15 @@ class AnimatedSkiaImage internal constructor(
 
     // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
     // The initialization block below owns cleanup if predecoding fails.
-    private val workingBitmaps = WorkingBitmaps(
+    private val frameDecoder = FrameBitmapDecoder(
         decodeImageInfo = decodeImageInfo,
         outputImageInfo = outputImageInfo,
         animatedTransformation = animatedTransformation,
+        needsPriorFrame = requiredFrameIndices.any { it != NO_FRAME },
     )
     override val size = encodedDataSize +
         (frameCount.toLong() * (Int.SIZE_BYTES + 1 + Long.SIZE_BYTES)) +
-        workingBitmaps.decode.imageInfo.byteSize() +
-        (workingBitmaps.output?.imageInfo?.byteSize() ?: 0L) +
+        frameDecoder.workingBitmapSize +
         (bufferedFrames.size * outputImageInfo.byteSize())
 
     init {
@@ -133,7 +133,7 @@ class AnimatedSkiaImage internal constructor(
                 try {
                     bufferedFrames.forEach { it?.image?.close() }
                 } finally {
-                    workingBitmaps.close()
+                    frameDecoder.close()
                 }
                 throw throwable
             }
@@ -243,7 +243,7 @@ class AnimatedSkiaImage internal constructor(
                 images.forEach { it.close() }
             } finally {
                 try {
-                    workingBitmaps.close()
+                    frameDecoder.close()
                 } finally {
                     codec.close()
                 }
@@ -563,14 +563,14 @@ class AnimatedSkiaImage internal constructor(
     }
 
     private fun decodeFrame(frameIndex: Int): SkiaImage {
-        codec.readPixels(
-            bitmap = workingBitmaps.decode,
+        val image = frameDecoder.decodeAnimatedFrame(
+            codec = codec,
             frame = frameIndex,
             priorFrame = priorFrameFor(frameIndex),
         )
         lastDecodedFrameIndex = frameIndex
 
-        return SkiaImage.makeFromBitmap(workingBitmaps.prepareOutput())
+        return image
     }
 
     private fun priorFrameFor(frameIndex: Int): Int {
