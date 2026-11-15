@@ -7,11 +7,14 @@ import coil3.Canvas
 import coil3.Image
 import coil3.gif.AnimatedImageDecoderUtils.ENCODED_LOOP_COUNT
 import coil3.gif.AnimatedImageDecoderUtils.REPEAT_INFINITE
-import coil3.gif.internal.BitmapSwapChain
+import coil3.gif.internal.FrameBitmapPool
 import coil3.gif.internal.WorkingBitmaps
 import coil3.gif.internal.byteSize
 import coil3.gif.internal.safeFrameDuration
 import coil3.gif.internal.scalePixelsTo
+import coil3.util.IntPair
+import coil3.util.component1
+import coil3.util.component2
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -22,9 +25,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.AnimationDisposalMode
 import org.jetbrains.skia.Codec
@@ -106,33 +111,32 @@ class AnimatedSkiaImage internal constructor(
 
     // Register and cancel jobs under frameLock, but start them outside it so an inline dispatcher
     // cannot acquire decodeLock while holding frameLock.
-    private var prefetchJob: Job? = null
-    private var prefetchWindowStart = NO_FRAME
+    private var prefetcher: FramePrefetcher? = null
     private var invalidationJob: Job? = null
     private var invalidationFrameIndex = NO_FRAME
     private var invalidationIteration = -1L
 
     // Allocate native pixel buffers after metadata and state so failures there cannot strand them.
     // The initialization block below owns cleanup if predecoding fails.
-    private val swapChain = if (bufferedFrames.size == 2 && animatedTransformation == null) {
-        BitmapSwapChain(outputImageInfo)
+    private val bitmapPool = if (bufferedFrames.size > 1 && animatedTransformation == null) {
+        FrameBitmapPool(outputImageInfo, bufferedFrames.size)
     } else {
         null
     }
     private val workingBitmaps = try {
-        if (swapChain == null || decodeImageInfo != outputImageInfo ||
+        if (bitmapPool == null || decodeImageInfo != outputImageInfo ||
             requiredFrameIndices.any { it != NO_FRAME }
         ) {
             WorkingBitmaps(
                 decodeImageInfo = decodeImageInfo,
-                outputImageInfo = if (swapChain == null) outputImageInfo else decodeImageInfo,
+                outputImageInfo = if (bitmapPool == null) outputImageInfo else decodeImageInfo,
                 animatedTransformation = animatedTransformation,
             )
         } else {
             null
         }
     } catch (throwable: Throwable) {
-        swapChain?.close()
+        bitmapPool?.close()
         throw throwable
     }
     override val size = encodedDataSize +
@@ -261,8 +265,8 @@ class AnimatedSkiaImage internal constructor(
 
     private fun closeBitmaps() {
         try {
-            if (swapChain != null) {
-                swapChain.close()
+            if (bitmapPool != null) {
+                bitmapPool.close()
             } else {
                 bufferedFrames.forEach { it?.image?.close() }
             }
@@ -357,7 +361,6 @@ class AnimatedSkiaImage internal constructor(
                 retainedFrame = null
                 bufferWindowStart = 0
                 animationStartTime = timeSource.markNow()
-                prefetchWindowStart = NO_FRAME
                 invalidationFrameIndex = NO_FRAME
                 invalidationIteration = -1L
                 true
@@ -390,8 +393,8 @@ class AnimatedSkiaImage internal constructor(
     }
 
     private fun cancelAnimationJobsLocked() {
-        prefetchJob?.cancel()
-        prefetchJob = null
+        prefetcher?.job?.cancel()
+        prefetcher = null
         invalidationJob?.cancel()
         invalidationJob = null
     }
@@ -448,35 +451,20 @@ class AnimatedSkiaImage internal constructor(
         } else {
             bufferedFrames.size
         }
-        val job = synchronized(frameLock) {
+        val prefetcher = synchronized(frameLock) {
             if (!animationState.isRunning || animationStartTime !== startTime) return
-            if (count <= 1) {
-                // Skipping to the final frame can leave a prefetch queued from an earlier loop.
-                prefetchJob?.cancel()
-                prefetchJob = null
-                return
+            val window = if (count > 1 && !isBufferWindowCompleteLocked(frameIndex, count)) {
+                IntPair(frameIndex, count)
+            } else {
+                EMPTY_PREFETCH_WINDOW
             }
-            if (isBufferWindowCompleteLocked(frameIndex, count)) return
-            if (prefetchWindowStart == frameIndex && prefetchJob?.isActive == true) return
-
-            prefetchJob?.cancel()
-            prefetchWindowStart = frameIndex
-            coroutineScope.launch(start = CoroutineStart.LAZY) {
-                for (offset in 1 until count) {
-                    currentCoroutineContext().ensureActive()
-                    try {
-                        ensureFrame(nextFrameIndex(frameIndex, offset))
-                    } catch (exception: CancellationException) {
-                        throw exception
-                    } catch (_: Exception) {
-                        return@launch
-                    }
-                }
-            }.also {
-                prefetchJob = it
-            }
+            if ((this.prefetcher?.window ?: EMPTY_PREFETCH_WINDOW) == window) return
+            val prefetcher = this.prefetcher ?: FramePrefetcher().also { this.prefetcher = it }
+            prefetcher.window = window
+            prefetcher
         }
-        job.start()
+        prefetcher.wakeups.tryEmit(Unit)
+        prefetcher.job.start()
     }
 
     private fun scheduleInvalidation(frameIndex: Int, iteration: Long, startTime: TimeMark) {
@@ -529,14 +517,18 @@ class AnimatedSkiaImage internal constructor(
                     reserveDecodeSlotLocked()
                 }
 
-                val image = decodeFrame(frameIndex, slot)
+                var image: SkiaImage? = null
                 var isRetained = false
                 try {
+                    val decodedImage = decodeFrame(frameIndex, slot)
+                    image = decodedImage
                     val replacedFrame = synchronized(frameLock) {
                         if (animationState.canDecodeFrames &&
                             isInBufferWindow(frameIndex, bufferWindowStart)
                         ) {
-                            val replacedFrame = addBufferedFrameLocked(Frame(frameIndex, image))
+                            val replacedFrame = addBufferedFrameLocked(
+                                Frame(frameIndex, decodedImage, slot),
+                            )
                             isRetained = true
                             replacedFrame
                         } else {
@@ -545,7 +537,13 @@ class AnimatedSkiaImage internal constructor(
                     }
                     if (slot == null) replacedFrame?.image?.close()
                 } finally {
-                    if (slot == null && !isRetained) image.close()
+                    if (!isRetained) {
+                        if (slot == null) {
+                            image?.close()
+                        } else {
+                            synchronized(frameLock) { checkNotNull(bitmapPool).recycle(slot) }
+                        }
+                    }
                 }
             }
         } catch (exception: CancellationException) {
@@ -566,16 +564,19 @@ class AnimatedSkiaImage internal constructor(
             isInBufferWindow(frameIndex, bufferWindowStart)
     }
 
-    private fun reserveDecodeSlotLocked(): BitmapSwapChain.Slot? {
-        val swapChain = swapChain ?: return null
-        val render = findBufferedFrameLocked(lastDrawnFrameIndex) ?: lastBufferedFrameLocked()
-        val slot = swapChain.decodeSlot(render?.image)
+    private fun reserveDecodeSlotLocked(): FrameBitmapPool.Slot? {
+        val pool = bitmapPool ?: return null
+        pool.take()?.let { return it }
 
-        // Remove the slot from the buffer before overwriting its pixels. The most recently drawn
-        // frame stays available while decoding and if a decode fails.
-        val index = bufferedFrames.indexOfFirst { it?.image === slot.image }
-        if (index >= 0) removeBufferedFrameLocked(index)
-        return slot
+        // Remove the frame before overwriting its pixels. Keep the last draw available if decoding
+        // fails, and prefer evicting frames outside the new prefetch window.
+        val index = bufferedFrames.indexOfFirst { frame ->
+            frame != null && frame.index != lastDrawnFrameIndex &&
+                !isInBufferWindow(frame.index, bufferWindowStart)
+        }.takeIf { it >= 0 } ?: bufferedFrames.indexOfFirst { frame ->
+            frame != null && frame.index != lastDrawnFrameIndex
+        }
+        return checkNotNull(removeBufferedFrameLocked(index)?.slot)
     }
 
     private fun addBufferedFrameLocked(frame: Frame): Frame? {
@@ -604,7 +605,7 @@ class AnimatedSkiaImage internal constructor(
         return frame
     }
 
-    private fun decodeFrame(frameIndex: Int, slot: BitmapSwapChain.Slot?): SkiaImage {
+    private fun decodeFrame(frameIndex: Int, slot: FrameBitmapPool.Slot?): SkiaImage {
         codec.readPixels(
             bitmap = workingBitmaps?.decode ?: checkNotNull(slot).bitmap,
             frame = frameIndex,
@@ -660,6 +661,34 @@ class AnimatedSkiaImage internal constructor(
         return bufferedFrames.lastOrNull { it != null }
     }
 
+    private inner class FramePrefetcher {
+
+        // A wakeup reads the latest window under frameLock, even when draws signal out of order.
+        val wakeups = MutableSharedFlow<Unit>(
+            replay = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+        var window = EMPTY_PREFETCH_WINDOW
+
+        val job = coroutineScope.launch(start = CoroutineStart.LAZY) {
+            wakeups.collect {
+                val request = synchronized(frameLock) { window }
+                val (frameIndex, count) = request
+                for (offset in 1 until count) {
+                    currentCoroutineContext().ensureActive()
+                    if (synchronized(frameLock) { window != request }) return@collect
+                    try {
+                        ensureFrame(nextFrameIndex(frameIndex, offset))
+                    } catch (exception: CancellationException) {
+                        throw exception
+                    } catch (_: Exception) {
+                        return@collect
+                    }
+                }
+            }
+        }
+    }
+
     private enum class AnimationState(
         val canDecodeFrames: Boolean,
         val isRunning: Boolean,
@@ -675,7 +704,9 @@ class AnimatedSkiaImage internal constructor(
     private class Frame(
         val index: Int,
         val image: SkiaImage,
+        val slot: FrameBitmapPool.Slot?,
     )
 }
 
 private const val NO_FRAME = -1
+private val EMPTY_PREFETCH_WINDOW = IntPair(NO_FRAME, 0)

@@ -529,21 +529,50 @@ class AnimatedSkiaImageDecoderTest {
 
     @Test
     fun frameBufferRemainsBoundedAcrossManyIterations() = runTest {
+        for (bufferedFramesCount in listOf(2, 3, 6)) {
+            val timeSource = FakeTimeSource()
+            val result = decode("animated_infinite.gif", timeSource, bufferedFramesCount)
+            val image = assertIs<AnimatedSkiaImage>(result.image)
+            val bufferSize = minOf(bufferedFramesCount, 5)
+            assertEquals(bufferSize, image.bufferedFrameCount)
+
+            repeat(4) {
+                for (frame in 1..5) {
+                    assertFrameIsSimilar(result, frame)
+                    runCurrent()
+                    assertEquals(bufferSize, image.bufferedFrameCount)
+                    timeSource.advanceBy(400.milliseconds)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun prefetchStopsAfterFillingTheWindowWhenDrawsStop() = runTest {
         val timeSource = FakeTimeSource()
+        var decodedFrames = 0
+        val extras = ImageRequest.Builder(context)
+            .animatedTransformation {
+                decodedFrames++
+                PixelOpacity.UNCHANGED
+            }
+            .build()
+            .extras
         val result = decode(
             resource = "animated_infinite.gif",
             timeSource = timeSource,
-            bufferedFramesCount = 2,
+            bufferedFramesCount = 3,
+            options = Options(context, extras = extras),
         )
-        val image = assertIs<AnimatedSkiaImage>(result.image)
-        assertEquals(2, image.bufferedFrameCount)
+        assertFrameIsSimilar(result, frame = 1)
+        timeSource.advanceBy(400.milliseconds)
+        assertFrameIsSimilar(result, frame = 2)
+        runCurrent()
+        assertEquals(4, decodedFrames)
 
-        repeat(100) {
-            result.image.toBitmap().close()
-            runCurrent()
-            assertEquals(2, image.bufferedFrameCount)
-            timeSource.advanceBy(400.milliseconds)
-        }
+        timeSource.advanceBy(10.seconds)
+        advanceTimeBy(10.seconds)
+        assertEquals(4, decodedFrames)
     }
 
     @Test
