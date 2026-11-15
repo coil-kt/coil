@@ -120,6 +120,7 @@ fun Project.addAllMultiplatformTargets(
     }
 }
 
+// https://youtrack.jetbrains.com/issue/KT-68813
 fun KotlinJsTargetDsl.configureWebBinaries(includeLibrary: Boolean = false) {
     val executables = binaries.executable()
     val otherBinaries = if (includeLibrary) {
