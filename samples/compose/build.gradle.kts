@@ -1,5 +1,6 @@
 import coil3.applyCoilHierarchyTemplate
 import coil3.composeDesktopCurrentOsDependency
+import coil3.configureWebBinaries
 import coil3.multiplatformAndroidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -46,7 +47,7 @@ kotlin {
                 outputFileName = "coilSample.js"
             }
         }
-        binaries.executable()
+        configureWebBinaries()
     }
 
     @OptIn(ExperimentalWasmDsl::class)
@@ -57,7 +58,7 @@ kotlin {
                 outputFileName = "coilSample.js"
             }
         }
-        binaries.executable()
+        configureWebBinaries()
     }
 
     arrayOf(
@@ -92,22 +93,5 @@ kotlin {
                 implementation(composeDesktopCurrentOsDependency())
             }
         }
-    }
-}
-
-// https://youtrack.jetbrains.com/issue/KT-56025
-afterEvaluate {
-    tasks {
-        val configureJs: Task.() -> Unit = {
-            dependsOn(named("jsDevelopmentExecutableCompileSync"))
-            dependsOn(named("jsProductionExecutableCompileSync"))
-            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
-
-            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(named("wasmJsProductionExecutableCompileSync"))
-            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
-        }
-        named("jsBrowserProductionWebpack").configure(configureJs)
-        named("wasmJsBrowserProductionWebpack").configure(configureJs)
     }
 }
