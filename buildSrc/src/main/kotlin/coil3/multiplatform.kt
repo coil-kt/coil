@@ -1,15 +1,16 @@
 package coil3
 
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBinaryMode.DEVELOPMENT
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.npm.npmProject
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
@@ -41,8 +42,7 @@ fun Project.addAllMultiplatformTargets(
                         enabled = false
                     }
                 }
-                binaries.executable()
-                binaries.library()
+                configureWebBinaries(includeLibrary = true)
             }
 
             if (enableWasm) {
@@ -86,8 +86,7 @@ fun Project.addAllMultiplatformTargets(
                             enabled = false
                         }
                     }
-                    binaries.executable()
-                    binaries.library()
+                    configureWebBinaries(includeLibrary = true)
                 }
             }
 
@@ -117,48 +116,25 @@ fun Project.addAllMultiplatformTargets(
             }
         }
 
-        applyKotlinJsImplicitDependencyWorkaround(enableWasm)
         createSkikoWasmJsRuntimeDependency(skikoVersion)
     }
 }
 
-// https://youtrack.jetbrains.com/issue/KT-56025
-fun Project.applyKotlinJsImplicitDependencyWorkaround(enableWasm: Boolean = true) {
-    tasks {
-        val configureJs: Task.() -> Unit = {
-            dependsOn(named("jsDevelopmentLibraryCompileSync"))
-            dependsOn(named("jsDevelopmentExecutableCompileSync"))
-            dependsOn(named("jsProductionLibraryCompileSync"))
-            dependsOn(named("jsProductionExecutableCompileSync"))
-            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
-
-            dependsOn(getByPath(":coil:jsDevelopmentLibraryCompileSync"))
-            dependsOn(getByPath(":coil:jsDevelopmentExecutableCompileSync"))
-            dependsOn(getByPath(":coil:jsProductionLibraryCompileSync"))
-            dependsOn(getByPath(":coil:jsProductionExecutableCompileSync"))
-            dependsOn(getByPath(":coil:jsTestTestDevelopmentExecutableCompileSync"))
-        }
-        named("jsBrowserProductionWebpack").configure(configureJs)
-        named("jsBrowserProductionLibraryDistribution").configure(configureJs)
-        named("jsNodeProductionLibraryDistribution").configure(configureJs)
-
-        if (enableWasm) {
-            val configureWasmJs: Task.() -> Unit = {
-                dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
-                dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-                dependsOn(named("wasmJsProductionLibraryCompileSync"))
-                dependsOn(named("wasmJsProductionExecutableCompileSync"))
-                dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
-
-                dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
-                dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
-                dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
-                dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
-                dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
-            }
-            named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
-            named("wasmJsBrowserProductionLibraryDistribution").configure(configureWasmJs)
-            named("wasmJsNodeProductionLibraryDistribution").configure(configureWasmJs)
+// https://youtrack.jetbrains.com/issue/KT-68813
+fun KotlinJsTargetDsl.configureWebBinaries(includeLibrary: Boolean = false) {
+    val executables = binaries.executable()
+    val otherBinaries = if (includeLibrary) {
+        executables + binaries.library().filter { it.mode == DEVELOPMENT }
+    } else {
+        executables.filter { it.mode == DEVELOPMENT }
+    }
+    for (binary in otherBinaries) {
+        // Keep the npm package's kotlin/ entry point for its primary production binary.
+        // Other binaries need sibling directories so their sync tasks can't overwrite it.
+        val directoryName = "kotlin-${binary.name}"
+        val outputDirectory = binary.compilation.npmProject.dir.map { it.dir(directoryName).asFile }
+        binary.linkSyncTask.configure {
+            destinationDirectory.set(outputDirectory)
         }
     }
 }

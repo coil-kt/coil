@@ -1,3 +1,4 @@
+import coil3.configureWebBinaries
 import coil3.createSkikoWasmJsRuntimeDependency
 
 plugins {
@@ -15,7 +16,7 @@ kotlin {
                 }
             }
         }
-        binaries.executable()
+        configureWebBinaries()
     }
 
     sourceSets {
