@@ -8,7 +8,7 @@ plugins {
     id("dev.drewhamilton.poko")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko)
+addAllMultiplatformTargets()
 multiplatformAndroidLibrary(name = "coil3.test")
 
 kotlin {

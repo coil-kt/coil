@@ -33,4 +33,4 @@ kotlin {
     }
 }
 
-createSkikoWasmJsRuntimeDependency(libs.versions.skiko)
+createSkikoWasmJsRuntimeDependency()
