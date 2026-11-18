@@ -58,13 +58,18 @@ android {
 As of Coil `3.2.0`, Java 11 bytecode is required for `coil-compose` and `coil-compose-core`:
 
 ```kotlin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
     }
 }
 ```

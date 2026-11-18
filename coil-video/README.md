@@ -8,7 +8,7 @@ To add video frame support, import the extension library:
 implementation("io.coil-kt.coil3:coil-video:3.6.3")
 ```
 
-And add the decoder to your component registry when constructing your `ImageLoader`:
+Coil registers `VideoFrameDecoder.Factory` automatically through its service loader. If you've disabled service loading, add the factory to your `ImageLoader`'s component registry:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -16,6 +16,14 @@ val imageLoader = ImageLoader.Builder(context)
         add(VideoFrameDecoder.Factory())
     }
     .build()
+```
+
+The decoder automatically handles sources whose MIME type starts with `video/`. Coil can infer this MIME type from a recognized file extension. If the source has a missing or incorrect MIME type, set the decoder explicitly for the request:
+
+```kotlin
+imageView.load("/path/to/video") {
+    decoderFactory { result, options, _ -> VideoFrameDecoder(result.source, options) }
+}
 ```
 
 To specify the time of the frame to extract from a video, use `videoFrameMillis` or `videoFrameMicros`:
@@ -43,11 +51,3 @@ imageView.load("/path/to/video.mp4") {
 ```
 
 If no frame position is specified, the first frame of the video will be decoded.
-
-The `ImageLoader` will automatically detect any videos and extract their frames if the request's filename/URI ends with a [valid video extension](https://developer.android.com/guide/topics/media/media-formats#video-formats). If it does not, you can set the `Decoder` explicitly for the request:
-
-```kotlin
-imageView.load("/path/to/video") {
-    decoderFactory { result, options, _ -> VideoFrameDecoder(result.source, options) }
-}
-```

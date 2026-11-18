@@ -19,7 +19,7 @@ AsyncImage(
 ```
 
 !!! Note
-    If you use Compose Multiplatform, you'll need to use Ktor instead of OkHttp. See [here](network.md#ktor-network-engines) for how to do that.
+    OkHttp supports Android and desktop JVM. For shared networking code that also targets iOS or the web, see [Ktor network engines](network.md#ktor-network-engines).
 
 ## Android Views
 
@@ -96,7 +96,7 @@ val image = bitmap.asImage()
 It's also interoperable with Compose UI's `Painter` class. This extension function requires importing the `coil-compose-core` artifact:
 
 ```kotlin
-val painter = image.asPainter()
+val painter = image.asPainter(LocalPlatformContext.current)
 ```
 
 !!! Note
@@ -113,6 +113,7 @@ Here's a list of the main artifacts Coil has published to `mavenCentral()`:
 * `io.coil-kt.coil3:coil-network-okhttp`: Includes support for fetching images from the network using [OkHttp](https://github.com/square/okhttp).
 * `io.coil-kt.coil3:coil-network-ktor2`: Includes support for fetching images from the network using [Ktor 2](https://github.com/ktorio/ktor).
 * `io.coil-kt.coil3:coil-network-ktor3`: Includes support for fetching images from the network using [Ktor 3](https://github.com/ktorio/ktor).
+* `io.coil-kt.coil3:coil-network-httpengine`: Includes support for fetching images from the network using Android's [HttpEngine](https://developer.android.com/reference/android/net/http/HttpEngine). Requires Android API >=34.
 * `io.coil-kt.coil3:coil-network-cache-control`: Includes support for respecting [`Cache-Control` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) when fetching images from the network.
 * `io.coil-kt.coil3:coil-gif`: Includes two [decoders](/coil/api/coil-core/coil3.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt.coil3:coil-svg`: Includes a [decoder](/coil/api/coil-core/coil3.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.

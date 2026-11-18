@@ -39,6 +39,7 @@ include(
     "coil-network-ktor2",
     "coil-network-ktor3",
     "coil-network-okhttp",
+    "coil-network-httpengine",
     "coil-network-cache-control",
     "coil-gif",
     "coil-lint",

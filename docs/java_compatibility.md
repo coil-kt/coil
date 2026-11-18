@@ -32,7 +32,7 @@ ImageRequest request = new ImageRequest.Builder(context)
     .size(1080, 1920)
     .build();
 Image image = ImageLoaders.executeBlocking(imageLoader, request).getImage();
-Drawable drawable = Image_androidKt.asDrawable(image, context. resources);
+Drawable drawable = image == null ? null : Image_androidKt.asDrawable(image, context.getResources());
 ```
 
 !!! Note

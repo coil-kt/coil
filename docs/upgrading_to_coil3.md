@@ -9,7 +9,7 @@ Coil 3 is the next major version of Coil that has a number of major improvements
 
 This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour changes.
 
-Using Coil 3 in a Compose Multiplatform project? Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
+See the [Compose Multiplatform sample](https://github.com/coil-kt/coil/tree/main/samples/compose) for an example project.
 
 ## Maven Coordinates and Package Name
 

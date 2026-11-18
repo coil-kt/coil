@@ -1,11 +1,14 @@
 package coil3.network.internal
 
+import coil3.annotation.InternalCoilApi
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 
-internal fun <P, T> singleParameterLazy(initializer: (P) -> T) = SingleParameterLazy(initializer)
+@InternalCoilApi
+fun <P, T> singleParameterLazy(initializer: (P) -> T) = SingleParameterLazy(initializer)
 
-internal class SingleParameterLazy<P, T>(initializer: (P) -> T) : SynchronizedObject() {
+@InternalCoilApi
+class SingleParameterLazy<P, T>(initializer: (P) -> T) : SynchronizedObject() {
     private var initializer: ((P) -> T)? = initializer
     private var _value: Any? = UNINITIALIZED
 

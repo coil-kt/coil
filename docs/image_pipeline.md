@@ -32,7 +32,7 @@ class CustomCacheInterceptor(
         val value = cache.get(chain.request.data.toString())
         if (value != null) {
             return SuccessResult(
-                image = value.bitmap.asImage(),
+                image = value,
                 request = chain.request,
                 dataSource = DataSource.MEMORY_CACHE,
             )

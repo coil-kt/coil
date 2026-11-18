@@ -1,19 +1,27 @@
 import coil3.androidLibrary
-import com.android.compose.screenshot.tasks.PreviewScreenshotUpdateTask
-import com.android.compose.screenshot.tasks.PreviewScreenshotValidationTask
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
-    alias(libs.plugins.screenshot)
 }
 
 androidLibrary(name = "coil3.test.composescreenshot") {
     buildFeatures {
         compose = true
     }
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+    testOptions {
+        screenshotTests.create("screenshotTest") {
+            engineVersion = libs.screenshot.validation.api.get().versionConstraint.requiredVersion
+            imageDifferenceThreshold = 0.01f
+            targetVariants.add("debug")
+
+            dependencies {
+                implementation(libs.androidx.compose.ui.tooling)
+                implementation(libs.screenshot.validation.api)
+            }
+        }
+    }
 }
 
 dependencies {
@@ -21,16 +29,4 @@ dependencies {
 
     implementation(projects.coilComposeCore)
     implementation(projects.coilTest)
-
-    testImplementation(projects.internal.testUtils)
-    testImplementation(libs.bundles.test.jvm)
-
-    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
-}
-
-tasks.withType<PreviewScreenshotUpdateTask>().configureEach {
-    testEngineInput.threshold.set(0.01f)
-}
-tasks.withType<PreviewScreenshotValidationTask>().configureEach {
-    testEngineInput.threshold.set(0.01f)
 }

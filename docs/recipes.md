@@ -47,7 +47,7 @@ listImageView.load("https://example.com/image.jpg")
 
 // Second request (once the first request finishes)
 detailImageView.load("https://example.com/image.jpg") {
-    placeholderMemoryCacheKey(listImageView.result.memoryCacheKey)
+    placeholderMemoryCacheKey((listImageView.result as? SuccessResult)?.memoryCacheKey)
 }
 ```
 
