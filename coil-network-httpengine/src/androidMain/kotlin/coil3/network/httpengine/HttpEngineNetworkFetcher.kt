@@ -19,13 +19,11 @@ import coil3.network.internal.singleParameterLazy
 import coil3.request.Options
 import java.util.concurrent.Executor
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
 @JvmName("factory")
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 fun HttpEngineNetworkFetcherFactory(
     executor: Executor = Dispatchers.IO.asExecutor(),
     clock: Clock = Clock.System,
@@ -48,7 +46,6 @@ fun HttpEngineNetworkFetcherFactory(
 
 @JvmName("factory")
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 fun HttpEngineNetworkFetcherFactory(
     httpEngine: HttpEngine,
     executor: Executor = Dispatchers.IO.asExecutor(),
@@ -69,7 +66,6 @@ fun HttpEngineNetworkFetcherFactory(
 }
 
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 fun HttpEngine.asNetworkClient(
     executor: Executor = Dispatchers.IO.asExecutor(),
     clock: Clock = Clock.System,
@@ -79,7 +75,6 @@ fun HttpEngine.asNetworkClient(
 }
 
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 private class HttpEngineFetcherFactory(
     executor: Executor = Dispatchers.IO.asExecutor(),
     clock: Clock = Clock.System,

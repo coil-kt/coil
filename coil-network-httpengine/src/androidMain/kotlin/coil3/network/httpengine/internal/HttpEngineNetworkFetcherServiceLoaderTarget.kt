@@ -5,9 +5,7 @@ import coil3.Uri
 import coil3.fetch.Fetcher
 import coil3.network.httpengine.HttpEngineNetworkFetcherFactory
 import coil3.util.FetcherServiceLoaderTarget
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 internal class HttpEngineNetworkFetcherServiceLoaderTarget : FetcherServiceLoaderTarget<Uri> {
     override fun factory(): Fetcher.Factory<Uri>? {
         return if (SDK_INT >= 34) HttpEngineNetworkFetcherFactory() else null

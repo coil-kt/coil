@@ -20,7 +20,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -44,7 +43,6 @@ import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 
 @SdkSuppress(minSdkVersion = 34)
-@OptIn(ExperimentalTime::class)
 class HttpEngineNetworkClientTest {
 
     @Test

@@ -191,7 +191,6 @@ class MovieDrawable @JvmOverloads constructor(
     }
 
     @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         return if (paint.alpha == 255 &&
             (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))
