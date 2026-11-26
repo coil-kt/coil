@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
 
-addAllMultiplatformTargets(libs.versions.skiko)
+addAllMultiplatformTargets()
 multiplatformAndroidLibrary(name = "coil3.svg")
 
 kotlin {

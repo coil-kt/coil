@@ -1,7 +1,6 @@
 package coil3
 
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -15,7 +14,6 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
 fun Project.addAllMultiplatformTargets(
-    skikoVersion: Provider<String>,
     enableWasm: Boolean = true,
     enableNativeLinux: Boolean = true,
 ) {
@@ -116,7 +114,7 @@ fun Project.addAllMultiplatformTargets(
             }
         }
 
-        createSkikoWasmJsRuntimeDependency(skikoVersion)
+        createSkikoWasmJsRuntimeDependency()
     }
 }
 
