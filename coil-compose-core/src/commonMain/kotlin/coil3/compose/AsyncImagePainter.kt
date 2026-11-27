@@ -159,6 +159,15 @@ class AsyncImagePainter internal constructor(
     private var colorFilter: ColorFilter? = null
 
     private var isRemembered = false
+
+    // The input whose request ran to completion and whose result is currently painted. Used to
+    // avoid launching a redundant request when the painter is remembered again.
+    private var completedInput: Input? = null
+
+    // Incremented whenever a request is launched. Used to ignore the result of a request that's
+    // superseded by a newer one before it records itself as completed.
+    private var requestGeneration = 0
+
     private var rememberJob: Job? = null
         set(value) {
             field?.cancel()
@@ -218,12 +227,21 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() = trace("AsyncImagePainter.onRemembered") {
         (painter as? RememberObserver)?.onRemembered()
-        launchJob()
+        // Set this before launching the request so that a callback which restarts the request while
+        // it's being launched (e.g. from `onState`) still launches a new request.
         isRemembered = true
+        // Don't restart a request that already completed for the current input. The painter can be
+        // remembered again without being forgotten in between (e.g. `movableContentOf` detaches and
+        // re-attaches its modifier node), and restarting would discard the result and flicker.
+        if (completedInput != _input) {
+            launchJob()
+        }
     }
 
     private fun launchJob() {
         val input = _input ?: return
+        completedInput = null
+        val generation = ++requestGeneration
 
         rememberJob = scope.launchWithDeferredDispatch {
             val previewHandler = previewHandler
@@ -237,6 +255,12 @@ class AsyncImagePainter internal constructor(
                 input.imageLoader.execute(request).toState()
             }
             updateState(state)
+            // Only record this request as completed if it's still the most recent one. A new
+            // request can be launched while this one is delivering its result (e.g. from an
+            // `onState` callback), in which case this request's result is stale.
+            if (generation == requestGeneration) {
+                completedInput = input
+            }
         }
     }
 
@@ -256,6 +280,10 @@ class AsyncImagePainter internal constructor(
      * Launch a new image request with the current [Input]s.
      */
     fun restart() {
+        // Invalidate any completed request even if the painter is currently forgotten so a new
+        // request is launched the next time it's remembered.
+        completedInput = null
+        requestGeneration++
         if (_input == null) {
             rememberJob = null
         } else if (isRemembered) {
