@@ -20,31 +20,25 @@ internal actual fun println(
     println(message)
 }
 
-/** Create a [Bitmap] from [image] for the given [options]. */
-internal fun Bitmap.Companion.makeFromImage(
-    image: SkiaImage,
-    options: Options,
-): Bitmap {
-    val srcWidth = image.width
-    val srcHeight = image.height
+internal fun Options.allocDecodeBitmap(srcWidth: Int, srcHeight: Int): Bitmap {
     val (dstWidth, dstHeight) = DecodeUtils.computeDstSize(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
-        targetSize = options.size,
-        scale = options.scale,
-        maxSize = options.maxBitmapSize,
+        targetSize = size,
+        scale = scale,
+        maxSize = maxBitmapSize,
     )
     var multiplier = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
         dstWidth = dstWidth,
         dstHeight = dstHeight,
-        scale = options.scale,
-        maxSize = options.maxBitmapSize,
+        scale = scale,
+        maxSize = maxBitmapSize,
     )
 
     // Only upscale the image if the options require an exact size.
-    if (options.precision == Precision.INEXACT) {
+    if (precision == Precision.INEXACT) {
         multiplier = multiplier.coerceAtMost(1.0)
     }
 
@@ -53,17 +47,26 @@ internal fun Bitmap.Companion.makeFromImage(
 
     val bitmap = Bitmap()
     bitmap.allocN32Pixels(outWidth, outHeight)
+    return bitmap
+}
+
+/** Create a [Bitmap] from [image] for the given [options]. */
+internal fun Bitmap.Companion.makeFromImage(
+    image: SkiaImage,
+    options: Options,
+): Bitmap {
+    val bitmap = options.allocDecodeBitmap(image.width, image.height)
     Canvas(bitmap).use { canvas ->
         canvas.drawImageRect(
             image = image,
             srcLeft = 0f,
             srcTop = 0f,
-            srcRight = srcWidth.toFloat(),
-            srcBottom = srcHeight.toFloat(),
+            srcRight = image.width.toFloat(),
+            srcBottom = image.height.toFloat(),
             dstLeft = 0f,
             dstTop = 0f,
-            dstRight = outWidth.toFloat(),
-            dstBottom = outHeight.toFloat(),
+            dstRight = bitmap.width.toFloat(),
+            dstBottom = bitmap.height.toFloat(),
             samplingMode = SamplingMode.DEFAULT,
             paint = null,
             strict = false,

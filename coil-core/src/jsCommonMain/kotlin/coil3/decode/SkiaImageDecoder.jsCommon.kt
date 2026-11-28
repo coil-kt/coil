@@ -8,6 +8,7 @@ import coil3.util.IntPair
 import coil3.util.component1
 import coil3.util.component2
 import org.jetbrains.skia.Bitmap
+import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.impl.use
 
@@ -158,3 +159,5 @@ private fun int32LE(b1: Byte, b2: Byte, b3: Byte, b4: Byte): UInt =
     int32(b4, b3, b2, b1)
 
 private fun Byte.asInt() = this.toUInt() and 0xFFu
+
+internal actual fun tryMakeData(source: ImageSource): Data? = null
