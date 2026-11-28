@@ -15,7 +15,6 @@ import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -26,7 +25,6 @@ import okio.IOException
 import okio.Path
 
 @RequiresApi(34)
-@OptIn(ExperimentalTime::class)
 internal class HttpEngineUrlRequestCallback(
     private val continuation: CancellableContinuation<NetworkResponse>,
     private val networkRequest: NetworkRequest,

@@ -44,8 +44,8 @@ class LruMutableMapTest {
         assertEquals(listOf("one", "two", "three"), map.keys.toList())
         assertEquals(listOf(1, 2, 3), map.values.toList())
 
-        // Access "three" to make it the most recently accessed.
-        map["one"]
+        // Access "one" to make it the most recently accessed.
+        assertEquals(1, map["one"])
 
         assertEquals(listOf("two", "three", "one"), map.keys.toList())
         assertEquals(listOf(2, 3, 1), map.values.toList())

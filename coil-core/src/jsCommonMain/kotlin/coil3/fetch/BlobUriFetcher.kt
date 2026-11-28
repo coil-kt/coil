@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalWasmJsInterop::class)
-
 package coil3.fetch
 
 import coil3.ImageLoader
@@ -7,7 +5,6 @@ import coil3.Uri
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
 import coil3.request.Options
-import kotlin.js.ExperimentalWasmJsInterop
 import okio.Buffer
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
