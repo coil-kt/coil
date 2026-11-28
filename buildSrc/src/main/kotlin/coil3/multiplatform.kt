@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.konan.target.Family
 
 fun Project.addAllMultiplatformTargets(
     skikoVersion: Provider<String>,
+    enableJs: Boolean = true,
     enableWasm: Boolean = true,
     enableNativeLinux: Boolean = true,
 ) {
@@ -27,22 +28,24 @@ fun Project.addAllMultiplatformTargets(
 
             val sharedKarmaConfigDirectory = rootProject.projectDir.resolve("karma.config.d")
 
-            js {
-                browser {
-                    testTask {
-                        useKarma {
-                            useChromeHeadless()
-                            useConfigDirectory(sharedKarmaConfigDirectory)
+            if (enableJs) {
+                js {
+                    browser {
+                        testTask {
+                            useKarma {
+                                useChromeHeadless()
+                                useConfigDirectory(sharedKarmaConfigDirectory)
+                            }
                         }
                     }
-                }
-                nodejs {
-                    testTask {
-                        // Compose Multiplatform is not supported on nodejs.
-                        enabled = false
+                    nodejs {
+                        testTask {
+                            // Compose Multiplatform is not supported on nodejs.
+                            enabled = false
+                        }
                     }
+                    configureWebBinaries(includeLibrary = true)
                 }
-                configureWebBinaries(includeLibrary = true)
             }
 
             if (enableWasm) {
@@ -116,7 +119,9 @@ fun Project.addAllMultiplatformTargets(
             }
         }
 
-        createSkikoWasmJsRuntimeDependency(skikoVersion)
+        if (enableJs || enableWasm) {
+            createSkikoWasmJsRuntimeDependency(skikoVersion)
+        }
     }
 }
 

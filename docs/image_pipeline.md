@@ -13,7 +13,7 @@ val imageLoader = ImageLoader.Builder(context)
         add(ItemMapper())
         add(HttpUrlKeyer())
         add(CronetFetcher.Factory())
-        add(GifDecoder.Factory())
+        add(AnimatedImageDecoderFactory())
     }
     .build()
 ```
